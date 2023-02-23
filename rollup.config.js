@@ -6,7 +6,7 @@ import {elements} from './src/elements/.elements.js';
 async function writeElement(elementName, elementClass) {
 	let cssPath = `./src/css/${elementName}.css`;
 	let input = fs.readFileSync(cssPath);
-	let css = await postcss([cssnano()]).process(input);
+	let css = await postcss([cssnano()]).process(input, {from: undefined,});
 
 	let fileContent = `import {${elementClass}, styleInject} from '../harmony-ui.js';
 import {InjectUiStyle} from './.inject-ui-style.js';
@@ -21,7 +21,7 @@ if (window.customElements) {
 async function writeGlobal() {
 	let cssPath = `./src/css/harmony-ui.css`;
 	let input = fs.readFileSync(cssPath);
-	let css = await postcss([cssnano()]).process(input);
+	let css = await postcss([cssnano()]).process(input, {from: undefined,});
 
 	let fileContent = `import {styleInject} from '../harmony-ui.js';
 export const InjectUiStyle = (function () {
