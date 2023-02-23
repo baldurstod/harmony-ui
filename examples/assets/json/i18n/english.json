@@ -1,0 +1,9 @@
+{
+	"lang": "english",
+	"strings": {
+		"#test": "Test"
+		,"#button_1": "Button 1"
+		,"#button_2": "Button 2"
+		,"#button_3": "Button 3"
+	}
+}

@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Test switch</title>
+		<script type="module" src="../dist/define/mindalka-switch.js"></script>
+		<link rel="stylesheet" type="text/css" href="./assets/css/examples.css" />
+	</head>
+	<body>
+		<mindalka-switch data-i18n="#test" id='switch' style="width:200px">
+		</mindalka-switch>
+	</body>
+	<script>
+		document.getElementById('switch').addEventListener('change', (event) => console.log(event.target.checked))
+	</script>
+</html>

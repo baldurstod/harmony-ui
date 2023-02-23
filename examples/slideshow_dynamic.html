@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Test slideshow</title>
+	</head>
+	<body>
+		<script type="module">
+			import {createElement} from '../dist/mindalka-ui.js';
+			import '../dist/define/mindalka-slideshow.js';
+
+			let slideshow = createElement('mindalka-slideshow');
+			slideshow.style = "height:500px;width:500px;";
+			document.body.append(slideshow);
+			let imageUrls = ['https://files.cdn.printful.com/products/3/823_1581583554.jpg', 'https://files.cdn.printful.com/printfile-preview/397879931/d8cbbb954d1af01c04c4aabb6a0fc450_preview.png', 'https://files.cdn.printful.com/files/60c/60cf9cdbaac70ca5e6100a972e886e2e_preview.png'];
+
+			for (let url of imageUrls) {
+				let image = createElement('img', {src:url});
+				slideshow.append(image);
+			}
+
+
+		</script>
+		<mindalka-slideshow style="height:500px;width:500px;">
+			<img src="https://files.cdn.printful.com/products/3/823_1581583554.jpg">
+			<img src="https://files.cdn.printful.com/printfile-preview/397879931/d8cbbb954d1af01c04c4aabb6a0fc450_preview.png">
+			<img src="https://files.cdn.printful.com/files/60c/60cf9cdbaac70ca5e6100a972e886e2e_preview.png">
+		</mindalka-slideshow>
+	</body>
+</html>

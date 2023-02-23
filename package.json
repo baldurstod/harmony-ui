@@ -1,0 +1,12 @@
+{
+	"name": "harmony-ui",
+	"version": "1.0.0",
+	"description": "",
+	"main": "dist/harmony-ui.js",
+	"type": "module",
+	"devDependencies": {
+		"cssnano": "^5.1.13",
+		"postcss": "^8.4.16",
+		"rollup": "^2.60.1"
+	}
+}

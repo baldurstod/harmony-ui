@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Test accordion</title>
+		<script type="module" src="../dist/define/mindalka-accordion.js"></script>
+	</head>
+	<body>
+		<mindalka-accordion multiple="0" id="accordion">
+			<item>
+				<header>Item 1</header>
+				<content>Content 1</content>
+			</item>
+			<item>
+				<header>Item 2</header>
+				<content>Content 2</content>
+			</item>
+		</mindalka-accordion>
+		<script type="module">
+			import {createElement} from '../dist/mindalka-ui.js';
+			let accordion = document.getElementById('accordion');
+
+			let h = createElement('header', {innerHTML:'Item 3'});
+			let c = createElement('content', {innerHTML:'Content 3'});
+			accordion.createItem(h, c);
+
+			accordion.addEventListener('select', event => {
+				console.error(event.detail);
+			})
+		</script>
+	</body>
+</html>

@@ -1,0 +1,73 @@
+harmony-panel{
+	display: flex;
+	flex: 1;
+	flex-direction: column;
+
+	flex: 0 0 auto;
+	/*flex-grow: 0;
+	flex-shrink: 0;
+	flex-basis: auto;*/
+	/*flex-basis: 0;*/
+	/*flex: 1;*/
+	/*height:100%;
+	width:100%;*/
+
+	/*padding: 5px !important;*/
+	box-sizing: border-box;
+	pointer-events: all;
+	overflow: hidden;
+	position: relative;
+	flex-direction: column;
+	box-sizing: border-box;
+}
+harmony-panel > *{
+	/*flex: 1;*/
+	/*flex-grow: 0;
+	flex-shrink: 0;
+	flex-basis: auto;*/
+	/*flex: 1;*/
+	/*display: flex;
+	flex: 1;
+	height:100%;
+	width:100%;*/
+}
+.harmony-panel-row{
+	flex-direction: row;
+}
+.harmony-panel-row > harmony-panel{
+	height:100%;
+}
+.harmony-panel-column{
+	flex-direction: column;
+}
+.harmony-panel-column > harmony-panel{
+	width:100%;
+}
+.harmony-panel-splitter{
+	display: none;
+	flex: 0 0 10px;
+	background-color: red;
+}
+harmony-panel>.title{
+	cursor: pointer;
+	text-align: center;
+	font-size: 1.5em;
+	padding: 4px;
+	overflow: hidden;
+}
+harmony-panel>.content{
+	width: 100%;
+	box-sizing: border-box;
+}
+
+harmony-panel[collapsible='1'] > .title{
+
+}
+harmony-panel[collapsible='1'] > .title::after{
+	content: "-";
+	right: 5px;
+	position: absolute;
+}
+harmony-panel[collapsed='1'] > .title::after{
+	content: "+";
+}

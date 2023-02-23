@@ -1,0 +1,16 @@
+harmony-toggle-button{
+	cursor: pointer;
+	height: 50px;
+	width: 50px;
+	display: inline-block;
+	position: relative;
+}
+harmony-toggle-button>span{
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	height: 100%;
+	width: 100%;
+	background-size: 100% auto;
+	box-sizing: border-box;
+}

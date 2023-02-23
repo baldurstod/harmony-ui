@@ -1,0 +1,32 @@
+harmony-tab{
+	display: block;
+	height: 100%;
+	overflow: auto;
+}
+harmony-tab::first-letter{
+	text-transform: uppercase;
+}
+.harmony-tab-label{
+	display: inline-block;
+	background-color: var(--main-bg-color-bright);
+	padding: 10px;
+	border: 1px solid black;
+	border-top:0px;
+	/*border-right:0px;*/
+	/*margin-left: -1px;*/
+	position: relative;
+	/*left: 1px;*/
+	color: var(--main-text-color-dark2);
+	cursor: pointer;
+	user-select: none;
+	pointer-events: all;
+	flex: 0 0;
+	text-align: center;
+	white-space: nowrap;
+}
+.harmony-tab-label.activated{
+	background-color: var(--main-bg-color-dark);
+	border-bottom: 1px solid var(--main-bg-color-dark);
+	border-left: 1px solid white;
+	z-index: 2;
+}
