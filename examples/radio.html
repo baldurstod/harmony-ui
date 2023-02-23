@@ -2,25 +2,25 @@
 <html>
 	<head>
 		<title>Test radio</title>
-		<script type="module" src="../dist/define/mindalka-radio.js"></script>
+		<script type="module" src="../dist/define/harmony-radio.js"></script>
 		<link rel="stylesheet" type="text/css" href="./assets/css/examples.css" />
 	</head>
 	<body>
-		<mindalka-radio id='radio' data-i18n="simple">
+		<harmony-radio id='radio' data-i18n="simple">
 			<button class="i18n" data-i18n="#button_1" value='1' selected></button>
 			<button class="i18n" data-i18n="#button_2" value='2'></button>
 			<button class="i18n" data-i18n="#button_3" value='3'></button>
-		</mindalka-radio>
+		</harmony-radio>
 		<div></div>
-		<mindalka-radio id='radio-multiple' data-i18n="multiple" multiple>
+		<harmony-radio id='radio-multiple' data-i18n="multiple" multiple>
 			<button class="i18n" data-i18n="#button_1" value='1' selected></button>
 			<button class="i18n" data-i18n="#button_2" value='2'></button>
 			<button class="i18n" data-i18n="#button_3" value='3' selected></button>
 			<button class="i18n" data-i18n="#button_4" value='4'></button>
-		</mindalka-radio>
+		</harmony-radio>
 	</body>
 	<script type="module">
-		import {createElement} from '../dist/mindalka-ui.js';
+		import {createElement} from '../dist/harmony-ui.js';
 		function resolveAfterDelay(delay) {
 			return new Promise(resolve => setTimeout(() => resolve(), delay));
 		}
@@ -30,7 +30,7 @@
 		document.getElementById('radio-multiple').select('4', true);
 
 
-		createElement('mindalka-radio', {
+		createElement('harmony-radio', {
 			parent: document.body,
 			childs: [
 				createElement('button', {i18n:'#button_1', value:'button_1', attributes:{selected:1}}),
