@@ -44,10 +44,16 @@ function createElementOptions(element, options) {
 					optionValue.append(element);
 					break;
 				case 'child':
-					element.append(optionValue);
+					if (optionValue) {
+						element.append(optionValue);
+					}
 					break;
 				case 'childs':
-					element.append(...optionValue);
+					optionValue.forEach(entry => {
+						if (entry !== null && entry !== undefined) {
+							element.append(entry);
+						}
+					});
 					break;
 				case 'events':
 					for (let eventType in optionValue) {
