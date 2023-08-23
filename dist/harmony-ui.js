@@ -426,6 +426,36 @@ class HarmonyContextMenu extends HTMLElement {
 	}
 }
 
+class HarmonyLabelProperty extends HTMLElement {
+	#doOnce = false;
+	#htmlLabel;
+	#htmlProperty;
+	constructor() {
+		super();
+		this.#initHtml();
+	}
+
+	#initHtml() {
+		this.#htmlLabel = createElement('label', {i18n:''});
+		this.#htmlProperty = createElement('span');
+	}
+
+	set label(label) {
+		this.#htmlLabel.setAttribute('data-i18n', label);
+	}
+
+	set property(property) {
+		this.#htmlProperty.innerHTML = property;
+	}
+
+	connectedCallback() {
+		if (!this.#doOnce) {
+			this.#doOnce = true;
+			this.append(this.#htmlLabel, this.#htmlProperty);
+		}
+	}
+}
+
 let CustomPanelId = 0;
 let dragged = null;
 class HarmonyPanel extends HTMLElement {
@@ -1688,4 +1718,4 @@ class HarmonyToggleButton extends HTMLElement {
 	}
 }
 
-export { HarmonyAccordion, HarmonyContextMenu, HarmonyPanel, HarmonyRadio, HarmonySelect, HarmonySlideshow, HarmonySwitch, HarmonyTab, HarmonyTabGroup, HarmonyToggleButton, createElement, createElementNS, display, hide, show, styleInject, toggle, updateElement, visible };
+export { HarmonyAccordion, HarmonyContextMenu, HarmonyLabelProperty, HarmonyPanel, HarmonyRadio, HarmonySelect, HarmonySlideshow, HarmonySwitch, HarmonyTab, HarmonyTabGroup, HarmonyToggleButton, createElement, createElementNS, display, hide, show, styleInject, toggle, updateElement, visible };

@@ -1,4 +1,4 @@
-import {createElement} from 'harmony-ui';
+import { createElement } from '../harmony-html.js';
 
 export class HarmonyLabelProperty extends HTMLElement {
 	#doOnce = false;
