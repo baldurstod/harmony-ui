@@ -1,6 +1,9 @@
 function createElement(tagName, options) {
 	let element = document.createElement(tagName);
 	createElementOptions(element, options);
+	if (options.elementCreated) {
+		options.elementCreated(element);
+	}
 	return element;
 }
 
@@ -134,7 +137,7 @@ class HarmonyAccordion extends HTMLElement {
 	#disabled;
 	#items;
 	#selected;
-	constructor(options) {
+	constructor() {
 		super();
 		this.#doOnce = true;
 		this.#multiple = false;

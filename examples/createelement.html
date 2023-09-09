@@ -6,7 +6,7 @@
 	</head>
 	<body>
 		<script type="module">
-			import {createElement} from '../dist/mindalka-ui.js';
+			import {createElement} from '../dist/harmony-ui.js';
 
 			createElement('div', {
 				parent: document.body,
@@ -14,6 +14,7 @@
 					1, 2, 3, null, 4
 				],
 				child: 5,
+				elementCreated: (element) => console.log(element)
 			});
 		</script>
 	</body>
