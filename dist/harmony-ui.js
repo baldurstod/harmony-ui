@@ -1,7 +1,7 @@
 function createElement(tagName, options) {
 	let element = document.createElement(tagName);
 	createElementOptions(element, options);
-	if (options.elementCreated) {
+	if (options?.elementCreated) {
 		options.elementCreated(element);
 	}
 	return element;
