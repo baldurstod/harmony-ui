@@ -6,7 +6,7 @@ export class HarmonyAccordion extends HTMLElement {
 	#disabled;
 	#items;
 	#selected;
-	constructor(options) {
+	constructor() {
 		super();
 		this.#doOnce = true;
 		this.#multiple = false;
