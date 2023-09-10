@@ -47,6 +47,10 @@ function createElementOptions(element, options) {
 					element.setAttribute('data-i18n-json', JSON.stringify(optionValue));
 					element.classList.add('i18n');
 					break;
+				case 'i18n-values':
+					element.setAttribute('data-i18n-values', JSON.stringify(optionValue));
+					element.classList.add('i18n');
+					break;
 				case 'parent':
 					optionValue.append(element);
 					break;
