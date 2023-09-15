@@ -47,6 +47,10 @@ function createElementOptions(element, options) {
 					element.setAttribute('data-i18n-json', JSON.stringify(optionValue));
 					element.classList.add('i18n');
 					break;
+				case 'i18n-values':
+					element.setAttribute('data-i18n-values', JSON.stringify(optionValue));
+					element.classList.add('i18n');
+					break;
 				case 'parent':
 					optionValue.append(element);
 					break;
@@ -430,6 +434,38 @@ class HarmonyContextMenu extends HTMLElement {
 			}
 		}
 		return htmlItem;
+	}
+}
+
+class HarmonyCopy extends HTMLElement {
+	#doOnce = true;
+	#htmlCopied;
+	constructor() {
+		super();
+		this.#htmlCopied = createElement('div', { class: 'harmony-copy-copied' });
+		this.addEventListener('click', () => this.#copy());
+	}
+
+	connectedCallback() {
+		if (this.#doOnce) {
+			this.#doOnce = false;
+			this.append(this.#htmlCopied);
+			hide(this.#htmlCopied);
+		}
+	}
+
+	async #copy() {
+		try {
+			const text = this.innerText;
+			this.#htmlCopied.innerText = text;
+			show(this.#htmlCopied);
+			await navigator.clipboard.writeText(text);
+			this.#htmlCopied.classList.add('harmony-copy-copied-end');
+
+			setTimeout(() => { this.#htmlCopied.classList.remove('harmony-copy-copied-end'); hide(this.#htmlCopied); }, 1000);
+		} catch (e) {
+			console.log(e);
+		}
 	}
 }
 
@@ -1725,4 +1761,4 @@ class HarmonyToggleButton extends HTMLElement {
 	}
 }
 
-export { HarmonyAccordion, HarmonyContextMenu, HarmonyLabelProperty, HarmonyPanel, HarmonyRadio, HarmonySelect, HarmonySlideshow, HarmonySwitch, HarmonyTab, HarmonyTabGroup, HarmonyToggleButton, createElement, createElementNS, display, hide, show, styleInject, toggle, updateElement, visible };
+export { HarmonyAccordion, HarmonyContextMenu, HarmonyCopy, HarmonyLabelProperty, HarmonyPanel, HarmonyRadio, HarmonySelect, HarmonySlideshow, HarmonySwitch, HarmonyTab, HarmonyTabGroup, HarmonyToggleButton, createElement, createElementNS, display, hide, show, styleInject, toggle, updateElement, visible };

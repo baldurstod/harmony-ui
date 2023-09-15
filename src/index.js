@@ -1,6 +1,7 @@
 export * from './harmony-html.js';
 export * from './elements/harmony-accordion.js';
 export * from './elements/harmony-context-menu.js';
+export * from './elements/harmony-copy.js';
 export * from './elements/harmony-label-property.js';
 export * from './elements/harmony-panel.js';
 export * from './elements/harmony-radio.js';

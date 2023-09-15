@@ -1,6 +1,7 @@
 export const elements = {
 	'harmony-accordion': 'HarmonyAccordion',
 	'harmony-context-menu': 'HarmonyContextMenu',
+	'harmony-copy': 'HarmonyCopy',
 	'harmony-label-property': 'HarmonyLabelProperty',
 	'harmony-panel': 'HarmonyPanel',
 	'harmony-radio': 'HarmonyRadio',
