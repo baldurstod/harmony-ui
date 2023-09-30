@@ -31,7 +31,6 @@ export class HarmonyAccordion extends HTMLElement {
 			list.push(child);
 		}
 		list.forEach(element => this.addItem(element));
-		console.log(list);
 	}
 
 	addItem(item) {
