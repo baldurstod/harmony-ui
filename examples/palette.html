@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Test palette</title>
+		<script type="module" src="../dist/define/harmony-palette.js"></script>
+		<link rel="stylesheet" type="text/css" href="./assets/css/examples.css" />
+	</head>
+	<body>
+		<harmony-palette multiple="0" id="palette">
+			<color tooltip="white">#000000</color>
+			<color>#FFFFFF</color>
+			<color>#FF0000</color>
+			<color>#00FF00</color>
+			<color>#0000FF</color>
+		</harmony-palette>
+		<script type="module">
+			let palette = document.getElementById('palette');
+			palette.addEventListener('select', event => {
+				console.error(event.detail);
+			})
+		</script>
+	</body>
+</html>

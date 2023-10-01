@@ -1,0 +1,20 @@
+html{
+	--harmony-palette-color-height: 2rem;
+	--harmony-palette-gap: 0.5rem;
+}
+
+harmony-palette{
+	display: flex;
+	flex-direction: row;
+	gap: var(--harmony-palette-gap);
+}
+
+.harmony-palette-color{
+	height: var(--harmony-palette-color-height);
+	width: var(--harmony-palette-color-height);
+	border-radius: 0.2rem;
+	border: 0.2rem solid grey;
+	cursor: pointer;
+}
+.harmony-palette-color.selected{
+}

@@ -3,6 +3,7 @@ export const elements = {
 	'harmony-context-menu': 'HarmonyContextMenu',
 	'harmony-copy': 'HarmonyCopy',
 	'harmony-label-property': 'HarmonyLabelProperty',
+	'harmony-palette': 'HarmonyPalette',
 	'harmony-panel': 'HarmonyPanel',
 	'harmony-radio': 'HarmonyRadio',
 	'harmony-select': 'HarmonySelect',
