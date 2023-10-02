@@ -139,7 +139,7 @@ function styleInject(css) {
 	document.head.append(createElement('style', {textContent: css}));
 }
 
-class HarmonyAccordion extends HTMLElement {
+class HTMLHarmonyAccordionElement extends HTMLElement {
 	#doOnce;
 	#multiple;
 	#disabled;
@@ -276,7 +276,7 @@ class HarmonyAccordion extends HTMLElement {
 	}
 }
 
-class HarmonyContextMenu extends HTMLElement {
+class HTMLHarmonyContextMenuElement extends HTMLElement {
 	constructor() {
 		super();
 		this._subMenus = new Map();
@@ -436,7 +436,7 @@ class HarmonyContextMenu extends HTMLElement {
 	}
 }
 
-class HarmonyCopy extends HTMLElement {
+class HTMLHarmonyCopyElement extends HTMLElement {
 	#doOnce = true;
 	#htmlCopied;
 	constructor() {
@@ -468,7 +468,7 @@ class HarmonyCopy extends HTMLElement {
 	}
 }
 
-class HarmonyLabelProperty extends HTMLElement {
+class HTMLHarmonyLabelPropertyElement extends HTMLElement {
 	#doOnce = false;
 	#htmlLabel;
 	#htmlProperty;
@@ -506,7 +506,7 @@ function clampColor(val) {
 	return Math.min(Math.max(0, val), 1);
 }
 
-class HarmonyPalette extends HTMLElement {
+class HTMLHarmonyPaletteElement extends HTMLElement {
 	#initialized = false;
 	#multiple = false;
 	#colors = new Map();
@@ -645,7 +645,7 @@ class HarmonyPalette extends HTMLElement {
 
 let CustomPanelId = 0;
 let dragged = null;
-class HarmonyPanel extends HTMLElement {
+class HTMLHarmonyPanelElement extends HTMLElement {
 	static #nextId = 0;
 	constructor() {
 		super();
@@ -665,9 +665,9 @@ class HarmonyPanel extends HTMLElement {
 		//this.addEventListener('mousemove', event => this._handleMouseMove(event));
 		//this.addEventListener('mouseleave', event => this._handleMouseLeave(event));
 		this.CustomPanelId = CustomPanelId++;
-		if (!HarmonyPanel._spliter) {
-			HarmonyPanel._spliter = document.createElement('div');
-			HarmonyPanel._spliter.className = 'harmony-panel-splitter';
+		if (!HTMLHarmonyPanelElement._spliter) {
+			HTMLHarmonyPanelElement._spliter = document.createElement('div');
+			HTMLHarmonyPanelElement._spliter.className = 'harmony-panel-splitter';
 		}
 
 		this.htmlTitle = document.createElement('div');
@@ -776,7 +776,7 @@ class HarmonyPanel extends HTMLElement {
 			if (dragged) {
 				if (this != dragged) {
 					this._addChild(dragged, event.offsetX, event.offsetY);
-					//OptionsManager.setItem('app.layout.disposition', HarmonyPanel.saveDisposition());
+					//OptionsManager.setItem('app.layout.disposition', HTMLHarmonyPanelElement.saveDisposition());
 				}
 			}
 		}
@@ -785,8 +785,8 @@ class HarmonyPanel extends HTMLElement {
 
 	_handleMouseEnter(event) {
 		//console.error(this, event);
-		//clearInterval(HarmonyPanel._interval);
-		//HarmonyPanel._interval = setInterval(event => this.style.opacity = (Math.floor(new Date().getTime() / 500) % 2) / 2 + 0.5, 100);
+		//clearInterval(HTMLHarmonyPanelElement._interval);
+		//HTMLHarmonyPanelElement._interval = setInterval(event => this.style.opacity = (Math.floor(new Date().getTime() / 500) % 2) / 2 + 0.5, 100);
 		//event.stopPropagation();
 	}
 
@@ -794,32 +794,32 @@ class HarmonyPanel extends HTMLElement {
 		const delta = 5;
 		//console.error(event.offsetX, event.offsetY);
 		//this.style.opacity = (Math.floor(new Date().getTime() / 1000) % 2);
-		//HarmonyPanel.highlitPanel = this;
+		//HTMLHarmonyPanelElement.highlitPanel = this;
 		event.stopPropagation();
 		if (event.offsetX < delta || event.offsetY < delta) {
-			HarmonyPanel.highlitPanel = this;
-			this.parentNode.insertBefore(HarmonyPanel._spliter, this);
+			HTMLHarmonyPanelElement.highlitPanel = this;
+			this.parentNode.insertBefore(HTMLHarmonyPanelElement._spliter, this);
 		} else if ((this.offsetWidth - event.offsetX) < delta || (this.offsetHeight - event.offsetY) < delta) {
-			HarmonyPanel.highlitPanel = this;
-			this.parentNode.insertBefore(HarmonyPanel._spliter, this.nextSibling);
+			HTMLHarmonyPanelElement.highlitPanel = this;
+			this.parentNode.insertBefore(HTMLHarmonyPanelElement._spliter, this.nextSibling);
 		} else {
-			HarmonyPanel.highlitPanel = null;
+			HTMLHarmonyPanelElement.highlitPanel = null;
 		}
 
 	}
 
 	_handleMouseLeave(event) {
 		//console.error(this, event);
-		//clearInterval(HarmonyPanel._interval);
+		//clearInterval(HTMLHarmonyPanelElement._interval);
 	}
 
 	static set highlitPanel(panel) {
-		if (HarmonyPanel._highlitPanel) {
-			HarmonyPanel._highlitPanel.style.filter = null;
+		if (HTMLHarmonyPanelElement._highlitPanel) {
+			HTMLHarmonyPanelElement._highlitPanel.style.filter = null;
 		}
-		HarmonyPanel._highlitPanel = panel;
-		if (HarmonyPanel._highlitPanel) {
-			HarmonyPanel._highlitPanel.style.filter = 'grayscale(80%)';///'contrast(200%)';
+		HTMLHarmonyPanelElement._highlitPanel = panel;
+		if (HTMLHarmonyPanelElement._highlitPanel) {
+			HTMLHarmonyPanelElement._highlitPanel.style.filter = 'grayscale(80%)';///'contrast(200%)';
 		}
 	}
 
@@ -876,8 +876,8 @@ class HarmonyPanel extends HTMLElement {
 	}
 
 	_split(newNode, before, direction) {
-		let panel = HarmonyPanel._createDummy();//document.createElement('harmony-panel');
-		/*panel.id = HarmonyPanel.nextId;
+		let panel = HTMLHarmonyPanelElement._createDummy();//document.createElement('harmony-panel');
+		/*panel.id = HTMLHarmonyPanelElement.nextId;
 		panel._isDummy = true;
 		panel.classList.add('dummy');*/
 		panel.size = this.size;
@@ -895,7 +895,7 @@ class HarmonyPanel extends HTMLElement {
 
 	static _createDummy() {
 		let dummy = document.createElement('harmony-panel');
-		dummy.id = HarmonyPanel.#nextId;
+		dummy.id = HTMLHarmonyPanelElement.#nextId;
 		dummy._isDummy = true;
 		dummy.classList.add('dummy');
 		return dummy;
@@ -1010,7 +1010,7 @@ class HarmonyPanel extends HTMLElement {
 
 
 	static get nextId() {
-		return `harmony-panel-dummy-${++HarmonyPanel.#nextId}`;
+		return `harmony-panel-dummy-${++HTMLHarmonyPanelElement.#nextId}`;
 	}
 
 	static saveDisposition() {
@@ -1032,7 +1032,7 @@ class HarmonyPanel extends HTMLElement {
 	}
 }
 
-class HarmonyRadio extends HTMLElement {
+class HTMLHarmonyRadioElement extends HTMLElement {
 	#doOnce;
 	#disabled;
 	#multiple = false;
@@ -1163,7 +1163,7 @@ const resizeCallback = (entries, observer) => {
 const DEFAULT_AUTO_PLAY_DELAY = 3000;
 const DEFAULT_SCROLL_TRANSITION_TIME = 0.5;
 
-class HarmonySlideshow extends HTMLElement {
+class HTMLHarmonySlideshowElement extends HTMLElement {
 	#activeImage;
 	#currentImage;
 	#doOnce;
@@ -1511,7 +1511,7 @@ class HarmonySlideshow extends HTMLElement {
 	}
 }
 
-class HarmonySelect extends HTMLElement {
+class HTMLHarmonySelectElement extends HTMLElement {
 	#htmlSelect;
 	constructor() {
 		super();
@@ -1610,7 +1610,7 @@ class HarmonySelect extends HTMLElement {
 	}
 }
 
-class HarmonySwitch extends HTMLElement {
+class HTMLHarmonySwitchElement extends HTMLElement {
 	#doOnce;
 	#disabled;
 	#htmlLabel;
@@ -1697,7 +1697,7 @@ class HarmonySwitch extends HTMLElement {
 	}
 }
 
-class HarmonyTab extends HTMLElement {
+class HTMLHarmonyTabElement extends HTMLElement {
 	#disabled = false;
 	#active = false;
 	#header;
@@ -1785,7 +1785,7 @@ class HarmonyTab extends HTMLElement {
 	}
 }
 
-class HarmonyTabGroup extends HTMLElement {
+class HTMLHarmonyTabGroupElement extends HTMLElement {
 	#tabs = new Set();
 	#header;
 	#content;
@@ -1835,7 +1835,7 @@ class HarmonyTabGroup extends HTMLElement {
 	}
 }
 
-class HarmonyToggleButton extends HTMLElement {
+class HTMLHarmonyToggleButtonElement extends HTMLElement {
 	constructor() {
 		super();
 		this._state = false;
@@ -1905,4 +1905,4 @@ class HarmonyToggleButton extends HTMLElement {
 	}
 }
 
-export { HarmonyAccordion, HarmonyContextMenu, HarmonyCopy, HarmonyLabelProperty, HarmonyPalette, HarmonyPanel, HarmonyRadio, HarmonySelect, HarmonySlideshow, HarmonySwitch, HarmonyTab, HarmonyTabGroup, HarmonyToggleButton, createElement, createElementNS, display, hide, show, styleInject, toggle, updateElement, visible };
+export { HTMLHarmonyAccordionElement, HTMLHarmonyContextMenuElement, HTMLHarmonyCopyElement, HTMLHarmonyLabelPropertyElement, HTMLHarmonyPaletteElement, HTMLHarmonyPanelElement, HTMLHarmonyRadioElement, HTMLHarmonySelectElement, HTMLHarmonySlideshowElement, HTMLHarmonySwitchElement, HTMLHarmonyTabElement, HTMLHarmonyTabGroupElement, HTMLHarmonyToggleButtonElement, createElement, createElementNS, display, hide, show, styleInject, toggle, updateElement, visible };
