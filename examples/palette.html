@@ -17,8 +17,11 @@
 		<script type="module">
 			let palette = document.getElementById('palette');
 			palette.addEventListener('select', event => {
-				console.error(event.detail);
-			})
+				console.error('select', event.detail);
+			});
+			palette.addEventListener('unselect', event => {
+				console.error('unselect', event.detail);
+			});
 		</script>
 	</body>
 </html>

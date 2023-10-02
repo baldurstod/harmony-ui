@@ -1,6 +1,8 @@
 html{
-	--harmony-palette-color-height: 2rem;
+	--harmony-palette-color-size: 2rem;
 	--harmony-palette-gap: 0.5rem;
+	--harmony-palette-border-color: grey;
+	--harmony-palette-selected-border-color: orange;
 }
 
 harmony-palette{
@@ -10,15 +12,16 @@ harmony-palette{
 }
 
 .harmony-palette-color{
-	height: var(--harmony-palette-color-height);
-	width: var(--harmony-palette-color-height);
-	border-radius: 0.2rem;
-	border: 0.2rem solid grey;
-	padding: 0.2rem;
+	height: var(--harmony-palette-color-size);
+	width: var(--harmony-palette-color-size);
+	border-radius: calc(var(--harmony-palette-color-size) * .1);
+	border: calc(var(--harmony-palette-color-size) * .1) solid var(--harmony-palette-border-color);
+	padding: calc(var(--harmony-palette-color-size) * .1);
 	cursor: pointer;
 }
 .harmony-palette-color.selected{
-	border-color: orange;
-	border-width: 0.4rem;
+	border-color: var(--harmony-palette-selected-border-color);
+	border-width: calc(var(--harmony-palette-color-size) * .2);
 	padding: 0;
+	color: black;
 }

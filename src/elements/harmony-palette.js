@@ -1,5 +1,9 @@
 import {createElement, hide, show, display} from '../harmony-html.js';
 
+import checkMark from '../css/icons/check_mark.svg';
+
+const checkMarkSVG = await (await fetch(checkMark)).text();
+
 function clampColor(val) {
 	return Math.min(Math.max(0, val), 1);
 }
@@ -56,21 +60,32 @@ export class HarmonyPalette extends HTMLElement {
 
 	#selectColor(hex, element) {
 		if (this.#selected.has(hex)) {
-			this.#selected.get(hex).classList.remove('selected');
+			this.#setSelected(this.#selected.get(hex), false);
 			this.#dispatchSelect(hex, false);
 			this.#selected.delete(hex);
 		} else {
 			if (!this.#multiple) {
 				for (const [h, e] of this.#selected) {
-					e.classList.remove('selected');
+					this.#setSelected(e, false);
 					this.#dispatchSelect(h, false);
 					this.#selected.delete(h);
 				}
 			}
 			this.#dispatchSelect(hex, true);
 			this.#selected.set(hex, element);
-			element.classList.add('selected');
+			this.#setSelected(element, true);
 		}
+	}
+
+	#setSelected(element, selected) {
+		if (selected) {
+			element.classList.add('selected');
+			element.innerHTML = checkMarkSVG;
+		} else {
+			element.classList.remove('selected');
+			element.innerText = '';
+		}
+
 	}
 
 	#dispatchSelect(hex, selected) {
