@@ -14,7 +14,11 @@ harmony-palette{
 	width: var(--harmony-palette-color-height);
 	border-radius: 0.2rem;
 	border: 0.2rem solid grey;
+	padding: 0.2rem;
 	cursor: pointer;
 }
 .harmony-palette-color.selected{
+	border-color: orange;
+	border-width: 0.4rem;
+	padding: 0;
 }

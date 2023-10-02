@@ -506,6 +506,7 @@ class HarmonyPalette extends HTMLElement {
 	#initialized = false;
 	#multiple = false;
 	#colors = new Map();
+	#selected = new Map();
 	constructor() {
 		super();
 	}
@@ -545,15 +546,33 @@ class HarmonyPalette extends HTMLElement {
 				'data-color': colorHex,
 				style: `background-color: ${colorHex}`,
 				events: {
-					click: () => this.#selectColor(colorHex),
+					click: event => this.#selectColor(colorHex, event.target),
 				}
 			});
 		}
 	}
 
-	#selectColor(hex) {
-		console.log(hex);
-		this.dispatchEvent(new CustomEvent('select', { detail: { hex: hex } }));
+	#selectColor(hex, element) {
+		if (this.#selected.has(hex)) {
+			this.#selected.get(hex).classList.remove('selected');
+			this.#dispatchSelect(hex, false);
+			this.#selected.delete(hex);
+		} else {
+			if (!this.#multiple) {
+				for (const [h, e] of this.#selected) {
+					e.classList.remove('selected');
+					this.#dispatchSelect(h, false);
+					this.#selected.delete(h);
+				}
+			}
+			this.#dispatchSelect(hex, true);
+			this.#selected.set(hex, element);
+			element.classList.add('selected');
+		}
+	}
+
+	#dispatchSelect(hex, selected) {
+		this.dispatchEvent(new CustomEvent(selected ? 'select' : 'unselect', { detail: { hex: hex } }));
 	}
 
 	clearColors() {
@@ -576,8 +595,6 @@ class HarmonyPalette extends HTMLElement {
 		c.tooltip = tooltip;
 
 		this.#colors.set(c.h, c);
-
-		console.log(c);
 	}
 
 	#getColorAsRGB(color) {
@@ -585,7 +602,6 @@ class HarmonyPalette extends HTMLElement {
 		switch (true) {
 			case typeof color == 'string':
 				let c = parseInt('0x' + color.replace('#', ''), 16);
-				console.log(c);
 				r = ((c >> 16) & 0xFF) / 255;
 				g = ((c >> 8) & 0xFF) / 255;
 				b = (c & 0xFF) / 255;
