@@ -1,6 +1,6 @@
 import {createElement, hide, show, display} from '../harmony-html.js';
 
-export class HarmonyRadio extends HTMLElement {
+export class HTMLHarmonyRadioElement extends HTMLElement {
 	#doOnce;
 	#disabled;
 	#multiple = false;

@@ -9,7 +9,7 @@ const resizeCallback = (entries, observer) => {
 const DEFAULT_AUTO_PLAY_DELAY = 3000;
 const DEFAULT_SCROLL_TRANSITION_TIME = 0.5;
 
-export class HarmonySlideshow extends HTMLElement {
+export class HTMLHarmonySlideshowElement extends HTMLElement {
 	#activeImage;
 	#currentImage;
 	#doOnce;

@@ -1,6 +1,6 @@
 import {createElement, hide, show} from '../harmony-html.js';
 
-export class HarmonySelect extends HTMLElement {
+export class HTMLHarmonySelectElement extends HTMLElement {
 	#htmlSelect;
 	constructor() {
 		super();

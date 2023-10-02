@@ -8,7 +8,7 @@ function clampColor(val) {
 	return Math.min(Math.max(0, val), 1);
 }
 
-export class HarmonyPalette extends HTMLElement {
+export class HTMLHarmonyPaletteElement extends HTMLElement {
 	#initialized = false;
 	#multiple = false;
 	#colors = new Map();

@@ -1,6 +1,6 @@
 import {createElement, hide, show, display} from '../harmony-html.js';
 
-export class HarmonyTab extends HTMLElement {
+export class HTMLHarmonyTabElement extends HTMLElement {
 	#disabled = false;
 	#active = false;
 	#header;

@@ -1,6 +1,6 @@
 import { createElement } from '../harmony-html.js';
 
-export class HarmonyLabelProperty extends HTMLElement {
+export class HTMLHarmonyLabelPropertyElement extends HTMLElement {
 	#doOnce = false;
 	#htmlLabel;
 	#htmlProperty;

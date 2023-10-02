@@ -1,6 +1,6 @@
 import {createElement, hide, show} from '../harmony-html.js';
 
-export class HarmonyToggleButton extends HTMLElement {
+export class HTMLHarmonyToggleButtonElement extends HTMLElement {
 	constructor() {
 		super();
 		this._state = false;

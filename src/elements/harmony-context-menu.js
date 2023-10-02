@@ -1,4 +1,4 @@
-export class HarmonyContextMenu extends HTMLElement {
+export class HTMLHarmonyContextMenuElement extends HTMLElement {
 	constructor() {
 		super();
 		this._subMenus = new Map();

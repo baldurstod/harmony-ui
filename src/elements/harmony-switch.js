@@ -1,6 +1,6 @@
 import {createElement, hide, show, display} from '../harmony-html.js';
 
-export class HarmonySwitch extends HTMLElement {
+export class HTMLHarmonySwitchElement extends HTMLElement {
 	#doOnce;
 	#disabled;
 	#htmlLabel;

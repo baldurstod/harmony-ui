@@ -1,6 +1,6 @@
 let CustomPanelId = 0;
 let dragged = null;
-export class HarmonyPanel extends HTMLElement {
+export class HTMLHarmonyPanelElement extends HTMLElement {
 	static #nextId = 0;
 	constructor() {
 		super();
@@ -20,9 +20,9 @@ export class HarmonyPanel extends HTMLElement {
 		//this.addEventListener('mousemove', event => this._handleMouseMove(event));
 		//this.addEventListener('mouseleave', event => this._handleMouseLeave(event));
 		this.CustomPanelId = CustomPanelId++;
-		if (!HarmonyPanel._spliter) {
-			HarmonyPanel._spliter = document.createElement('div');
-			HarmonyPanel._spliter.className = 'harmony-panel-splitter';
+		if (!HTMLHarmonyPanelElement._spliter) {
+			HTMLHarmonyPanelElement._spliter = document.createElement('div');
+			HTMLHarmonyPanelElement._spliter.className = 'harmony-panel-splitter';
 		}
 
 		this.htmlTitle = document.createElement('div');
@@ -131,7 +131,7 @@ export class HarmonyPanel extends HTMLElement {
 			if (dragged) {
 				if (this != dragged) {
 					this._addChild(dragged, event.offsetX, event.offsetY);
-					//OptionsManager.setItem('app.layout.disposition', HarmonyPanel.saveDisposition());
+					//OptionsManager.setItem('app.layout.disposition', HTMLHarmonyPanelElement.saveDisposition());
 				}
 			}
 		}
@@ -140,8 +140,8 @@ export class HarmonyPanel extends HTMLElement {
 
 	_handleMouseEnter(event) {
 		//console.error(this, event);
-		//clearInterval(HarmonyPanel._interval);
-		//HarmonyPanel._interval = setInterval(event => this.style.opacity = (Math.floor(new Date().getTime() / 500) % 2) / 2 + 0.5, 100);
+		//clearInterval(HTMLHarmonyPanelElement._interval);
+		//HTMLHarmonyPanelElement._interval = setInterval(event => this.style.opacity = (Math.floor(new Date().getTime() / 500) % 2) / 2 + 0.5, 100);
 		//event.stopPropagation();
 	}
 
@@ -149,32 +149,32 @@ export class HarmonyPanel extends HTMLElement {
 		const delta = 5;
 		//console.error(event.offsetX, event.offsetY);
 		//this.style.opacity = (Math.floor(new Date().getTime() / 1000) % 2);
-		//HarmonyPanel.highlitPanel = this;
+		//HTMLHarmonyPanelElement.highlitPanel = this;
 		event.stopPropagation();
 		if (event.offsetX < delta || event.offsetY < delta) {
-			HarmonyPanel.highlitPanel = this;
-			this.parentNode.insertBefore(HarmonyPanel._spliter, this);
+			HTMLHarmonyPanelElement.highlitPanel = this;
+			this.parentNode.insertBefore(HTMLHarmonyPanelElement._spliter, this);
 		} else if ((this.offsetWidth - event.offsetX) < delta || (this.offsetHeight - event.offsetY) < delta) {
-			HarmonyPanel.highlitPanel = this;
-			this.parentNode.insertBefore(HarmonyPanel._spliter, this.nextSibling);
+			HTMLHarmonyPanelElement.highlitPanel = this;
+			this.parentNode.insertBefore(HTMLHarmonyPanelElement._spliter, this.nextSibling);
 		} else {
-			HarmonyPanel.highlitPanel = null;
+			HTMLHarmonyPanelElement.highlitPanel = null;
 		}
 
 	}
 
 	_handleMouseLeave(event) {
 		//console.error(this, event);
-		//clearInterval(HarmonyPanel._interval);
+		//clearInterval(HTMLHarmonyPanelElement._interval);
 	}
 
 	static set highlitPanel(panel) {
-		if (HarmonyPanel._highlitPanel) {
-			HarmonyPanel._highlitPanel.style.filter = null;
+		if (HTMLHarmonyPanelElement._highlitPanel) {
+			HTMLHarmonyPanelElement._highlitPanel.style.filter = null;
 		}
-		HarmonyPanel._highlitPanel = panel;
-		if (HarmonyPanel._highlitPanel) {
-			HarmonyPanel._highlitPanel.style.filter = 'grayscale(80%)';///'contrast(200%)';
+		HTMLHarmonyPanelElement._highlitPanel = panel;
+		if (HTMLHarmonyPanelElement._highlitPanel) {
+			HTMLHarmonyPanelElement._highlitPanel.style.filter = 'grayscale(80%)';///'contrast(200%)';
 		}
 	}
 
@@ -231,8 +231,8 @@ export class HarmonyPanel extends HTMLElement {
 	}
 
 	_split(newNode, before, direction) {
-		let panel = HarmonyPanel._createDummy();//document.createElement('harmony-panel');
-		/*panel.id = HarmonyPanel.nextId;
+		let panel = HTMLHarmonyPanelElement._createDummy();//document.createElement('harmony-panel');
+		/*panel.id = HTMLHarmonyPanelElement.nextId;
 		panel._isDummy = true;
 		panel.classList.add('dummy');*/
 		panel.size = this.size;
@@ -250,7 +250,7 @@ export class HarmonyPanel extends HTMLElement {
 
 	static _createDummy() {
 		let dummy = document.createElement('harmony-panel');
-		dummy.id = HarmonyPanel.#nextId;
+		dummy.id = HTMLHarmonyPanelElement.#nextId;
 		dummy._isDummy = true;
 		dummy.classList.add('dummy');
 		return dummy;
@@ -367,7 +367,7 @@ export class HarmonyPanel extends HTMLElement {
 
 
 	static get nextId() {
-		return `harmony-panel-dummy-${++HarmonyPanel.#nextId}`;
+		return `harmony-panel-dummy-${++HTMLHarmonyPanelElement.#nextId}`;
 	}
 
 	static saveDisposition() {
@@ -390,7 +390,7 @@ export class HarmonyPanel extends HTMLElement {
 
 		let dummiesList = new Map();
 		for (let oldDummy of json.dummies) {
-			let newDummy = HarmonyPanel._createDummy();
+			let newDummy = HTMLHarmonyPanelElement._createDummy();
 			document.body.append(newDummy);
 			dummiesList.set(oldDummy, newDummy.id);
 		}

@@ -1,6 +1,6 @@
 import {createElement} from '../harmony-html.js';
 
-export class HarmonyTabGroup extends HTMLElement {
+export class HTMLHarmonyTabGroupElement extends HTMLElement {
 	#tabs = new Set();
 	#header;
 	#content;

@@ -1,6 +1,6 @@
 import {createElement, hide, show, display} from '../harmony-html.js';
 
-export class HarmonyAccordion extends HTMLElement {
+export class HTMLHarmonyAccordionElement extends HTMLElement {
 	#doOnce;
 	#multiple;
 	#disabled;

@@ -1,6 +1,6 @@
 import {createElement, hide, show, display} from '../harmony-html.js';
 
-export class HarmonyCopy extends HTMLElement {
+export class HTMLHarmonyCopyElement extends HTMLElement {
 	#doOnce = true;
 	#htmlCopied;
 	constructor() {
