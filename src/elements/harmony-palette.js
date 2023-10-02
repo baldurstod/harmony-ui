@@ -13,6 +13,7 @@ export class HTMLHarmonyPaletteElement extends HTMLElement {
 	#multiple = false;
 	#colors = new Map();
 	#selected = new Map();
+	#preSelected = new Set();
 	constructor() {
 		super();
 	}
@@ -34,8 +35,11 @@ export class HTMLHarmonyPaletteElement extends HTMLElement {
 			list.push(child);
 		}
 		list.forEach(element => {
-			this.#addColor(element.innerText);
+			const c = this.#addColor(element.innerText);
 			element.remove();
+			if (c && element.getAttribute('selected') == 1) {
+				this.#preSelected.add(c.h);
+			}
 		});
 		this.#refreshHTML();
 	}
@@ -46,7 +50,7 @@ export class HTMLHarmonyPaletteElement extends HTMLElement {
 		}
 		this.innerHTML = '';
 		for (const [colorHex, color] of this.#colors) {
-			createElement('div', {
+			const element = createElement('div', {
 				parent: this,
 				class: 'harmony-palette-color',
 				'data-color': colorHex,
@@ -55,7 +59,13 @@ export class HTMLHarmonyPaletteElement extends HTMLElement {
 					click: event => this.#selectColor(colorHex, event.target),
 				}
 			});
+
+			if (this.#preSelected.has(colorHex)) {
+				this.#selectColor(colorHex, element);
+
+			}
 		}
+		this.#preSelected.clear();
 	}
 
 	#selectColor(hex, element) {
@@ -98,8 +108,9 @@ export class HTMLHarmonyPaletteElement extends HTMLElement {
 	}
 
 	addColor(color, tooltip) {
-		this.#addColor(color, tooltip);
+		const c = this.#addColor(color, tooltip);
 		this.#refreshHTML();
+		return c;
 	}
 
 	#addColor(color, tooltip) {
@@ -112,6 +123,7 @@ export class HTMLHarmonyPaletteElement extends HTMLElement {
 		c.tooltip = tooltip;
 
 		this.#colors.set(c.h, c);
+		return c;
 	}
 
 	#getColorAsRGB(color) {
