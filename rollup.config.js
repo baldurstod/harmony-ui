@@ -2,6 +2,7 @@ import fs from 'fs';
 import postcss from 'postcss';
 import cssnano from 'cssnano';
 import {elements} from './src/elements/.elements.js';
+import image from '@rollup/plugin-image';
 
 async function writeElement(elementName, elementClass) {
 	let cssPath = `./src/css/${elementName}.css`;
@@ -47,6 +48,7 @@ export default [
 			format: 'esm'
 		},
 		plugins: [
+			image(),
 		],
 	},
 ];
