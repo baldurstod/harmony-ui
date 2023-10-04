@@ -152,6 +152,15 @@ export class HTMLHarmonySlideshowElement extends HTMLElement {
 		this.#htmlImagesInner.innerHTML = '';
 		this.#htmlThumbnails.innerHTML = '';
 		this.#activeImage = null;
+
+		// Remove pending images
+		let list = [];
+		for (let child of this.children) {
+			if (child.constructor.name == 'HTMLImageElement') {
+				list.push(child);
+			}
+		}
+		list.forEach(element => element.remove());
 	}
 
 	refresh() {
@@ -184,9 +193,8 @@ export class HTMLHarmonySlideshowElement extends HTMLElement {
 
 	#processChilds() {
 		//This is a 2 steps process cause we may change DOM
-		const children = this.children;
 		let list = [];
-		for (let child of children) {
+		for (let child of this.children) {
 			list.push(child);
 		}
 		list.forEach(element => this.addImage(element));
@@ -333,8 +341,7 @@ export class HTMLHarmonySlideshowElement extends HTMLElement {
 		let config = {childList:true, subtree: true};
 		const mutationCallback = (mutationsList, observer) => {
 			for (const mutation of mutationsList) {
-				let addedNodes = mutation.addedNodes;
-				for (let addedNode of addedNodes) {
+				for (let addedNode of mutation.addedNodes) {
 					if (addedNode.parentNode == this) {
 						this.addImage(addedNode);
 					}
