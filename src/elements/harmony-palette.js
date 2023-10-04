@@ -13,6 +13,7 @@ export class HTMLHarmonyPaletteElement extends HTMLElement {
 	#multiple = false;
 	#colors = new Map();
 	#selected = new Map();
+	#colorElements = new Map();
 	#preSelected = new Set();
 	constructor() {
 		super();
@@ -49,6 +50,8 @@ export class HTMLHarmonyPaletteElement extends HTMLElement {
 			return;
 		}
 		this.innerHTML = '';
+		this.#colorElements.clear();
+
 		for (const [colorHex, color] of this.#colors) {
 			const element = createElement('div', {
 				parent: this,
@@ -59,7 +62,7 @@ export class HTMLHarmonyPaletteElement extends HTMLElement {
 					click: event => this.#selectColor(colorHex, event.target),
 				}
 			});
-
+			this.#colorElements.set(colorHex, element);
 			if (this.#preSelected.has(colorHex)) {
 				this.#selectColor(colorHex, element);
 
@@ -68,8 +71,8 @@ export class HTMLHarmonyPaletteElement extends HTMLElement {
 		this.#preSelected.clear();
 	}
 
-	#selectColor(hex, element) {
-		if (this.#selected.has(hex)) {
+	#selectColor(hex, element, selected) {
+		if (this.#selected.has(hex) && selected !==  true) {
 			this.#setSelected(this.#selected.get(hex), false);
 			this.#dispatchSelect(hex, false);
 			this.#selected.delete(hex);
@@ -88,6 +91,9 @@ export class HTMLHarmonyPaletteElement extends HTMLElement {
 	}
 
 	#setSelected(element, selected) {
+		if (!element) {
+			return;
+		}
 		if (selected) {
 			element.classList.add('selected');
 			element.innerHTML = checkMarkSVG;
@@ -111,6 +117,16 @@ export class HTMLHarmonyPaletteElement extends HTMLElement {
 		const c = this.#addColor(color, tooltip);
 		this.#refreshHTML();
 		return c;
+	}
+
+	selectColor(color, selected = true) {
+		const c = this.#getColorAsRGB(color);
+		this.#selectColor(c.h, this.#colorElements.get(c.h), selected);
+	}
+
+	toggleColor(color) {
+		const c = this.#getColorAsRGB(color);
+		this.#selectColor(c.h, this.#colorElements.get(c.h));
 	}
 
 	#addColor(color, tooltip) {
