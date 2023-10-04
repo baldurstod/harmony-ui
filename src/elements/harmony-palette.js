@@ -38,7 +38,7 @@ export class HTMLHarmonyPaletteElement extends HTMLElement {
 		list.forEach(element => {
 			const c = this.#addColor(element.innerText);
 			element.remove();
-			if (c && element.getAttribute('selected') == 1) {
+			if (c && element.hasAttribute('selected')) {
 				this.#preSelected.add(c.h);
 			}
 		});
