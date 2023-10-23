@@ -1,3 +1,5 @@
+import { checkMarkSVG } from 'harmony-svg';
+
 function createElement(tagName, options) {
 	let element = document.createElement(tagName);
 	createElementOptions(element, options);
@@ -497,10 +499,6 @@ class HTMLHarmonyLabelPropertyElement extends HTMLElement {
 		}
 	}
 }
-
-var img = "data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960'%3e %3cpath fill='currentColor' d='m 381%2c-240 424%2c-424 -57%2c-56 -368%2c367 -169%2c-170 -57%2c57 z m 0%2c113 -339%2c-339 169%2c-170 170%2c170 366%2c-367 172%2c168 z'/%3e %3cpath fill='white' d='m 381%2c-240 424%2c-424 -57%2c-56 -368%2c367 -169%2c-170 -57%2c57 z m 366%2c-593 c -498%2c-84.66667 -249%2c-42.33333 0%2c0 z'/%3e%3c/svg%3e";
-
-const checkMarkSVG = await (await fetch(img)).text();
 
 function clampColor(val) {
 	return Math.min(Math.max(0, val), 1);

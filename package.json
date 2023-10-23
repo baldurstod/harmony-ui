@@ -10,5 +10,8 @@
 		"postcss": "^8.4.16",
 		"rollup": "^2.60.1",
 		"rollup-watch": "^3.2.2"
+	},
+	"dependencies": {
+		"harmony-svg": "github:baldurstod/harmony-svg"
 	}
 }

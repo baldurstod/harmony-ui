@@ -50,5 +50,8 @@ export default [
 		plugins: [
 			image(),
 		],
+		external: [
+			'harmony-svg',
+		],
 	},
 ];

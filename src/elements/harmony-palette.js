@@ -1,8 +1,6 @@
+import  { checkMarkSVG } from 'harmony-svg';
+
 import {createElement, hide, show, display} from '../harmony-html.js';
-
-import checkMark from '../css/icons/check_mark.svg';
-
-const checkMarkSVG = await (await fetch(checkMark)).text();
 
 function clampColor(val) {
 	return Math.min(Math.max(0, val), 1);
