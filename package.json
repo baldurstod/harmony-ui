@@ -6,6 +6,7 @@
 	"type": "module",
 	"devDependencies": {
 		"@rollup/plugin-image": "^3.0.2",
+		"@rollup/plugin-node-resolve": "^15.2.3",
 		"cssnano": "^5.1.13",
 		"postcss": "^8.4.16",
 		"rollup": "^2.60.1",
