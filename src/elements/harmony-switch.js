@@ -59,7 +59,6 @@ export class HTMLHarmonySwitchElement extends HTMLElement {
 	}
 
 	set ternary(ternary) {
-		console.log(ternary);
 		this.#ternary = ternary;
 		this.#refresh();
 	}

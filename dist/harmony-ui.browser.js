@@ -1702,7 +1702,6 @@ class HTMLHarmonySwitchElement extends HTMLElement {
 	}
 
 	set ternary(ternary) {
-		console.log(ternary);
 		this.#ternary = ternary;
 		this.#refresh();
 	}
@@ -1714,11 +1713,11 @@ class HTMLHarmonySwitchElement extends HTMLElement {
 	toggle() {
 		if (this.#ternary) {
 			if (this.#state === false) {
-				this.#state = undefined;
+				this.state = undefined;
 			} else if (this.#state === undefined) {
-				this.#state = true;
+				this.state = true;
 			} else {
-				this.#state = false;
+				this.state = false;
 			}
 		} else {
 			this.state = !this.#state;
