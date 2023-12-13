@@ -26,3 +26,8 @@ harmony-palette{
 	padding: 0;
 	color: black;
 }
+
+.harmony-palette-color > svg{
+	height: 100%;
+	width: 100%;
+}

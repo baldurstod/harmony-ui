@@ -1,4 +1,4 @@
-import { checkMarkSVG } from 'harmony-svg';
+import { checkOutlineSVG } from 'harmony-svg';
 
 function createElement(tagName, options) {
 	let element = document.createElement(tagName);
@@ -592,7 +592,7 @@ class HTMLHarmonyPaletteElement extends HTMLElement {
 		}
 		if (selected) {
 			element.classList.add('selected');
-			element.innerHTML = checkMarkSVG;
+			element.innerHTML = checkOutlineSVG;
 		} else {
 			element.classList.remove('selected');
 			element.innerText = '';

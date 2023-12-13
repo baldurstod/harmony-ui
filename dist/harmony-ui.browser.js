@@ -498,7 +498,7 @@ class HTMLHarmonyLabelPropertyElement extends HTMLElement {
 	}
 }
 
-const checkMarkSVG = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path fill="currentColor" d="m 381,-240 424,-424 -57,-56 -368,367 -169,-170 -57,57 z m 0,113 -339,-339 169,-170 170,170 366,-367 172,168 z"/><path fill="#ffffff" d="m 381,-240 424,-424 -57,-56 -368,367 -169,-170 -57,57 z m 366,-593 c -498,-84.66667 -249,-42.33333 0,0 z"/></svg>';
+const checkOutlineSVG = '<svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24"><path d="m381-240 424-424-57-56-368 367-169-170-57 57 227 226Zm0 113L42-466l169-170 170 170 366-367 172 168-538 538Z"/></svg>';
 
 function clampColor(val) {
 	return Math.min(Math.max(0, val), 1);
@@ -592,7 +592,7 @@ class HTMLHarmonyPaletteElement extends HTMLElement {
 		}
 		if (selected) {
 			element.classList.add('selected');
-			element.innerHTML = checkMarkSVG;
+			element.innerHTML = checkOutlineSVG;
 		} else {
 			element.classList.remove('selected');
 			element.innerText = '';
