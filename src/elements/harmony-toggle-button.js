@@ -1,68 +1,69 @@
-import {createElement, hide, show} from '../harmony-html.js';
+import { createElement, hide, show } from '../harmony-html.js';
 
 export class HTMLHarmonyToggleButtonElement extends HTMLElement {
+	#buttonOn;
+	#buttonOff;
+	#state = false;
+
 	constructor() {
 		super();
-		this._state = false;
 
-		this._buttonOn = createElement('span');
-		this._buttonOn.className = 'i18n-title toggle-button-on';
-		this._buttonOff = createElement('span');
-		this._buttonOff.className = 'i18n-title toggle-button-off';
+		this.#buttonOn = createElement('span', {
+			class: 'i18n-title toggle-button-on',
+			hidden: true,
+		});
+		this.#buttonOff = createElement('span', {
+			class: 'i18n-title toggle-button-off',
+		});
 
-		hide(this._buttonOn);
-
-		this.addEventListener('click', event=>{this._click(event);});
+		this.addEventListener('click', event => this.#click(event));
 	}
 
 	connectedCallback() {
 		this.className = 'toggle-button';
-		this.appendChild(this._buttonOff);
-		this.appendChild(this._buttonOn);
+		this.append(this.#buttonOff, this.#buttonOn);
 	}
 
 	attributeChangedCallback(name, oldValue, newValue) {
 		if (name == 'data-i18n-on') {
-			this._buttonOn.setAttribute('data-i18n-title', newValue);
-			//I18n.updateElement(this._buttonOn);
+			this.#buttonOn.setAttribute('data-i18n-title', newValue);
 		}
 		if (name == 'data-i18n-off') {
-			this._buttonOff.setAttribute('data-i18n-title', newValue);
-			//I18n.updateElement(this._buttonOff);
+			this.#buttonOff.setAttribute('data-i18n-title', newValue);
 		}
 		if (name == 'state') {
 			this.state = newValue;
 		}
 		if (name == 'src-on') {
-			this._buttonOn.style.backgroundImage = `url(${newValue})`;
+			this.#buttonOn.style.backgroundImage = `url(${newValue})`;
 		}
 		if (name == 'src-off') {
-			this._buttonOff.style.backgroundImage = `url(${newValue})`;
+			this.#buttonOff.style.backgroundImage = `url(${newValue})`;
 		}
 	}
 
 	get state() {
-		return this._state;
+		return this.#state;
 	}
 
 	set state(state) {
 		state = state ? true : false;
-		if (this._state != state) {
-			this._state = state;
-			this.dispatchEvent(new CustomEvent('change', {detail:{oldState:this._state, newState:state}}));
+		if (this.#state != state) {
+			this.#state = state;
+			this.dispatchEvent(new CustomEvent('change', { detail:{ oldState: this.#state, newState: state } }));
 
 			if (state) {
-				show(this._buttonOn);
-				hide(this._buttonOff);
+				show(this.#buttonOn);
+				hide(this.#buttonOff);
 			} else {
-				hide(this._buttonOn);
-				show(this._buttonOff);
+				hide(this.#buttonOn);
+				show(this.#buttonOff);
 			}
 		}
 	}
 
-	_click() {
-		this.state = !this._state;
+	#click() {
+		this.state = !this.#state;
 	}
 
 	static get observedAttributes() {
