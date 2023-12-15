@@ -17,11 +17,30 @@ export class HTMLHarmonyToggleButtonElement extends HTMLElement {
 		});
 
 		this.addEventListener('click', event => this.#click(event));
+		this.#initObserver();
 	}
 
 	connectedCallback() {
-		this.className = 'toggle-button';
 		this.append(this.#buttonOff, this.#buttonOn);
+		this.#processChilds();
+	}
+
+	#processChilds() {
+		for (let child of this.children) {
+			this.#processChild(child);
+		}
+		this.#refresh();
+	}
+
+	#processChild(htmlChildElement) {
+		switch (htmlChildElement.tagName) {
+			case 'ON':
+				this.#buttonOn = htmlChildElement;
+				break;
+			case 'OFF':
+				this.#buttonOff = htmlChildElement;
+				break;
+		}
 	}
 
 	attributeChangedCallback(name, oldValue, newValue) {
@@ -51,19 +70,38 @@ export class HTMLHarmonyToggleButtonElement extends HTMLElement {
 		if (this.#state != state) {
 			this.#state = state;
 			this.dispatchEvent(new CustomEvent('change', { detail:{ oldState: this.#state, newState: state } }));
+			this.#refresh();
+		}
+	}
 
-			if (state) {
-				show(this.#buttonOn);
-				hide(this.#buttonOff);
-			} else {
-				hide(this.#buttonOn);
-				show(this.#buttonOff);
-			}
+	#refresh() {
+		if (this.#state) {
+			show(this.#buttonOn);
+			hide(this.#buttonOff);
+		} else {
+			hide(this.#buttonOn);
+			show(this.#buttonOff);
 		}
 	}
 
 	#click() {
 		this.state = !this.#state;
+	}
+
+	#initObserver() {
+		let config = {childList:true, subtree: true};
+		const mutationCallback = (mutationsList, observer) => {
+			for (const mutation of mutationsList) {
+				for (let addedNode of mutation.addedNodes) {
+					if (addedNode.parentNode == this) {
+						this.#processChild(addedNode);
+					}
+				}
+			}
+		};
+
+		let observer = new MutationObserver(mutationCallback);
+		observer.observe(this, config);
 	}
 
 	static get observedAttributes() {

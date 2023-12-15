@@ -1899,68 +1899,108 @@ class HTMLHarmonyTabGroupElement extends HTMLElement {
 }
 
 class HTMLHarmonyToggleButtonElement extends HTMLElement {
+	#buttonOn;
+	#buttonOff;
+	#state = false;
+
 	constructor() {
 		super();
-		this._state = false;
 
-		this._buttonOn = createElement('span');
-		this._buttonOn.className = 'i18n-title toggle-button-on';
-		this._buttonOff = createElement('span');
-		this._buttonOff.className = 'i18n-title toggle-button-off';
+		this.#buttonOn = createElement('span', {
+			class: 'i18n-title toggle-button-on',
+			hidden: true,
+		});
+		this.#buttonOff = createElement('span', {
+			class: 'i18n-title toggle-button-off',
+		});
 
-		hide(this._buttonOn);
-
-		this.addEventListener('click', event=>{this._click(event);});
+		this.addEventListener('click', event => this.#click(event));
+		this.#initObserver();
 	}
 
 	connectedCallback() {
-		this.className = 'toggle-button';
-		this.appendChild(this._buttonOff);
-		this.appendChild(this._buttonOn);
+		this.append(this.#buttonOff, this.#buttonOn);
+		this.#processChilds();
+	}
+
+	#processChilds() {
+		for (let child of this.children) {
+			this.#processChild(child);
+		}
+		this.#refresh();
+	}
+
+	#processChild(htmlChildElement) {
+		switch (htmlChildElement.tagName) {
+			case 'ON':
+				this.#buttonOn = htmlChildElement;
+				break;
+			case 'OFF':
+				this.#buttonOff = htmlChildElement;
+				break;
+		}
 	}
 
 	attributeChangedCallback(name, oldValue, newValue) {
 		if (name == 'data-i18n-on') {
-			this._buttonOn.setAttribute('data-i18n-title', newValue);
-			//I18n.updateElement(this._buttonOn);
+			this.#buttonOn.setAttribute('data-i18n-title', newValue);
 		}
 		if (name == 'data-i18n-off') {
-			this._buttonOff.setAttribute('data-i18n-title', newValue);
-			//I18n.updateElement(this._buttonOff);
+			this.#buttonOff.setAttribute('data-i18n-title', newValue);
 		}
 		if (name == 'state') {
 			this.state = newValue;
 		}
 		if (name == 'src-on') {
-			this._buttonOn.style.backgroundImage = `url(${newValue})`;
+			this.#buttonOn.style.backgroundImage = `url(${newValue})`;
 		}
 		if (name == 'src-off') {
-			this._buttonOff.style.backgroundImage = `url(${newValue})`;
+			this.#buttonOff.style.backgroundImage = `url(${newValue})`;
 		}
 	}
 
 	get state() {
-		return this._state;
+		return this.#state;
 	}
 
 	set state(state) {
 		state = state ? true : false;
-		if (this._state != state) {
-			this._state = state;
-			this.dispatchEvent(new CustomEvent('change', {detail:{oldState:this._state, newState:state}}));
-
-			if (state) {
-				show(this._buttonOn);
-				hide(this._buttonOff);
-			} else {
-				hide(this._buttonOn);
-				show(this._buttonOff);
-			}
+		if (this.#state != state) {
+			this.#state = state;
+			this.dispatchEvent(new CustomEvent('change', { detail:{ oldState: this.#state, newState: state } }));
+			this.#refresh();
 		}
 	}
 
-	_click() {
-		this.state = !this._state;
+	#refresh() {
+		if (this.#state) {
+			show(this.#buttonOn);
+			hide(this.#buttonOff);
+		} else {
+			hide(this.#buttonOn);
+			show(this.#buttonOff);
+		}
+	}
+
+	#click() {
+		this.state = !this.#state;
+	}
+
+	#initObserver() {
+		let config = {childList:true, subtree: true};
+		const mutationCallback = (mutationsList, observer) => {
+			for (const mutation of mutationsList) {
+				for (let addedNode of mutation.addedNodes) {
+					if (addedNode.parentNode == this) {
+						this.#processChild(addedNode);
+					}
+				}
+			}
+		};
+
+		let observer = new MutationObserver(mutationCallback);
+		observer.observe(this, config);
+
 	}
 
 	static get observedAttributes() {
