@@ -8,20 +8,17 @@ export class HTMLHarmonyToggleButtonElement extends HTMLElement {
 	constructor() {
 		super();
 
-		this.#buttonOn = createElement('span', {
-			class: 'i18n-title toggle-button-on',
-			hidden: true,
-		});
-		this.#buttonOff = createElement('span', {
-			class: 'i18n-title toggle-button-off',
-		});
-
 		this.addEventListener('click', event => this.#click(event));
 		this.#initObserver();
 	}
 
 	connectedCallback() {
-		this.append(this.#buttonOff, this.#buttonOn);
+		if (this.#buttonOn) {
+			this.append(this.#buttonOn);
+		}
+		if (this.#buttonOff) {
+			this.append(this.#buttonOff);
+		}
 		this.#processChilds();
 	}
 
@@ -54,9 +51,16 @@ export class HTMLHarmonyToggleButtonElement extends HTMLElement {
 			this.state = newValue;
 		}
 		if (name == 'src-on') {
+			this.#buttonOn = this.#buttonOn ?? createElement('span', {
+				class: 'i18n-title toggle-button-on',
+				hidden: true,
+			});
 			this.#buttonOn.style.backgroundImage = `url(${newValue})`;
 		}
 		if (name == 'src-off') {
+			this.#buttonOff = this.#buttonOff ?? createElement('span', {
+				class: 'i18n-title toggle-button-off',
+			});
 			this.#buttonOff.style.backgroundImage = `url(${newValue})`;
 		}
 	}
