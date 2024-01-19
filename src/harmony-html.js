@@ -131,9 +131,11 @@ export function toggle(htmlElement) {
 	}
 }
 
-export function visible(htmlElement) {
+export function isVisible(htmlElement) {
 	return htmlElement.style.display == ''
 }
+
+export const visible = isVisible;
 
 export function styleInject(css) {
 	document.head.append(createElement('style', {textContent: css}));

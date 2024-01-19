@@ -133,9 +133,11 @@ function toggle(htmlElement) {
 	}
 }
 
-function visible(htmlElement) {
+function isVisible(htmlElement) {
 	return htmlElement.style.display == ''
 }
+
+const visible = isVisible;
 
 function styleInject(css) {
 	document.head.append(createElement('style', {textContent: css}));
@@ -2011,4 +2013,4 @@ class HTMLHarmonyToggleButtonElement extends HTMLElement {
 	}
 }
 
-export { HTMLHarmonyAccordionElement, HTMLHarmonyContextMenuElement, HTMLHarmonyCopyElement, HTMLHarmonyLabelPropertyElement, HTMLHarmonyPaletteElement, HTMLHarmonyPanelElement, HTMLHarmonyRadioElement, HTMLHarmonySelectElement, HTMLHarmonySlideshowElement, HTMLHarmonySwitchElement, HTMLHarmonyTabElement, HTMLHarmonyTabGroupElement, HTMLHarmonyToggleButtonElement, createElement, createElementNS, display, hide, show, styleInject, toggle, updateElement, visible };
+export { HTMLHarmonyAccordionElement, HTMLHarmonyContextMenuElement, HTMLHarmonyCopyElement, HTMLHarmonyLabelPropertyElement, HTMLHarmonyPaletteElement, HTMLHarmonyPanelElement, HTMLHarmonyRadioElement, HTMLHarmonySelectElement, HTMLHarmonySlideshowElement, HTMLHarmonySwitchElement, HTMLHarmonyTabElement, HTMLHarmonyTabGroupElement, HTMLHarmonyToggleButtonElement, createElement, createElementNS, display, hide, isVisible, show, styleInject, toggle, updateElement, visible };
