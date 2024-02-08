@@ -9,7 +9,8 @@ export class HTMLHarmonyTabElement extends HTMLElement {
 		super();
 		this.#header = createElement('div', {
 			class: 'harmony-tab-label',
-			i18n: this.getAttribute('data-i18n'),
+			...(this.getAttribute('data-i18n')) && {i18n: this.getAttribute('data-i18n')},
+			...(this.getAttribute('data-text')) && {innerText: this.getAttribute('data-text')},
 			events: {
 				click: event => this.#click(event)
 			}
@@ -32,6 +33,11 @@ export class HTMLHarmonyTabElement extends HTMLElement {
 		switch (name) {
 			case 'data-i18n':
 				this.#header.setAttribute('data-i18n', newValue);
+				this.#header.innerText = newValue;
+				this.#header.classList.add('i18n');
+				break;
+			case 'data-text':
+				this.#header.innerText = newValue;
 				break;
 			case 'disabled':
 				this.disabled = newValue;
@@ -84,6 +90,6 @@ export class HTMLHarmonyTabElement extends HTMLElement {
 	}
 
 	static get observedAttributes() {
-		return ['data-i18n', 'disabled'];
+		return ['data-i18n', 'data-text', 'disabled'];
 	}
 }
