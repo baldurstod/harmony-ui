@@ -234,6 +234,11 @@ class HTMLHarmonyAccordionElement extends HTMLElement {
 		}
 	}
 
+	clear() {
+		this.#items.clear();
+		this.#refresh();
+	}
+
 	#dispatchSelect(selected, header, content) {
 		this.dispatchEvent(new CustomEvent(selected ? 'select' : 'unselect', {detail:{header:header.children[0], content:content.children[0]}}));
 	}
