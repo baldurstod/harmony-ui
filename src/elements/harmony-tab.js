@@ -84,6 +84,10 @@ export class HTMLHarmonyTabElement extends HTMLElement {
 	}
 
 	#click() {
+		if (!this.dispatchEvent(new CustomEvent('click', { cancelable: true }))) {
+			return;
+		}
+
 		if (!this.#disabled) {
 			this.activate();
 		}

@@ -21,12 +21,36 @@
 		<script type="module">
 			import { createElement } from '../dist/harmony-ui.browser.js';
 
-			createElement('harmony-tab-group', {
+			const group1 = createElement('harmony-tab-group', {
 				parent: document.body,
 				childs: [
 					createElement('harmony-tab', { 'data-text': 1, innerText: 'Content 1' }),
 					createElement('harmony-tab', { 'data-text': 2, innerText: 'Content 2' }),
 					createElement('harmony-tab', { 'data-i18n': '#i18n_tab', innerText: 'Content i18n' }),
+				],
+			});
+
+			let dynamic = 0;
+			const group2 = createElement('harmony-tab-group', {
+				parent: document.body,
+				childs: [
+					createElement('harmony-tab', { 'data-text': 1, innerText: 'Content 1' }),
+					createElement('harmony-tab', { 'data-text': 2, innerText: 'Content 2' }),
+					createElement('harmony-tab', { 'data-i18n': '#i18n_tab', innerText: 'Content i18n' }),
+					createElement('harmony-tab', {
+						'data-i18n': '+',
+						events: {
+							click: event => {
+								event.preventDefault();
+								const tab = createElement('harmony-tab', {
+									parent: group2,
+									'data-text': ++dynamic,
+									innerText: 'Content ' + dynamic
+								});
+								tab.activate();
+							}
+						}
+					}),
 				],
 			});
 		</script>
