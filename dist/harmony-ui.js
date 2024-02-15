@@ -238,6 +238,7 @@ class HTMLHarmonyAccordionElement extends HTMLElement {
 
 	clear() {
 		this.#items.clear();
+		this.#selected.clear();
 		this.#refresh();
 	}
 
