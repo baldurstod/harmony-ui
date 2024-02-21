@@ -1,3 +1,23 @@
+async function documentStyle(cssText) {
+	return await shadowRootStyle(document, cssText);
+}
+
+function documentStyleSync(cssText) {
+	return shadowRootStyleSync(document, cssText);
+}
+
+async function shadowRootStyle(shadowRoot, cssText) {
+	const sheet = new CSSStyleSheet;
+	await sheet.replace(cssText);
+	shadowRoot.adoptedStyleSheets.push(sheet);
+}
+
+function shadowRootStyleSync(shadowRoot, cssText) {
+	const sheet = new CSSStyleSheet;
+	sheet.replaceSync(cssText);
+	shadowRoot.adoptedStyleSheets.push(sheet);
+}
+
 function createElement(tagName, options) {
 	let element = document.createElement(tagName);
 	createElementOptions(element, options);
@@ -2029,4 +2049,4 @@ class HTMLHarmonyToggleButtonElement extends HTMLElement {
 	}
 }
 
-export { HTMLHarmonyAccordionElement, HTMLHarmonyContextMenuElement, HTMLHarmonyCopyElement, HTMLHarmonyLabelPropertyElement, HTMLHarmonyPaletteElement, HTMLHarmonyPanelElement, HTMLHarmonyRadioElement, HTMLHarmonySelectElement, HTMLHarmonySlideshowElement, HTMLHarmonySwitchElement, HTMLHarmonyTabElement, HTMLHarmonyTabGroupElement, HTMLHarmonyToggleButtonElement, createElement, createElementNS, display, hide, isVisible, show, styleInject, toggle, updateElement, visible };
+export { HTMLHarmonyAccordionElement, HTMLHarmonyContextMenuElement, HTMLHarmonyCopyElement, HTMLHarmonyLabelPropertyElement, HTMLHarmonyPaletteElement, HTMLHarmonyPanelElement, HTMLHarmonyRadioElement, HTMLHarmonySelectElement, HTMLHarmonySlideshowElement, HTMLHarmonySwitchElement, HTMLHarmonyTabElement, HTMLHarmonyTabGroupElement, HTMLHarmonyToggleButtonElement, createElement, createElementNS, display, documentStyle, documentStyleSync, hide, isVisible, shadowRootStyle, shadowRootStyleSync, show, styleInject, toggle, updateElement, visible };
