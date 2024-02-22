@@ -4,6 +4,7 @@ import cssnano from 'cssnano';
 import {elements} from './src/elements/.elements.js';
 import image from '@rollup/plugin-image';
 import { nodeResolve } from '@rollup/plugin-node-resolve';
+import css from 'rollup-plugin-import-css';
 
 async function writeElement(elementName, elementClass, isBrowser = false) {
 	let cssPath = `./src/css/${elementName}.css`;
@@ -56,6 +57,7 @@ export default [
 			format: 'esm'
 		},
 		plugins: [
+			css(),
 			image(),
 		],
 		external: [
@@ -69,6 +71,7 @@ export default [
 			format: 'esm'
 		},
 		plugins: [
+			css(),
 			image(),
 			nodeResolve(),
 		],

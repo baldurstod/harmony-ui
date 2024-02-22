@@ -1,18 +1,32 @@
-import {createElement} from '../harmony-html.js';
+import { shadowRootStyle } from '../harmony-css.js';
+import { createElement } from '../harmony-html.js';
+
+import tabGroupCSS from '../css/harmony-tab-group.css';
+import tabCSS from '../css/harmony-tab.css';
 
 export class HTMLHarmonyTabGroupElement extends HTMLElement {
 	#tabs = new Set();
 	#header;
 	#content;
 	#activeTab;
+	#shadowRoot;
 	constructor() {
 		super();
-		this.#header = createElement('div', {class: 'harmony-tab-group-header'});
-		this.#content = createElement('div', {class: 'harmony-tab-group-content'});
+		this.#shadowRoot = this.attachShadow({ mode: 'closed' });
+		shadowRootStyle(this.#shadowRoot, tabGroupCSS);
+		shadowRootStyle(this.#shadowRoot, tabCSS);
+		this.#header = createElement('div', {
+			class: 'harmony-tab-group-header',
+			parent: this.#shadowRoot,
+		});
+		this.#content = createElement('div', {
+			class: 'harmony-tab-group-content',
+			parent: this.#shadowRoot,
+		});
 	}
 
 	connectedCallback() {
-		this.append(this.#header, this.#content);
+		//this.append(this.#header, this.#content);
 	}
 
 	addTab(tab) {
