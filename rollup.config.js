@@ -6,7 +6,7 @@ import image from '@rollup/plugin-image';
 import { nodeResolve } from '@rollup/plugin-node-resolve';
 import css from 'rollup-plugin-import-css';
 
-async function writeElement(elementName, elementClass, isBrowser = false) {
+async function writeElement(elementName, elementClass, injectCSS, isBrowser = false) {
 	let cssPath = `./src/css/${elementName}.css`;
 	let input = fs.readFileSync(cssPath);
 	let css = await postcss([cssnano()]).process(input, {from: undefined,});
@@ -14,7 +14,7 @@ async function writeElement(elementName, elementClass, isBrowser = false) {
 	let fileContent = `import {${elementClass}, styleInject} from '${isBrowser ? '../../harmony-ui.browser.js' : '../harmony-ui.js'}';
 import {InjectUiStyle} from './.inject-ui-style.js';
 if (window.customElements) {
-	styleInject(\`${css}\`);
+${injectCSS ? `	styleInject(\`${css}\`);` : ''}
 	customElements.define('${elementName}', ${elementClass});
 }`;
 
@@ -37,17 +37,15 @@ export const InjectUiStyle = (function () {
 fs.mkdirSync('./dist/define/', {recursive: true});
 fs.mkdirSync('./dist/define/browser/', {recursive: true});
 
-for (let elementName in elements) {
-	let elementClass = elements[elementName];
-	writeElement(elementName, elementClass);
-}
-writeGlobal();
+writeElements(false);
+writeElements(true);
 
-for (let elementName in elements) {
-	let elementClass = elements[elementName];
-	writeElement(elementName, elementClass, true);
+function writeElements(isBrowser) {
+	for (const element of elements) {
+		writeElement(element.name, element.class, element.injectCSS, isBrowser);
+	}
+	writeGlobal(true);
 }
-writeGlobal(true);
 
 export default [
 	{
