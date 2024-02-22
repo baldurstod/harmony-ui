@@ -172,19 +172,7 @@ function styleInject(css) {
 
 const I18N_DELAY_BEFORE_REFRESH = 100;
 
-class I18nEvents extends EventTarget {
-	static #instance;
-	constructor() {
-		if (I18nEvents.#instance) {
-			return I18nEvents.#instance;
-		}
-		super();
-		I18nEvents.#instance = this;
-	}
-}
-
 class I18n {
-	static #path = './json/i18n/';
 	static #lang = 'english';
 	static #translations = new Map();
 	static #executing = false;
@@ -197,15 +185,15 @@ class I18n {
 	}
 
 	static setOptions(options) {
-		if (options.path) {
-			this.#path = options.path;
-		}
-
 		if (options.translations) {
-			for (let file of options.translations) {
-				this.#loaded(file);
+			for (let translation of options.translations) {
+				this.addTranslation(translation);
 			}
 		}
+	}
+
+	static addTranslation(translation) {
+		this.#translations.set(translation.lang, translation);
 	}
 
 	static #initObserver() {
@@ -299,7 +287,6 @@ class I18n {
 
 	static #i18n() {
 		this.#refreshTimeout = null;
-		if (this.#lang == '') {return;}
 		if (this.#executing) {return;}
 		this.#executing = true;
 		this.#processList(document, 'i18n', 'data-i18n', 'innerHTML');
@@ -312,8 +299,6 @@ class I18n {
 	}
 
 	static updateElement(htmlElement) {
-		if (this.#lang == '') {return;}
-
 		this.#processList(htmlElement, 'i18n', 'data-i18n', 'innerHTML');
 		this.#processList(htmlElement, 'i18n-title', 'data-i18n-title', 'title');
 		this.#processList(htmlElement, 'i18n-placeholder', 'data-i18n-placeholder', 'placeholder');
@@ -327,23 +312,20 @@ class I18n {
 
 	static setLang(lang) {
 		if (this.#lang != lang) {
-			new I18nEvents().dispatchEvent(new CustomEvent('langchanged', { detail: { oldLang: this.#lang, newLang: lang } }));
 			this.#lang = lang;
-			this.checkLang();
 			this.i18n();
 		}
 	}
 
 	static getString(s) {
-		if (this.checkLang()) {
-			if (this.#translations.get(this.#lang).strings) {
-				let s2 = this.#translations.get(this.#lang).strings[s];
-				if (typeof s2 == 'string') {
-					return s2;
-				} else {
-					console.warn('Missing translation for key ' + s);
-					return s;
-				}
+		const strings = this.#translations.get(this.#lang)?.strings;
+		if (strings) {
+			let s2 = strings[s];
+			if (typeof s2 == 'string') {
+				return s2;
+			} else {
+				console.warn('Missing translation for key ' + s);
+				return s;
 			}
 		}
 		return s;
@@ -363,29 +345,32 @@ class I18n {
 	}
 
 	static getAuthors() {
-		if (this.checkLang()) {
-			if (this.#translations.get(this.#lang).authors) {
-				return this.#translations.get(this.#lang).authors;
-			}
-		}
-		return [];
+		return this.#translations.get(this.#lang)?.authors ?? [];
 	}
-
-	static checkLang() {
+/*
+	static async #checkLang() {
+		if (!this.#path) {
+			return false;
+		}
 		if (this.#translations.has(this.#lang)) {
 			return true;
 		} else {
 			let url = this.#path + this.#lang + '.json';
-			fetch(new Request(url)).then((response) => {
-				response.json().then((json) => {
-					this.#loaded(json);
-				});
-			});
+			try {
+				const response = await fetch(new Request(url));
+				const json = await response.json();
+				this.#loaded(json);
+				/*.then((response) => {
+					response.json().then((json) => {
+						this.#loaded(json);
+					})
+				});* /
+			} catch(e) {}
 			this.#translations.set(this.#lang, {});
 			return false;
 		}
-	}
-
+	}*/
+/*
 	static #loaded(file) {
 		if (file) {
 			let lang = file.lang;
@@ -393,7 +378,7 @@ class I18n {
 			this.i18n();
 			new I18nEvents().dispatchEvent(new CustomEvent('translationsloaded'));
 		}
-	}
+	}*/
 }
 
 class HTMLHarmonyAccordionElement extends HTMLElement {
@@ -2310,4 +2295,4 @@ class HTMLHarmonyToggleButtonElement extends HTMLElement {
 	}
 }
 
-export { HTMLHarmonyAccordionElement, HTMLHarmonyContextMenuElement, HTMLHarmonyCopyElement, HTMLHarmonyLabelPropertyElement, HTMLHarmonyPaletteElement, HTMLHarmonyPanelElement, HTMLHarmonyRadioElement, HTMLHarmonySelectElement, HTMLHarmonySlideshowElement, HTMLHarmonySwitchElement, HTMLHarmonyTabElement, HTMLHarmonyTabGroupElement, HTMLHarmonyToggleButtonElement, I18n, I18nEvents, createElement, createElementNS, display, documentStyle, documentStyleSync, hide, isVisible, shadowRootStyle, shadowRootStyleSync, show, styleInject, toggle, updateElement, visible };
+export { HTMLHarmonyAccordionElement, HTMLHarmonyContextMenuElement, HTMLHarmonyCopyElement, HTMLHarmonyLabelPropertyElement, HTMLHarmonyPaletteElement, HTMLHarmonyPanelElement, HTMLHarmonyRadioElement, HTMLHarmonySelectElement, HTMLHarmonySlideshowElement, HTMLHarmonySwitchElement, HTMLHarmonyTabElement, HTMLHarmonyTabGroupElement, HTMLHarmonyToggleButtonElement, I18n, createElement, createElementNS, display, documentStyle, documentStyleSync, hide, isVisible, shadowRootStyle, shadowRootStyleSync, show, styleInject, toggle, updateElement, visible };
