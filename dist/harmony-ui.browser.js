@@ -179,6 +179,7 @@ class I18n {
 	static #refreshTimeout;
 	static #observerConfig = { childList: true, subtree: true, attributeFilter: ['i18n', 'data-i18n-json', 'data-i18n-values'] };
 	static #observer;
+	static #observed = new Set();
 
 	static start() {
 		this.observeElement(document.body);
@@ -217,6 +218,8 @@ class I18n {
 	}
 
 	static observeElement(element) {
+		this.#observed.add(element);
+
 		this.#initObserver();
 		this.#observer.observe(element, this.#observerConfig);
 		this.updateElement(element);
@@ -289,11 +292,15 @@ class I18n {
 		this.#refreshTimeout = null;
 		if (this.#executing) {return;}
 		this.#executing = true;
-		this.#processList(document, 'i18n', 'data-i18n', 'innerHTML');
-		this.#processList(document, 'i18n-title', 'data-i18n-title', 'title');
-		this.#processList(document, 'i18n-placeholder', 'data-i18n-placeholder', 'placeholder');
-		this.#processList(document, 'i18n-label', 'data-i18n-label', 'label');
-		this.#processJSON(document);
+
+		for (const element of this.#observed) {
+			this.#processList(element, 'i18n', 'data-i18n', 'innerHTML');
+			this.#processList(element, 'i18n-title', 'data-i18n-title', 'title');
+			this.#processList(element, 'i18n-placeholder', 'data-i18n-placeholder', 'placeholder');
+			this.#processList(element, 'i18n-label', 'data-i18n-label', 'label');
+			this.#processJSON(element);
+		}
+
 		this.#executing = false;
 		return;
 	}
