@@ -161,6 +161,232 @@ function styleInject(css) {
 	document.head.append(createElement('style', {textContent: css}));
 }
 
+const I18N_DELAY_BEFORE_REFRESH = 100;
+
+class I18nEvents extends EventTarget {
+	static #instance;
+	constructor() {
+		if (I18nEvents.#instance) {
+			return I18nEvents.#instance;
+		}
+		super();
+		I18nEvents.#instance = this;
+	}
+}
+
+class I18n {
+	static #path = './json/i18n/';
+	static #lang = 'english';
+	static #translations = new Map();
+	static #executing = false;
+	static #refreshTimeout;
+	static #observerConfig = { childList: true, subtree: true, attributeFilter: ['i18n', 'data-i18n-json', 'data-i18n-values'] };
+	static #observer;
+
+	static start() {
+		this.observeElement(document.body);
+	}
+
+	static setOptions(options) {
+		if (options.path) {
+			this.#path = options.path;
+		}
+
+		if (options.translations) {
+			for (let file of options.translations) {
+				this.#loaded(file);
+			}
+		}
+	}
+
+	static #initObserver() {
+		if (this.#observer) {
+			return;
+		}
+		const callback = async (mutationsList, observer) => {
+			for(let mutation of mutationsList) {
+				if (mutation.type === 'childList') {
+					for (let node of mutation.addedNodes) {
+						if (node instanceof HTMLElement) {
+							this.updateElement(node);
+						}
+					}
+				} else if (mutation.type === 'attributes') {
+					this.updateElement(mutation.target);
+				}
+			}
+		};
+		this.#observer = new MutationObserver(callback);
+	}
+
+	static observeElement(element) {
+		this.#initObserver();
+		this.#observer.observe(element, this.#observerConfig);
+		this.updateElement(element);
+	}
+
+	static #processList(parentNode, className, attribute, subElement) {
+		const elements = parentNode.querySelectorAll('.' + className);
+
+		if (parentNode.classList?.contains(className)) {
+			this.#processElement(parentNode, attribute, subElement);
+		}
+
+		for (let element of elements) {
+			this.#processElement(element, attribute, subElement);
+		}
+	}
+
+	static #processJSON(parentNode) {
+		const className = 'i18n';
+		const elements = parentNode.querySelectorAll('.' + className);
+
+		if (parentNode.classList?.contains(className)) {
+			this.#processElementJSON(parentNode);
+		}
+
+		for (let element of elements) {
+			this.#processElementJSON(element);
+		}
+	}
+
+	static #processElement(htmlElement, attribute, subElement) {
+		let dataLabel = htmlElement.getAttribute(attribute);
+		if (dataLabel) {
+			htmlElement[subElement] = this.getString(dataLabel);
+		}
+	}
+
+	static #processElementJSON(htmlElement) {
+		const str = htmlElement.getAttribute('data-i18n-json');
+		if (!str) {
+			return;
+		}
+
+		const dataJSON = JSON.parse(str);
+		if (!dataJSON) {
+			return;
+		}
+
+		let valuesJSON;
+		const values = htmlElement.getAttribute('data-i18n-values');
+		if (values) {
+			valuesJSON = JSON.parse(values);
+		} else {
+			valuesJSON = dataJSON.values;
+		}
+
+		const innerHTML = dataJSON.innerHTML;
+		if (innerHTML) {
+			htmlElement.innerHTML = this.formatString(innerHTML, valuesJSON);
+		}
+	}
+
+	static i18n() {
+		if (!this.#refreshTimeout) {
+			this.#refreshTimeout = setTimeout((event) => this.#i18n(), I18N_DELAY_BEFORE_REFRESH);
+		}
+	}
+
+	static #i18n() {
+		this.#refreshTimeout = null;
+		if (this.#lang == '') {return;}
+		if (this.#executing) {return;}
+		this.#executing = true;
+		this.#processList(document, 'i18n', 'data-i18n', 'innerHTML');
+		this.#processList(document, 'i18n-title', 'data-i18n-title', 'title');
+		this.#processList(document, 'i18n-placeholder', 'data-i18n-placeholder', 'placeholder');
+		this.#processList(document, 'i18n-label', 'data-i18n-label', 'label');
+		this.#processJSON(document);
+		this.#executing = false;
+		return;
+	}
+
+	static updateElement(htmlElement) {
+		if (this.#lang == '') {return;}
+
+		this.#processList(htmlElement, 'i18n', 'data-i18n', 'innerHTML');
+		this.#processList(htmlElement, 'i18n-title', 'data-i18n-title', 'title');
+		this.#processList(htmlElement, 'i18n-placeholder', 'data-i18n-placeholder', 'placeholder');
+		this.#processList(htmlElement, 'i18n-label', 'data-i18n-label', 'label');
+		this.#processJSON(htmlElement);
+	}
+
+	static set lang(lang) {
+		throw 'Deprecated, use setLang() instead';
+	}
+
+	static setLang(lang) {
+		if (this.#lang != lang) {
+			new I18nEvents().dispatchEvent(new CustomEvent('langchanged', { detail: { oldLang: this.#lang, newLang: lang } }));
+			this.#lang = lang;
+			this.checkLang();
+			this.i18n();
+		}
+	}
+
+	static getString(s) {
+		if (this.checkLang()) {
+			if (this.#translations.get(this.#lang).strings) {
+				let s2 = this.#translations.get(this.#lang).strings[s];
+				if (typeof s2 == 'string') {
+					return s2;
+				} else {
+					console.warn('Missing translation for key ' + s);
+					return s;
+				}
+			}
+		}
+		return s;
+	}
+
+	static formatString(s, values) {
+		let str = this.getString(s);
+
+		for (let key in values) {
+			str = str.replace(new RegExp("\\\${" + key + "\\}", "gi"), values[key]);
+		}
+		return str;
+	}
+
+	static get authors() {
+		throw 'Deprecated, use getAuthors() instead';
+	}
+
+	static getAuthors() {
+		if (this.checkLang()) {
+			if (this.#translations.get(this.#lang).authors) {
+				return this.#translations.get(this.#lang).authors;
+			}
+		}
+		return [];
+	}
+
+	static checkLang() {
+		if (this.#translations.has(this.#lang)) {
+			return true;
+		} else {
+			let url = this.#path + this.#lang + '.json';
+			fetch(new Request(url)).then((response) => {
+				response.json().then((json) => {
+					this.#loaded(json);
+				});
+			});
+			this.#translations.set(this.#lang, {});
+			return false;
+		}
+	}
+
+	static #loaded(file) {
+		if (file) {
+			let lang = file.lang;
+			this.#translations.set(lang, file);
+			this.i18n();
+			new I18nEvents().dispatchEvent(new CustomEvent('translationsloaded'));
+		}
+	}
+}
+
 class HTMLHarmonyAccordionElement extends HTMLElement {
 	#doOnce;
 	#multiple;
@@ -1886,11 +2112,12 @@ class HTMLHarmonyTabElement extends HTMLElement {
 	}
 }
 
-var tabGroupCSS = "harmony-tab-group{\n\twidth:100%;\n\theight:100%;\n\tdisplay: flex;\n\tflex-direction: column;\n\tposition: relative;\n\toverflow: hidden;\n}\n.harmony-tab-group-header{\n\tbackground-color: var(--main-bg-color-bright);\n\tdisplay: flex;\n\tflex-wrap: wrap;\n\toverflow: hidden;\n}\n.harmony-tab-group-content{\n\tflex: 1;\n\tbackground-color: var(--main-bg-color-dark);\n\toverflow: auto;\n}\n";
+var tabGroupCSS = ":host, harmony-tab-group{\n\twidth:100%;\n\theight:100%;\n\tdisplay: flex;\n\tflex-direction: column;\n\tposition: relative;\n\toverflow: hidden;\n}\n.harmony-tab-group-header{\n\tbackground-color: var(--main-bg-color-bright);\n\tdisplay: flex;\n\tflex-wrap: wrap;\n\toverflow: hidden;\n}\n.harmony-tab-group-content{\n\tflex: 1;\n\tbackground-color: var(--main-bg-color-dark);\n\toverflow: auto;\n}\n";
 
 var tabCSS = "harmony-tab{\n\tdisplay: block;\n\theight: 100%;\n\toverflow: auto;\n}\nharmony-tab::first-letter{\n\ttext-transform: uppercase;\n}\n.harmony-tab-label{\n\tdisplay: inline-block;\n\tbackground-color: var(--main-bg-color-bright);\n\tpadding: 10px;\n\tborder: 1px solid black;\n\tborder-top:0px;\n\t/*border-right:0px;*/\n\t/*margin-left: -1px;*/\n\tposition: relative;\n\t/*left: 1px;*/\n\tcolor: var(--main-text-color-dark2);\n\tcursor: pointer;\n\tuser-select: none;\n\tpointer-events: all;\n\tflex: 0 0;\n\ttext-align: center;\n\twhite-space: nowrap;\n}\n.harmony-tab-label.activated{\n\tbackground-color: var(--main-bg-color-dark);\n\tborder-bottom: 1px solid var(--main-bg-color-dark);\n\tborder-left: 1px solid white;\n\tz-index: 2;\n}\n";
 
 class HTMLHarmonyTabGroupElement extends HTMLElement {
+	#doOnce = true;
 	#tabs = new Set();
 	#header;
 	#content;
@@ -1898,21 +2125,22 @@ class HTMLHarmonyTabGroupElement extends HTMLElement {
 	#shadowRoot;
 	constructor() {
 		super();
-		this.#shadowRoot = this.attachShadow({ mode: 'closed' });
-		shadowRootStyle(this.#shadowRoot, tabGroupCSS);
-		shadowRootStyle(this.#shadowRoot, tabCSS);
 		this.#header = createElement('div', {
 			class: 'harmony-tab-group-header',
-			parent: this.#shadowRoot,
 		});
 		this.#content = createElement('div', {
 			class: 'harmony-tab-group-content',
-			parent: this.#shadowRoot,
 		});
 	}
 
 	connectedCallback() {
-		//this.append(this.#header, this.#content);
+		if (this.#doOnce) {
+			this.#shadowRoot = this.attachShadow({ mode: 'closed' });
+			shadowRootStyle(this.#shadowRoot, tabGroupCSS);
+			shadowRootStyle(this.#shadowRoot, tabCSS);
+			this.#shadowRoot.append(this.#header, this.#content);
+			this.#doOnce = false;
+		}
 	}
 
 	addTab(tab) {
@@ -2063,4 +2291,4 @@ class HTMLHarmonyToggleButtonElement extends HTMLElement {
 	}
 }
 
-export { HTMLHarmonyAccordionElement, HTMLHarmonyContextMenuElement, HTMLHarmonyCopyElement, HTMLHarmonyLabelPropertyElement, HTMLHarmonyPaletteElement, HTMLHarmonyPanelElement, HTMLHarmonyRadioElement, HTMLHarmonySelectElement, HTMLHarmonySlideshowElement, HTMLHarmonySwitchElement, HTMLHarmonyTabElement, HTMLHarmonyTabGroupElement, HTMLHarmonyToggleButtonElement, createElement, createElementNS, display, documentStyle, documentStyleSync, hide, isVisible, shadowRootStyle, shadowRootStyleSync, show, styleInject, toggle, updateElement, visible };
+export { HTMLHarmonyAccordionElement, HTMLHarmonyContextMenuElement, HTMLHarmonyCopyElement, HTMLHarmonyLabelPropertyElement, HTMLHarmonyPaletteElement, HTMLHarmonyPanelElement, HTMLHarmonyRadioElement, HTMLHarmonySelectElement, HTMLHarmonySlideshowElement, HTMLHarmonySwitchElement, HTMLHarmonyTabElement, HTMLHarmonyTabGroupElement, HTMLHarmonyToggleButtonElement, I18n, I18nEvents, createElement, createElementNS, display, documentStyle, documentStyleSync, hide, isVisible, shadowRootStyle, shadowRootStyleSync, show, styleInject, toggle, updateElement, visible };
