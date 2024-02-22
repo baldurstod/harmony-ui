@@ -111,6 +111,9 @@ function createElementOptions(element, options) {
 				case 'list':
 					element.setAttribute(optionName, optionValue);
 					break;
+				case 'adoptStyle':
+					adoptStyleSheet(element, optionValue);
+					break;
 				default:
 					if (optionName.startsWith('data-')) {
 						element.setAttribute(optionName, optionValue);
@@ -122,6 +125,12 @@ function createElementOptions(element, options) {
 		}
 	}
 	return element;
+}
+
+async function adoptStyleSheet(element, cssText) {
+	const sheet = new CSSStyleSheet;
+	await sheet.replace(cssText);
+	element.adoptStyleSheet?.(sheet);
 }
 
 function display(htmlElement, visible) {
@@ -2129,6 +2138,7 @@ class HTMLHarmonyTabGroupElement extends HTMLElement {
 	#shadowRoot;
 	constructor() {
 		super();
+		this.#shadowRoot = this.attachShadow({ mode: 'closed' });
 		this.#header = createElement('div', {
 			class: 'harmony-tab-group-header',
 		});
@@ -2139,13 +2149,16 @@ class HTMLHarmonyTabGroupElement extends HTMLElement {
 
 	connectedCallback() {
 		if (this.#doOnce) {
-			this.#shadowRoot = this.attachShadow({ mode: 'closed' });
 			I18n.observeElement(this.#shadowRoot);
 			shadowRootStyle(this.#shadowRoot, tabGroupCSS);
 			shadowRootStyle(this.#shadowRoot, tabCSS);
 			this.#shadowRoot.append(this.#header, this.#content);
 			this.#doOnce = false;
 		}
+	}
+
+	adoptStyleSheet(styleSheet) {
+		this.#shadowRoot.adoptedStyleSheets.push(styleSheet);
 	}
 
 	addTab(tab) {

@@ -89,6 +89,9 @@ function createElementOptions(element, options) {
 				case 'list':
 					element.setAttribute(optionName, optionValue);
 					break;
+				case 'adoptStyle':
+					adoptStyleSheet(element, optionValue);
+					break;
 				default:
 					if (optionName.startsWith('data-')) {
 						element.setAttribute(optionName, optionValue);
@@ -100,6 +103,12 @@ function createElementOptions(element, options) {
 		}
 	}
 	return element;
+}
+
+async function adoptStyleSheet(element, cssText) {
+	const sheet = new CSSStyleSheet;
+	await sheet.replace(cssText);
+	element.adoptStyleSheet?.(sheet);
 }
 
 export function display(htmlElement, visible) {

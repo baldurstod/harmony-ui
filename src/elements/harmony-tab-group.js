@@ -14,6 +14,7 @@ export class HTMLHarmonyTabGroupElement extends HTMLElement {
 	#shadowRoot;
 	constructor() {
 		super();
+		this.#shadowRoot = this.attachShadow({ mode: 'closed' });
 		this.#header = createElement('div', {
 			class: 'harmony-tab-group-header',
 		});
@@ -24,13 +25,16 @@ export class HTMLHarmonyTabGroupElement extends HTMLElement {
 
 	connectedCallback() {
 		if (this.#doOnce) {
-			this.#shadowRoot = this.attachShadow({ mode: 'closed' });
 			I18n.observeElement(this.#shadowRoot);
 			shadowRootStyle(this.#shadowRoot, tabGroupCSS);
 			shadowRootStyle(this.#shadowRoot, tabCSS);
 			this.#shadowRoot.append(this.#header, this.#content);
 			this.#doOnce = false;
 		}
+	}
+
+	adoptStyleSheet(styleSheet) {
+		this.#shadowRoot.adoptedStyleSheets.push(styleSheet);
 	}
 
 	addTab(tab) {
