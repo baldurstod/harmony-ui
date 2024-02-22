@@ -1,5 +1,6 @@
 import { shadowRootStyle } from '../harmony-css.js';
 import { createElement } from '../harmony-html.js';
+import { I18n } from '../harmony-i18n.js';
 
 import tabGroupCSS from '../css/harmony-tab-group.css';
 import tabCSS from '../css/harmony-tab.css';
@@ -24,6 +25,7 @@ export class HTMLHarmonyTabGroupElement extends HTMLElement {
 	connectedCallback() {
 		if (this.#doOnce) {
 			this.#shadowRoot = this.attachShadow({ mode: 'closed' });
+			I18n.observeElement(this.#shadowRoot);
 			shadowRootStyle(this.#shadowRoot, tabGroupCSS);
 			shadowRootStyle(this.#shadowRoot, tabCSS);
 			this.#shadowRoot.append(this.#header, this.#content);
