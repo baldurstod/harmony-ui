@@ -1,4 +1,7 @@
+import { shadowRootStyle } from '../harmony-css.js';
 import { createElement } from '../harmony-html.js';
+
+import switchCSS from '../css/harmony-switch.css';
 
 export class HTMLHarmonySwitchElement extends HTMLElement {
 	#doOnce;
@@ -8,6 +11,7 @@ export class HTMLHarmonySwitchElement extends HTMLElement {
 	#htmlSwitchInner;
 	#state = false;
 	#ternary = false;
+	#shadowRoot;
 	constructor() {
 		super();
 		this.#doOnce = true;
@@ -19,8 +23,9 @@ export class HTMLHarmonySwitchElement extends HTMLElement {
 
 	connectedCallback() {
 		if (this.#doOnce) {
-			this.append(this.#htmlLabel);
-			this.append(this.#htmlSwitchOuter);
+			this.#shadowRoot = this.attachShadow({ mode: 'closed' });
+			shadowRootStyle(this.#shadowRoot, switchCSS);
+			this.#shadowRoot.append(this.#htmlLabel, this.#htmlSwitchOuter);
 			this.#htmlSwitchOuter.append(this.#htmlSwitchInner);
 			this.#refresh();
 			this.#doOnce = false;
@@ -83,13 +88,13 @@ export class HTMLHarmonySwitchElement extends HTMLElement {
 	}
 
 	#refresh() {
-		this.classList.remove('on');
-		this.classList.remove('off');
-		this.classList[this.#ternary ? 'add' : 'remove']('ternary');
+		this.#htmlSwitchOuter.classList.remove('on');
+		this.#htmlSwitchOuter.classList.remove('off');
+		this.#htmlSwitchOuter.classList[this.#ternary ? 'add' : 'remove']('ternary');
 		if (this.#state === undefined) {
 			return;
 		}
-		this.classList.add(this.#state ? 'on' : 'off');
+		this.#htmlSwitchOuter.classList.add(this.#state ? 'on' : 'off');
 	}
 
 	attributeChangedCallback(name, oldValue, newValue) {

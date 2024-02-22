@@ -1,15 +1,13 @@
-:root{
-	--harmony-switch-width: 4rem;
-	--harmony-switch-height: 2rem;
-	--harmony-switch-on-background-color: #1072eb;
-	--harmony-switch-on-background-color-hover: #1040c1;
-	--harmony-switch-slider-width: 1.4rem;
-	--harmony-switch-slider-height: 1.4rem;
-	--harmony-switch-slider-margin: 0.3rem;
-	--harmony-switch-slider-border-width: 0rem;
-}
+:host, harmony-switch{
+	--harmony-switch-shadow-width: var(--harmony-switch-width, 4rem);
+	--harmony-switch-shadow-height: var(--harmony-switch-height, 2rem);
+	--harmony-switch-shadow-on-background-color: var(--harmony-switch-on-background-color, #1072eb);
+	--harmony-switch-shadow-on-background-color-hover: var(--harmony-switch-on-background-color-hover, #1040c1);
+	--harmony-switch-shadow-slider-width: var(--harmony-switch-slider-width, 1.4rem);
+	--harmony-switch-shadow-slider-height: var(--harmony-switch-slider-height, 1.4rem);
+	--harmony-switch-shadow-slider-margin: var(--harmony-switch-slider-margin, 0.3rem);
+	--harmony-switch-shadow-slider-border-width: var(--harmony-switch-slider-border-width, 0rem);
 
-harmony-switch{
 	display: inline-flex;
 	overflow: hidden;
 	user-select: none;
@@ -22,58 +20,58 @@ harmony-switch{
 }
 .harmony-switch-outer{
 	display: flex;
-	flex: 0 0 var(--harmony-switch-width);
-	height: var(--harmony-switch-height);
-	border-radius: calc(var(--harmony-switch-height) * 0.5);
+	flex: 0 0 var(--harmony-switch-shadow-width);
+	height: var(--harmony-switch-shadow-height);
+	border-radius: calc(var(--harmony-switch-shadow-height) * 0.5);
 	align-items: center;
 	margin-left: 0.25rem;
 	transition: background-color 0.25s linear;
 }
 
-harmony-switch > span{
+.harmony-switch-outer{
 	background-color: var(--harmony-ui-input-background-primary);
 }
-harmony-switch:hover > span{
+.harmony-switch-outer:hover{
 	background-color: var(--harmony-ui-input-background-secondary);
 }
-harmony-switch.on > span{
+.harmony-switch-outer.on{
 	background-color: var(--harmony-ui-accent-primary);
 }
-harmony-switch.on:hover > span{
+.harmony-switch-outer.on:hover{
 	background-color: var(--harmony-ui-accent-secondary);
 }
 .harmony-switch-inner{
 	display: inline-block;
-	height: var(--harmony-switch-slider-height);
-	width: var(--harmony-switch-slider-width);
-	border-radius: calc(var(--harmony-switch-slider-height) * 0.5);
+	height: var(--harmony-switch-shadow-slider-height);
+	width: var(--harmony-switch-shadow-slider-width);
+	border-radius: calc(var(--harmony-switch-shadow-slider-height) * 0.5);
 	transition: all 0.25s;
 	position: relative;
-	left: var(--harmony-switch-slider-margin);
-	border: var(--harmony-switch-slider-border-width) solid;
+	left: var(--harmony-switch-shadow-slider-margin);
+	border: var(--harmony-switch-shadow-slider-border-width) solid;
 	box-sizing: border-box;
 	border-color: var(--harmony-ui-input-border-primary);
 	background-color: var(--harmony-ui-input-background-tertiary);
 }
-harmony-switch.ternary .harmony-switch-inner{
-	left: calc(50% - var(--harmony-switch-slider-width) * 0.5);
+.harmony-switch-outer.ternary .harmony-switch-inner{
+	left: calc(50% - var(--harmony-switch-shadow-slider-width) * 0.5);
 }
-harmony-switch.off .harmony-switch-inner{
-	left: var(--harmony-switch-slider-margin);
+.harmony-switch-outer.off .harmony-switch-inner{
+	left: var(--harmony-switch-shadow-slider-margin);
 }
-harmony-switch.on .harmony-switch-inner{
-	left: calc(100% - var(--harmony-switch-slider-width) - var(--harmony-switch-slider-margin));
+.harmony-switch-outer.on .harmony-switch-inner{
+	left: calc(100% - var(--harmony-switch-shadow-slider-width) - var(--harmony-switch-shadow-slider-margin));
 }
-harmony-switch.ternary.off > span{
+.harmony-switch-outer.ternary.off{
 	background-color: red;
 }
-harmony-switch.ternary.off:hover > span{
+.harmony-switch-outer.ternary.off:hover{
 	background-color: red;
 }
-harmony-switch.ternary.on > span{
+.harmony-switch-outer.ternary.on{
 	background-color: green;
 }
-harmony-switch.ternary.on:hover > span{
+.harmony-switch-outer.ternary.on:hover{
 	background-color: green;
 }
 
