@@ -5,6 +5,7 @@ import tabGroupCSS from '../css/harmony-tab-group.css';
 import tabCSS from '../css/harmony-tab.css';
 
 export class HTMLHarmonyTabGroupElement extends HTMLElement {
+	#doOnce = true;
 	#tabs = new Set();
 	#header;
 	#content;
@@ -12,21 +13,22 @@ export class HTMLHarmonyTabGroupElement extends HTMLElement {
 	#shadowRoot;
 	constructor() {
 		super();
-		this.#shadowRoot = this.attachShadow({ mode: 'closed' });
-		shadowRootStyle(this.#shadowRoot, tabGroupCSS);
-		shadowRootStyle(this.#shadowRoot, tabCSS);
 		this.#header = createElement('div', {
 			class: 'harmony-tab-group-header',
-			parent: this.#shadowRoot,
 		});
 		this.#content = createElement('div', {
 			class: 'harmony-tab-group-content',
-			parent: this.#shadowRoot,
 		});
 	}
 
 	connectedCallback() {
-		//this.append(this.#header, this.#content);
+		if (this.#doOnce) {
+			this.#shadowRoot = this.attachShadow({ mode: 'closed' });
+			shadowRootStyle(this.#shadowRoot, tabGroupCSS);
+			shadowRootStyle(this.#shadowRoot, tabCSS);
+			this.#shadowRoot.append(this.#header, this.#content);
+			this.#doOnce = false;
+		}
 	}
 
 	addTab(tab) {
