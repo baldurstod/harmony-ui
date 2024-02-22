@@ -1,5 +1,6 @@
 import { shadowRootStyle } from '../harmony-css.js';
 import { createElement } from '../harmony-html.js';
+import { I18n } from '../harmony-i18n.js';
 
 import switchCSS from '../css/harmony-switch.css';
 
@@ -15,6 +16,8 @@ export class HTMLHarmonySwitchElement extends HTMLElement {
 	constructor() {
 		super();
 		this.#doOnce = true;
+		this.#shadowRoot = this.attachShadow({ mode: 'closed' });
+		shadowRootStyle(this.#shadowRoot, switchCSS);
 		this.#htmlLabel = createElement('div', { class: 'harmony-switch-label' });
 		this.#htmlSwitchOuter = createElement('span', { class: 'harmony-switch-outer' });
 		this.#htmlSwitchInner = createElement('span', { class: 'harmony-switch-inner' });
@@ -23,8 +26,7 @@ export class HTMLHarmonySwitchElement extends HTMLElement {
 
 	connectedCallback() {
 		if (this.#doOnce) {
-			this.#shadowRoot = this.attachShadow({ mode: 'closed' });
-			shadowRootStyle(this.#shadowRoot, switchCSS);
+			I18n.observeElement(this.#shadowRoot);
 			this.#shadowRoot.append(this.#htmlLabel, this.#htmlSwitchOuter);
 			this.#htmlSwitchOuter.append(this.#htmlSwitchInner);
 			this.#refresh();
