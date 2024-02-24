@@ -89,7 +89,7 @@ function createElementOptions(element, options) {
 				case 'list':
 					element.setAttribute(optionName, optionValue);
 					break;
-				case 'adoptStyle':
+				case 'adopt-style':
 					adoptStyleSheet(element, optionValue);
 					break;
 				default:
