@@ -1,7 +1,11 @@
+import { shadowRootStyle } from '../harmony-css.js';
 import {createElement, hide, show, display} from '../harmony-html.js';
+import { I18n } from '../harmony-i18n.js';
+
+import radioCSS from '../css/harmony-radio.css';
 
 export class HTMLHarmonyRadioElement extends HTMLElement {
-	#doOnce;
+	#doOnce = true;
 	#disabled;
 	#multiple = false;
 	#htmlLabel;
@@ -10,16 +14,19 @@ export class HTMLHarmonyRadioElement extends HTMLElement {
 	#buttons = new Map();
 	#buttons2 = new Set();
 	#selected = new Set();
-	constructor(options) {
+	#shadowRoot;
+	constructor() {
 		super();
-		this.#doOnce = true;
+		this.#shadowRoot = this.attachShadow({ mode: 'closed' });
 		this.#htmlLabel = createElement('div', {class: 'harmony-radio-label'});
 		this.#initObserver();
 	}
 
 	connectedCallback() {
 		if (this.#doOnce) {
-			this.prepend(this.#htmlLabel);
+			I18n.observeElement(this.#shadowRoot);
+			shadowRootStyle(this.#shadowRoot, radioCSS);
+			this.#shadowRoot.prepend(this.#htmlLabel);
 			hide(this.#htmlLabel);
 			this.#processChilds();
 			this.#doOnce = false;
@@ -33,6 +40,7 @@ export class HTMLHarmonyRadioElement extends HTMLElement {
 	}
 
 	#initButton(htmlButton) {
+		this.#shadowRoot.append(htmlButton);
 		this.#buttons.set(htmlButton.value, htmlButton);
 		if (!this.#buttons2.has(htmlButton)) {
 			htmlButton.addEventListener('click', () => this.select(htmlButton.value, !this.#multiple || !htmlButton.hasAttribute('selected')));
@@ -50,7 +58,7 @@ export class HTMLHarmonyRadioElement extends HTMLElement {
 		let htmlButton = this.#buttons.get(value);
 		if (htmlButton) {
 			if (select && !this.#multiple) {
-				for (let child of this.children) {
+				for (let child of this.#shadowRoot.children) {
 					if (child.hasAttribute('selected')) {
 						child.removeAttribute('selected');
 						this.dispatchEvent(new CustomEvent('change', {detail:{value:child.value, state:false}}));

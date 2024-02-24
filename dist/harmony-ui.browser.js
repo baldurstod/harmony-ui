@@ -1313,8 +1313,10 @@ class HTMLHarmonyPanelElement extends HTMLElement {
 	}
 }
 
+var radioCSS = ":root{\n\t--harmony-radio-button-border-radius: 0.5rem;\n\t--harmony-radio-button-padding: 0.5rem;\n\t--harmony-radio-button-font-size: 1rem;\n}\n:host{\n\t--harmony-radio-shadow-button-border-radius: var(--harmony-radio-button-border-radius, 0.5rem);\n\t--harmony-radio-shadow-button-padding: var(--harmony-radio-button-padding, 0.5rem);\n\t--harmony-radio-shadow-button-font-size: var(--harmony-radio-button-font-size, 1rem);\n\tdisplay: inline-flex;\n\toverflow: hidden;\n\tuser-select: none;\n}\n.harmony-radio-label{\n\tmargin: auto 0;\n\tfont-weight: bold;\n\tmargin-right: 0.25rem;\n}\nbutton{\n\tpadding: var(--harmony-radio-shadow-button-padding);\n\tcolor: var(--harmony-ui-text-primary);\n\tcursor: pointer;\n\tappearance: none;\n\tborder-style: solid;\n\tborder-width: 0.0625rem;\n\tborder-color: var(--harmony-ui-border-primary);\n\tborder-right-style: none;\n\tbackground-color: var(--harmony-ui-input-background-primary);\n\ttransition: background-color 0.2s linear;\n\tfont-size: var(--harmony-radio-shadow-button-font-size);\n\toverflow: hidden;\n}\nbutton:hover{\n\tbackground-color: var(--harmony-ui-input-background-secondary);\n}\nbutton[selected]{\n\tbackground-color: var(--harmony-ui-accent-primary);\n}\nbutton[selected]:hover{\n\tbackground-color: var(--harmony-ui-accent-secondary);\n}\nbutton:first-of-type{\n\tborder-radius: var(--harmony-radio-shadow-button-border-radius) 0 0 var(--harmony-radio-shadow-button-border-radius);\n}\nbutton:last-child{\n\tborder-right-style: solid;\n\tborder-radius: 0 var(--harmony-radio-shadow-button-border-radius) var(--harmony-radio-shadow-button-border-radius) 0;\n}\n";
+
 class HTMLHarmonyRadioElement extends HTMLElement {
-	#doOnce;
+	#doOnce = true;
 	#disabled;
 	#multiple = false;
 	#htmlLabel;
@@ -1323,16 +1325,19 @@ class HTMLHarmonyRadioElement extends HTMLElement {
 	#buttons = new Map();
 	#buttons2 = new Set();
 	#selected = new Set();
-	constructor(options) {
+	#shadowRoot;
+	constructor() {
 		super();
-		this.#doOnce = true;
+		this.#shadowRoot = this.attachShadow({ mode: 'closed' });
 		this.#htmlLabel = createElement('div', {class: 'harmony-radio-label'});
 		this.#initObserver();
 	}
 
 	connectedCallback() {
 		if (this.#doOnce) {
-			this.prepend(this.#htmlLabel);
+			I18n.observeElement(this.#shadowRoot);
+			shadowRootStyle(this.#shadowRoot, radioCSS);
+			this.#shadowRoot.prepend(this.#htmlLabel);
 			hide(this.#htmlLabel);
 			this.#processChilds();
 			this.#doOnce = false;
@@ -1346,6 +1351,7 @@ class HTMLHarmonyRadioElement extends HTMLElement {
 	}
 
 	#initButton(htmlButton) {
+		this.#shadowRoot.append(htmlButton);
 		this.#buttons.set(htmlButton.value, htmlButton);
 		if (!this.#buttons2.has(htmlButton)) {
 			htmlButton.addEventListener('click', () => this.select(htmlButton.value, !this.#multiple || !htmlButton.hasAttribute('selected')));
@@ -1363,7 +1369,7 @@ class HTMLHarmonyRadioElement extends HTMLElement {
 		let htmlButton = this.#buttons.get(value);
 		if (htmlButton) {
 			if (select && !this.#multiple) {
-				for (let child of this.children) {
+				for (let child of this.#shadowRoot.children) {
 					if (child.hasAttribute('selected')) {
 						child.removeAttribute('selected');
 						this.dispatchEvent(new CustomEvent('change', {detail:{value:child.value, state:false}}));
