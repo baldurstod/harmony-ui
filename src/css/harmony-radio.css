@@ -1,12 +1,8 @@
-:root{
-	--harmony-radio-button-border-radius: 0.5rem;
-	--harmony-radio-button-padding: 0.5rem;
-	--harmony-radio-button-font-size: 1rem;
-}
 :host{
 	--harmony-radio-shadow-button-border-radius: var(--harmony-radio-button-border-radius, 0.5rem);
 	--harmony-radio-shadow-button-padding: var(--harmony-radio-button-padding, 0.5rem);
 	--harmony-radio-shadow-button-font-size: var(--harmony-radio-button-font-size, 1rem);
+	--harmony-radio-shadow-button-flex: var(--harmony-radio-button-flex, auto);
 	display: inline-flex;
 	overflow: hidden;
 	user-select: none;
@@ -19,6 +15,7 @@
 button{
 	padding: var(--harmony-radio-shadow-button-padding);
 	color: var(--harmony-ui-text-primary);
+	flex: var(--harmony-radio-shadow-button-flex);
 	cursor: pointer;
 	appearance: none;
 	border-style: solid;
