@@ -1,12 +1,20 @@
-import { createElement, hide, show } from '../harmony-html.js';
+import { shadowRootStyle } from '../harmony-css.js';
+import { createElement, hide, show} from '../harmony-html.js';
+import { I18n } from '../harmony-i18n.js';
+
+import toggleButtonCSS from '../css/harmony-toggle-button.css';
 
 export class HTMLHarmonyToggleButtonElement extends HTMLElement {
 	#buttonOn;
 	#buttonOff;
 	#state = false;
+	#shadowRoot;
 
 	constructor() {
 		super();
+		this.#shadowRoot = this.attachShadow({ mode: 'closed' });
+		I18n.observeElement(this.#shadowRoot);
+		shadowRootStyle(this.#shadowRoot, toggleButtonCSS);
 
 		this.addEventListener('click', event => this.#click(event));
 		this.#initObserver();
@@ -14,10 +22,10 @@ export class HTMLHarmonyToggleButtonElement extends HTMLElement {
 
 	connectedCallback() {
 		if (this.#buttonOn) {
-			this.append(this.#buttonOn);
+			this.#shadowRoot.append(this.#buttonOn);
 		}
 		if (this.#buttonOff) {
-			this.append(this.#buttonOff);
+			this.#shadowRoot.append(this.#buttonOff);
 		}
 		this.#processChilds();
 	}
@@ -33,11 +41,14 @@ export class HTMLHarmonyToggleButtonElement extends HTMLElement {
 		switch (htmlChildElement.tagName) {
 			case 'ON':
 				this.#buttonOn = htmlChildElement;
+				this.#shadowRoot.append(this.#buttonOn);
 				break;
 			case 'OFF':
 				this.#buttonOff = htmlChildElement;
+				this.#shadowRoot.append(this.#buttonOff);
 				break;
 		}
+		this.#refresh();
 	}
 
 	attributeChangedCallback(name, oldValue, newValue) {
@@ -106,6 +117,10 @@ export class HTMLHarmonyToggleButtonElement extends HTMLElement {
 
 		let observer = new MutationObserver(mutationCallback);
 		observer.observe(this, config);
+	}
+
+	adoptStyleSheet(styleSheet) {
+		this.#shadowRoot.adoptedStyleSheets.push(styleSheet);
 	}
 
 	static get observedAttributes() {

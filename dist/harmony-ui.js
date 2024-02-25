@@ -2195,13 +2195,19 @@ class HTMLHarmonyTabGroupElement extends HTMLElement {
 	}
 }
 
+var toggleButtonCSS = ":host{\n\tcursor: pointer;\n\theight: 50px;\n\twidth: 50px;\n\tdisplay: inline-block;\n\tposition: relative;\n}\non, off{\n\tposition: absolute;\n\ttop: 0px;\n\tleft: 0px;\n\theight: 100%;\n\twidth: 100%;\n\tbackground-size: 100% auto;\n\tbox-sizing: border-box;\n}\n";
+
 class HTMLHarmonyToggleButtonElement extends HTMLElement {
 	#buttonOn;
 	#buttonOff;
 	#state = false;
+	#shadowRoot;
 
 	constructor() {
 		super();
+		this.#shadowRoot = this.attachShadow({ mode: 'closed' });
+		I18n.observeElement(this.#shadowRoot);
+		shadowRootStyle(this.#shadowRoot, toggleButtonCSS);
 
 		this.addEventListener('click', event => this.#click(event));
 		this.#initObserver();
@@ -2209,10 +2215,10 @@ class HTMLHarmonyToggleButtonElement extends HTMLElement {
 
 	connectedCallback() {
 		if (this.#buttonOn) {
-			this.append(this.#buttonOn);
+			this.#shadowRoot.append(this.#buttonOn);
 		}
 		if (this.#buttonOff) {
-			this.append(this.#buttonOff);
+			this.#shadowRoot.append(this.#buttonOff);
 		}
 		this.#processChilds();
 	}
@@ -2228,11 +2234,14 @@ class HTMLHarmonyToggleButtonElement extends HTMLElement {
 		switch (htmlChildElement.tagName) {
 			case 'ON':
 				this.#buttonOn = htmlChildElement;
+				this.#shadowRoot.append(this.#buttonOn);
 				break;
 			case 'OFF':
 				this.#buttonOff = htmlChildElement;
+				this.#shadowRoot.append(this.#buttonOff);
 				break;
 		}
+		this.#refresh();
 	}
 
 	attributeChangedCallback(name, oldValue, newValue) {
@@ -2301,6 +2310,10 @@ class HTMLHarmonyToggleButtonElement extends HTMLElement {
 
 		let observer = new MutationObserver(mutationCallback);
 		observer.observe(this, config);
+	}
+
+	adoptStyleSheet(styleSheet) {
+		this.#shadowRoot.adoptedStyleSheets.push(styleSheet);
 	}
 
 	static get observedAttributes() {
