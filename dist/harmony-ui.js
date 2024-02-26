@@ -538,18 +538,21 @@ class HTMLHarmonyAccordionElement extends HTMLElement {
 	}
 }
 
+var contextMenuCSS = ":host{\n\tposition: absolute;\n\tfont-size: 1.5em;\n\tcursor: not-allowed;\n\tbackground-color: green;\n\tbackground-color: var(--theme-context-menu-bg-color);\n\toverflow: auto;\n\tz-index: 100000;\n}\n\n.harmony-context-menu-item{\n\tbackground-color: green;\n\tcursor: pointer;\n\tbackground-color: var(--theme-context-menu-item-bg-color);\n}\n\n.harmony-context-menu-item.disabled{\n\tpointer-events: none;\n}\n\n.harmony-context-menu-item.selected{\n\tbackground-color: blue;\n\tbackground-color: var(--theme-context-menu-item-selected-bg-color);\n}\n\n\n.harmony-context-menu-item.separator{\n\theight: 5px;\n\tbackground-color: black;\n}\n.harmony-context-menu-item>.harmony-context-menu-item-title:hover{\n\tbackground-color: var(--theme-context-menu-item-hover-bg-color);\n}\n\n.harmony-context-menu-item.selected>.harmony-context-menu-item-title::after{\n\tcontent: \"✔\";\n\tright: 0px;\n\tposition: absolute;\n}\n.harmony-context-menu-item>.harmony-context-menu-item-title::after{\n\ttransition: all 0.2s ease 0s;\n\twidth: 32px;\n\theight: 32px;\n}\n.harmony-context-menu-item.closed>.harmony-context-menu-item-title, .harmony-context-menu-item.opened>.harmony-context-menu-item-title{\n\tpadding-right: 32px;\n}\n.harmony-context-menu-item.closed>.harmony-context-menu-item-title::after{\n\tcontent: \"➤\";\n\tright: 0px;\n\tposition: absolute;\n}\n.harmony-context-menu-item.opened>.harmony-context-menu-item-title::after{\n\tcontent: \"➤\";\n\tright: 0px;\n\tposition: absolute;\n\t/*writing-mode: vertical-rl; */\n\ttransform: rotate(90deg);\n}\n\n.harmony-context-menu-item .submenu{\n\tbackground-color: var(--theme-context-menu-submenu-bg-color);\n\tpadding-left: 10px;\n\tmargin-left: 2px;\n\tdisplay: none;\n\toverflow: hidden;\n\tposition: relative;\n\tbackground-color: var(--theme-context-menu-submenu-fg-color);\n}\n\n.harmony-context-menu-item.opened>.submenu{\n\tdisplay: block;\n}\n";
+
 class HTMLHarmonyContextMenuElement extends HTMLElement {
+	#doOnce = true;
+	#subMenus = new Map();
+	#shadowRoot;
 	constructor() {
 		super();
-		this._subMenus = new Map();
+		this.#shadowRoot = this.attachShadow({ mode: 'closed' });
 
 		document.addEventListener('click', (event) => {
 			if (!this.contains(event.target)) {
 				this.close();
 			}
 		});
-
-
 	}
 
 	show(items, clientX , clientY, userData) {
@@ -558,10 +561,10 @@ class HTMLHarmonyContextMenuElement extends HTMLElement {
 		this.style.position = 'absolute';
 		this.style.left = clientX + 'px';
 		this.style.top = clientY + 'px';
-		this._checkSize();
+		this.#checkSize();
 	}
 
-	_checkSize() {
+	#checkSize() {
 		let bodyRect = document.body.getBoundingClientRect();
 		let elemRect = this.getBoundingClientRect();
 
@@ -592,7 +595,6 @@ class HTMLHarmonyContextMenuElement extends HTMLElement {
 		if (elemRect.top < 0) {
 			this.style.top = '0px';
 		}
-
 	}
 
 	close() {
@@ -600,53 +602,61 @@ class HTMLHarmonyContextMenuElement extends HTMLElement {
 	}
 
 	connectedCallback() {
-		let callback = (entries, observer) => {
-			entries.forEach(entry => {
-				this._checkSize();
-			});
-		};
-		let resizeObserver = new ResizeObserver(callback);
-		resizeObserver.observe(this);
-		resizeObserver.observe(document.body);
+		if (this.#doOnce) {
+			I18n.observeElement(this.#shadowRoot);
+			shadowRootStyle(this.#shadowRoot, contextMenuCSS);
+
+			let callback = (entries, observer) => {
+				entries.forEach(entry => {
+					this.#checkSize();
+				});
+			};
+			let resizeObserver = new ResizeObserver(callback);
+			resizeObserver.observe(this);
+			resizeObserver.observe(document.body);
+			this.#doOnce = false;
+		}
 	}
 
 	setItems(items, userData) {
-		this.innerHTML = '';
+		this.#shadowRoot.innerHTML = '';
 		if (items instanceof Array) {
 			for (let item of items) {
-				this.append(this.addItem(item, userData));
+				this.#shadowRoot.append(this.addItem(item, userData));
 			}
 		} else {
 			for (let itemId in items) {
 				let item = items[itemId];
-				this.append(this.addItem(item, userData));
+				this.#shadowRoot.append(this.addItem(item, userData));
 			}
-
 		}
 	}
 
-	_openSubMenu(htmlSubMenu) {
-		for (let [htmlItem, sub] of this._subMenus) {
+	#openSubMenu(htmlSubMenu) {
+		for (let [htmlItem, sub] of this.#subMenus) {
 			if (sub == htmlSubMenu || sub.contains(htmlSubMenu)) {
 				htmlItem.classList.add('opened');
-					htmlItem.classList.remove('closed');
+				htmlItem.classList.remove('closed');
 			} else {
 				htmlItem.classList.remove('opened');
 				htmlItem.classList.add('closed');
 			}
 		}
-		this._checkSize();
+		this.#checkSize();
 	}
 
 	addItem(item, userData) {
-		let htmlItem = document.createElement('div');
-		htmlItem.className = 'harmony-context-menu-item';
-		//this.append(htmlItem);
+		let htmlItem = createElement('div', {
+			class: 'harmony-context-menu-item',
+		});
+
 		if (!item) {
 			htmlItem.classList.add('separator');
 		} else {
-				let htmlItemTitle = document.createElement('div');
-				htmlItemTitle.className = 'harmony-context-menu-item-title';
+				let htmlItemTitle = createElement('div', {
+					class: 'harmony-context-menu-item-title',
+				});
+
 				if (item.i18n) {
 					htmlItemTitle.classList.add('i18n');
 					htmlItemTitle.setAttribute('data-i18n', item.i18n);
@@ -663,9 +673,10 @@ class HTMLHarmonyContextMenuElement extends HTMLElement {
 					htmlItem.classList.add('disabled');
 				}
 				if (item.submenu) {
-					let htmlSubMenu = document.createElement('div');
-					this._subMenus.set(htmlItem, htmlSubMenu);
-					htmlSubMenu.className = 'submenu';
+					let htmlSubMenu = createElement('div', {
+						class: 'submenu',
+					});
+					this.#subMenus.set(htmlItem, htmlSubMenu);
 					if (item.submenu instanceof Array) {
 						for (let subItem of item.submenu) {
 							htmlSubMenu.append(this.addItem(subItem, userData));
@@ -679,7 +690,7 @@ class HTMLHarmonyContextMenuElement extends HTMLElement {
 					htmlItem.append(htmlSubMenu);
 					//htmlSubMenu.style.display = 'none';
 					htmlItem.classList.add('closed');
-					htmlItem.addEventListener('click', (event) => {this._openSubMenu(htmlSubMenu);event.stopPropagation();});
+					htmlItem.addEventListener('click', event => {this.#openSubMenu(htmlSubMenu);event.stopPropagation();});
 				} else {
 					htmlItem.addEventListener('click', () =>
 						{

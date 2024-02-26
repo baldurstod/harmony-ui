@@ -1,6 +1,6 @@
 export const elements = [
 	{ name: 'harmony-accordion', class: 'HTMLHarmonyAccordionElement', injectCSS: true },
-	{ name: 'harmony-context-menu', class: 'HTMLHarmonyContextMenuElement', injectCSS: true },
+	{ name: 'harmony-context-menu', class: 'HTMLHarmonyContextMenuElement', injectCSS: false },
 	{ name: 'harmony-copy', class: 'HTMLHarmonyCopyElement', injectCSS: true },
 	{ name: 'harmony-label-property', class: 'HTMLHarmonyLabelPropertyElement', injectCSS: true },
 	{ name: 'harmony-palette', class: 'HTMLHarmonyPaletteElement', injectCSS: true },
