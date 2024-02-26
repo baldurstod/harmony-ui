@@ -92,6 +92,12 @@ function createElementOptions(element, options) {
 				case 'adopt-style':
 					adoptStyleSheet(element, optionValue);
 					break;
+				case 'adopt-styles':
+					optionValue.forEach(entry => {
+						adoptStyleSheet(element, entry);
+					});
+					break;
+					break;
 				default:
 					if (optionName.startsWith('data-')) {
 						element.setAttribute(optionName, optionValue);
