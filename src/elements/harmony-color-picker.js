@@ -30,7 +30,17 @@ export class HTMLHarmonyColorPickerElement extends HTMLElement {
 				},
 			},
 		});
-		this.#htmlMainPicker = createElement('div', { id: 'main-picker' });
+		this.#htmlMainPicker = createElement('div', {
+			id: 'main-picker',
+			events: {
+				click: event => this.#updateLumSat(event),
+				mousemove: event => {
+					if (event.buttons > 0) {
+						this.#updateLumSat(event)
+					}
+				},
+			},
+		});
 		this.#htmlAlphaPicker = createElement('div', {
 			id: 'alpha-picker',
 			class:'alpha-background',
@@ -52,13 +62,21 @@ export class HTMLHarmonyColorPickerElement extends HTMLElement {
 	}
 
 	#updateAlpha(event) {
-		const percent = 1 - (event.offsetY / event.target.offsetHeight);
+		const percent = 1 - event.offsetY / event.target.offsetHeight;
 		this.#color.alpha = percent;
 		this.#update();
 	}
+
 	#updateHue(event) {
 		const percent = event.offsetX / event.target.offsetWidth;
 		this.#color.setHue(percent);
+		this.#update();
+	}
+
+	#updateLumSat(event) {
+		const sat = event.offsetX / event.target.offsetWidth;
+		const lum = 1 - event.offsetY / event.target.offsetHeight;
+		this.#color.setSatLum(sat, lum);
 		this.#update();
 	}
 
@@ -83,6 +101,8 @@ export class HTMLHarmonyColorPickerElement extends HTMLElement {
 
 		// Note: As of today (feb 2024) the css image() function is not yet supported by any browser. We resort to use a constant linear gradient
 		this.#htmlSample.style = `--foreground-layer: linear-gradient(rgb(${red} ${green} ${blue} / ${this.#color.alpha}), rgb(${red} ${green} ${blue} / ${this.#color.alpha}));`;
+
+		this.#htmlMainPicker.style = `color: hsl(${this.#color.getHue()}turn 100% 50%)`;
 
 		this.#htmlInput.value = this.#color.getHex();
 	}

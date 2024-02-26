@@ -71,6 +71,18 @@ export class Color {
 		this.#rgba[2] = rgb[2];
 	}
 
+	setSatLum(sat, lum) {
+		const hsl = rgbToHsl(this.#rgba[0], this.#rgba[1], this.#rgba[2]);
+
+
+		const rgb = hslToRgb(hsl[0], sat, lum);
+
+		this.#rgba[0] = rgb[0];
+		this.#rgba[1] = rgb[1];
+		this.#rgba[2] = rgb[2];
+
+	}
+
 	setHex(hex) {
 		hex = (hex.startsWith('#') ? hex.slice(1) : hex)
 			.replace(/^(\w{3})$/,          '$1F')                   //987      -> 987F
@@ -94,6 +106,10 @@ export class Color {
 	getHex() {
 		const hex = this.#rgba.map(x => Math.round(x * 255).toString(16));
 		return '#' + hex.map(x => x.padStart(2, '0')).join('');
+	}
+
+	getHue() {
+		return rgbToHsl(this.#rgba[0], this.#rgba[1], this.#rgba[2])[0];
 	}
 
 	set red(red) {

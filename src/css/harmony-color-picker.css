@@ -28,14 +28,11 @@
 	grid-area: h;
 }
 #main-picker{
-	background-color: blue;
 	grid-area: m;
-	/*
-	width: calc(var(--harmony-color-picker-shadow-width) - 1rem - 3 * var(--harmony-color-picker-shadow-gap));
-	height: calc(var(--harmony-color-picker-shadow-width) - 1rem - 3 * var(--harmony-color-picker-shadow-gap));
-	*/
 	width: var(--harmony-color-picker-shadow-width);
 	height: var(--harmony-color-picker-shadow-height);
+	background-image: linear-gradient(180deg, white, rgba(255, 255, 255, 0) 50%),linear-gradient(0deg, black, rgba(0, 0, 0, 0) 50%),linear-gradient(90deg, #808080, rgba(128, 128, 128, 0));
+	background-color: currentColor;
 }
 #alpha-picker{
 	/*width: 100%;*/
