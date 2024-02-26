@@ -1,0 +1,67 @@
+:host{
+	--harmony-color-picker-shadow-width: var(--harmony-color-picker-width, 15rem);
+	--harmony-color-picker-shadow-height: var(--harmony-color-picker-height, 15rem);
+	--harmony-color-picker-shadow-gap: var(--harmony-color-picker-gap, 0.3rem);
+
+	padding: var(--harmony-color-picker-shadow-gap);
+	box-sizing: border-box;
+	display: inline-grid;
+	/*grid-template-rows: 1rem 5fr;
+	grid-template-columns: 2fr 2fr 1rem;*/
+	column-gap: var(--harmony-color-picker-shadow-gap);
+	row-gap: var(--harmony-color-picker-shadow-gap);
+
+	/*width: var(--harmony-color-picker-width, 10rem);
+	height: var(--harmony-color-picker-height, 10rem);*/
+	background-color: brown;
+	/*display: flex;
+	flex-wrap: wrap;*/
+	grid-template-areas: "h h h" "m m a" "i s o";
+}
+
+#hue-picker{
+	/*flex-basis: var(--harmony-color-picker-shadow-width);*/
+	height: 1rem;
+	background-image: linear-gradient(90deg, red, yellow, lime, cyan, blue, magenta, red);
+	grid-area: h;
+}
+#main-picker{
+	background-color: blue;
+	grid-area: m;
+	/*
+	width: calc(var(--harmony-color-picker-shadow-width) - 1rem - 3 * var(--harmony-color-picker-shadow-gap));
+	height: calc(var(--harmony-color-picker-shadow-width) - 1rem - 3 * var(--harmony-color-picker-shadow-gap));
+	*/
+	width: var(--harmony-color-picker-shadow-width);
+	height: var(--harmony-color-picker-shadow-height);
+}
+#alpha-picker{
+	/*width: 100%;*/
+	width: 1.5rem;
+	grid-area: a;
+}
+#alpha-picker > div, #sample > div{
+	width: 100%;
+	height: 100%;
+}
+#input{
+	grid-area: i;
+	font-family: monospace;
+}
+#sample{
+	grid-area: s;
+}
+#sample::before{
+	content: "";
+	display: block;
+	width: 100%;
+	height: 100%;
+	background: currentColor;
+}
+#ok{
+	grid-area: o;
+}
+.alpha-background{
+	background: linear-gradient(45deg, lightgrey 25%, transparent 25%, transparent 75%, lightgrey 75%) 0 0 / 1rem 1rem,
+	linear-gradient(45deg, lightgrey 25%, white 25%, white 75%, lightgrey 75%) 0.5em 0.5em / 1em 1em;
+}

@@ -2,6 +2,7 @@ export * from './harmony-css.js';
 export * from './harmony-html.js';
 export * from './harmony-i18n.js';
 export * from './elements/harmony-accordion.js';
+export * from './elements/harmony-color-picker.js';
 export * from './elements/harmony-context-menu.js';
 export * from './elements/harmony-copy.js';
 export * from './elements/harmony-label-property.js';

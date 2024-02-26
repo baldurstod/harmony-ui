@@ -538,6 +538,152 @@ class HTMLHarmonyAccordionElement extends HTMLElement {
 	}
 }
 
+var colorPickerCSS = ":host{\n\t--harmony-color-picker-shadow-width: var(--harmony-color-picker-width, 15rem);\n\t--harmony-color-picker-shadow-height: var(--harmony-color-picker-height, 15rem);\n\t--harmony-color-picker-shadow-gap: var(--harmony-color-picker-gap, 0.3rem);\n\n\tpadding: var(--harmony-color-picker-shadow-gap);\n\tbox-sizing: border-box;\n\tdisplay: inline-grid;\n\t/*grid-template-rows: 1rem 5fr;\n\tgrid-template-columns: 2fr 2fr 1rem;*/\n\tcolumn-gap: var(--harmony-color-picker-shadow-gap);\n\trow-gap: var(--harmony-color-picker-shadow-gap);\n\n\t/*width: var(--harmony-color-picker-width, 10rem);\n\theight: var(--harmony-color-picker-height, 10rem);*/\n\tbackground-color: brown;\n\t/*display: flex;\n\tflex-wrap: wrap;*/\n\tgrid-template-areas: \"h h h\" \"m m a\" \"i s o\";\n}\n\n#hue-picker{\n\t/*flex-basis: var(--harmony-color-picker-shadow-width);*/\n\theight: 1rem;\n\tbackground-image: linear-gradient(90deg, red, yellow, lime, cyan, blue, magenta, red);\n\tgrid-area: h;\n}\n#main-picker{\n\tbackground-color: blue;\n\tgrid-area: m;\n\t/*\n\twidth: calc(var(--harmony-color-picker-shadow-width) - 1rem - 3 * var(--harmony-color-picker-shadow-gap));\n\theight: calc(var(--harmony-color-picker-shadow-width) - 1rem - 3 * var(--harmony-color-picker-shadow-gap));\n\t*/\n\twidth: var(--harmony-color-picker-shadow-width);\n\theight: var(--harmony-color-picker-shadow-height);\n}\n#alpha-picker{\n\t/*width: 100%;*/\n\twidth: 1.5rem;\n\tgrid-area: a;\n}\n#alpha-picker > div, #sample > div{\n\twidth: 100%;\n\theight: 100%;\n}\n#input{\n\tgrid-area: i;\n\tfont-family: monospace;\n}\n#sample{\n\tgrid-area: s;\n}\n#sample::before{\n\tcontent: \"\";\n\tdisplay: block;\n\twidth: 100%;\n\theight: 100%;\n\tbackground: currentColor;\n}\n#ok{\n\tgrid-area: o;\n}\n.alpha-background{\n\tbackground: linear-gradient(45deg, lightgrey 25%, transparent 25%, transparent 75%, lightgrey 75%) 0 0 / 1rem 1rem,\n\tlinear-gradient(45deg, lightgrey 25%, white 25%, white 75%, lightgrey 75%) 0.5em 0.5em / 1em 1em;\n}\n";
+
+class HTMLHarmonyColorPickerElement extends HTMLElement {
+	#doOnce = true;
+	#shadowRoot;
+	#color = new Color({hex: '#00ccffff'});
+	#htmlHuePicker;
+	#htmlHueSelector;
+	#htmlMainPicker;
+	#htmlAlphaPicker;
+	#htmlAlphaPickerInner;
+	#htmlAlphaSelector;
+	#htmlInput;
+	#htmlSample;
+	#htmlOk;
+	constructor() {
+		super();
+		this.#shadowRoot = this.attachShadow({ mode: 'closed' });
+		this.#htmlHuePicker = createElement('div', { id: 'hue-picker' });
+		this.#htmlMainPicker = createElement('div', { id: 'main-picker' });
+		this.#htmlAlphaPicker = createElement('div', {
+			id: 'alpha-picker',
+			class:'alpha-background',
+			child: this.#htmlAlphaPickerInner = createElement('div'),
+			events: {
+				click: event => this.#updateAlpha(event),
+				mousemove: event => {
+					if (event.buttons > 0) {
+						this.#updateAlpha(event);
+					}
+				},
+			},
+		});
+		this.#htmlInput = createElement('input', { id: 'input' });
+		this.#htmlSample = createElement('div', {
+			id: 'sample',
+			class:'alpha-background',
+		});
+		this.#htmlOk = createElement('button', { id: 'ok' });
+	}
+
+	#updateAlpha(event) {
+		const percent = 1 - (event.offsetY / event.target.offsetHeight);
+		this.#color.alpha = percent;
+	}
+
+	connectedCallback() {
+		if (this.#doOnce) {
+			shadowRootStyle(this.#shadowRoot, colorPickerCSS);
+			this.#shadowRoot.append(this.#htmlHuePicker, this.#htmlMainPicker, this.#htmlAlphaPicker, this.#htmlInput, this.#htmlInput, this.#htmlSample, this.#htmlOk);
+			this.#update();
+			this.#doOnce = false;
+		}
+	}
+
+	adoptStyleSheet(styleSheet) {
+		this.#shadowRoot.adoptedStyleSheets.push(styleSheet);
+	}
+
+	#update() {
+		const red = this.#color.red * 255;
+		const green = this.#color.green * 255;
+		const blue = this.#color.blue * 255;
+		this.#htmlAlphaPickerInner.style = `background: linear-gradient(rgb(${red} ${green} ${blue} / 1), rgb(${red} ${green} ${blue} / 0));`;
+		this.#htmlSample.style = `color: rgba(${red} ${green} ${blue} / ${this.#color.alpha});`;
+
+		this.#htmlInput.value = this.#color.getHex();
+	}
+
+	setColor() {
+		this.#update();
+	}
+}
+
+
+class Color {
+	#rgba = [];
+	constructor({red = 0, green = 0, blue = 0, alpha = 1, hex} = {}) {
+		this.#rgba[0] = red;
+		this.#rgba[1] = green;
+		this.#rgba[2] = blue;
+		this.#rgba[3] = alpha;
+
+		if (hex) {
+			this.setHex(hex);
+		}
+	}
+
+	setHex(hex) {
+		hex = (hex.startsWith('#') ? hex.slice(1) : hex)
+			.replace(/^(\w{3})$/,          '$1F')                   //987      -> 987F
+			.replace(/^(\w)(\w)(\w)(\w)$/, '$1$1$2$2$3$3$4$4')      //9876     -> 99887766
+			.replace(/^(\w{6})$/,          '$1FF');                 //987654   -> 987654FF
+
+		if (!hex.match(/^([0-9a-fA-F]{8})$/)) {
+			throw new Error('Unknown hex color; ' + hex);
+		}
+
+		const rgba = hex
+			.match(/^(\w\w)(\w\w)(\w\w)(\w\w)$/).slice(1)  //98765432 -> 98 76 54 32
+			.map(x => parseInt(x, 16));                    //Hex to decimal
+
+		this.#rgba[0] = rgba[0]/255;
+		this.#rgba[1] = rgba[1]/255;
+		this.#rgba[2] = rgba[2]/255;
+		this.#rgba[3] = rgba[3]/255;
+	}
+
+	getHex() {
+		const hex = this.#rgba.map(x => Math.round(x * 255).toString(16));
+		return '#' + hex.map(x => x.padStart(2, '0')).join('');
+	}
+
+	set red(red) {
+		this.#rgba[0] = red;
+	}
+
+	get red() {
+		return this.#rgba[0];
+	}
+
+	set green(green) {
+		this.#rgba[1] = green;
+	}
+
+	get green() {
+		return this.#rgba[1];
+	}
+
+	set blue(blue) {
+		this.#rgba[2] = blue;
+	}
+
+	get blue() {
+		return this.#rgba[2];
+	}
+
+	set alpha(alpha) {
+		this.#rgba[3] = alpha;
+	}
+
+	get alpha() {
+		return this.#rgba[3];
+	}
+}
+
 var contextMenuCSS = ":host{\n\tposition: absolute;\n\tfont-size: 1.5em;\n\tcursor: not-allowed;\n\tbackground-color: green;\n\tbackground-color: var(--theme-context-menu-bg-color);\n\toverflow: auto;\n\tz-index: 100000;\n}\n\n.harmony-context-menu-item{\n\tbackground-color: green;\n\tcursor: pointer;\n\tbackground-color: var(--theme-context-menu-item-bg-color);\n}\n\n.harmony-context-menu-item.disabled{\n\tpointer-events: none;\n}\n\n.harmony-context-menu-item.selected{\n\tbackground-color: blue;\n\tbackground-color: var(--theme-context-menu-item-selected-bg-color);\n}\n\n\n.harmony-context-menu-item.separator{\n\theight: 5px;\n\tbackground-color: black;\n}\n.harmony-context-menu-item>.harmony-context-menu-item-title:hover{\n\tbackground-color: var(--theme-context-menu-item-hover-bg-color);\n}\n\n.harmony-context-menu-item.selected>.harmony-context-menu-item-title::after{\n\tcontent: \"✔\";\n\tright: 0px;\n\tposition: absolute;\n}\n.harmony-context-menu-item>.harmony-context-menu-item-title::after{\n\ttransition: all 0.2s ease 0s;\n\twidth: 32px;\n\theight: 32px;\n}\n.harmony-context-menu-item.closed>.harmony-context-menu-item-title, .harmony-context-menu-item.opened>.harmony-context-menu-item-title{\n\tpadding-right: 32px;\n}\n.harmony-context-menu-item.closed>.harmony-context-menu-item-title::after{\n\tcontent: \"➤\";\n\tright: 0px;\n\tposition: absolute;\n}\n.harmony-context-menu-item.opened>.harmony-context-menu-item-title::after{\n\tcontent: \"➤\";\n\tright: 0px;\n\tposition: absolute;\n\t/*writing-mode: vertical-rl; */\n\ttransform: rotate(90deg);\n}\n\n.harmony-context-menu-item .submenu{\n\tbackground-color: var(--theme-context-menu-submenu-bg-color);\n\tpadding-left: 10px;\n\tmargin-left: 2px;\n\tdisplay: none;\n\toverflow: hidden;\n\tposition: relative;\n\tbackground-color: var(--theme-context-menu-submenu-fg-color);\n}\n\n.harmony-context-menu-item.opened>.submenu{\n\tdisplay: block;\n}\n";
 
 class HTMLHarmonyContextMenuElement extends HTMLElement {
@@ -2337,4 +2483,4 @@ class HTMLHarmonyToggleButtonElement extends HTMLElement {
 	}
 }
 
-export { HTMLHarmonyAccordionElement, HTMLHarmonyContextMenuElement, HTMLHarmonyCopyElement, HTMLHarmonyLabelPropertyElement, HTMLHarmonyPaletteElement, HTMLHarmonyPanelElement, HTMLHarmonyRadioElement, HTMLHarmonySelectElement, HTMLHarmonySlideshowElement, HTMLHarmonySwitchElement, HTMLHarmonyTabElement, HTMLHarmonyTabGroupElement, HTMLHarmonyToggleButtonElement, I18n, createElement, createElementNS, display, documentStyle, documentStyleSync, hide, isVisible, shadowRootStyle, shadowRootStyleSync, show, styleInject, toggle, updateElement, visible };
+export { Color, HTMLHarmonyAccordionElement, HTMLHarmonyColorPickerElement, HTMLHarmonyContextMenuElement, HTMLHarmonyCopyElement, HTMLHarmonyLabelPropertyElement, HTMLHarmonyPaletteElement, HTMLHarmonyPanelElement, HTMLHarmonyRadioElement, HTMLHarmonySelectElement, HTMLHarmonySlideshowElement, HTMLHarmonySwitchElement, HTMLHarmonyTabElement, HTMLHarmonyTabGroupElement, HTMLHarmonyToggleButtonElement, I18n, createElement, createElementNS, display, documentStyle, documentStyleSync, hide, isVisible, shadowRootStyle, shadowRootStyleSync, show, styleInject, toggle, updateElement, visible };
