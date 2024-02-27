@@ -55,7 +55,7 @@ export class HTMLHarmonyColorPickerElement extends HTMLElement {
 			}),
 			events: {
 				mousedown: event => {
-					this.#updateSatLum(event.offsetX / this.#htmlMainPicker.offsetWidth, event.offsetY / this.#htmlMainPicker.offsetHeight);
+					this.#updateSatLum(event.offsetX / this.#htmlMainPicker.offsetWidth, 1 - (event.offsetY / this.#htmlMainPicker.offsetHeight));
 					this.#handleMouseDown(event, this.#htmlMainSelector);
 				},
 			},
@@ -143,7 +143,7 @@ export class HTMLHarmonyColorPickerElement extends HTMLElement {
 		this.#htmlAlphaSelector.style.top = `${100 - this.#color.alpha * 100}%`;
 
 		this.#htmlMainSelector.style.left = `${sat * 100}%`;
-		this.#htmlMainSelector.style.top = `${lum * 100}%`;;
+		this.#htmlMainSelector.style.top = `${100 - lum * 100}%`;;
 	}
 
 	getColor() {
@@ -175,7 +175,7 @@ export class HTMLHarmonyColorPickerElement extends HTMLElement {
 			case this.#htmlMainSelector:
 				const sat = Math.max(Math.min((pageX + this.#shiftX) / this.#htmlMainPicker.offsetWidth, 1), 0);
 				const lum = Math.max(Math.min((pageY + this.#shiftY) / this.#htmlMainPicker.offsetHeight, 1), 0);
-				this.#updateSatLum(sat, lum);
+				this.#updateSatLum(sat, 1 - lum);
 				break;
 			case this.#htmlAlphaSelector:
 				const alpha = Math.max(Math.min((pageY + this.#shiftY) / this.#htmlAlphaPicker.offsetHeight, 1), 0);

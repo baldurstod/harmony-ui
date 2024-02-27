@@ -652,6 +652,10 @@ class Color {
 		return rgbToHsl(this.#rgba[0], this.#rgba[1], this.#rgba[2])[0];
 	}
 
+	getHsl() {
+		return rgbToHsl(this.#rgba[0], this.#rgba[1], this.#rgba[2]);
+	}
+
 	getRgba() {
 		return this.#rgba;
 	}
@@ -698,6 +702,7 @@ class HTMLHarmonyColorPickerElement extends HTMLElement {
 	#htmlHuePicker;
 	#htmlHueSelector;
 	#htmlMainPicker;
+	#htmlMainSelector;
 	#htmlAlphaPicker;
 	#htmlAlphaSelector;
 	#htmlInput;
@@ -720,28 +725,29 @@ class HTMLHarmonyColorPickerElement extends HTMLElement {
 				id: 'hue-selector',
 				class:'selector',
 				events: {
-					mousedown: event => {
-						this.#dragElement = event.currentTarget;
-						this.#shiftX = this.#htmlHueSelector.offsetLeft;
-						this.#shiftY = this.#htmlHueSelector.offsetTop;
-						this.#pageX = event.pageX;
-						this.#pageY = event.pageY;
-						event.stopPropagation();
-					},
+					mousedown: event => this.#handleMouseDown(event),
 				},
 			}),
 			events: {
-				mousedown: event => this.#updateHue(event.offsetX / this.#htmlHuePicker.offsetWidth),
+				mousedown: event => {
+					this.#updateHue(event.offsetX / this.#htmlHuePicker.offsetWidth);
+					this.#handleMouseDown(event, this.#htmlHueSelector);
+				},
 			},
 		});
 		this.#htmlMainPicker = createElement('div', {
 			id: 'main-picker',
+			child: this.#htmlMainSelector = createElement('div', {
+				id: 'main-selector',
+				class:'selector',
+				events: {
+					mousedown: event => this.#handleMouseDown(event),
+				},
+			}),
 			events: {
-				click: event => this.#updateLumSat(event),
 				mousedown: event => {
-					this.#dragElement = event.target;
-					//this.#shiftX = event.offsetX - this.#htmlHueSelector.getBoundingClientRect().left;
-					//this.#shiftY = event.offsetY - this.#htmlHueSelector.getBoundingClientRect().top;
+					this.#updateSatLum(event.offsetX / this.#htmlMainPicker.offsetWidth, 1 - (event.offsetY / this.#htmlMainPicker.offsetHeight));
+					this.#handleMouseDown(event, this.#htmlMainSelector);
 				},
 			},
 		});
@@ -752,18 +758,14 @@ class HTMLHarmonyColorPickerElement extends HTMLElement {
 				id: 'alpha-selector',
 				class:'selector',
 				events: {
-					mousedown: event => {
-						this.#dragElement = event.currentTarget;
-						this.#shiftX = this.#htmlAlphaSelector.offsetLeft;
-						this.#shiftY = this.#htmlAlphaSelector.offsetTop;
-						this.#pageX = event.pageX;
-						this.#pageY = event.pageY;
-						event.stopPropagation();
-					},
+					mousedown: event => this.#handleMouseDown(event),
 				},
 			}),
 			events: {
-				mousedown: event => this.#updateAlpha(1 - (event.offsetY / this.#htmlAlphaPicker.offsetHeight)),
+				mousedown: event => {
+					this.#updateAlpha(1 - (event.offsetY / this.#htmlAlphaPicker.offsetHeight));
+					this.#handleMouseDown(event, this.#htmlAlphaSelector);
+				},
 			},
 		});
 		this.#htmlInput = createElement('input', { id: 'input' });
@@ -786,9 +788,9 @@ class HTMLHarmonyColorPickerElement extends HTMLElement {
 		this.#colorChanged();
 	}
 
-	#updateLumSat(event) {
-		const sat = event.offsetX / event.target.offsetWidth;
-		const lum = 1 - event.offsetY / event.target.offsetHeight;
+	#updateSatLum(sat, lum) {
+		/*const sat = event.offsetX / event.target.offsetWidth;
+		const lum = 1 - event.offsetY / event.target.offsetHeight;*/
 		this.#color.setSatLum(sat, lum);
 		this.#update();
 		this.#colorChanged();
@@ -815,7 +817,10 @@ class HTMLHarmonyColorPickerElement extends HTMLElement {
 		const red = this.#color.red * 255;
 		const green = this.#color.green * 255;
 		const blue = this.#color.blue * 255;
-		const hue = this.#color.getHue();
+		const hsl = this.#color.getHsl();
+		const hue = hsl[0];
+		const sat = hsl[1];
+		const lum = hsl[2];
 		this.#htmlAlphaPicker.style = `--foreground-layer: linear-gradient(rgb(${red} ${green} ${blue} / 1), rgb(${red} ${green} ${blue} / 0));`;
 
 		// Note: As of today (feb 2024) the css image() function is not yet supported by any browser. We resort to use a constant linear gradient
@@ -827,7 +832,9 @@ class HTMLHarmonyColorPickerElement extends HTMLElement {
 
 		this.#htmlHueSelector.style.left = `${hue * 100}%`;
 		this.#htmlAlphaSelector.style.top = `${100 - this.#color.alpha * 100}%`;
-	}
+
+		this.#htmlMainSelector.style.left = `${sat * 100}%`;
+		this.#htmlMainSelector.style.top = `${100 - lum * 100}%`;	}
 
 	getColor() {
 		return this.#color;
@@ -835,6 +842,15 @@ class HTMLHarmonyColorPickerElement extends HTMLElement {
 
 	setColor() {
 		this.#update();
+	}
+
+	#handleMouseDown(event, selector) {
+		this.#dragElement = selector ?? event.currentTarget;
+		this.#shiftX = (selector ?? event.currentTarget).offsetLeft;
+		this.#shiftY = (selector ?? event.currentTarget).offsetTop;
+		this.#pageX = event.pageX;
+		this.#pageY = event.pageY;
+		event.stopPropagation();
 	}
 
 	#handleMouseMove(event) {
@@ -846,9 +862,11 @@ class HTMLHarmonyColorPickerElement extends HTMLElement {
 				const hue = Math.max(Math.min((pageX + this.#shiftX) / this.#htmlHuePicker.offsetWidth, 1), 0);
 				this.#updateHue(hue);
 				break;
-			/*case this.#htmlMainPicker:
-				this.#updateLumSat(event.offsetX - this.#shiftX, event.offsetY - this.#shiftY);
-				break;*/
+			case this.#htmlMainSelector:
+				const sat = Math.max(Math.min((pageX + this.#shiftX) / this.#htmlMainPicker.offsetWidth, 1), 0);
+				const lum = Math.max(Math.min((pageY + this.#shiftY) / this.#htmlMainPicker.offsetHeight, 1), 0);
+				this.#updateSatLum(sat, 1 - lum);
+				break;
 			case this.#htmlAlphaSelector:
 				const alpha = Math.max(Math.min((pageY + this.#shiftY) / this.#htmlAlphaPicker.offsetHeight, 1), 0);
 				this.#updateAlpha(1 - alpha);
