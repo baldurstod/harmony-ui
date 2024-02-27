@@ -65,12 +65,14 @@ export class HTMLHarmonyColorPickerElement extends HTMLElement {
 		const percent = 1 - event.offsetY / event.target.offsetHeight;
 		this.#color.alpha = percent;
 		this.#update();
+		this.#colorChanged();
 	}
 
 	#updateHue(event) {
 		const percent = event.offsetX / event.target.offsetWidth;
 		this.#color.setHue(percent);
 		this.#update();
+		this.#colorChanged();
 	}
 
 	#updateLumSat(event) {
@@ -78,6 +80,11 @@ export class HTMLHarmonyColorPickerElement extends HTMLElement {
 		const lum = 1 - event.offsetY / event.target.offsetHeight;
 		this.#color.setSatLum(sat, lum);
 		this.#update();
+		this.#colorChanged();
+	}
+
+	#colorChanged() {
+		this.dispatchEvent(new CustomEvent('change', { detail: { hex: this.#color.getHex(), rgba: this.#color.getRgba() } }));
 	}
 
 	connectedCallback() {
@@ -105,6 +112,10 @@ export class HTMLHarmonyColorPickerElement extends HTMLElement {
 		this.#htmlMainPicker.style = `color: hsl(${this.#color.getHue()}turn 100% 50%)`;
 
 		this.#htmlInput.value = this.#color.getHex();
+	}
+
+	getColor() {
+		return this.#color;
 	}
 
 	setColor() {
