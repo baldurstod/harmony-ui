@@ -22,12 +22,14 @@
 }
 
 #hue-picker{
+	position: relative;
 	/*flex-basis: var(--harmony-color-picker-shadow-width);*/
-	height: 1rem;
+	padding: 1rem;
 	background-image: linear-gradient(90deg, red, yellow, lime, cyan, blue, magenta, red);
 	grid-area: h;
 }
 #main-picker{
+	position: relative;
 	grid-area: m;
 	width: var(--harmony-color-picker-shadow-width);
 	height: var(--harmony-color-picker-shadow-height);
@@ -35,8 +37,9 @@
 	background-color: currentColor;
 }
 #alpha-picker{
+	position: relative;
 	/*width: 100%;*/
-	width: 1.5rem;
+	padding: 1rem;
 	grid-area: a;
 }
 #input{
@@ -53,4 +56,17 @@
 	background: var(--foreground-layer),
 				linear-gradient(45deg, lightgrey 25%, transparent 25%, transparent 75%, lightgrey 75%) 0 0 / 1rem 1rem,
 				linear-gradient(45deg, lightgrey 25%, white 25%, white 75%, lightgrey 75%) 0.5em 0.5em / 1em 1em;
+}
+.selector{
+	position: absolute;
+	border: 2px solid #fff;
+	border-radius: 100%;
+	box-shadow: 0 0 3px 1px #67b9ff;
+	transform: translate(-50%, -50%);
+	cursor: pointer;
+	display: block;
+	background: none;
+	padding: 1rem;
+	border-radius: 2px;
+	/*pointer-events: none;*/
 }
