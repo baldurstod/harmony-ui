@@ -33,14 +33,7 @@ export class HTMLHarmonyColorPickerElement extends HTMLElement {
 				id: 'hue-selector',
 				class:'selector',
 				events: {
-					mousedown: event => {
-						this.#dragElement = event.currentTarget;
-						this.#shiftX = this.#htmlHueSelector.offsetLeft;
-						this.#shiftY = this.#htmlHueSelector.offsetTop;
-						this.#pageX = event.pageX;
-						this.#pageY = event.pageY;
-						event.stopPropagation();
-					},
+					mousedown: event => this.#handleMouseDown(event),
 				},
 			}),
 			events: {
@@ -51,11 +44,7 @@ export class HTMLHarmonyColorPickerElement extends HTMLElement {
 			id: 'main-picker',
 			events: {
 				click: event => this.#updateLumSat(event),
-				mousedown: event => {
-					this.#dragElement = event.target;
-					//this.#shiftX = event.offsetX - this.#htmlHueSelector.getBoundingClientRect().left;
-					//this.#shiftY = event.offsetY - this.#htmlHueSelector.getBoundingClientRect().top;
-				},
+				mousedown: event => this.#handleMouseDown(event),
 			},
 		});
 		this.#htmlAlphaPicker = createElement('div', {
@@ -65,14 +54,7 @@ export class HTMLHarmonyColorPickerElement extends HTMLElement {
 				id: 'alpha-selector',
 				class:'selector',
 				events: {
-					mousedown: event => {
-						this.#dragElement = event.currentTarget;
-						this.#shiftX = this.#htmlAlphaSelector.offsetLeft;
-						this.#shiftY = this.#htmlAlphaSelector.offsetTop;
-						this.#pageX = event.pageX;
-						this.#pageY = event.pageY;
-						event.stopPropagation();
-					},
+					mousedown: event => this.#handleMouseDown(event),
 				},
 			}),
 			events: {
@@ -148,6 +130,15 @@ export class HTMLHarmonyColorPickerElement extends HTMLElement {
 
 	setColor() {
 		this.#update();
+	}
+
+	#handleMouseDown(event) {
+		this.#dragElement = event.currentTarget;
+		this.#shiftX = event.currentTarget.offsetLeft;
+		this.#shiftY = event.currentTarget.offsetTop;
+		this.#pageX = event.pageX;
+		this.#pageY = event.pageY;
+		event.stopPropagation();
 	}
 
 	#handleMouseMove(event) {
