@@ -112,6 +112,10 @@ export class Color {
 		return rgbToHsl(this.#rgba[0], this.#rgba[1], this.#rgba[2])[0];
 	}
 
+	getHsl() {
+		return rgbToHsl(this.#rgba[0], this.#rgba[1], this.#rgba[2]);
+	}
+
 	getRgba() {
 		return this.#rgba;
 	}
