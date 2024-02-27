@@ -38,7 +38,10 @@ export class HTMLHarmonyColorPickerElement extends HTMLElement {
 				},
 			}),
 			events: {
-				mousedown: event => this.#updateHue(event.offsetX / this.#htmlHuePicker.offsetWidth),
+				mousedown: event => {
+					this.#updateHue(event.offsetX / this.#htmlHuePicker.offsetWidth);
+					this.#handleMouseDown(event, this.#htmlHueSelector);
+				},
 			},
 		});
 		this.#htmlMainPicker = createElement('div', {
@@ -51,7 +54,10 @@ export class HTMLHarmonyColorPickerElement extends HTMLElement {
 				},
 			}),
 			events: {
-				mousedown: event => this.#updateSatLum(event.offsetX / this.#htmlMainPicker.offsetWidth, event.offsetY / this.#htmlMainPicker.offsetHeight),
+				mousedown: event => {
+					this.#updateSatLum(event.offsetX / this.#htmlMainPicker.offsetWidth, event.offsetY / this.#htmlMainPicker.offsetHeight);
+					this.#handleMouseDown(event, this.#htmlMainSelector);
+				},
 			},
 		});
 		this.#htmlAlphaPicker = createElement('div', {
@@ -65,7 +71,10 @@ export class HTMLHarmonyColorPickerElement extends HTMLElement {
 				},
 			}),
 			events: {
-				mousedown: event => this.#updateAlpha(1 - (event.offsetY / this.#htmlAlphaPicker.offsetHeight)),
+				mousedown: event => {
+					this.#updateAlpha(1 - (event.offsetY / this.#htmlAlphaPicker.offsetHeight));
+					this.#handleMouseDown(event, this.#htmlAlphaSelector);
+				},
 			},
 		});
 		this.#htmlInput = createElement('input', { id: 'input' });
@@ -145,10 +154,10 @@ export class HTMLHarmonyColorPickerElement extends HTMLElement {
 		this.#update();
 	}
 
-	#handleMouseDown(event) {
-		this.#dragElement = event.currentTarget;
-		this.#shiftX = event.currentTarget.offsetLeft;
-		this.#shiftY = event.currentTarget.offsetTop;
+	#handleMouseDown(event, selector) {
+		this.#dragElement = selector ?? event.currentTarget;
+		this.#shiftX = (selector ?? event.currentTarget).offsetLeft;
+		this.#shiftY = (selector ?? event.currentTarget).offsetTop;
 		this.#pageX = event.pageX;
 		this.#pageY = event.pageY;
 		event.stopPropagation();
