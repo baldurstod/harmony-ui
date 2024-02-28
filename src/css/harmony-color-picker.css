@@ -5,7 +5,7 @@
 
 	--foreground-layer: none;
 
-    background-color: var(--main-bg-color-bright);
+	background-color: var(--main-bg-color-bright);
 	padding: var(--harmony-color-picker-shadow-gap);
 	box-sizing: border-box;
 	display: inline-grid;
@@ -18,7 +18,7 @@
 	height: var(--harmony-color-picker-height, 10rem);*/
 	/*display: flex;
 	flex-wrap: wrap;*/
-	grid-template-areas: "h h h" "m m a" "i s o";
+	grid-template-areas: "h h h h" "m m m a" "i s o o";
 }
 
 #hue-picker{
@@ -27,6 +27,7 @@
 	padding: 1rem;
 	background-image: linear-gradient(90deg, red, yellow, lime, cyan, blue, magenta, red);
 	grid-area: h;
+	height: 0;
 }
 #main-picker{
 	position: relative;
@@ -38,16 +39,30 @@
 }
 #alpha-picker{
 	position: relative;
-	/*width: 100%;*/
 	padding: 1rem;
 	grid-area: a;
+	width: 0;
+}
+#hue-selector{
+	padding: 1rem 0.2rem;
+}
+#alpha-selector{
+	padding: 0.2rem 1rem;
+}
+#main-selector{
+	padding: 0.5rem;
+	border-radius: 50%;
 }
 #input{
+	width: calc(var(--harmony-color-picker-shadow-width) * 0.6);
 	grid-area: i;
 	font-family: monospace;
+	font-size: 1.5rem;
+	box-sizing: border-box;
 }
 #sample{
 	grid-area: s;
+	width: calc(var(--harmony-color-picker-shadow-width) * 0.25);
 }
 #ok{
 	grid-area: o;
@@ -66,7 +81,5 @@
 	cursor: pointer;
 	display: block;
 	background: none;
-	padding: 1rem;
 	border-radius: 2px;
-	/*pointer-events: none;*/
 }

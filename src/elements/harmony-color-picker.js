@@ -82,7 +82,9 @@ export class HTMLHarmonyColorPickerElement extends HTMLElement {
 			id: 'sample',
 			class:'alpha-background',
 		});
-		this.#htmlOk = createElement('button', { id: 'ok' });
+		this.#htmlOk = createElement('button', { id: 'ok',
+			i18n: '#ok',
+		});
 	}
 
 	#updateAlpha(alpha) {
