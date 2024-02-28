@@ -152,7 +152,8 @@ export class HTMLHarmonyColorPickerElement extends HTMLElement {
 		return this.#color;
 	}
 
-	setColor() {
+	setHex(hex) {
+		this.#color.setHex(hex);
 		this.#update();
 	}
 
