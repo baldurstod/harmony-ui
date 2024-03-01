@@ -40,7 +40,6 @@ export class HTMLHarmonyRadioElement extends HTMLElement {
 	}
 
 	#initButton(htmlButton) {
-		this.#shadowRoot.append(htmlButton);
 		this.#buttons.set(htmlButton.value, htmlButton);
 		if (!this.#buttons2.has(htmlButton)) {
 			htmlButton.addEventListener('click', () => this.select(htmlButton.value, !this.#multiple || !htmlButton.hasAttribute('selected')));
@@ -49,6 +48,14 @@ export class HTMLHarmonyRadioElement extends HTMLElement {
 
 		if (this.#selected.has(htmlButton.value) || htmlButton.hasAttribute('selected')) {
 			this.select(htmlButton.value, true);
+		}
+	}
+
+	append(...params) {
+		for (const param of params) {
+			this.#initButton(param);
+			this.#shadowRoot.append(param);
+			I18n.updateElement(param);
 		}
 	}
 
