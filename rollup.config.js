@@ -44,7 +44,7 @@ function writeElements(isBrowser) {
 	for (const element of elements) {
 		writeElement(element.name, element.class, element.injectCSS, isBrowser);
 	}
-	writeGlobal(true);
+	writeGlobal(isBrowser);
 }
 
 export default [
