@@ -19,6 +19,7 @@ export class I18n {
 				this.addTranslation(translation);
 			}
 		}
+		this.i18n();
 	}
 
 	static addTranslation(translation) {
