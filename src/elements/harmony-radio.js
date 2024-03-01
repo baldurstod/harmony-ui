@@ -128,11 +128,13 @@ export class HTMLHarmonyRadioElement extends HTMLElement {
 				break;
 			case 'multiple':
 				this.#multiple = true;
+			case 'value':
+				this.select(newValue, true);
 				break;
 		}
 	}
 
 	static get observedAttributes() {
-		return ['data-label', 'data-i18n', 'disabled', 'multiple'];
+		return ['data-label', 'data-i18n', 'disabled', 'multiple', 'value'];
 	}
 }
