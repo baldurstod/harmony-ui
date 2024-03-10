@@ -1,16 +1,13 @@
+import { shadowRootStyle } from "./harmony-css";
+
 export function createElement(tagName, options) {
 	let element = document.createElement(tagName);
-	createElementOptions(element, options);
-	if (options?.elementCreated) {
-		options.elementCreated(element);
-	}
-	return element;
+	return createElementOptions(element, options);
 }
 
 export function createElementNS(namespaceURI, tagName, options) {
 	let element = document.createElementNS(namespaceURI, tagName);
-	createElementOptions(element, options);
-	return element;
+	return createElementOptions(element, options);
 }
 
 export function updateElement(element, options) {
@@ -19,7 +16,12 @@ export function updateElement(element, options) {
 }
 
 function createElementOptions(element, options) {
+	let shadowRoot;
 	if (options) {
+		if (options['attach-shadow']) {
+			shadowRoot = element.attachShadow(options['attach-shadow']);
+		}
+
 		for (let optionName in options) {
 			let optionValue = options[optionName];
 			switch (optionName) {
@@ -56,13 +58,13 @@ function createElementOptions(element, options) {
 					break;
 				case 'child':
 					if (optionValue) {
-						element.append(optionValue);
+						(element ?? shadowRoot).append(optionValue.host ?? optionValue);
 					}
 					break;
 				case 'childs':
 					optionValue.forEach(entry => {
 						if (entry !== null && entry !== undefined) {
-							element.append(entry);
+							(element ?? shadowRoot).append(entry.host ?? entry);
 						}
 					});
 					break;
@@ -90,11 +92,11 @@ function createElementOptions(element, options) {
 					element.setAttribute(optionName, optionValue);
 					break;
 				case 'adopt-style':
-					adoptStyleSheet(element, optionValue);
+					adoptStyleSheet(shadowRoot ?? element, optionValue);
 					break;
 				case 'adopt-styles':
 					optionValue.forEach(entry => {
-						adoptStyleSheet(element, entry);
+						adoptStyleSheet(shadowRoot ?? element, entry);
 					});
 					break;
 					break;
@@ -107,14 +109,22 @@ function createElementOptions(element, options) {
 					break;
 			}
 		}
+
+		options.elementCreated?.(element, shadowRoot);
 	}
-	return element;
+	return shadowRoot ?? element;
 }
 
 async function adoptStyleSheet(element, cssText) {
 	const sheet = new CSSStyleSheet;
 	await sheet.replace(cssText);
-	element.adoptStyleSheet?.(sheet);
+	if (element.adoptStyleSheet) {
+		element.adoptStyleSheet(sheet);
+	} else {
+		if (element.adoptedStyleSheets) {
+			element.adoptedStyleSheets.push(sheet);
+		}
+	}
 }
 
 export function display(htmlElement, visible) {

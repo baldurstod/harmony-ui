@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Test HTML</title>
+		<link rel="stylesheet" type="text/css" href="./assets/css/examples.css" />
+	</head>
+	<body>
+	</body>
+	<script type="module">
+		import { createElement } from '../dist/harmony-ui.browser.js';
+
+
+		createElement('div', {
+			id: 'main-node',
+			parent: document.body,
+			'attach-shadow': { mode: 'closed' },
+			'adopt-style': ":host{width:50px;height:50px;background-color:blue;}",
+			childs: [
+				createElement('div', { id: 'empty-child' }),
+				createElement('div', { 'attach-shadow': { mode: 'closed' }, id: 'shadow-child' }),
+				createElement('div', {
+					id: 'nested-shadow',
+					'attach-shadow': { mode: 'closed' },
+					child: createElement('div', {
+						id: 'nested-shadow-child',
+						'attach-shadow': { mode: 'closed' }
+					}),
+				}),
+				createElement('div'),
+				createElement('div'),
+			],
+		});
+	</script>
+</html>
