@@ -36,8 +36,8 @@ function updateElement(element, options) {
 function createElementOptions(element, options) {
 	let shadowRoot;
 	if (options) {
-		if (options['attach-shadow']) {
-			shadowRoot = element.attachShadow(options['attach-shadow']);
+		if (options.attachShadow) {
+			shadowRoot = element.attachShadow(options.attachShadow);
 		}
 
 		for (let optionName in options) {
@@ -109,10 +109,10 @@ function createElementOptions(element, options) {
 				case 'list':
 					element.setAttribute(optionName, optionValue);
 					break;
-				case 'adopt-style':
+				case 'adoptStyle':
 					adoptStyleSheet(shadowRoot ?? element, optionValue);
 					break;
-				case 'adopt-styles':
+				case 'adoptStyles':
 					optionValue.forEach(entry => {
 						adoptStyleSheet(shadowRoot ?? element, entry);
 					});
