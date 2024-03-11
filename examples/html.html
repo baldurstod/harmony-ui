@@ -13,17 +13,17 @@
 		createElement('div', {
 			id: 'main-node',
 			parent: document.body,
-			'attach-shadow': { mode: 'closed' },
-			'adopt-style': ":host{width:50px;height:50px;background-color:blue;}",
+			attachShadow: { mode: 'closed' },
+			adoptStyle: ":host{width:50px;height:50px;background-color:blue;}",
 			childs: [
 				createElement('div', { id: 'empty-child' }),
-				createElement('div', { 'attach-shadow': { mode: 'closed' }, id: 'shadow-child' }),
+				createElement('div', { 'attachShadow': { mode: 'closed' }, id: 'shadow-child' }),
 				createElement('div', {
 					id: 'nested-shadow',
-					'attach-shadow': { mode: 'closed' },
+					'attachShadow': { mode: 'closed' },
 					child: createElement('div', {
 						id: 'nested-shadow-child',
-						'attach-shadow': { mode: 'closed' }
+						'attachShadow': { mode: 'closed' }
 					}),
 				}),
 				createElement('div'),

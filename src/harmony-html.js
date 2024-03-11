@@ -58,13 +58,13 @@ function createElementOptions(element, options) {
 					break;
 				case 'child':
 					if (optionValue) {
-						(element ?? shadowRoot).append(optionValue.host ?? optionValue);
+						(shadowRoot ?? element).append(optionValue.host ?? optionValue);
 					}
 					break;
 				case 'childs':
 					optionValue.forEach(entry => {
 						if (entry !== null && entry !== undefined) {
-							(element ?? shadowRoot).append(entry.host ?? entry);
+							(shadowRoot ?? element).append(entry.host ?? entry);
 						}
 					});
 					break;
