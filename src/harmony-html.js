@@ -1,5 +1,3 @@
-import { shadowRootStyle } from "./harmony-css";
-
 export function createElement(tagName, options) {
 	let element = document.createElement(tagName);
 	return createElementOptions(element, options);
