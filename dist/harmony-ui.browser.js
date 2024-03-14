@@ -147,10 +147,12 @@ async function adoptStyleSheet(element, cssText) {
 function display(htmlElement, visible) {
 	if (htmlElement == undefined) return;
 
+	const element = htmlElement.host ?? htmlElement;
+
 	if (visible) {
-		htmlElement.style.display = '';
+		element.style.display = '';
 	} else {
-		htmlElement.style.display = 'none';
+		element.style.display = 'none';
 	}
 }
 
