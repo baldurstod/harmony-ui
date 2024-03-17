@@ -1818,6 +1818,8 @@ class HTMLHarmonyRadioElement extends HTMLElement {
 	}
 }
 
+var slideshowCSS = ":host{\n\toverflow: hidden;\n\tdisplay: flex;\n\talign-items: center;\n\tjustify-content: center;\n\tflex-direction: column;\n\tposition: relative;\n}\n.image{\n\tposition: relative;\n\tflex-shrink: 0;\n}\n.images{\n\toverflow: hidden;\n\tflex: 1;\n\twidth: 100%;\n}\n.images-outer{\n\toverflow: hidden;\n\tmargin: auto;\n}\n.images-inner{\n\tdisplay: flex;\n\tposition: relative;\n\twidth: 100%;\n\theight: 100%;\n}\n:host(.dynamic) .images-inner{\n\ttransition: all 0.5s ease 0s;\n}\n\n/* Controls */\n.controls{\n\tposition: absolute;\n\tz-index: 1000;\n\topacity: 0;\n\twidth: 100%;\n\theight: 100%;\n\tdisplay: none;\n}\n:host(.dynamic) .controls{\n\tdisplay: unset;\n}\n\n.controls > div{\n\tposition: absolute;\n\n\tbackground-size: 100%;\n\tbackground-repeat: no-repeat;\n\tbackground-position: center;\n\tpointer-events: all;\n\tcursor: pointer;\n}\n\n.previous-image, .next-image{\n\ttop: calc(50% - 24px);\n\twidth: 48px;\n\theight: 48px;\n\tbackground-image: url(\"data:image/svg+xml,%3C%3Fxml version='1.0'%3F%3E%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath style='fill:%23ffffff;stroke:%23000000;stroke-width:10;' d='M 360,100 300,30 30,256 300,482 360,412 175,256 Z'/%3E%3C/svg%3E%0A\");\n\n}\n.previous-image{\n\tleft: 10px;\n}\n.next-image{\n\tright: 10px;\n\ttransform: scaleX(-1);\n}\n.play, .pause{\n\tbottom: 10px;\n\tleft: 10px;\n\twidth: 25px;\n\theight: 25px;\n}\n.play{\n\tbackground-image: url(\"data:image/svg+xml,%3C%3Fxml version='1.0'%3F%3E%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath style='fill:%23ffffff;stroke:%23000000;stroke-width:40;' d='M20 20 L470 256 L20 492 Z'/%3E%3C/svg%3E%0A\");\n}\n.pause{\n\tright: 0px;\n\tbackground-image: url(\"data:image/svg+xml,%3C%3Fxml version='1.0'%3F%3E%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cg style='fill:%23ffffff;stroke:%23000000;stroke-width:30;'%3E%3Crect width='140' height='452' x='30' y='30' /%3E%3Crect width='140' height='452' x='342' y='30' /%3E%3C/g%3E%3C/svg%3E%0A\");\n}\n\n/* thumbnails */\n.thumbnails{\n\twidth: 100%;\n\t/*background-color: red;*/\n\tflex: 0;\n\tdisplay: flex;\n\tjustify-content: center;\n}\n:host(.dynamic) .thumbnails{\n\tdisplay: none;\n}\n.thumbnails > img{\n\tobject-fit: contain;\n\theight: 80px;\n\tcursor: pointer;\n\tmargin: 3px;\n}\n\n.zoom{\n\tposition: fixed;\n\tpointer-events: none;\n\t/*transform: scale(3);*/\n\twidth: 100%;\n\theight: 100%;\n}\n\n.zoom > img{\n\t/*transform: scale(3);*/\n\twidth: 100%;\n\tposition: relative;\n\twidth: 1500px;\n}\n";
+
 const resizeCallback = (entries, observer) => {
 	entries.forEach(entry => {
 		entry.target.onResized(entry);
@@ -1828,76 +1830,103 @@ const DEFAULT_AUTO_PLAY_DELAY = 3000;
 const DEFAULT_SCROLL_TRANSITION_TIME = 0.5;
 
 class HTMLHarmonySlideshowElement extends HTMLElement {
+	#shadowRoot;
 	#activeImage;
-	#currentImage;
-	#doOnce;
+	#currentImage = 0;
+	#doOnce = true;
 	#doOnceOptions;
-	#dynamic;
+	#dynamic = true;
 	#htmlControls;
 	#htmlImages;
 	#htmlImagesOuter;
 	#htmlImagesInner;
-	#htmlNextImage;
 	#htmlPauseButton;
 	#htmlPlayButton;
-	#htmlPreviousImage;
 	#htmlThumbnails;
 	#htmlZoomContainer;
-	#images;
-	#imgSet;
+	#images = [];
+	#imgSet = new Set();
 	#htmlZoomImage;
 	#resizeObserver = new ResizeObserver(resizeCallback);
 
 	constructor(options) {
 		super();
-		this.#images = [];
-		this.#dynamic = true;
-		this.#imgSet = new Set();
-		this.#currentImage = 0;
-		this.#activeImage = null;
-		this.#doOnce = true;
 		this.#doOnceOptions = options;
 		this.#initObserver();
 	}
 
 	#initHtml() {
+		this.#shadowRoot = this.attachShadow({ mode: 'closed' });
+		I18n.observeElement(this.#shadowRoot);
+		shadowRootStyleSync(this.#shadowRoot, slideshowCSS);// sync version is used to ensure style is loaded before computation occurs
 		if (this.#dynamic) {
-			this.classList.add('harmony-slideshow-dynamic');
+			this.classList.add('dynamic');
 		}
-		this.#htmlImages = createElement('div', {class:'harmony-slideshow-images'});
-		this.#htmlImagesOuter = createElement('div', {class:'harmony-slideshow-images-outer'});
-		this.#htmlImagesInner = createElement('div', {class:'harmony-slideshow-images-inner'});
-		this.#htmlImagesInner.addEventListener('mouseover', (event) => this.#zoomImage(event));
-		this.#htmlImagesInner.addEventListener('mousemove', (event) => this.#zoomImage(event));
-		this.#htmlImagesInner.addEventListener('mouseout', (event) => this.#zoomImage(event));
-		this.#htmlControls = createElement('div', {class:'harmony-slideshow-controls'});
-		this.#htmlControls.addEventListener('mouseenter', (event) => this.#htmlControls.style.opacity = 'unset');
-		this.#htmlControls.addEventListener('mouseleave', (event) => this.#htmlControls.style.opacity = '0');
+		this.#htmlImages = createElement('div', {
+			class: 'images',
+			parent: this.#shadowRoot,
+			child: this.#htmlImagesOuter = createElement('div', {
+				class: 'images-outer',
+				child: this.#htmlImagesInner = createElement('div', {
+					class: 'images-inner',
+				}),
+				events: {
+					mouseover: event => this.#zoomImage(event),
+					mousemove: event => this.#zoomImage(event),
+					mouseout: event => this.#zoomImage(event),
+				},
+			}),
+
+		});
+
+		createElement('div', {
+			class: 'controls',
+			parent: this.#shadowRoot,
+			childs: [
+				createElement('div', {
+					class: 'previous-image',
+					events: {
+						click: event => {this.previousImage();this.setAutoPlay(false);},
+					},
+				}),
+				createElement('div', {
+					class: 'next-image',
+					events: {
+						click: event => {this.nextImage();this.setAutoPlay(false);},
+					},
+				}),
+				this.#htmlPlayButton = createElement('div', {
+					class: 'play',
+					events: {
+						click: () => this.play(true),
+					},
+				}),
+				this.#htmlPauseButton = createElement('div', {
+					class: 'pause',
+					events: {
+						click: () => this.play(false),
+					},
+				}),
+			],
+			events: {
+				mouseenter: event => event.target.style.opacity = 'unset',
+				mouseleave: event => event.target.style.opacity = '0',
+			},
+		});
 
 		this.#htmlZoomImage = createElement('img');
-		this.#htmlZoomContainer = createElement('div', {class:'harmony-slideshow-zoom', childs:[this.#htmlZoomImage]});
-		document.body.append(this.#htmlZoomContainer);
+		this.#htmlZoomContainer = createElement('div', {
+			class: 'zoom',
+			parent: document.body,
+			childs: [
+				this.#htmlZoomImage,
+			]
+		});
 
-		this.#htmlThumbnails = createElement('div', {class:'harmony-slideshow-thumbnails'});
-		display(this.#htmlThumbnails, !this.#dynamic);
-		display(this.#htmlControls, this.#dynamic);
-
-		this.#htmlPreviousImage = createElement('div', {class:'harmony-slideshow-previous-image'});
-		this.#htmlNextImage = createElement('div', {class:'harmony-slideshow-next-image'});
-
-		this.#htmlPreviousImage.addEventListener('click', (event) => {this.previousImage();this.setAutoPlay(false);});
-		this.#htmlNextImage.addEventListener('click', (event) => {this.nextImage();this.setAutoPlay(false);});
-
-		this.#htmlPlayButton = createElement('div', {class:'harmony-slideshow-play'});
-		this.#htmlPauseButton = createElement('div', {class:'harmony-slideshow-pause'});
-
-		this.#htmlPlayButton.addEventListener('click', (event) => this.play(true));
-		this.#htmlPauseButton.addEventListener('click', (event) => this.play(false));
-
-		this.#htmlControls.append(this.#htmlPreviousImage, this.#htmlNextImage, this.#htmlPlayButton, this.#htmlPauseButton);
-		this.#htmlImages.append(this.#htmlImagesOuter);
-		this.#htmlImagesOuter.append(this.#htmlImagesInner);
-		this.append(this.#htmlImages, this.#htmlControls, this.#htmlThumbnails);
+		this.#htmlThumbnails = createElement('div', {
+			class: 'thumbnails',
+			parent: this.#shadowRoot,
+		});
 	}
 
 	previousImage() {
@@ -1949,12 +1978,11 @@ class HTMLHarmonySlideshowElement extends HTMLElement {
 				if (!this.#activeImage) {
 					this.active = htmlImage;
 				}
-				htmlImage.classList.add('harmony-slideshow-image');
+				htmlImage.classList.add('image');
 				htmlImage.decode().then(() => {
 					this.refresh();
 				});
 
-				//this.checkImageSize(htmlImage);
 				htmlImage.onload = () => this.checkImageSize(htmlImage);
 
 				let htmlThumbnailImage = htmlImage.cloneNode();
@@ -2030,16 +2058,14 @@ class HTMLHarmonySlideshowElement extends HTMLElement {
 
 	set dynamic(dynamic) {
 		this.#dynamic = dynamic;
-		display(this.#htmlThumbnails, !dynamic);
-		display(this.#htmlControls, dynamic);
 		if (!dynamic) {
 			this.setAutoPlay(false);
 			this.setImage(0);
 		}
 		if (dynamic) {
-			this.classList.add('harmony-slideshow-dynamic');
+			this.classList.add('dynamic');
 		} else {
-			this.classList.remove('harmony-slideshow-dynamic');
+			this.classList.remove('dynamic');
 		}
 	}
 
@@ -2065,7 +2091,7 @@ class HTMLHarmonySlideshowElement extends HTMLElement {
 		}
 	}
 
-	onResized(resizeObserverEntry) {
+	onResized() {
 		this.checkImagesSize();
 	}
 
@@ -2099,16 +2125,10 @@ class HTMLHarmonySlideshowElement extends HTMLElement {
 		let imageHeight = naturalHeight * ratio + 'px';
 		this.#htmlImagesOuter.style.width = imageWidth;
 		this.#htmlImagesOuter.style.height = imageHeight;
-		//this.#htmlImagesInner.style.transform = `scale(${1})`;
-
-		//this.#htmlControls.style.width = imageWidth;
-		//this.#htmlControls.style.height = imageHeight;
 	}
 
 	#zoomImage(event) {
 		let activeImage = this.#activeImage;
-		//console.log(event);
-		//console.log(event.offsetX, event.offsetY);
 		switch (event.type) {
 			case 'mouseover':
 				if (activeImage) {
