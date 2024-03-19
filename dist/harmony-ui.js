@@ -730,7 +730,9 @@ class HTMLHarmonyColorPickerElement extends HTMLElement {
 		document.addEventListener('mousemove', event => this.#handleMouseMove(event));
 
 		this.#shadowRoot = this.attachShadow({ mode: 'closed' });
+		shadowRootStyle(this.#shadowRoot, colorPickerCSS);
 		this.#htmlHuePicker = createElement('div', {
+			parent: this.#shadowRoot,
 			id: 'hue-picker',
 			child: this.#htmlHueSelector = createElement('div', {
 				id: 'hue-selector',
@@ -747,6 +749,7 @@ class HTMLHarmonyColorPickerElement extends HTMLElement {
 			},
 		});
 		this.#htmlMainPicker = createElement('div', {
+			parent: this.#shadowRoot,
 			id: 'main-picker',
 			child: this.#htmlMainSelector = createElement('div', {
 				id: 'main-selector',
@@ -763,6 +766,7 @@ class HTMLHarmonyColorPickerElement extends HTMLElement {
 			},
 		});
 		this.#htmlAlphaPicker = createElement('div', {
+			parent: this.#shadowRoot,
 			id: 'alpha-picker',
 			class:'alpha-background',
 			child: this.#htmlAlphaSelector = createElement('div', {
@@ -779,13 +783,24 @@ class HTMLHarmonyColorPickerElement extends HTMLElement {
 				},
 			},
 		});
-		this.#htmlInput = createElement('input', { id: 'input' });
+		this.#htmlInput = createElement('input', {
+			parent: this.#shadowRoot,
+			id: 'input',
+			events: {
+				change: () => this.#updateHex(this.#htmlInput.value),
+			}
+		});
 		this.#htmlSample = createElement('div', {
+			parent: this.#shadowRoot,
 			id: 'sample',
 			class:'alpha-background',
 		});
 		this.#htmlOk = createElement('button', { id: 'ok',
+			parent: this.#shadowRoot,
 			i18n: '#ok',
+			events: {
+				click: () => this.#updateHex(this.#htmlInput.value),
+			}
 		});
 	}
 
@@ -797,6 +812,12 @@ class HTMLHarmonyColorPickerElement extends HTMLElement {
 
 	#updateHue(hue) {
 		this.#color.setHue(hue);
+		this.#update();
+		this.#colorChanged();
+	}
+
+	#updateHex(hex) {
+		this.#color.setHex(hex);
 		this.#update();
 		this.#colorChanged();
 	}
@@ -815,8 +836,6 @@ class HTMLHarmonyColorPickerElement extends HTMLElement {
 
 	connectedCallback() {
 		if (this.#doOnce) {
-			shadowRootStyle(this.#shadowRoot, colorPickerCSS);
-			this.#shadowRoot.append(this.#htmlHuePicker, this.#htmlMainPicker, this.#htmlAlphaPicker, this.#htmlInput, this.#htmlInput, this.#htmlSample, this.#htmlOk);
 			this.#update();
 			this.#doOnce = false;
 		}
