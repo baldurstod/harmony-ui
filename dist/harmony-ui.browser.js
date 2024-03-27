@@ -2540,7 +2540,7 @@ class HTMLHarmonyTabElement extends HTMLElement {
 	}
 }
 
-var tabGroupCSS = ":host, harmony-tab-group{\n\twidth:100%;\n\theight:100%;\n\tdisplay: flex;\n\tflex-direction: column;\n\tposition: relative;\n\toverflow: hidden;\n}\n.harmony-tab-group-header{\n\tbackground-color: var(--main-bg-color-bright);\n\tdisplay: flex;\n\tflex-wrap: wrap;\n\toverflow: hidden;\n}\n.harmony-tab-group-content{\n\tflex: 1;\n\tbackground-color: var(--main-bg-color-dark);\n\toverflow: auto;\n}\n";
+var tabGroupCSS = ":host, harmony-tab-group{\n\twidth:100%;\n\theight:100%;\n\tdisplay: flex;\n\tflex-direction: column;\n\tposition: relative;\n\toverflow: hidden;\n}\n.harmony-tab-group-header{\n\tbackground-color: var(--main-bg-color-bright);\n\tdisplay: flex;\n\tflex-wrap: wrap;\n\toverflow: hidden;\n\twidth: 100%;\n}\n.harmony-tab-group-content{\n\tflex: 1;\n\tbackground-color: var(--main-bg-color-dark);\n\toverflow: auto;\n\twidth: 100%;\n}\n";
 
 var tabCSS = "harmony-tab{\n\tdisplay: block;\n\theight: 100%;\n\toverflow: auto;\n}\nharmony-tab::first-letter{\n\ttext-transform: uppercase;\n}\n.harmony-tab-label{\n\tdisplay: inline-block;\n\tbackground-color: var(--main-bg-color-bright);\n\tpadding: 10px;\n\tborder: 1px solid black;\n\tborder-top:0px;\n\t/*border-right:0px;*/\n\t/*margin-left: -1px;*/\n\tposition: relative;\n\t/*left: 1px;*/\n\tcolor: var(--main-text-color-dark2);\n\tcursor: pointer;\n\tuser-select: none;\n\tpointer-events: all;\n\tflex: 0 0;\n\ttext-align: center;\n\twhite-space: nowrap;\n}\n.harmony-tab-label.activated{\n\tbackground-color: var(--main-bg-color-dark);\n\tborder-bottom: 1px solid var(--main-bg-color-dark);\n\tborder-left: 1px solid white;\n\tz-index: 2;\n}\n";
 

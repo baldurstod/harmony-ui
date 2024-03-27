@@ -11,9 +11,11 @@
 	display: flex;
 	flex-wrap: wrap;
 	overflow: hidden;
+	width: 100%;
 }
 .harmony-tab-group-content{
 	flex: 1;
 	background-color: var(--main-bg-color-dark);
 	overflow: auto;
+	width: 100%;
 }
