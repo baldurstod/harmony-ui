@@ -128,12 +128,14 @@ async function adoptStyleSheet(element, cssText) {
 export function display(htmlElement, visible) {
 	if (htmlElement == undefined) return;
 
-	const element = htmlElement.host ?? htmlElement;
+	if (htmlElement instanceof ShadowRoot) {
+		htmlElement = htmlElement.host;
+	}
 
 	if (visible) {
-		element.style.display = '';
+		htmlElement.style.display = '';
 	} else {
-		element.style.display = 'none';
+		htmlElement.style.display = 'none';
 	}
 }
 
