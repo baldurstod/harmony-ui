@@ -5,14 +5,14 @@ html{
 	--harmony-palette-selected-border-color: orange;
 }
 
-harmony-palette{
+:host{
 	display: flex;
 	flex-direction: row;
 	flex-wrap: wrap;
 	gap: var(--harmony-palette-gap);
 }
 
-.harmony-palette-color{
+.color{
 	height: var(--harmony-palette-color-size);
 	width: var(--harmony-palette-color-size);
 	border-radius: calc(var(--harmony-palette-color-size) * .1);
@@ -20,14 +20,14 @@ harmony-palette{
 	padding: calc(var(--harmony-palette-color-size) * .1);
 	cursor: pointer;
 }
-.harmony-palette-color.selected{
+.color.selected{
 	border-color: var(--harmony-palette-selected-border-color);
 	border-width: calc(var(--harmony-palette-color-size) * .2);
 	padding: 0;
 	color: black;
 }
 
-.harmony-palette-color > svg{
+.color > svg{
 	height: 100%;
 	width: 100%;
 }

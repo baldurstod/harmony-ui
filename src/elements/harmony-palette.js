@@ -1,6 +1,10 @@
 import  { checkOutlineSVG } from 'harmony-svg';
+import { I18n } from '../harmony-i18n.js';
 
-import {createElement, hide, show, display} from '../harmony-html.js';
+import { shadowRootStyle } from '../harmony-css.js';
+import { createElement } from '../harmony-html.js';
+
+import paletteCSS from '../css/harmony-palette.css';
 
 function clampColor(val) {
 	return Math.min(Math.max(0, val), 1);
@@ -13,17 +17,23 @@ export class HTMLHarmonyPaletteElement extends HTMLElement {
 	#selected = new Map();
 	#colorElements = new Map();
 	#preSelected = new Set();
+	#shadowRoot;
 	constructor() {
 		super();
+		this.#shadowRoot = this.attachShadow({ mode: 'closed' });
 	}
 
 	connectedCallback() {
 		if (!this.#initialized) {
+			I18n.observeElement(this.#shadowRoot);
+			shadowRootStyle(this.#shadowRoot, paletteCSS);
 			this.#initialized = true;
 			this.#processChilds();
-			//this.append(this.#htmlCopied);
-			//hide(this.#htmlCopied);
 		}
+	}
+
+	adoptStyleSheet(styleSheet) {
+		this.#shadowRoot.adoptedStyleSheets.push(styleSheet);
 	}
 
 	#processChilds() {
@@ -52,8 +62,8 @@ export class HTMLHarmonyPaletteElement extends HTMLElement {
 
 		for (const [colorHex, color] of this.#colors) {
 			const element = createElement('div', {
-				parent: this,
-				class: 'harmony-palette-color',
+				parent: this.#shadowRoot,
+				class: 'color',
 				'data-color': colorHex,
 				style: `background-color: ${colorHex}`,
 				events: {

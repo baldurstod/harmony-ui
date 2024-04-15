@@ -1144,6 +1144,8 @@ class HTMLHarmonyLabelPropertyElement extends HTMLElement {
 	}
 }
 
+var paletteCSS = "html{\r\n\t--harmony-palette-color-size: 2rem;\r\n\t--harmony-palette-gap: 0.5rem;\r\n\t--harmony-palette-border-color: grey;\r\n\t--harmony-palette-selected-border-color: orange;\r\n}\r\n\r\n:host{\r\n\tdisplay: flex;\r\n\tflex-direction: row;\r\n\tflex-wrap: wrap;\r\n\tgap: var(--harmony-palette-gap);\r\n}\r\n\r\n.color{\r\n\theight: var(--harmony-palette-color-size);\r\n\twidth: var(--harmony-palette-color-size);\r\n\tborder-radius: calc(var(--harmony-palette-color-size) * .1);\r\n\tborder: calc(var(--harmony-palette-color-size) * .1) solid var(--harmony-palette-border-color);\r\n\tpadding: calc(var(--harmony-palette-color-size) * .1);\r\n\tcursor: pointer;\r\n}\r\n.color.selected{\r\n\tborder-color: var(--harmony-palette-selected-border-color);\r\n\tborder-width: calc(var(--harmony-palette-color-size) * .2);\r\n\tpadding: 0;\r\n\tcolor: black;\r\n}\r\n\r\n.color > svg{\r\n\theight: 100%;\r\n\twidth: 100%;\r\n}\r\n";
+
 function clampColor(val) {
 	return Math.min(Math.max(0, val), 1);
 }
@@ -1155,17 +1157,25 @@ class HTMLHarmonyPaletteElement extends HTMLElement {
 	#selected = new Map();
 	#colorElements = new Map();
 	#preSelected = new Set();
+	#shadowRoot;
 	constructor() {
 		super();
+		this.#shadowRoot = this.attachShadow({ mode: 'closed' });
 	}
 
 	connectedCallback() {
 		if (!this.#initialized) {
+			I18n.observeElement(this.#shadowRoot);
+			shadowRootStyle(this.#shadowRoot, paletteCSS);
 			this.#initialized = true;
 			this.#processChilds();
 			//this.append(this.#htmlCopied);
 			//hide(this.#htmlCopied);
 		}
+	}
+
+	adoptStyleSheet(styleSheet) {
+		this.#shadowRoot.adoptedStyleSheets.push(styleSheet);
 	}
 
 	#processChilds() {
@@ -1194,8 +1204,8 @@ class HTMLHarmonyPaletteElement extends HTMLElement {
 
 		for (const [colorHex, color] of this.#colors) {
 			const element = createElement('div', {
-				parent: this,
-				class: 'harmony-palette-color',
+				parent: this.#shadowRoot,
+				class: 'color',
 				'data-color': colorHex,
 				style: `background-color: ${colorHex}`,
 				events: {
