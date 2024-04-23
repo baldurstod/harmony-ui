@@ -18,7 +18,7 @@
 	height: var(--harmony-color-picker-height, 10rem);*/
 	/*display: flex;
 	flex-wrap: wrap;*/
-	grid-template-areas: "h h h h" "m m m a" "i s o o";
+	grid-template-areas: "h h h h" "m m m a" "i i s s" "b b b b";
 }
 
 #hue-picker{
@@ -62,10 +62,17 @@
 }
 #sample{
 	grid-area: s;
-	width: calc(var(--harmony-color-picker-shadow-width) * 0.25);
+	/*width: calc(var(--harmony-color-picker-shadow-width) * 0.25);*/
 }
-#ok{
-	grid-area: o;
+#buttons{
+	grid-area: b;
+	display: flex;
+	gap: 2rem;
+}
+#buttons>button{
+	flex: 1;
+	font-size: 1.5rem;
+	cursor: pointer;
 }
 .alpha-background{
 	background: var(--foreground-layer),

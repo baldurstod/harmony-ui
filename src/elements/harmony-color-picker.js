@@ -17,6 +17,7 @@ export class HTMLHarmonyColorPickerElement extends HTMLElement {
 	#htmlInput;
 	#htmlSample;
 	#htmlOk;
+	#htmlCancel;
 	#dragElement;
 	#shiftX;
 	#shiftY;
@@ -93,12 +94,28 @@ export class HTMLHarmonyColorPickerElement extends HTMLElement {
 			id: 'sample',
 			class:'alpha-background',
 		});
-		this.#htmlOk = createElement('button', { id: 'ok',
+		createElement('div', {
 			parent: this.#shadowRoot,
-			i18n: '#ok',
-			events: {
-				click: () => this.#updateHex(this.#htmlInput.value),
-			}
+			id: 'buttons',
+			childs: [
+				this.#htmlOk = createElement('button', {
+					parent: this.#shadowRoot,
+					i18n: '#ok',
+					events: {
+						click: () => {
+							this.#updateHex(this.#htmlInput.value);
+							this.dispatchEvent(new CustomEvent('ok', { detail: { hex: this.#color.getHex(), rgba: this.#color.getRgba() } }));
+						},
+					},
+				}),
+				this.#htmlCancel = createElement('button', {
+					parent: this.#shadowRoot,
+					i18n: '#cancel',
+					events: {
+						click: () => this.dispatchEvent(new CustomEvent('cancel')),
+					}
+				}),
+			],
 		});
 	}
 

@@ -704,7 +704,7 @@ class Color {
 	}
 }
 
-var colorPickerCSS = ":host{\n\t--harmony-color-picker-shadow-width: var(--harmony-color-picker-width, 15rem);\n\t--harmony-color-picker-shadow-height: var(--harmony-color-picker-height, 15rem);\n\t--harmony-color-picker-shadow-gap: var(--harmony-color-picker-gap, 0.5rem);\n\n\t--foreground-layer: none;\n\n\tbackground-color: var(--main-bg-color-bright);\n\tpadding: var(--harmony-color-picker-shadow-gap);\n\tbox-sizing: border-box;\n\tdisplay: inline-grid;\n\t/*grid-template-rows: 1rem 5fr;\n\tgrid-template-columns: 2fr 2fr 1rem;*/\n\tcolumn-gap: var(--harmony-color-picker-shadow-gap);\n\trow-gap: var(--harmony-color-picker-shadow-gap);\n\n\t/*width: var(--harmony-color-picker-width, 10rem);\n\theight: var(--harmony-color-picker-height, 10rem);*/\n\t/*display: flex;\n\tflex-wrap: wrap;*/\n\tgrid-template-areas: \"h h h h\" \"m m m a\" \"i s o o\";\n}\n\n#hue-picker{\n\tposition: relative;\n\t/*flex-basis: var(--harmony-color-picker-shadow-width);*/\n\tpadding: 1rem;\n\tbackground-image: linear-gradient(90deg, red, yellow, lime, cyan, blue, magenta, red);\n\tgrid-area: h;\n\theight: 0;\n}\n#main-picker{\n\tposition: relative;\n\tgrid-area: m;\n\twidth: var(--harmony-color-picker-shadow-width);\n\theight: var(--harmony-color-picker-shadow-height);\n\tbackground-image: linear-gradient(180deg, white, rgba(255, 255, 255, 0) 50%),linear-gradient(0deg, black, rgba(0, 0, 0, 0) 50%),linear-gradient(90deg, #808080, rgba(128, 128, 128, 0));\n\tbackground-color: currentColor;\n}\n#alpha-picker{\n\tposition: relative;\n\tpadding: 1rem;\n\tgrid-area: a;\n\twidth: 0;\n}\n#hue-selector{\n\tpadding: 1rem 0.2rem;\n}\n#alpha-selector{\n\tpadding: 0.2rem 1rem;\n}\n#main-selector{\n\tpadding: 0.5rem;\n\tborder-radius: 50%;\n}\n#input{\n\twidth: calc(var(--harmony-color-picker-shadow-width) * 0.6);\n\tgrid-area: i;\n\tfont-family: monospace;\n\tfont-size: 1.5rem;\n\tbox-sizing: border-box;\n}\n#sample{\n\tgrid-area: s;\n\twidth: calc(var(--harmony-color-picker-shadow-width) * 0.25);\n}\n#ok{\n\tgrid-area: o;\n}\n.alpha-background{\n\tbackground: var(--foreground-layer),\n\t\t\t\tlinear-gradient(45deg, lightgrey 25%, transparent 25%, transparent 75%, lightgrey 75%) 0 0 / 1rem 1rem,\n\t\t\t\tlinear-gradient(45deg, lightgrey 25%, white 25%, white 75%, lightgrey 75%) 0.5em 0.5em / 1em 1em;\n}\n.selector{\n\tposition: absolute;\n\tborder: 2px solid #fff;\n\tborder-radius: 100%;\n\tbox-shadow: 0 0 3px 1px #67b9ff;\n\ttransform: translate(-50%, -50%);\n\tcursor: pointer;\n\tdisplay: block;\n\tbackground: none;\n\tborder-radius: 2px;\n}\n";
+var colorPickerCSS = ":host{\n\t--harmony-color-picker-shadow-width: var(--harmony-color-picker-width, 15rem);\n\t--harmony-color-picker-shadow-height: var(--harmony-color-picker-height, 15rem);\n\t--harmony-color-picker-shadow-gap: var(--harmony-color-picker-gap, 0.5rem);\n\n\t--foreground-layer: none;\n\n\tbackground-color: var(--main-bg-color-bright);\n\tpadding: var(--harmony-color-picker-shadow-gap);\n\tbox-sizing: border-box;\n\tdisplay: inline-grid;\n\t/*grid-template-rows: 1rem 5fr;\n\tgrid-template-columns: 2fr 2fr 1rem;*/\n\tcolumn-gap: var(--harmony-color-picker-shadow-gap);\n\trow-gap: var(--harmony-color-picker-shadow-gap);\n\n\t/*width: var(--harmony-color-picker-width, 10rem);\n\theight: var(--harmony-color-picker-height, 10rem);*/\n\t/*display: flex;\n\tflex-wrap: wrap;*/\n\tgrid-template-areas: \"h h h h\" \"m m m a\" \"i i s s\" \"b b b b\";\n}\n\n#hue-picker{\n\tposition: relative;\n\t/*flex-basis: var(--harmony-color-picker-shadow-width);*/\n\tpadding: 1rem;\n\tbackground-image: linear-gradient(90deg, red, yellow, lime, cyan, blue, magenta, red);\n\tgrid-area: h;\n\theight: 0;\n}\n#main-picker{\n\tposition: relative;\n\tgrid-area: m;\n\twidth: var(--harmony-color-picker-shadow-width);\n\theight: var(--harmony-color-picker-shadow-height);\n\tbackground-image: linear-gradient(180deg, white, rgba(255, 255, 255, 0) 50%),linear-gradient(0deg, black, rgba(0, 0, 0, 0) 50%),linear-gradient(90deg, #808080, rgba(128, 128, 128, 0));\n\tbackground-color: currentColor;\n}\n#alpha-picker{\n\tposition: relative;\n\tpadding: 1rem;\n\tgrid-area: a;\n\twidth: 0;\n}\n#hue-selector{\n\tpadding: 1rem 0.2rem;\n}\n#alpha-selector{\n\tpadding: 0.2rem 1rem;\n}\n#main-selector{\n\tpadding: 0.5rem;\n\tborder-radius: 50%;\n}\n#input{\n\twidth: calc(var(--harmony-color-picker-shadow-width) * 0.6);\n\tgrid-area: i;\n\tfont-family: monospace;\n\tfont-size: 1.5rem;\n\tbox-sizing: border-box;\n}\n#sample{\n\tgrid-area: s;\n\t/*width: calc(var(--harmony-color-picker-shadow-width) * 0.25);*/\n}\n#buttons{\n\tgrid-area: b;\n\tdisplay: flex;\n\tgap: 2rem;\n}\n#buttons>button{\n\tflex: 1;\n\tfont-size: 1.5rem;\n\tcursor: pointer;\n}\n.alpha-background{\n\tbackground: var(--foreground-layer),\n\t\t\t\tlinear-gradient(45deg, lightgrey 25%, transparent 25%, transparent 75%, lightgrey 75%) 0 0 / 1rem 1rem,\n\t\t\t\tlinear-gradient(45deg, lightgrey 25%, white 25%, white 75%, lightgrey 75%) 0.5em 0.5em / 1em 1em;\n}\n.selector{\n\tposition: absolute;\n\tborder: 2px solid #fff;\n\tborder-radius: 100%;\n\tbox-shadow: 0 0 3px 1px #67b9ff;\n\ttransform: translate(-50%, -50%);\n\tcursor: pointer;\n\tdisplay: block;\n\tbackground: none;\n\tborder-radius: 2px;\n}\n";
 
 class HTMLHarmonyColorPickerElement extends HTMLElement {
 	#doOnce = true;
@@ -719,6 +719,7 @@ class HTMLHarmonyColorPickerElement extends HTMLElement {
 	#htmlInput;
 	#htmlSample;
 	#htmlOk;
+	#htmlCancel;
 	#dragElement;
 	#shiftX;
 	#shiftY;
@@ -795,12 +796,28 @@ class HTMLHarmonyColorPickerElement extends HTMLElement {
 			id: 'sample',
 			class:'alpha-background',
 		});
-		this.#htmlOk = createElement('button', { id: 'ok',
+		createElement('div', {
 			parent: this.#shadowRoot,
-			i18n: '#ok',
-			events: {
-				click: () => this.#updateHex(this.#htmlInput.value),
-			}
+			id: 'buttons',
+			childs: [
+				this.#htmlOk = createElement('button', {
+					parent: this.#shadowRoot,
+					i18n: '#ok',
+					events: {
+						click: () => {
+							this.#updateHex(this.#htmlInput.value);
+							this.dispatchEvent(new CustomEvent('ok', { detail: { hex: this.#color.getHex(), rgba: this.#color.getRgba() } }));
+						},
+					},
+				}),
+				this.#htmlCancel = createElement('button', {
+					parent: this.#shadowRoot,
+					i18n: '#cancel',
+					events: {
+						click: () => this.dispatchEvent(new CustomEvent('cancel')),
+					}
+				}),
+			],
 		});
 	}
 
@@ -1169,8 +1186,6 @@ class HTMLHarmonyPaletteElement extends HTMLElement {
 			shadowRootStyle(this.#shadowRoot, paletteCSS);
 			this.#initialized = true;
 			this.#processChilds();
-			//this.append(this.#htmlCopied);
-			//hide(this.#htmlCopied);
 		}
 	}
 
