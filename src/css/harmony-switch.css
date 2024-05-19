@@ -19,12 +19,12 @@
 }
 .harmony-switch-outer{
 	display: flex;
-	flex: 0 0 var(--harmony-switch-shadow-width);
 	height: var(--harmony-switch-shadow-height);
 	border-radius: calc(var(--harmony-switch-shadow-height) * 0.5);
 	align-items: center;
 	margin-left: 0.25rem;
 	transition: background-color 0.25s linear;
+	width: var(--harmony-switch-shadow-width);
 }
 
 .harmony-switch-outer{
