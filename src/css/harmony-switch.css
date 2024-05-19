@@ -9,7 +9,6 @@
 	--harmony-switch-shadow-slider-border-width: var(--harmony-switch-slider-border-width, 0rem);
 
 	display: inline-flex;
-	overflow: hidden;
 	user-select: none;
 	cursor: pointer;
 	justify-content: space-between;
