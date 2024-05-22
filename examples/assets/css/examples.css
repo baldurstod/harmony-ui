@@ -10,3 +10,22 @@
 		color: #fff;
 	}
 }
+:root{
+	--font-size: 32px;
+}
+html{
+	height:100%;
+	width:100%;
+	font-size: var(--font-size);
+}
+
+body{
+	font-family: Verdana, sans-serif;
+	margin:0rem;
+	overflow: hidden;
+	/*justify-content: center;*/
+	height:100%;
+	width:100%;
+	display: flex;
+	flex-direction: column;
+}

@@ -13,6 +13,18 @@ export function updateElement(element, options) {
 	return element;
 }
 
+function append(element, child) {
+	if (child === null || child === undefined) {
+		return;
+	}
+
+	if (child instanceof ShadowRoot) {
+		element.append(child.host);
+	} else {
+		element.append(child);
+	}
+}
+
 function createElementOptions(element, options) {
 	let shadowRoot;
 	if (options) {
@@ -20,8 +32,8 @@ function createElementOptions(element, options) {
 			shadowRoot = element.attachShadow(options.attachShadow);
 		}
 
-		for (let optionName in options) {
-			let optionValue = options[optionName];
+		for (const optionName in options) {
+			const optionValue = options[optionName];
 			switch (optionName) {
 				case 'class':
 					element.classList.add(...optionValue.split(' '));
@@ -55,16 +67,10 @@ function createElementOptions(element, options) {
 					optionValue.append(element);
 					break;
 				case 'child':
-					if (optionValue) {
-						(shadowRoot ?? element).append(optionValue.host ?? optionValue);
-					}
+					append(shadowRoot ?? element, optionValue);
 					break;
 				case 'childs':
-					optionValue.forEach(entry => {
-						if (entry !== null && entry !== undefined) {
-							(shadowRoot ?? element).append(entry.host ?? entry);
-						}
-					});
+					optionValue.forEach(entry => append(shadowRoot ?? element, entry));
 					break;
 				case 'events':
 					for (let eventType in optionValue) {
