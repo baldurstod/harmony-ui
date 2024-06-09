@@ -9,6 +9,7 @@ export const elements = [
 	{ name: 'harmony-radio', class: 'HTMLHarmonyRadioElement', injectCSS: false },
 	{ name: 'harmony-select', class: 'HTMLHarmonySelectElement', injectCSS: true },
 	{ name: 'harmony-slideshow', class: 'HTMLHarmonySlideshowElement', injectCSS: true },
+	{ name: 'harmony-splitter', class: 'HTMLHarmonySplitterElement', injectCSS: false },
 	{ name: 'harmony-switch', class: 'HTMLHarmonySwitchElement', injectCSS: false },
 	{ name: 'harmony-tab', class: 'HTMLHarmonyTabElement', injectCSS: false },
 	{ name: 'harmony-tab-group', class: 'HTMLHarmonyTabGroupElement', injectCSS: false },

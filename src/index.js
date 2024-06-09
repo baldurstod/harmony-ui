@@ -11,6 +11,7 @@ export * from './elements/harmony-panel.js';
 export * from './elements/harmony-radio.js';
 export * from './elements/harmony-slideshow.js';
 export * from './elements/harmony-select.js';
+export * from './elements/harmony-splitter.js';
 export * from './elements/harmony-switch.js';
 export * from './elements/harmony-tab.js';
 export * from './elements/harmony-tab-group.js';

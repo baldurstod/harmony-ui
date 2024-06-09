@@ -2353,6 +2353,130 @@ class HTMLHarmonySelectElement extends HTMLElement {
 	}
 }
 
+var splitterCSS = ":host{\n\tdisplay: flex;\n}\n:host(.vertical){\n\tflex-direction: row;\n}\n:host(.horizontal){\n\tflex-direction: column;\n}\n:host .gutter{\n\tflex: 0 0 0.5rem;\n}\n:host(.vertical) .gutter{\n\tcursor: ew-resize;\n}\n:host(.horizontal) .gutter{\n\tcursor: ns-resize;\n}\n:host .panel{\n\tflex: 0 0 50%;\n\tdisplay: flex;\n}\n";
+
+class HTMLHarmonySplitterElement extends HTMLElement {
+	#shadowRoot;
+	#htmlPanel1;
+	#htmlPanel2;
+	#htmlGutter;
+	#doOnce = true;
+	#orientation;
+	#split = 0.5;
+	#startOffsetLeft;
+	#startOffsetTop;
+	#startPageX;
+	#startPageY;
+	#startOffsetX;
+	#startOffsetY;
+	#dragging = false;
+
+	constructor(options) {
+		super();
+		this.#initHtml();
+		this.setOrientation(this.getAttribute('orientation') ?? 'v');
+		//this.#doOnceOptions = options;
+	}
+
+	#initHtml() {
+		this.#shadowRoot = this.attachShadow({ mode: 'closed' });
+		shadowRootStyleSync(this.#shadowRoot, splitterCSS);// sync version is used to ensure style is loaded before computation occurs
+
+		this.#htmlPanel1 = createElement('slot', {
+			class: 'panel',
+			name: '1',
+			parent: this.#shadowRoot,
+			});
+		this.#htmlGutter = createElement('div', {
+			class: 'gutter',
+			parent: this.#shadowRoot,
+			/*events: {
+				mousedown: event => this.#handleMouseDown(event),
+			},*/
+		});
+		this.#htmlPanel2 = createElement('slot', {
+			class: 'panel',
+			name: '2',
+			parent: this.#shadowRoot,
+		});
+
+		this.addEventListener('mousedown', event => this.#handleMouseDown(event));
+		this.addEventListener('mousemove', event => this.#handleMouseMove(event), {capture: true});
+		this.addEventListener('mouseup', () => this.#dragging = false);
+	}
+
+	connectedCallback() {
+		if (this.#doOnce) {
+			this.#update();
+			this.#doOnce = false;
+		}
+	}
+
+	#update() {
+
+		this.#htmlPanel1.style.flexBasis = this.#split * 100 + '%';
+		this.#htmlPanel2.style.flexBasis = (1 - this.#split) * 100 + '%';
+		if (this.#orientation == 'v') ;
+	}
+
+	setOrientation(orientation) {
+		this.classList.remove('vertical', 'horizontal');
+		switch (orientation) {
+			case 'v':
+				case 'vertical':
+				this.#orientation = 'v';
+				this.classList.add('vertical');
+				break;
+			case 'h':
+			case 'horizontal':
+				this.#orientation = 'h';
+				this.classList.add('horizontal');
+				break;
+		}
+		//TODO
+	}
+
+	#handleMouseDown(event) {
+		this.#startOffsetLeft = this.#htmlGutter.offsetLeft;
+		this.#startOffsetTop = this.#htmlGutter.offsetTop;
+		this.#startOffsetX = event.offsetX;
+		this.#startOffsetY = event.offsetY;
+		this.#startPageX = event.pageX;
+		this.#startPageY = event.pageY;
+		this.#dragging = true;
+		event.stopPropagation();
+	}
+
+	#handleMouseMove(event) {
+		//event.stopPropagation();
+		if (!this.#dragging) {
+			return;
+		}
+
+		let elemRect = this.getBoundingClientRect();
+		const clientX = event.clientX;
+		const clientY = event.clientY;
+		if (this.#orientation == 'v') {
+			this.#split = (clientX - elemRect.x) / elemRect.width;
+		} else {
+			this.#split = (clientY - elemRect.y) / elemRect.height;
+		}
+		this.#update();
+	}
+
+	attributeChangedCallback(name, oldValue, newValue) {
+		switch (name) {
+			case 'orientation':
+				this.orientation = newValue;
+				break;
+		}
+	}
+
+	static get observedAttributes() {
+		return ['orientation'];
+	}
+}
+
 var switchCSS = ":host, harmony-switch{\n\t--harmony-switch-shadow-width: var(--harmony-switch-width, 4rem);\n\t--harmony-switch-shadow-height: var(--harmony-switch-height, 2rem);\n\t--harmony-switch-shadow-on-background-color: var(--harmony-switch-on-background-color, #1072eb);\n\t--harmony-switch-shadow-on-background-color-hover: var(--harmony-switch-on-background-color-hover, #1040c1);\n\t--harmony-switch-shadow-slider-width: var(--harmony-switch-slider-width, 1.4rem);\n\t--harmony-switch-shadow-slider-height: var(--harmony-switch-slider-height, 1.4rem);\n\t--harmony-switch-shadow-slider-margin: var(--harmony-switch-slider-margin, 0.3rem);\n\t--harmony-switch-shadow-slider-border-width: var(--harmony-switch-slider-border-width, 0rem);\n\n\tdisplay: inline-flex;\n\tuser-select: none;\n\tcursor: pointer;\n\tjustify-content: space-between;\n}\n.harmony-switch-label{\n\tmargin: auto 0;\n\tfont-weight: bold;\n}\n.harmony-switch-outer{\n\tdisplay: flex;\n\theight: var(--harmony-switch-shadow-height);\n\tborder-radius: calc(var(--harmony-switch-shadow-height) * 0.5);\n\talign-items: center;\n\tmargin-left: 0.25rem;\n\ttransition: background-color 0.25s linear;\n\twidth: var(--harmony-switch-shadow-width);\n}\n\n.harmony-switch-outer{\n\tbackground-color: var(--harmony-ui-input-background-primary);\n}\n.harmony-switch-outer:hover{\n\tbackground-color: var(--harmony-ui-input-background-secondary);\n}\n.harmony-switch-outer.on{\n\tbackground-color: var(--harmony-ui-accent-primary);\n}\n.harmony-switch-outer.on:hover{\n\tbackground-color: var(--harmony-ui-accent-secondary);\n}\n.harmony-switch-inner{\n\tdisplay: inline-block;\n\theight: var(--harmony-switch-shadow-slider-height);\n\twidth: var(--harmony-switch-shadow-slider-width);\n\tborder-radius: calc(var(--harmony-switch-shadow-slider-height) * 0.5);\n\ttransition: all 0.25s;\n\tposition: relative;\n\tleft: var(--harmony-switch-shadow-slider-margin);\n\tborder: var(--harmony-switch-shadow-slider-border-width) solid;\n\tbox-sizing: border-box;\n\tborder-color: var(--harmony-ui-input-border-primary);\n\tbackground-color: var(--harmony-ui-input-background-tertiary);\n}\n.harmony-switch-outer.ternary .harmony-switch-inner{\n\tleft: calc(50% - var(--harmony-switch-shadow-slider-width) * 0.5);\n}\n.harmony-switch-outer.off .harmony-switch-inner{\n\tleft: var(--harmony-switch-shadow-slider-margin);\n}\n.harmony-switch-outer.on .harmony-switch-inner{\n\tleft: calc(100% - var(--harmony-switch-shadow-slider-width) - var(--harmony-switch-shadow-slider-margin));\n}\n.harmony-switch-outer.ternary.off{\n\tbackground-color: red;\n}\n.harmony-switch-outer.ternary.off:hover{\n\tbackground-color: red;\n}\n.harmony-switch-outer.ternary.on{\n\tbackground-color: green;\n}\n.harmony-switch-outer.ternary.on:hover{\n\tbackground-color: green;\n}\n\n";
 
 class HTMLHarmonySwitchElement extends HTMLElement {
@@ -2770,4 +2894,4 @@ class HTMLHarmonyToggleButtonElement extends HTMLElement {
 	}
 }
 
-export { HTMLHarmonyAccordionElement, HTMLHarmonyColorPickerElement, HTMLHarmonyContextMenuElement, HTMLHarmonyCopyElement, HTMLHarmonyLabelPropertyElement, HTMLHarmonyPaletteElement, HTMLHarmonyPanelElement, HTMLHarmonyRadioElement, HTMLHarmonySelectElement, HTMLHarmonySlideshowElement, HTMLHarmonySwitchElement, HTMLHarmonyTabElement, HTMLHarmonyTabGroupElement, HTMLHarmonyToggleButtonElement, I18n, createElement, createElementNS, display, documentStyle, documentStyleSync, hide, isVisible, shadowRootStyle, shadowRootStyleSync, show, styleInject, toggle, updateElement, visible };
+export { HTMLHarmonyAccordionElement, HTMLHarmonyColorPickerElement, HTMLHarmonyContextMenuElement, HTMLHarmonyCopyElement, HTMLHarmonyLabelPropertyElement, HTMLHarmonyPaletteElement, HTMLHarmonyPanelElement, HTMLHarmonyRadioElement, HTMLHarmonySelectElement, HTMLHarmonySlideshowElement, HTMLHarmonySplitterElement, HTMLHarmonySwitchElement, HTMLHarmonyTabElement, HTMLHarmonyTabGroupElement, HTMLHarmonyToggleButtonElement, I18n, createElement, createElementNS, display, documentStyle, documentStyleSync, hide, isVisible, shadowRootStyle, shadowRootStyleSync, show, styleInject, toggle, updateElement, visible };

@@ -1,0 +1,22 @@
+:host{
+	display: flex;
+}
+:host(.vertical){
+	flex-direction: row;
+}
+:host(.horizontal){
+	flex-direction: column;
+}
+:host .gutter{
+	flex: 0 0 0.5rem;
+}
+:host(.vertical) .gutter{
+	cursor: ew-resize;
+}
+:host(.horizontal) .gutter{
+	cursor: ns-resize;
+}
+:host .panel{
+	flex: 0 0 50%;
+	display: flex;
+}
