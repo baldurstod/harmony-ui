@@ -2399,9 +2399,9 @@ class HTMLHarmonySplitterElement extends HTMLElement {
 			parent: this.#shadowRoot,
 		});
 
-		this.addEventListener('mousedown', event => this.#handleMouseDown(event));
-		this.addEventListener('mousemove', event => this.#handleMouseMove(event), {capture: true});
-		this.addEventListener('mouseup', () => this.#dragging = false);
+		this.#htmlGutter.addEventListener('mousedown', event => this.#handleMouseDown(event));
+		document.body.addEventListener('mousemove', event => this.#handleMouseMove(event), {capture: true});
+		document.body.addEventListener('mouseup', () => this.#dragging = false);
 	}
 
 	connectedCallback() {
@@ -2457,6 +2457,8 @@ class HTMLHarmonySplitterElement extends HTMLElement {
 		} else {
 			this.#split = (clientY - elemRect.y) / elemRect.height;
 		}
+
+		this.#split = Math.max(Math.min(this.#split, 0.99), 0.01);
 
 		this.dispatchEvent(new CustomEvent('change', { detail: { value: this.#split } }));
 
