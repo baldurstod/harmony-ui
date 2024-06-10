@@ -2353,7 +2353,7 @@ class HTMLHarmonySelectElement extends HTMLElement {
 	}
 }
 
-var splitterCSS = ":host{\n\tdisplay: flex;\n}\n:host(.vertical){\n\tflex-direction: row;\n}\n:host(.horizontal){\n\tflex-direction: column;\n}\n:host .gutter{\n\tflex: 0 0 0.5rem;\n}\n:host(.vertical) .gutter{\n\tcursor: ew-resize;\n}\n:host(.horizontal) .gutter{\n\tcursor: ns-resize;\n}\n:host .panel{\n\tflex: 0 0 50%;\n\tdisplay: flex;\n}\n";
+var splitterCSS = ":host{\n\tdisplay: flex;\n\tpointer-events: none;\n\t/*--harmony-color-picker-shadow-gap: var(--harmony-color-picker-gap, 0.5rem);*/\n\t--harmony-splitter-shadow-gutter-thickness: var(--harmony-splitter-gutter-thickness, 0.3rem);\n\t--harmony-splitter-shadow-gutter-bg-color: var(--harmony-splitter-gutter-bg-color, black);\n}\n:host(.vertical){\n\tflex-direction: row;\n}\n:host(.horizontal){\n\tflex-direction: column;\n}\n:host .gutter{\n\tflex: 0 0 var(--harmony-splitter-shadow-gutter-thickness);\n\tpointer-events: all;\n\tbackground-color: var(--harmony-splitter-shadow-gutter-bg-color);\n}\n:host(.vertical) .gutter{\n\tcursor: ew-resize;\n}\n:host(.horizontal) .gutter{\n\tcursor: ns-resize;\n}\n:host .panel{\n\tflex: 0 0 50%;\n\tdisplay: flex;\n\tpointer-events: none;\n}\n";
 
 class HTMLHarmonySplitterElement extends HTMLElement {
 	#shadowRoot;

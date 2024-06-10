@@ -1,5 +1,9 @@
 :host{
 	display: flex;
+	pointer-events: none;
+	/*--harmony-color-picker-shadow-gap: var(--harmony-color-picker-gap, 0.5rem);*/
+	--harmony-splitter-shadow-gutter-thickness: var(--harmony-splitter-gutter-thickness, 0.3rem);
+	--harmony-splitter-shadow-gutter-bg-color: var(--harmony-splitter-gutter-bg-color, black);
 }
 :host(.vertical){
 	flex-direction: row;
@@ -8,7 +12,9 @@
 	flex-direction: column;
 }
 :host .gutter{
-	flex: 0 0 0.5rem;
+	flex: 0 0 var(--harmony-splitter-shadow-gutter-thickness);
+	pointer-events: all;
+	background-color: var(--harmony-splitter-shadow-gutter-bg-color);
 }
 :host(.vertical) .gutter{
 	cursor: ew-resize;
@@ -19,4 +25,5 @@
 :host .panel{
 	flex: 0 0 50%;
 	display: flex;
+	pointer-events: none;
 }
