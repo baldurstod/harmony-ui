@@ -26,13 +26,31 @@
 			<div slot="1" style="background-color: blue;"></div>
 			<div slot="2" style="background-color: red;"></div>
 		</harmony-splitter>
-		<harmony-splitter id="splitter2" style="height:500px;width:500px;" orientation="horizontal">
+		<!--harmony-splitter id="splitter2" style="height:500px;width:500px;" orientation="horizontal">
 			<div slot="1" style="background-color: blue;"></div>
 			<div slot="2" style="background-color: red;"></div>
-		</harmony-splitter>
+		</harmony-splitter-->
 	</body>
-	<script>
-		//document.getElementById('switch').addEventListener('change', (event) => console.log(event.target.checked))
+	<script type="module">
+		import { createElement } from '../dist/harmony-ui.browser.js';
+		createElement('harmony-splitter', {
+			parent: document.body,
+			attributes: {
+				orientation: 'horizontal',
+			},
+			id: 'splitter2',
+			childs: [
+				createElement('div', {
+					slot: '1',
+					style: 'background-color: blue;',
+				}),
+				createElement('div', {
+					slot: '2',
+					style: 'background-color: red;',
+				}),
+
+			]
+		});
 		document.getElementById('splitter1').addEventListener('change', (event) => console.log(event.detail.value))
 		document.getElementById('splitter2').addEventListener('change', (event) => console.log(event.detail.value))
 	</script>

@@ -21,7 +21,6 @@ export class HTMLHarmonySplitterElement extends HTMLElement {
 	constructor(options) {
 		super();
 		this.#initHtml();
-		this.setOrientation(this.getAttribute('orientation') ?? 'v');
 		//this.#doOnceOptions = options;
 	}
 
@@ -33,7 +32,7 @@ export class HTMLHarmonySplitterElement extends HTMLElement {
 			class: 'panel',
 			name: '1',
 			parent: this.#shadowRoot,
-			});
+		});
 		this.#htmlGutter = createElement('div', {
 			class: 'gutter',
 			parent: this.#shadowRoot,
@@ -54,6 +53,7 @@ export class HTMLHarmonySplitterElement extends HTMLElement {
 
 	connectedCallback() {
 		if (this.#doOnce) {
+			this.setOrientation(this.getAttribute('orientation') ?? 'v');
 			this.#update();
 			this.#doOnce = false;
 		}
@@ -77,10 +77,7 @@ export class HTMLHarmonySplitterElement extends HTMLElement {
 				this.#orientation = 'h';
 				this.classList.add('horizontal');
 				break;
-			default:
-				break;
 		}
-		//TODO
 	}
 
 	#handleMouseDown(event) {
@@ -116,7 +113,7 @@ export class HTMLHarmonySplitterElement extends HTMLElement {
 	attributeChangedCallback(name, oldValue, newValue) {
 		switch (name) {
 			case 'orientation':
-				this.orientation = newValue;
+				this.setOrientation(newValue);
 				break;
 		}
 	}
