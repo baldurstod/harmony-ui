@@ -60,14 +60,8 @@ export class HTMLHarmonySplitterElement extends HTMLElement {
 	}
 
 	#update() {
-
 		this.#htmlPanel1.style.flexBasis = this.#split * 100 + '%';
 		this.#htmlPanel2.style.flexBasis = (1 - this.#split) * 100 + '%';
-		if (this.#orientation == 'v') {
-			//this.#split = (clientX - elemRect.x) / elemRect.width;
-		} else {
-			//this.#split = (clientY - elemRect.y) / elemRect.height;
-		}
 	}
 
 	setOrientation(orientation) {
@@ -101,7 +95,6 @@ export class HTMLHarmonySplitterElement extends HTMLElement {
 	}
 
 	#handleMouseMove(event) {
-		//event.stopPropagation();
 		if (!this.#dragging) {
 			return;
 		}
@@ -114,6 +107,9 @@ export class HTMLHarmonySplitterElement extends HTMLElement {
 		} else {
 			this.#split = (clientY - elemRect.y) / elemRect.height;
 		}
+
+		this.dispatchEvent(new CustomEvent('change', { detail: { value: this.#split } }));
+
 		this.#update();
 	}
 
