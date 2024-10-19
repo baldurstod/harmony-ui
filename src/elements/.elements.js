@@ -1,4 +1,5 @@
 export const elements = [
+	{ name: 'harmony-2d-manipulator', class: 'HTMLHarmony2dManipulatorElement', injectCSS: true },
 	{ name: 'harmony-accordion', class: 'HTMLHarmonyAccordionElement', injectCSS: true },
 	{ name: 'harmony-color-picker', class: 'HTMLHarmonyColorPickerElement', injectCSS: false },
 	{ name: 'harmony-context-menu', class: 'HTMLHarmonyContextMenuElement', injectCSS: false },

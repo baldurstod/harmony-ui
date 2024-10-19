@@ -1,0 +1,31 @@
+:host {
+	--harmony-2d-manipulator-shadow-radius: var(--harmony-2d-manipulator-radius, 0.25rem);
+
+	width: 10rem;
+	height: 10rem;
+	display: block;
+	user-select: none;
+}
+
+.manipulator {
+	position: absolute;
+	background-color: red;
+	transform: translate(-50%, -50%);
+}
+
+.corner {
+	position: absolute;
+	width: 0.5rem;
+	height: 0.5rem;
+	background-color: chartreuse;
+	border-radius: var(--harmony-2d-manipulator-shadow-radius);
+	transform: translate(-50%, -50%);
+}
+
+@media (prefers-color-scheme: light) {
+	:host {}
+}
+
+@media (prefers-color-scheme: dark) {
+	:host {}
+}

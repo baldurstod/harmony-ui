@@ -412,6 +412,272 @@ class I18n {
 	}*/
 }
 
+var manipulator2dCSS = ":host {\n\t--harmony-2d-manipulator-shadow-radius: var(--harmony-2d-manipulator-radius, 0.25rem);\n\n\twidth: 10rem;\n\theight: 10rem;\n\tdisplay: block;\n\tuser-select: none;\n}\n\n.manipulator {\n\tposition: absolute;\n\tbackground-color: red;\n\ttransform: translate(-50%, -50%);\n}\n\n.corner {\n\tposition: absolute;\n\twidth: 0.5rem;\n\theight: 0.5rem;\n\tbackground-color: chartreuse;\n\tborder-radius: var(--harmony-2d-manipulator-shadow-radius);\n\ttransform: translate(-50%, -50%);\n}\n\n@media (prefers-color-scheme: light) {\n\t:host {}\n}\n\n@media (prefers-color-scheme: dark) {\n\t:host {}\n}\n";
+
+function toBool(s) {
+    return s === '1' || s === 'true';
+}
+
+var ManipulatorDirection;
+(function (ManipulatorDirection) {
+    ManipulatorDirection["All"] = "all";
+    ManipulatorDirection["X"] = "x";
+    ManipulatorDirection["Y"] = "y";
+    ManipulatorDirection["None"] = "none";
+})(ManipulatorDirection || (ManipulatorDirection = {}));
+function getDirection(s) {
+    switch (s) {
+        case 'x':
+            return ManipulatorDirection.X;
+        case 'y':
+            return ManipulatorDirection.Y;
+        case 'none':
+            return ManipulatorDirection.None;
+        case 'all':
+        default:
+            return ManipulatorDirection.All;
+    }
+}
+const CORNERS = [[0, 0], [0, 1], [1, 1], [1, 0]];
+class HTMLHarmony2dManipulatorElement extends HTMLElement {
+    #shadowRoot;
+    #htmlQuad;
+    #doOnce = true;
+    #translate = ManipulatorDirection.All;
+    #rotate = true;
+    #scale = ManipulatorDirection.All;
+    #skew = ManipulatorDirection.All;
+    #htmlScaleCorners = [];
+    #top = 50;
+    #left = 50;
+    #width = 50;
+    #height = 50;
+    #rotation = 0;
+    #dragCorner = -1;
+    #startPageX = 0;
+    #startPageY = 0;
+    #minWidth = 0;
+    #minHeight = 0;
+    #qp0_x;
+    #qp0_y;
+    #pp_x;
+    #pp_y;
+    dragBottom = false;
+    dragTop = false;
+    dragStart = false;
+    dragEnd = false;
+    constructor() {
+        super();
+        this.#shadowRoot = this.attachShadow({ mode: 'open' });
+        shadowRootStyle(this.#shadowRoot, manipulator2dCSS);
+        this.#htmlQuad = createElement('div', {
+            parent: this.#shadowRoot,
+            class: 'manipulator',
+            //style: "width:100px;height:100px;display:block;background-color:red;",
+            child: [
+            /*this.#htmlHueSelector = createElement('div', {
+                id: 'hue-selector',
+                class: 'selector',
+                events: {
+                    mousedown: event => this.#handleMouseDown(event),
+                },
+            })*/
+            ],
+            events: {
+                mousedown: event => {
+                    //this.#updateHue(event.offsetX / this.#htmlHuePicker.offsetWidth);
+                    //this.#handleMouseDown(event, this.#htmlHueSelector);
+                },
+            },
+        });
+        for (let i = 0; i < 4; i++) {
+            const htmlCorner = createElement('div', {
+                class: 'corner',
+                parent: this.#htmlQuad,
+                events: {
+                    mousedown: (event) => this.#startDragCorner(event, i),
+                }
+            });
+            this.#htmlScaleCorners.push(htmlCorner);
+        }
+        document.addEventListener('mousemove', (event) => this.#onMouseMove(event));
+        document.addEventListener('mouseup', (event) => this.#stopDrag(event));
+    }
+    #onMouseMove(event) {
+        this.#resize(event);
+    }
+    #stopDrag(event) {
+        this.#stopDragCorner(event);
+    }
+    #stopDragCorner(event) {
+        if (this.#dragCorner >= 0) ;
+        this.#dragCorner = -1;
+    }
+    #startDragCorner(event, i) {
+        this.#dragCorner = i;
+        this.#startPageX = event.pageX;
+        this.#startPageY = event.pageY;
+        this.#initStartPositions(event);
+    }
+    #resize(event) {
+        if (this.#dragCorner >= 0) {
+            this.#deltaResize(event);
+            this.#refresh();
+        }
+    }
+    connectedCallback() {
+        this.#refresh();
+    }
+    #refresh() {
+        this.style.setProperty('--translate', this.#translate);
+        this.style.setProperty('--rotate', this.#rotate ? '1' : '0');
+        this.style.setProperty('--scale', this.#scale);
+        this.style.setProperty('--skew', this.#skew);
+        this.#htmlQuad.style.left = `${this.#left}px`;
+        this.#htmlQuad.style.top = `${this.#top}px`;
+        this.#htmlQuad.style.width = `${this.#width}px`;
+        this.#htmlQuad.style.height = `${this.#height}px`;
+        for (let i = 0; i < 4; i++) {
+            const c = CORNERS[i];
+            const htmlCorner = this.#htmlScaleCorners[i];
+            htmlCorner.style.left = `${c[0] * this.#width}px`;
+            htmlCorner.style.top = `${c[1] * this.#height}px`;
+        }
+    }
+    attributeChangedCallback(name, oldValue, newValue) {
+        switch (name) {
+            case 'translate':
+                this.#translate = getDirection(newValue);
+                break;
+            case 'rotate':
+                this.#rotate = toBool(newValue);
+                break;
+            case 'scale':
+                this.#scale = getDirection(newValue);
+                break;
+            case 'skew':
+                this.#skew = getDirection(newValue);
+                break;
+        }
+        this.#refresh();
+    }
+    static get observedAttributes() {
+        return ['translate', 'rotate', 'scale', 'skew'];
+    }
+    #deltaResize(event) {
+        const delta = this.#getDelta(event);
+        const qp_x = this.#qp0_x + delta.x;
+        const qp_y = this.#qp0_y + delta.y;
+        const cp_x = (qp_x + this.#pp_x) / 2.0;
+        const cp_y = (qp_y + this.#pp_y) / 2.0;
+        const mtheta = -this.#rotation;
+        const cos_mt = Math.cos(mtheta);
+        const sin_mt = Math.sin(mtheta);
+        let q_x = qp_x * cos_mt - qp_y * sin_mt - cos_mt * cp_x + sin_mt * cp_y + cp_x;
+        let q_y = qp_x * sin_mt + qp_y * cos_mt - sin_mt * cp_x - cos_mt * cp_y + cp_y;
+        let p_x = this.#pp_x * cos_mt - this.#pp_y * sin_mt - cos_mt * cp_x + sin_mt * cp_y + cp_x;
+        let p_y = this.#pp_x * sin_mt + this.#pp_y * cos_mt - sin_mt * cp_x - cos_mt * cp_y + cp_y;
+        const matrix = this.#resizeMatrix();
+        const wtmp = matrix.a * (q_x - p_x) + matrix.c * (p_x - q_x);
+        const htmp = matrix.b * (q_y - p_y) + matrix.d * (p_y - q_y);
+        let w;
+        let h;
+        if (wtmp < this.#minWidth || htmp < this.#minHeight) {
+            w = Math.max(this.#minWidth, wtmp);
+            h = Math.max(this.#minHeight, htmp);
+            const theta = -1 * mtheta;
+            const cos_t = Math.cos(theta);
+            const sin_t = Math.sin(theta);
+            const dh_x = -sin_t * h;
+            const dh_y = cos_t * h;
+            const dw_x = cos_t * w;
+            const dw_y = sin_t * w;
+            const qp_x_min = this.#pp_x + (matrix.a - matrix.c) * dw_x + (matrix.b - matrix.d) * dh_x;
+            const qp_y_min = this.#pp_y + (matrix.a - matrix.c) * dw_y + (matrix.b - matrix.d) * dh_y;
+            const cp_x_min = (qp_x_min + this.#pp_x) / 2.0;
+            const cp_y_min = (qp_y_min + this.#pp_y) / 2.0;
+            q_x = qp_x_min * cos_mt - qp_y_min * sin_mt - cos_mt * cp_x_min + sin_mt * cp_y_min + cp_x_min;
+            q_y = qp_x_min * sin_mt + qp_y_min * cos_mt - sin_mt * cp_x_min - cos_mt * cp_y_min + cp_y_min;
+            p_x = this.#pp_x * cos_mt - this.#pp_y * sin_mt - cos_mt * cp_x_min + sin_mt * cp_y_min + cp_x_min;
+            p_y = this.#pp_x * sin_mt + this.#pp_y * cos_mt - sin_mt * cp_x_min - cos_mt * cp_y_min + cp_y_min;
+        }
+        else {
+            w = wtmp;
+            h = htmp;
+        }
+        const l = matrix.c * q_x + matrix.a * p_x;
+        const t = matrix.d * q_y + matrix.b * p_y;
+        this.#left = this.convertToUnit(l, 'width');
+        this.#width = this.convertToUnit(w, 'width');
+        this.#top = this.convertToUnit(t, 'height');
+        this.#height = this.convertToUnit(h, 'height');
+    }
+    #getDelta(event) {
+        const currentX = (event).clientX;
+        const currentY = (event).clientY;
+        return {
+            x: this.dragBottom || this.dragTop ? 0 : currentX - this.#startPageX,
+            y: this.dragStart || this.dragEnd ? 0 : currentY - this.#startPageY
+        };
+    }
+    #resizeMatrix() {
+        const a = (this.#dragCorner == 2) || (this.#dragCorner == 3) || this.dragEnd ? 1 : 0;
+        const b = (this.#dragCorner == 2) || (this.#dragCorner == 1) || this.dragStart || this.dragBottom ? 1 : 0;
+        const c = a === 1 ? 0 : 1;
+        const d = b === 1 ? 0 : 1;
+        return {
+            a,
+            b,
+            c,
+            d
+        };
+    }
+    convertToUnit(value, ratio) {
+        return value;
+        /*
+        if (this.unit === 'px') {
+        }
+
+        if (this.unit === 'viewport') {
+            const windowSize: number = ratio === 'width' ? window.innerWidth || screen.width : window.innerHeight || screen.height;
+            return (value * 100) / windowSize;
+        }
+
+        const parentSize: number = ratio === 'width' ? this.parentWidth : this.parentHeight;
+        return (value * 100) / parentSize;
+        */
+    }
+    #initStartPositions(event) {
+        this.#startPageX = event.pageX;
+        this.#startPageY = event.pageY;
+        //await this.initParentSize();
+        //this.initStartPositionsMove();
+        //this.initStartPositionsRotation();
+        this.#initStartPositionsResize();
+    }
+    #initStartPositionsResize() {
+        const theta = this.#rotation;
+        const cos_t = Math.cos(theta);
+        const sin_t = Math.sin(theta);
+        //const css: CSSStyleDeclaration = window.getComputedStyle(this.el);
+        const l = this.#left; //parseFloat(css.left);
+        const t = this.#top; //parseFloat(css.top);
+        const w = this.#width; //parseFloat(css.width);
+        const h = this.#height; //parseFloat(css.height);
+        const matrix = this.#resizeMatrix();
+        const c0_x = l + w / 2.0;
+        const c0_y = t + h / 2.0;
+        const q0_x = l + matrix.a * w;
+        const q0_y = t + matrix.b * h;
+        const p0_x = l + matrix.c * w;
+        const p0_y = t + matrix.d * h;
+        this.#qp0_x = q0_x * cos_t - q0_y * sin_t - c0_x * cos_t + c0_y * sin_t + c0_x;
+        this.#qp0_y = q0_x * sin_t + q0_y * cos_t - c0_x * sin_t - c0_y * cos_t + c0_y;
+        this.#pp_x = p0_x * cos_t - p0_y * sin_t - c0_x * cos_t + c0_y * sin_t + c0_x;
+        this.#pp_y = p0_x * sin_t + p0_y * cos_t - c0_x * sin_t - c0_y * cos_t + c0_y;
+    }
+}
+
 class HTMLHarmonyAccordionElement extends HTMLElement {
 	#doOnce;
 	#multiple;
@@ -2895,4 +3161,4 @@ class HTMLHarmonyToggleButtonElement extends HTMLElement {
 	}
 }
 
-export { HTMLHarmonyAccordionElement, HTMLHarmonyColorPickerElement, HTMLHarmonyContextMenuElement, HTMLHarmonyCopyElement, HTMLHarmonyLabelPropertyElement, HTMLHarmonyPaletteElement, HTMLHarmonyPanelElement, HTMLHarmonyRadioElement, HTMLHarmonySelectElement, HTMLHarmonySlideshowElement, HTMLHarmonySplitterElement, HTMLHarmonySwitchElement, HTMLHarmonyTabElement, HTMLHarmonyTabGroupElement, HTMLHarmonyToggleButtonElement, I18n, createElement, createElementNS, display, documentStyle, documentStyleSync, hide, isVisible, shadowRootStyle, shadowRootStyleSync, show, styleInject, toggle, updateElement, visible };
+export { HTMLHarmony2dManipulatorElement, HTMLHarmonyAccordionElement, HTMLHarmonyColorPickerElement, HTMLHarmonyContextMenuElement, HTMLHarmonyCopyElement, HTMLHarmonyLabelPropertyElement, HTMLHarmonyPaletteElement, HTMLHarmonyPanelElement, HTMLHarmonyRadioElement, HTMLHarmonySelectElement, HTMLHarmonySlideshowElement, HTMLHarmonySplitterElement, HTMLHarmonySwitchElement, HTMLHarmonyTabElement, HTMLHarmonyTabGroupElement, HTMLHarmonyToggleButtonElement, I18n, ManipulatorDirection, createElement, createElementNS, display, documentStyle, documentStyleSync, hide, isVisible, shadowRootStyle, shadowRootStyleSync, show, styleInject, toggle, updateElement, visible };
