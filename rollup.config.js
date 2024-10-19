@@ -4,6 +4,7 @@ import cssnano from 'cssnano';
 import {elements} from './src/elements/.elements.js';
 import image from '@rollup/plugin-image';
 import { nodeResolve } from '@rollup/plugin-node-resolve';
+import typescript from '@rollup/plugin-typescript';
 import css from 'rollup-plugin-import-css';
 
 async function writeElement(elementName, elementClass, injectCSS, isBrowser = false) {
@@ -57,6 +58,7 @@ export default [
 		plugins: [
 			css(),
 			image(),
+			typescript(),
 		],
 		external: [
 			'harmony-svg',
@@ -71,6 +73,7 @@ export default [
 		plugins: [
 			css(),
 			image(),
+			typescript(),
 			nodeResolve(),
 		],
 	},
