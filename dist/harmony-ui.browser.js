@@ -438,7 +438,15 @@ function getDirection(s) {
             return ManipulatorDirection.All;
     }
 }
-const CORNERS = [[0, 0], [0, 1], [1, 1], [1, 0]];
+const CORNERS = [[0, 0], [1, 0], [0, 1], [1, 1]];
+var ManipulatorCorner;
+(function (ManipulatorCorner) {
+    ManipulatorCorner[ManipulatorCorner["None"] = -1] = "None";
+    ManipulatorCorner[ManipulatorCorner["TopLeft"] = 0] = "TopLeft";
+    ManipulatorCorner[ManipulatorCorner["TopRight"] = 1] = "TopRight";
+    ManipulatorCorner[ManipulatorCorner["BottomLeft"] = 2] = "BottomLeft";
+    ManipulatorCorner[ManipulatorCorner["BottomRight"] = 3] = "BottomRight";
+})(ManipulatorCorner || (ManipulatorCorner = {}));
 class HTMLHarmony2dManipulatorElement extends HTMLElement {
     #shadowRoot;
     #htmlQuad;
@@ -523,7 +531,7 @@ class HTMLHarmony2dManipulatorElement extends HTMLElement {
     }
     #stopDragCorner(event) {
         if (this.#dragCorner >= 0) ;
-        this.#dragCorner = -1;
+        this.#dragCorner = ManipulatorCorner.None;
     }
     #startDragCorner(event, i) {
         if (this.#dragging) {
@@ -567,16 +575,16 @@ class HTMLHarmony2dManipulatorElement extends HTMLElement {
         }));
     }
     getTopLeft() {
-        return this.getCorner(0);
+        return this.getCorner(ManipulatorCorner.TopLeft);
     }
     getTopRight() {
-        return this.getCorner(3);
+        return this.getCorner(ManipulatorCorner.TopRight);
     }
     getBottomLeft() {
-        return this.getCorner(1);
+        return this.getCorner(ManipulatorCorner.BottomLeft);
     }
     getBottomRight() {
-        return this.getCorner(2);
+        return this.getCorner(ManipulatorCorner.BottomRight);
     }
     getCorner(i) {
         if (i < 0 || i >= 4) {
@@ -682,8 +690,8 @@ class HTMLHarmony2dManipulatorElement extends HTMLElement {
         };
     }
     #resizeMatrix() {
-        const a = (this.#dragCorner == 2) || (this.#dragCorner == 3) || this.dragEnd ? 1 : 0;
-        const b = (this.#dragCorner == 2) || (this.#dragCorner == 1) || this.dragStart || this.dragBottom ? 1 : 0;
+        const a = (this.#dragCorner == ManipulatorCorner.BottomRight) || (this.#dragCorner == ManipulatorCorner.TopRight) || this.dragEnd ? 1 : 0;
+        const b = (this.#dragCorner == ManipulatorCorner.BottomRight) || (this.#dragCorner == ManipulatorCorner.BottomLeft) || this.dragStart || this.dragBottom ? 1 : 0;
         const c = a === 1 ? 0 : 1;
         const d = b === 1 ? 0 : 1;
         return {
@@ -3222,4 +3230,4 @@ class HTMLHarmonyToggleButtonElement extends HTMLElement {
 	}
 }
 
-export { HTMLHarmony2dManipulatorElement, HTMLHarmonyAccordionElement, HTMLHarmonyColorPickerElement, HTMLHarmonyContextMenuElement, HTMLHarmonyCopyElement, HTMLHarmonyLabelPropertyElement, HTMLHarmonyPaletteElement, HTMLHarmonyPanelElement, HTMLHarmonyRadioElement, HTMLHarmonySelectElement, HTMLHarmonySlideshowElement, HTMLHarmonySplitterElement, HTMLHarmonySwitchElement, HTMLHarmonyTabElement, HTMLHarmonyTabGroupElement, HTMLHarmonyToggleButtonElement, I18n, ManipulatorDirection, createElement, createElementNS, display, documentStyle, documentStyleSync, hide, isVisible, shadowRootStyle, shadowRootStyleSync, show, styleInject, toggle, updateElement, visible };
+export { HTMLHarmony2dManipulatorElement, HTMLHarmonyAccordionElement, HTMLHarmonyColorPickerElement, HTMLHarmonyContextMenuElement, HTMLHarmonyCopyElement, HTMLHarmonyLabelPropertyElement, HTMLHarmonyPaletteElement, HTMLHarmonyPanelElement, HTMLHarmonyRadioElement, HTMLHarmonySelectElement, HTMLHarmonySlideshowElement, HTMLHarmonySplitterElement, HTMLHarmonySwitchElement, HTMLHarmonyTabElement, HTMLHarmonyTabGroupElement, HTMLHarmonyToggleButtonElement, I18n, ManipulatorCorner, ManipulatorDirection, createElement, createElementNS, display, documentStyle, documentStyleSync, hide, isVisible, shadowRootStyle, shadowRootStyleSync, show, styleInject, toggle, updateElement, visible };

@@ -31,7 +31,15 @@ function getDirection(s: string): ManipulatorDirection {
 	}
 }
 
-const CORNERS = [[0, 0], [0, 1], [1, 1], [1, 0]];
+const CORNERS = [[0, 0], [1, 0], [0, 1], [1, 1]];
+
+export enum ManipulatorCorner {
+	None = -1,
+	TopLeft = 0,
+	TopRight = 1,
+	BottomLeft = 2,
+	BottomRight = 3,
+}
 
 export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 	#shadowRoot: ShadowRoot;
@@ -52,7 +60,7 @@ export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 	#previousHeight: number = -1;
 	#rotation: number = 0;
 	#previousRotation: number = 0;
-	#dragCorner: number = -1;
+	#dragCorner: ManipulatorCorner = -1;
 	#startPageX: number = 0;
 	#startPageY: number = 0;
 	#minWidth = 0;
@@ -134,10 +142,10 @@ export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 		if (this.#dragCorner >= 0) {
 
 		}
-		this.#dragCorner = -1;
+		this.#dragCorner = ManipulatorCorner.None;
 	}
 
-	#startDragCorner(event: MouseEvent, i: number) {
+	#startDragCorner(event: MouseEvent, i: ManipulatorCorner) {
 		if (this.#dragging) {
 			return;
 		}
@@ -184,22 +192,22 @@ export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 	}
 
 	getTopLeft() {
-		return this.getCorner(0);
+		return this.getCorner(ManipulatorCorner.TopLeft);
 	}
 
 	getTopRight() {
-		return this.getCorner(3);
+		return this.getCorner(ManipulatorCorner.TopRight);
 	}
 
 	getBottomLeft() {
-		return this.getCorner(1);
+		return this.getCorner(ManipulatorCorner.BottomLeft);
 	}
 
 	getBottomRight() {
-		return this.getCorner(2);
+		return this.getCorner(ManipulatorCorner.BottomRight);
 	}
 
-	getCorner(i: number) {
+	getCorner(i: ManipulatorCorner) {
 		if (i < 0 || i >= 4) {
 			return null;
 		}
@@ -333,8 +341,8 @@ export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 	}
 
 	#resizeMatrix(): ResizeMatrix {
-		const a: 0 | 1 = (this.#dragCorner == 2) || (this.#dragCorner == 3) || this.dragEnd ? 1 : 0;
-		const b: 0 | 1 = (this.#dragCorner == 2) || (this.#dragCorner == 1) || this.dragStart || this.dragBottom ? 1 : 0;
+		const a: 0 | 1 = (this.#dragCorner == ManipulatorCorner.BottomRight) || (this.#dragCorner == ManipulatorCorner.TopRight) || this.dragEnd ? 1 : 0;
+		const b: 0 | 1 = (this.#dragCorner == ManipulatorCorner.BottomRight) || (this.#dragCorner == ManipulatorCorner.BottomLeft) || this.dragStart || this.dragBottom ? 1 : 0;
 		const c: 0 | 1 = a === 1 ? 0 : 1;
 		const d: 0 | 1 = b === 1 ? 0 : 1;
 
