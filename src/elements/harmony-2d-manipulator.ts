@@ -69,6 +69,8 @@ export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 	dragStart = false;
 	dragEnd = false;
 
+	#dragging = false;
+
 	constructor() {
 		super();
 		this.#shadowRoot = this.attachShadow({ mode: 'open' });
@@ -121,6 +123,10 @@ export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 	}
 
 	#stopDrag(event: MouseEvent) {
+		if (this.#dragging) {
+			this.#dragging = false;
+			this.#dispatchEvent('updateend');
+		}
 		this.#stopDragCorner(event);
 	}
 
@@ -132,6 +138,10 @@ export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 	}
 
 	#startDragCorner(event: MouseEvent, i: number) {
+		if (this.#dragging) {
+			return;
+		}
+		this.#dragging = true;
 		this.#dragCorner = i;
 		this.#startPageX = event.pageX;
 		this.#startPageY = event.pageY;
@@ -155,8 +165,11 @@ export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 		this.#previousTop = this.#top;
 		this.#previousLeft = this.#left;
 		this.#previousRotation = this.#rotation;
+		this.#dispatchEvent('change');
+	}
 
-		this.dispatchEvent(new CustomEvent('change', {
+	#dispatchEvent(name: string) {
+		this.dispatchEvent(new CustomEvent(name, {
 			detail: {
 				position: { x: this.#left, y: this.#top },
 				width: this.#width,
