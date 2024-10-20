@@ -45,7 +45,7 @@ export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 	#shadowRoot: ShadowRoot;
 	#htmlQuad: HTMLElement;
 	#doOnce = true;
-	#translate: ManipulatorDirection = ManipulatorDirection.All;
+	#translationMode: ManipulatorDirection = ManipulatorDirection.All;
 	#rotate = true;
 	#scale: ManipulatorDirection = ManipulatorDirection.All;
 	#skew: ManipulatorDirection = ManipulatorDirection.All;
@@ -61,11 +61,16 @@ export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 	#rotation: number = 0;
 	#previousRotation: number = 0;
 	#dragCorner: ManipulatorCorner = -1;
+	#dragThis = false;
 	#startPageX: number = 0;
 	#startPageY: number = 0;
 	#minWidth = 0;
 	#minHeight = 0;
 
+	#startWidth: number = 0;
+	#startHeight: number = 0;
+	#startTop: number = 0;
+	#startLeft: number = 0;
 
 	#qp0_x: number;
 	#qp0_y: number;
@@ -78,6 +83,7 @@ export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 	dragEnd = false;
 
 	#dragging = false;
+	#draggedElement?: HTMLElement;
 
 	constructor() {
 		super();
@@ -87,22 +93,10 @@ export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 		this.#htmlQuad = createElement('div', {
 			parent: this.#shadowRoot,
 			class: 'manipulator',
-			//style: "width:100px;height:100px;display:block;background-color:red;",
-			child: [
-				/*this.#htmlHueSelector = createElement('div', {
-					id: 'hue-selector',
-					class: 'selector',
-					events: {
-						mousedown: event => this.#handleMouseDown(event),
-					},
-				})*/
-			],
 			events: {
-				mousedown: event => {
-					//this.#updateHue(event.offsetX / this.#htmlHuePicker.offsetWidth);
-					//this.#handleMouseDown(event, this.#htmlHueSelector);
-				},
-			},
+				//mousedown: (event: MouseEvent) => this.#draggedElement = (event.target as HTMLElement),
+				mousedown: (event: MouseEvent) => this.#startTranslate(event),
+			}
 		});
 
 		for (let i = 0; i < 4; i++) {
@@ -127,6 +121,7 @@ export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 	}
 
 	#onMouseMove(event: MouseEvent) {
+		this.#translate(event);
 		this.#resize(event);
 	}
 
@@ -135,7 +130,12 @@ export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 			this.#dragging = false;
 			this.#dispatchEvent('updateend');
 		}
+		this.#stopTranslate(event);
 		this.#stopDragCorner(event);
+	}
+
+	#stopTranslate(event: MouseEvent) {
+		this.#dragThis = false;
 	}
 
 	#stopDragCorner(event: MouseEvent) {
@@ -145,15 +145,42 @@ export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 		this.#dragCorner = ManipulatorCorner.None;
 	}
 
+	#startTranslate(event: MouseEvent) {
+		if (this.#dragging) {
+			return;
+		}
+		this.#dragging = true;
+		this.#dragThis = true;
+		this.#initStartPositions(event);
+	}
+
 	#startDragCorner(event: MouseEvent, i: ManipulatorCorner) {
 		if (this.#dragging) {
 			return;
 		}
 		this.#dragging = true;
 		this.#dragCorner = i;
-		this.#startPageX = event.pageX;
-		this.#startPageY = event.pageY;
 		this.#initStartPositions(event);
+	}
+
+	#translate(event: MouseEvent) {
+		if (!this.#dragThis) {
+			return;
+		}
+
+
+		this.#deltaMove(event, true, true);
+		this.#refresh();
+
+		/*
+		if (this.drag === 'x-axis') {
+			this.deltaMove($event, false, true);
+		  } else if (this.drag === 'y-axis') {
+			this.deltaMove($event, true, false);
+		  } else {
+			this.deltaMove($event, true, true);
+		  }
+			*/
 	}
 
 	#resize(event: MouseEvent) {
@@ -220,7 +247,7 @@ export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 	}
 
 	#refresh() {
-		this.style.setProperty('--translate', this.#translate);
+		this.style.setProperty('--translate', this.#translationMode);
 		this.style.setProperty('--rotate', this.#rotate ? '1' : '0');
 		this.style.setProperty('--scale', this.#scale);
 		this.style.setProperty('--skew', this.#skew);
@@ -242,7 +269,7 @@ export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 	attributeChangedCallback(name: string, oldValue: string, newValue: string) {
 		switch (name) {
 			case 'translate':
-				this.#translate = getDirection(newValue);
+				this.#translationMode = getDirection(newValue);
 				break;
 			case 'rotate':
 				this.#rotate = toBool(newValue);
@@ -259,6 +286,26 @@ export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 
 	static get observedAttributes() {
 		return ['translate', 'rotate', 'scale', 'skew'];
+	}
+
+	#deltaMove(event: MouseEvent, top: boolean, left: boolean) {
+		const delta: { x: number; y: number } = this.#getDelta(event);
+
+		const deltaX: number = this.convertToUnit(delta.x, 'width');
+		const deltaY: number = this.convertToUnit(delta.y, 'height');
+
+		if (top) {
+			//const maxTop: number = this.#convertParentUnit(this.parentHeight) - this.startHeight;
+			//this.#top = this.#startTop + deltaY > 0 ? (this.#startTop + deltaY < maxTop ? this.#startTop + deltaY : maxTop) : 0;
+			this.#top = this.#startTop + deltaY;
+		}
+
+		if (left) {
+			//const maxLeft: number = this.#convertParentUnit(this.parentWidth) - this.startWidth;
+			//this.#left = this.#startLeft + deltaX > 0 ? (this.#startLeft + deltaX < maxLeft ? this.startLeft + deltaX : maxLeft) : 0;
+			this.#left = this.#startLeft + deltaX;
+		}
+		this.#update();
 	}
 
 	#deltaResize(event: MouseEvent) {
@@ -377,9 +424,17 @@ export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 
 		//await this.initParentSize();
 
-		//this.initStartPositionsMove();
+		this.#initStartPositionsMove();
 		//this.initStartPositionsRotation();
 		this.#initStartPositionsResize();
+	}
+
+	#initStartPositionsMove() {
+		this.#startWidth = isNaN(this.#width) ? 0 : this.#width;
+		this.#startHeight = isNaN(this.#height) ? 0 : this.#height;
+
+		this.#startTop = this.#top;
+		this.#startLeft = this.#left;
 	}
 
 	#initStartPositionsResize() {
