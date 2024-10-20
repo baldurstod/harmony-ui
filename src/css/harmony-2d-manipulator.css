@@ -10,7 +10,6 @@
 .manipulator {
 	position: absolute;
 	background-color: red;
-	transform: translate(-50%, -50%);
 }
 
 .corner {

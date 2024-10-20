@@ -414,7 +414,7 @@ class I18n {
 	}*/
 }
 
-var manipulator2dCSS = ":host {\n\t--harmony-2d-manipulator-shadow-radius: var(--harmony-2d-manipulator-radius, 0.25rem);\n\n\twidth: 10rem;\n\theight: 10rem;\n\tdisplay: block;\n\tuser-select: none;\n}\n\n.manipulator {\n\tposition: absolute;\n\tbackground-color: red;\n\ttransform: translate(-50%, -50%);\n}\n\n.corner {\n\tposition: absolute;\n\twidth: 0.5rem;\n\theight: 0.5rem;\n\tbackground-color: chartreuse;\n\tborder-radius: var(--harmony-2d-manipulator-shadow-radius);\n\ttransform: translate(-50%, -50%);\n}\n\n@media (prefers-color-scheme: light) {\n\t:host {}\n}\n\n@media (prefers-color-scheme: dark) {\n\t:host {}\n}\n";
+var manipulator2dCSS = ":host {\n\t--harmony-2d-manipulator-shadow-radius: var(--harmony-2d-manipulator-radius, 0.25rem);\n\n\twidth: 10rem;\n\theight: 10rem;\n\tdisplay: block;\n\tuser-select: none;\n}\n\n.manipulator {\n\tposition: absolute;\n\tbackground-color: red;\n}\n\n.corner {\n\tposition: absolute;\n\twidth: 0.5rem;\n\theight: 0.5rem;\n\tbackground-color: chartreuse;\n\tborder-radius: var(--harmony-2d-manipulator-shadow-radius);\n\ttransform: translate(-50%, -50%);\n}\n\n@media (prefers-color-scheme: light) {\n\t:host {}\n}\n\n@media (prefers-color-scheme: dark) {\n\t:host {}\n}\n";
 
 function toBool(s) {
     return s === '1' || s === 'true';
@@ -615,8 +615,8 @@ class HTMLHarmony2dManipulatorElement extends HTMLElement {
         this.#height = this.convertToUnit(h, 'height');
     }
     #getDelta(event) {
-        const currentX = (event).clientX;
-        const currentY = (event).clientY;
+        const currentX = event.pageX;
+        const currentY = event.pageY;
         return {
             x: this.dragBottom || this.dragTop ? 0 : currentX - this.#startPageX,
             y: this.dragStart || this.dragEnd ? 0 : currentY - this.#startPageY

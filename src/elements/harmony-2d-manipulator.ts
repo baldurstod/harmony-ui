@@ -251,8 +251,8 @@ export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 	}
 
 	#getDelta(event: MouseEvent): { x: number; y: number } {
-		const currentX: number = (event).clientX;
-		const currentY: number = (event).clientY;
+		const currentX: number = event.pageX;
+		const currentY: number = event.pageY;
 
 		return {
 			x: this.dragBottom || this.dragTop ? 0 : currentX - this.#startPageX,
