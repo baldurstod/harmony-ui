@@ -42,11 +42,16 @@ export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 	#scale: ManipulatorDirection = ManipulatorDirection.All;
 	#skew: ManipulatorDirection = ManipulatorDirection.All;
 	#htmlScaleCorners = [];
-	#top: number = 50;
-	#left: number = 50;
+	#top: number = 0;
+	#left: number = 0;
 	#width: number = 50;
 	#height: number = 50;
+	#previousTop: number = -1;
+	#previousLeft: number = -1;
+	#previousWidth: number = -1;
+	#previousHeight: number = -1;
 	#rotation: number = 0;
+	#previousRotation: number = 0;
 	#dragCorner: number = -1;
 	#startPageX: number = 0;
 	#startPageY: number = 0;
@@ -105,6 +110,9 @@ export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 
 		document.addEventListener('mousemove', (event: MouseEvent) => this.#onMouseMove(event));
 		document.addEventListener('mouseup', (event: MouseEvent) => this.#stopDrag(event));
+	}
+
+	setTopLeft(x: number, y: number) {
 
 	}
 
@@ -135,6 +143,55 @@ export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 			this.#deltaResize(event);
 			this.#refresh();
 		}
+	}
+
+	#update() {
+		if (this.#previousHeight == this.#height && this.#previousLeft == this.#left && this.#previousTop == this.#top && this.#previousWidth == this.#width && this.#previousRotation == this.#rotation) {
+			return;
+		}
+
+		this.#previousHeight = this.#height;
+		this.#previousWidth = this.#width;
+		this.#previousTop = this.#top;
+		this.#previousLeft = this.#left;
+		this.#previousRotation = this.#rotation;
+
+		this.dispatchEvent(new CustomEvent('change', {
+			detail: {
+				position: { x: this.#left, y: this.#top },
+				width: this.#width,
+				height: this.#height,
+				rotation: this.#rotation,
+				topLeft: this.getTopLeft(),
+				topRight: this.getTopRight(),
+				bottomLeft: this.getBottomLeft(),
+				bottomRight: this.getBottomRight(),
+			}
+		}));
+	}
+
+	getTopLeft() {
+		return this.getCorner(0);
+	}
+
+	getTopRight() {
+		return this.getCorner(3);
+	}
+
+	getBottomLeft() {
+		return this.getCorner(1);
+	}
+
+	getBottomRight() {
+		return this.getCorner(2);
+	}
+
+	getCorner(i: number) {
+		if (i < 0 || i >= 4) {
+			return null;
+		}
+		const c = CORNERS[i];
+		return { x: c[0] * this.#width + this.#left, y: c[1] * this.#height + this.#top };
 	}
 
 	connectedCallback() {
@@ -248,6 +305,8 @@ export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 
 		this.#top = this.convertToUnit(t, 'height');
 		this.#height = this.convertToUnit(h, 'height');
+
+		this.#update();
 	}
 
 	#getDelta(event: MouseEvent): { x: number; y: number } {
@@ -300,7 +359,7 @@ export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 		//this.initStartPositionsMove();
 		//this.initStartPositionsRotation();
 		this.#initStartPositionsResize();
-	  }
+	}
 
 	#initStartPositionsResize() {
 		const theta: number = this.#rotation;
@@ -330,5 +389,5 @@ export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 
 		this.#pp_x = p0_x * cos_t - p0_y * sin_t - c0_x * cos_t + c0_y * sin_t + c0_x;
 		this.#pp_y = p0_x * sin_t + p0_y * cos_t - c0_x * sin_t - c0_y * cos_t + c0_y;
-	  }
+	}
 }
