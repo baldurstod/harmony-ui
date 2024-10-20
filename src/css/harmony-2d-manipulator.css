@@ -1,5 +1,7 @@
 :host {
-	--harmony-2d-manipulator-shadow-radius: var(--harmony-2d-manipulator-radius, 0.25rem);
+	--harmony-2d-manipulator-shadow-radius: var(--harmony-2d-manipulator-radius, 0.5rem);
+	--harmony-2d-manipulator-shadow-bg-color: var(--harmony-2d-manipulator-bg-color, red);
+	--harmony-2d-manipulator-shadow-handle-bg-color: var(--harmony-2d-manipulator-handle-bg-color, chartreuse);
 
 	width: 10rem;
 	height: 10rem;
@@ -9,15 +11,15 @@
 
 .manipulator {
 	position: absolute;
-	background-color: red;
+	background-color: var(--harmony-2d-manipulator-shadow-bg-color);
 }
 
 .corner {
 	position: absolute;
-	width: 0.5rem;
-	height: 0.5rem;
-	background-color: chartreuse;
-	border-radius: var(--harmony-2d-manipulator-shadow-radius);
+	width: var(--harmony-2d-manipulator-shadow-radius);
+	height: var(--harmony-2d-manipulator-shadow-radius);
+	background-color: var(--harmony-2d-manipulator-shadow-handle-bg-color);
+	border-radius: calc(var(--harmony-2d-manipulator-shadow-radius) * 0.5);
 	transform: translate(-50%, -50%);
 }
 
