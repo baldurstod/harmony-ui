@@ -439,6 +439,7 @@ function getDirection(s) {
     }
 }
 const CORNERS = [[0, 0], [1, 0], [0, 1], [1, 1]];
+const SCALE_CORNERS = [[-1, -1], [1, -1], [-1, 1], [1, 1]];
 var ManipulatorCorner;
 (function (ManipulatorCorner) {
     ManipulatorCorner[ManipulatorCorner["None"] = -1] = "None";
@@ -565,7 +566,7 @@ class HTMLHarmony2dManipulatorElement extends HTMLElement {
             */
     }
     #resize(event) {
-        if (this.#dragCorner >= 0) {
+        if (this.#dragCorner > ManipulatorCorner.None) {
             this.#deltaResize(event);
             this.#refresh();
         }
@@ -671,6 +672,13 @@ class HTMLHarmony2dManipulatorElement extends HTMLElement {
     }
     #deltaResize(event) {
         const delta = this.#getDelta(event);
+        if (this.#dragCorner > ManipulatorCorner.None) {
+            const c = SCALE_CORNERS[this.#dragCorner];
+            //return { x: c[0] * this.#width + this.#left, y: c[1] * this.#height + this.#top };
+            const x = (c[0] * delta.x + c[1] * delta.y) * 0.5;
+            delta.x = x * c[0];
+            delta.y = x * c[1];
+        }
         const qp_x = this.#qp0_x + delta.x;
         const qp_y = this.#qp0_y + delta.y;
         const cp_x = (qp_x + this.#pp_x) / 2.0;

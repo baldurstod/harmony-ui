@@ -32,6 +32,7 @@ function getDirection(s: string): ManipulatorDirection {
 }
 
 const CORNERS = [[0, 0], [1, 0], [0, 1], [1, 1]];
+const SCALE_CORNERS = [[-1, -1], [1, -1], [-1, 1], [1, 1]];
 
 export enum ManipulatorCorner {
 	None = -1,
@@ -184,7 +185,7 @@ export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 	}
 
 	#resize(event: MouseEvent) {
-		if (this.#dragCorner >= 0) {
+		if (this.#dragCorner > ManipulatorCorner.None) {
 			this.#deltaResize(event);
 			this.#refresh();
 		}
@@ -310,6 +311,18 @@ export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 
 	#deltaResize(event: MouseEvent) {
 		const delta: { x: number; y: number } = this.#getDelta(event);
+
+		if (this.#dragCorner > ManipulatorCorner.None) {
+			SCALE_CORNERS
+
+			const c = SCALE_CORNERS[this.#dragCorner];
+			//return { x: c[0] * this.#width + this.#left, y: c[1] * this.#height + this.#top };
+
+
+			const x = (c[0] * delta.x + c[1] * delta.y) * 0.5;
+			delta.x = x * c[0];
+			delta.y = x * c[1];
+		}
 
 		const qp_x: number = this.#qp0_x + delta.x;
 		const qp_y: number = this.#qp0_y + delta.y;
