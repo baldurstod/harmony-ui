@@ -20,6 +20,7 @@
 	background-color: var(--harmony-2d-manipulator-shadow-bg-color);
 	border: var(--harmony-2d-manipulator-shadow-border);
 	cursor: move;
+	pointer-events: all;
 }
 
 .corner {
