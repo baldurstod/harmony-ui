@@ -414,7 +414,7 @@ class I18n {
 	}*/
 }
 
-var manipulator2dCSS = ":host {\n\t--harmony-2d-manipulator-shadow-radius: var(--harmony-2d-manipulator-radius, 0.5rem);\n\t--harmony-2d-manipulator-shadow-bg-color: var(--harmony-2d-manipulator-bg-color, red);\n\t--harmony-2d-manipulator-shadow-border: var(--harmony-2d-manipulator-border, none);\n\t--harmony-2d-manipulator-shadow-handle-bg-color: var(--harmony-2d-manipulator-handle-bg-color, chartreuse);\n\n\twidth: 10rem;\n\theight: 10rem;\n\tdisplay: block;\n\tuser-select: none;\n\tpointer-events: all;\n}\n\n:host-context(.grabbing) {\n\tcursor: grabbing;\n}\n\n.manipulator {\n\tposition: absolute;\n\tbackground-color: var(--harmony-2d-manipulator-shadow-bg-color);\n\tborder: var(--harmony-2d-manipulator-shadow-border);\n\tcursor: move;\n\tpointer-events: all;\n}\n\n.corner {\n\tposition: absolute;\n\twidth: var(--harmony-2d-manipulator-shadow-radius);\n\theight: var(--harmony-2d-manipulator-shadow-radius);\n\tbackground-color: var(--harmony-2d-manipulator-shadow-handle-bg-color);\n\tborder-radius: calc(var(--harmony-2d-manipulator-shadow-radius) * 0.5);\n\ttransform: translate(-50%, -50%);\n\tcursor: grab;\n}\n\n.side {\n\tposition: absolute;\n\twidth: var(--harmony-2d-manipulator-shadow-radius);\n\theight: var(--harmony-2d-manipulator-shadow-radius);\n\tbackground-color: var(--harmony-2d-manipulator-shadow-handle-bg-color);\n\tborder-radius: calc(var(--harmony-2d-manipulator-shadow-radius) * 0.5);\n\ttransform: translate(-50%, -50%);\n\tcursor: grab;\n}\n\n.corner.grabbing {\n\tcursor: grabbing;\n}\n\n@media (prefers-color-scheme: light) {\n\t:host {}\n}\n\n@media (prefers-color-scheme: dark) {\n\t:host {}\n}\n";
+var manipulator2dCSS = ":host {\n\t--harmony-2d-manipulator-shadow-radius: var(--harmony-2d-manipulator-radius, 0.5rem);\n\t--harmony-2d-manipulator-shadow-bg-color: var(--harmony-2d-manipulator-bg-color, red);\n\t--harmony-2d-manipulator-shadow-border: var(--harmony-2d-manipulator-border, none);\n\t--harmony-2d-manipulator-shadow-handle-bg-color: var(--harmony-2d-manipulator-handle-bg-color, chartreuse);\n\n\twidth: 10rem;\n\theight: 10rem;\n\tdisplay: block;\n\tuser-select: none;\n\tpointer-events: all;\n}\n\n:host-context(.grabbing) {\n\tcursor: grabbing;\n}\n\n.manipulator {\n\tposition: absolute;\n\tbackground-color: var(--harmony-2d-manipulator-shadow-bg-color);\n\tborder: var(--harmony-2d-manipulator-shadow-border);\n\tcursor: move;\n\tpointer-events: all;\n}\n\n.rotator {\n\tposition: absolute;\n\twidth: var(--harmony-2d-manipulator-shadow-radius);\n\theight: var(--harmony-2d-manipulator-shadow-radius);\n\tbackground-color: var(--harmony-2d-manipulator-shadow-handle-bg-color);\n\tborder-radius: calc(var(--harmony-2d-manipulator-shadow-radius) * 0.5);\n\ttransform: translate(-50%, -50%);\n\tcursor: grab;\n}\n\n.corner {\n\tposition: absolute;\n\twidth: var(--harmony-2d-manipulator-shadow-radius);\n\theight: var(--harmony-2d-manipulator-shadow-radius);\n\tbackground-color: var(--harmony-2d-manipulator-shadow-handle-bg-color);\n\tborder-radius: calc(var(--harmony-2d-manipulator-shadow-radius) * 0.5);\n\ttransform: translate(-50%, -50%);\n\tcursor: grab;\n}\n\n.side {\n\tposition: absolute;\n\twidth: var(--harmony-2d-manipulator-shadow-radius);\n\theight: var(--harmony-2d-manipulator-shadow-radius);\n\tbackground-color: var(--harmony-2d-manipulator-shadow-handle-bg-color);\n\tborder-radius: calc(var(--harmony-2d-manipulator-shadow-radius) * 0.5);\n\ttransform: translate(-50%, -50%);\n\tcursor: grab;\n}\n\n.corner.grabbing {\n\tcursor: grabbing;\n}\n";
 
 function toBool(s) {
     return s === '1' || s === 'true';
@@ -465,11 +465,12 @@ class HTMLHarmony2dManipulatorElement extends HTMLElement {
     #htmlQuad;
     #doOnce = true;
     #translationMode = ManipulatorDirection.All;
-    #rotate = true;
+    #canRotate = true;
     #scale = ManipulatorDirection.All;
     #skew = ManipulatorDirection.All;
     #htmlScaleCorners = [];
     #htmlResizeSides = [];
+    #htmlRotator;
     #top = 0;
     #left = 0;
     #width = 50;
@@ -483,6 +484,7 @@ class HTMLHarmony2dManipulatorElement extends HTMLElement {
     #dragCorner = ManipulatorCorner.None;
     #dragSide = ManipulatorSide.None;
     #dragThis = false;
+    #dragRotator = false;
     #startPageX = 0;
     #startPageY = 0;
     #minWidth = 0;
@@ -491,6 +493,8 @@ class HTMLHarmony2dManipulatorElement extends HTMLElement {
     #startHeight = 0;
     #startTop = 0;
     #startLeft = 0;
+    #centerX = 0;
+    #centerY = 0;
     #qp0_x;
     #qp0_y;
     #pp_x;
@@ -508,6 +512,12 @@ class HTMLHarmony2dManipulatorElement extends HTMLElement {
         this.#htmlQuad = createElement('div', {
             parent: this.#shadowRoot,
             class: 'manipulator',
+            child: this.#htmlRotator = createElement('div', {
+                class: 'rotator',
+                events: {
+                    mousedown: (event) => this.#startDragRotator(event),
+                }
+            }),
             events: {
                 //mousedown: (event: MouseEvent) => this.#draggedElement = (event.target as HTMLElement),
                 mousedown: (event) => this.#startTranslate(event),
@@ -541,6 +551,7 @@ class HTMLHarmony2dManipulatorElement extends HTMLElement {
     #onMouseMove(event) {
         this.#translate(event);
         this.#resize(event);
+        this.#rotate(event);
     }
     #stopDrag(event) {
         if (this.#dragging) {
@@ -548,11 +559,15 @@ class HTMLHarmony2dManipulatorElement extends HTMLElement {
             this.#dispatchEvent('updateend');
         }
         this.#stopTranslate(event);
+        this.#stopDragRotator(event);
         this.#stopDragCorner(event);
         this.#stopDragSide(event);
     }
     #stopTranslate(event) {
         this.#dragThis = false;
+    }
+    #stopDragRotator(event) {
+        this.#dragRotator = false;
     }
     #stopDragCorner(event) {
         if (this.#dragCorner < 0) {
@@ -576,6 +591,16 @@ class HTMLHarmony2dManipulatorElement extends HTMLElement {
         }
         this.#dragging = true;
         this.#dragThis = true;
+        this.#initStartPositions(event);
+    }
+    #startDragRotator(event) {
+        if (this.#dragging) {
+            return;
+        }
+        this.#dragging = true;
+        this.#dragRotator = true;
+        this.#htmlRotator.classList.add('grabbing');
+        this.classList.add('grabbing');
         this.#initStartPositions(event);
     }
     #startDragCorner(event, i) {
@@ -617,6 +642,14 @@ class HTMLHarmony2dManipulatorElement extends HTMLElement {
     #resize(event) {
         if (this.#dragCorner > ManipulatorCorner.None || this.#dragSide > ManipulatorSide.None) {
             this.#deltaResize(event);
+            this.#refresh();
+        }
+    }
+    #rotate(event) {
+        if (this.#dragRotator) {
+            const currentX = event.clientX;
+            const currentY = event.clientY;
+            this.#rotation = -Math.atan2(currentX - this.#centerX, currentY - this.#centerY) + Math.PI;
             this.#refresh();
         }
     }
@@ -669,9 +702,10 @@ class HTMLHarmony2dManipulatorElement extends HTMLElement {
     }
     #refresh() {
         this.style.setProperty('--translate', this.#translationMode);
-        this.style.setProperty('--rotate', this.#rotate ? '1' : '0');
+        this.style.setProperty('--rotate', this.#canRotate ? '1' : '0');
         this.style.setProperty('--scale', this.#scale);
         this.style.setProperty('--skew', this.#skew);
+        this.#htmlQuad.style.rotate = `${this.#rotation}rad`;
         this.#htmlQuad.style.left = `${this.#left}px`;
         this.#htmlQuad.style.top = `${this.#top}px`;
         this.#htmlQuad.style.width = `${this.#width}px`;
@@ -688,6 +722,8 @@ class HTMLHarmony2dManipulatorElement extends HTMLElement {
             htmlSide.style.left = `${s[0] * this.#width}px`;
             htmlSide.style.top = `${s[1] * this.#height}px`;
         }
+        this.#htmlRotator.style.left = `${0.5 * this.#width}px`;
+        this.#htmlRotator.style.top = `${-0.2 * this.#height}px`;
     }
     attributeChangedCallback(name, oldValue, newValue) {
         switch (name) {
@@ -695,7 +731,7 @@ class HTMLHarmony2dManipulatorElement extends HTMLElement {
                 this.#translationMode = getDirection(newValue);
                 break;
             case 'rotate':
-                this.#rotate = toBool(newValue);
+                this.#canRotate = toBool(newValue);
                 break;
             case 'scale':
                 this.#scale = getDirection(newValue);
@@ -826,7 +862,7 @@ class HTMLHarmony2dManipulatorElement extends HTMLElement {
         this.#startPageY = event.pageY;
         //await this.initParentSize();
         this.#initStartPositionsMove();
-        //this.initStartPositionsRotation();
+        this.#initStartPositionsRotation();
         this.#initStartPositionsResize();
     }
     #initStartPositionsMove() {
@@ -834,6 +870,11 @@ class HTMLHarmony2dManipulatorElement extends HTMLElement {
         this.#startHeight = isNaN(this.#height) ? 0 : this.#height;
         this.#startTop = this.#top;
         this.#startLeft = this.#left;
+    }
+    #initStartPositionsRotation() {
+        const rect = this.#htmlQuad.getBoundingClientRect();
+        this.#centerX = rect.left + rect.width / 2;
+        this.#centerY = rect.top + rect.height / 2;
     }
     #initStartPositionsResize() {
         const theta = this.#rotation;
