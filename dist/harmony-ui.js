@@ -414,7 +414,7 @@ class I18n {
 	}*/
 }
 
-var manipulator2dCSS = ":host {\n\t--harmony-2d-manipulator-shadow-radius: var(--harmony-2d-manipulator-radius, 0.5rem);\n\t--harmony-2d-manipulator-shadow-bg-color: var(--harmony-2d-manipulator-bg-color, red);\n\t--harmony-2d-manipulator-shadow-border: var(--harmony-2d-manipulator-border, none);\n\t--harmony-2d-manipulator-shadow-handle-bg-color: var(--harmony-2d-manipulator-handle-bg-color, chartreuse);\n\n\twidth: 10rem;\n\theight: 10rem;\n\tdisplay: block;\n\tuser-select: none;\n\tpointer-events: all;\n}\n\n:host-context(.grabbing){\n\tcursor: grabbing;\n}\n\n.manipulator {\n\tposition: absolute;\n\tbackground-color: var(--harmony-2d-manipulator-shadow-bg-color);\n\tborder: var(--harmony-2d-manipulator-shadow-border);\n\tcursor: move;\n}\n\n.corner {\n\tposition: absolute;\n\twidth: var(--harmony-2d-manipulator-shadow-radius);\n\theight: var(--harmony-2d-manipulator-shadow-radius);\n\tbackground-color: var(--harmony-2d-manipulator-shadow-handle-bg-color);\n\tborder-radius: calc(var(--harmony-2d-manipulator-shadow-radius) * 0.5);\n\ttransform: translate(-50%, -50%);\n\tcursor: grab;\n}\n\n.corner.grabbing {\n\tcursor: grabbing;\n}\n\n@media (prefers-color-scheme: light) {\n\t:host {}\n}\n\n@media (prefers-color-scheme: dark) {\n\t:host {}\n}\n";
+var manipulator2dCSS = ":host {\n\t--harmony-2d-manipulator-shadow-radius: var(--harmony-2d-manipulator-radius, 0.5rem);\n\t--harmony-2d-manipulator-shadow-bg-color: var(--harmony-2d-manipulator-bg-color, red);\n\t--harmony-2d-manipulator-shadow-border: var(--harmony-2d-manipulator-border, none);\n\t--harmony-2d-manipulator-shadow-handle-bg-color: var(--harmony-2d-manipulator-handle-bg-color, chartreuse);\n\n\twidth: 10rem;\n\theight: 10rem;\n\tdisplay: block;\n\tuser-select: none;\n\tpointer-events: all;\n}\n\n:host-context(.grabbing) {\n\tcursor: grabbing;\n}\n\n.manipulator {\n\tposition: absolute;\n\tbackground-color: var(--harmony-2d-manipulator-shadow-bg-color);\n\tborder: var(--harmony-2d-manipulator-shadow-border);\n\tcursor: move;\n}\n\n.corner {\n\tposition: absolute;\n\twidth: var(--harmony-2d-manipulator-shadow-radius);\n\theight: var(--harmony-2d-manipulator-shadow-radius);\n\tbackground-color: var(--harmony-2d-manipulator-shadow-handle-bg-color);\n\tborder-radius: calc(var(--harmony-2d-manipulator-shadow-radius) * 0.5);\n\ttransform: translate(-50%, -50%);\n\tcursor: grab;\n}\n\n.side {\n\tposition: absolute;\n\twidth: var(--harmony-2d-manipulator-shadow-radius);\n\theight: var(--harmony-2d-manipulator-shadow-radius);\n\tbackground-color: var(--harmony-2d-manipulator-shadow-handle-bg-color);\n\tborder-radius: calc(var(--harmony-2d-manipulator-shadow-radius) * 0.5);\n\ttransform: translate(-50%, -50%);\n\tcursor: grab;\n}\n\n.corner.grabbing {\n\tcursor: grabbing;\n}\n\n@media (prefers-color-scheme: light) {\n\t:host {}\n}\n\n@media (prefers-color-scheme: dark) {\n\t:host {}\n}\n";
 
 function toBool(s) {
     return s === '1' || s === 'true';
@@ -442,6 +442,8 @@ function getDirection(s) {
 }
 const CORNERS = [[0, 0], [1, 0], [0, 1], [1, 1]];
 const SCALE_CORNERS = [[-1, -1], [1, -1], [-1, 1], [1, 1]];
+const SIDES = [[0.5, 0], [0.5, 1], [0, 0.5], [1, 0.5]];
+const SCALE_SIDES = [[0, 1], [0, 1], [1, 0], [1, 0]];
 var ManipulatorCorner;
 (function (ManipulatorCorner) {
     ManipulatorCorner[ManipulatorCorner["None"] = -1] = "None";
@@ -450,6 +452,14 @@ var ManipulatorCorner;
     ManipulatorCorner[ManipulatorCorner["BottomLeft"] = 2] = "BottomLeft";
     ManipulatorCorner[ManipulatorCorner["BottomRight"] = 3] = "BottomRight";
 })(ManipulatorCorner || (ManipulatorCorner = {}));
+var ManipulatorSide;
+(function (ManipulatorSide) {
+    ManipulatorSide[ManipulatorSide["None"] = -1] = "None";
+    ManipulatorSide[ManipulatorSide["Top"] = 0] = "Top";
+    ManipulatorSide[ManipulatorSide["Bottom"] = 1] = "Bottom";
+    ManipulatorSide[ManipulatorSide["Left"] = 2] = "Left";
+    ManipulatorSide[ManipulatorSide["Right"] = 3] = "Right";
+})(ManipulatorSide || (ManipulatorSide = {}));
 class HTMLHarmony2dManipulatorElement extends HTMLElement {
     #shadowRoot;
     #htmlQuad;
@@ -459,6 +469,7 @@ class HTMLHarmony2dManipulatorElement extends HTMLElement {
     #scale = ManipulatorDirection.All;
     #skew = ManipulatorDirection.All;
     #htmlScaleCorners = [];
+    #htmlResizeSides = [];
     #top = 0;
     #left = 0;
     #width = 50;
@@ -469,7 +480,8 @@ class HTMLHarmony2dManipulatorElement extends HTMLElement {
     #previousHeight = -1;
     #rotation = 0;
     #previousRotation = 0;
-    #dragCorner = -1;
+    #dragCorner = ManipulatorCorner.None;
+    #dragSide = ManipulatorSide.None;
     #dragThis = false;
     #startPageX = 0;
     #startPageY = 0;
@@ -511,6 +523,16 @@ class HTMLHarmony2dManipulatorElement extends HTMLElement {
             });
             this.#htmlScaleCorners.push(htmlCorner);
         }
+        for (let i = 0; i < 4; i++) {
+            const htmlCorner = createElement('div', {
+                class: 'side',
+                parent: this.#htmlQuad,
+                events: {
+                    mousedown: (event) => this.#startDragSide(event, i),
+                }
+            });
+            this.#htmlResizeSides.push(htmlCorner);
+        }
         document.addEventListener('mousemove', (event) => this.#onMouseMove(event));
         document.addEventListener('mouseup', (event) => this.#stopDrag(event));
     }
@@ -527,15 +549,26 @@ class HTMLHarmony2dManipulatorElement extends HTMLElement {
         }
         this.#stopTranslate(event);
         this.#stopDragCorner(event);
+        this.#stopDragSide(event);
     }
     #stopTranslate(event) {
         this.#dragThis = false;
     }
     #stopDragCorner(event) {
-        if (this.#dragCorner >= 0) ;
+        if (this.#dragCorner < 0) {
+            return;
+        }
         this.#htmlScaleCorners[this.#dragCorner].classList.remove('grabbing');
         this.classList.remove('grabbing');
         this.#dragCorner = ManipulatorCorner.None;
+    }
+    #stopDragSide(event) {
+        if (this.#dragSide < 0) {
+            return;
+        }
+        this.#htmlResizeSides[this.#dragSide].classList.remove('grabbing');
+        this.classList.remove('grabbing');
+        this.#dragSide = ManipulatorSide.None;
     }
     #startTranslate(event) {
         if (this.#dragging) {
@@ -555,6 +588,16 @@ class HTMLHarmony2dManipulatorElement extends HTMLElement {
         this.#dragCorner = i;
         this.#initStartPositions(event);
     }
+    #startDragSide(event, i) {
+        if (this.#dragging) {
+            return;
+        }
+        this.#htmlResizeSides[i].classList.add('grabbing');
+        this.classList.add('grabbing');
+        this.#dragging = true;
+        this.#dragSide = i;
+        this.#initStartPositions(event);
+    }
     #translate(event) {
         if (!this.#dragThis) {
             return;
@@ -572,7 +615,7 @@ class HTMLHarmony2dManipulatorElement extends HTMLElement {
             */
     }
     #resize(event) {
-        if (this.#dragCorner > ManipulatorCorner.None) {
+        if (this.#dragCorner > ManipulatorCorner.None || this.#dragSide > ManipulatorSide.None) {
             this.#deltaResize(event);
             this.#refresh();
         }
@@ -639,6 +682,12 @@ class HTMLHarmony2dManipulatorElement extends HTMLElement {
             htmlCorner.style.left = `${c[0] * this.#width}px`;
             htmlCorner.style.top = `${c[1] * this.#height}px`;
         }
+        for (let i = 0; i < 4; i++) {
+            const s = SIDES[i];
+            const htmlSide = this.#htmlResizeSides[i];
+            htmlSide.style.left = `${s[0] * this.#width}px`;
+            htmlSide.style.top = `${s[1] * this.#height}px`;
+        }
     }
     attributeChangedCallback(name, oldValue, newValue) {
         switch (name) {
@@ -683,6 +732,12 @@ class HTMLHarmony2dManipulatorElement extends HTMLElement {
             const x = (c[0] * delta.x + c[1] * delta.y) * 0.5;
             delta.x = x * c[0];
             delta.y = x * c[1];
+        }
+        if (this.#dragSide > ManipulatorSide.None) {
+            const c = SCALE_SIDES[this.#dragSide];
+            (c[0] * delta.x + c[1] * delta.y) * 0.5;
+            delta.x *= c[0];
+            delta.y *= c[1];
         }
         const qp_x = this.#qp0_x + delta.x;
         const qp_y = this.#qp0_y + delta.y;
@@ -740,8 +795,8 @@ class HTMLHarmony2dManipulatorElement extends HTMLElement {
         };
     }
     #resizeMatrix() {
-        const a = (this.#dragCorner == ManipulatorCorner.BottomRight) || (this.#dragCorner == ManipulatorCorner.TopRight) || this.dragEnd ? 1 : 0;
-        const b = (this.#dragCorner == ManipulatorCorner.BottomRight) || (this.#dragCorner == ManipulatorCorner.BottomLeft) || this.dragStart || this.dragBottom ? 1 : 0;
+        const a = (this.#dragCorner == ManipulatorCorner.BottomRight) || (this.#dragCorner == ManipulatorCorner.TopRight) || this.#dragSide == ManipulatorSide.Right ? 1 : 0;
+        const b = (this.#dragCorner == ManipulatorCorner.BottomRight) || (this.#dragCorner == ManipulatorCorner.BottomLeft) || this.#dragSide == ManipulatorSide.Left || this.#dragSide == ManipulatorSide.Bottom ? 1 : 0;
         const c = a === 1 ? 0 : 1;
         const d = b === 1 ? 0 : 1;
         return {
@@ -3284,4 +3339,4 @@ class HTMLHarmonyToggleButtonElement extends HTMLElement {
 	}
 }
 
-export { HTMLHarmony2dManipulatorElement, HTMLHarmonyAccordionElement, HTMLHarmonyColorPickerElement, HTMLHarmonyContextMenuElement, HTMLHarmonyCopyElement, HTMLHarmonyLabelPropertyElement, HTMLHarmonyPaletteElement, HTMLHarmonyPanelElement, HTMLHarmonyRadioElement, HTMLHarmonySelectElement, HTMLHarmonySlideshowElement, HTMLHarmonySplitterElement, HTMLHarmonySwitchElement, HTMLHarmonyTabElement, HTMLHarmonyTabGroupElement, HTMLHarmonyToggleButtonElement, I18n, ManipulatorCorner, ManipulatorDirection, createElement, createElementNS, display, documentStyle, documentStyleSync, hide, isVisible, shadowRootStyle, shadowRootStyleSync, show, styleInject, toggle, updateElement, visible };
+export { HTMLHarmony2dManipulatorElement, HTMLHarmonyAccordionElement, HTMLHarmonyColorPickerElement, HTMLHarmonyContextMenuElement, HTMLHarmonyCopyElement, HTMLHarmonyLabelPropertyElement, HTMLHarmonyPaletteElement, HTMLHarmonyPanelElement, HTMLHarmonyRadioElement, HTMLHarmonySelectElement, HTMLHarmonySlideshowElement, HTMLHarmonySplitterElement, HTMLHarmonySwitchElement, HTMLHarmonyTabElement, HTMLHarmonyTabGroupElement, HTMLHarmonyToggleButtonElement, I18n, ManipulatorCorner, ManipulatorDirection, ManipulatorSide, createElement, createElementNS, display, documentStyle, documentStyleSync, hide, isVisible, shadowRootStyle, shadowRootStyleSync, show, styleInject, toggle, updateElement, visible };

@@ -33,6 +33,8 @@ function getDirection(s: string): ManipulatorDirection {
 
 const CORNERS = [[0, 0], [1, 0], [0, 1], [1, 1]];
 const SCALE_CORNERS = [[-1, -1], [1, -1], [-1, 1], [1, 1]];
+const SIDES = [[0.5, 0], [0.5, 1], [0, 0.5], [1, 0.5]];
+const SCALE_SIDES = [[0, 1], [0, 1], [1, 0], [1, 0]];
 
 export enum ManipulatorCorner {
 	None = -1,
@@ -40,6 +42,14 @@ export enum ManipulatorCorner {
 	TopRight = 1,
 	BottomLeft = 2,
 	BottomRight = 3,
+}
+
+export enum ManipulatorSide {
+	None = -1,
+	Top = 0,
+	Bottom = 1,
+	Left = 2,
+	Right = 3,
 }
 
 export class HTMLHarmony2dManipulatorElement extends HTMLElement {
@@ -51,6 +61,7 @@ export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 	#scale: ManipulatorDirection = ManipulatorDirection.All;
 	#skew: ManipulatorDirection = ManipulatorDirection.All;
 	#htmlScaleCorners: Array<HTMLElement> = [];
+	#htmlResizeSides: Array<HTMLElement> = [];
 	#top: number = 0;
 	#left: number = 0;
 	#width: number = 50;
@@ -61,7 +72,8 @@ export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 	#previousHeight: number = -1;
 	#rotation: number = 0;
 	#previousRotation: number = 0;
-	#dragCorner: ManipulatorCorner = -1;
+	#dragCorner: ManipulatorCorner = ManipulatorCorner.None;
+	#dragSide: ManipulatorSide = ManipulatorSide.None;
 	#dragThis = false;
 	#startPageX: number = 0;
 	#startPageY: number = 0;
@@ -107,10 +119,19 @@ export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 				events: {
 					mousedown: (event: MouseEvent) => this.#startDragCorner(event, i),
 				}
-
 			});
-
 			this.#htmlScaleCorners.push(htmlCorner);
+		}
+
+		for (let i = 0; i < 4; i++) {
+			const htmlCorner = createElement('div', {
+				class: 'side',
+				parent: this.#htmlQuad,
+				events: {
+					mousedown: (event: MouseEvent) => this.#startDragSide(event, i),
+				}
+			});
+			this.#htmlResizeSides.push(htmlCorner);
 		}
 
 		document.addEventListener('mousemove', (event: MouseEvent) => this.#onMouseMove(event));
@@ -133,6 +154,7 @@ export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 		}
 		this.#stopTranslate(event);
 		this.#stopDragCorner(event);
+		this.#stopDragSide(event);
 	}
 
 	#stopTranslate(event: MouseEvent) {
@@ -140,13 +162,23 @@ export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 	}
 
 	#stopDragCorner(event: MouseEvent) {
-		if (this.#dragCorner >= 0) {
-
+		if (this.#dragCorner < 0) {
+			return;
 		}
 
 		this.#htmlScaleCorners[this.#dragCorner].classList.remove('grabbing');
 		this.classList.remove('grabbing');
 		this.#dragCorner = ManipulatorCorner.None;
+	}
+
+	#stopDragSide(event: MouseEvent) {
+		if (this.#dragSide < 0) {
+			return;
+		}
+
+		this.#htmlResizeSides[this.#dragSide].classList.remove('grabbing');
+		this.classList.remove('grabbing');
+		this.#dragSide = ManipulatorSide.None;
 	}
 
 	#startTranslate(event: MouseEvent) {
@@ -167,6 +199,18 @@ export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 
 		this.#dragging = true;
 		this.#dragCorner = i;
+		this.#initStartPositions(event);
+	}
+
+	#startDragSide(event: MouseEvent, i: ManipulatorSide) {
+		if (this.#dragging) {
+			return;
+		}
+		this.#htmlResizeSides[i].classList.add('grabbing');
+		this.classList.add('grabbing');
+
+		this.#dragging = true;
+		this.#dragSide = i;
 		this.#initStartPositions(event);
 	}
 
@@ -191,7 +235,7 @@ export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 	}
 
 	#resize(event: MouseEvent) {
-		if (this.#dragCorner > ManipulatorCorner.None) {
+		if (this.#dragCorner > ManipulatorCorner.None || this.#dragSide > ManipulatorSide.None) {
 			this.#deltaResize(event);
 			this.#refresh();
 		}
@@ -271,6 +315,13 @@ export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 			htmlCorner.style.left = `${c[0] * this.#width}px`;
 			htmlCorner.style.top = `${c[1] * this.#height}px`;
 		}
+
+		for (let i = 0; i < 4; i++) {
+			const s = SIDES[i];
+			const htmlSide = this.#htmlResizeSides[i];
+			htmlSide.style.left = `${s[0] * this.#width}px`;
+			htmlSide.style.top = `${s[1] * this.#height}px`;
+		}
 	}
 
 	attributeChangedCallback(name: string, oldValue: string, newValue: string) {
@@ -323,6 +374,13 @@ export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 			const x = (c[0] * delta.x + c[1] * delta.y) * 0.5;
 			delta.x = x * c[0];
 			delta.y = x * c[1];
+		}
+
+		if (this.#dragSide > ManipulatorSide.None) {
+			const c = SCALE_SIDES[this.#dragSide];
+			const x = (c[0] * delta.x + c[1] * delta.y) * 0.5;
+			delta.x *= c[0];
+			delta.y *= c[1];
 		}
 
 		const qp_x: number = this.#qp0_x + delta.x;
@@ -402,8 +460,8 @@ export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 	}
 
 	#resizeMatrix(): ResizeMatrix {
-		const a: 0 | 1 = (this.#dragCorner == ManipulatorCorner.BottomRight) || (this.#dragCorner == ManipulatorCorner.TopRight) || this.dragEnd ? 1 : 0;
-		const b: 0 | 1 = (this.#dragCorner == ManipulatorCorner.BottomRight) || (this.#dragCorner == ManipulatorCorner.BottomLeft) || this.dragStart || this.dragBottom ? 1 : 0;
+		const a: 0 | 1 = (this.#dragCorner == ManipulatorCorner.BottomRight) || (this.#dragCorner == ManipulatorCorner.TopRight) || this.#dragSide == ManipulatorSide.Right ? 1 : 0;
+		const b: 0 | 1 = (this.#dragCorner == ManipulatorCorner.BottomRight) || (this.#dragCorner == ManipulatorCorner.BottomLeft) || this.#dragSide == ManipulatorSide.Left || this.#dragSide == ManipulatorSide.Bottom ? 1 : 0;
 		const c: 0 | 1 = a === 1 ? 0 : 1;
 		const d: 0 | 1 = b === 1 ? 0 : 1;
 

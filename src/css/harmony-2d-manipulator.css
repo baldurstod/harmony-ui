@@ -11,7 +11,7 @@
 	pointer-events: all;
 }
 
-:host-context(.grabbing){
+:host-context(.grabbing) {
 	cursor: grabbing;
 }
 
@@ -23,6 +23,16 @@
 }
 
 .corner {
+	position: absolute;
+	width: var(--harmony-2d-manipulator-shadow-radius);
+	height: var(--harmony-2d-manipulator-shadow-radius);
+	background-color: var(--harmony-2d-manipulator-shadow-handle-bg-color);
+	border-radius: calc(var(--harmony-2d-manipulator-shadow-radius) * 0.5);
+	transform: translate(-50%, -50%);
+	cursor: grab;
+}
+
+.side {
 	position: absolute;
 	width: var(--harmony-2d-manipulator-shadow-radius);
 	height: var(--harmony-2d-manipulator-shadow-radius);
