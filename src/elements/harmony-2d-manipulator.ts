@@ -145,6 +145,7 @@ export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 		}
 
 		this.#htmlScaleCorners[this.#dragCorner].classList.remove('grabbing');
+		this.classList.remove('grabbing');
 		this.#dragCorner = ManipulatorCorner.None;
 	}
 
@@ -162,6 +163,7 @@ export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 			return;
 		}
 		this.#htmlScaleCorners[i].classList.add('grabbing');
+		this.classList.add('grabbing');
 
 		this.#dragging = true;
 		this.#dragCorner = i;

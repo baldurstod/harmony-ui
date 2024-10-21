@@ -11,6 +11,10 @@
 	pointer-events: all;
 }
 
+:host-context(.grabbing){
+	cursor: grabbing;
+}
+
 .manipulator {
 	position: absolute;
 	background-color: var(--harmony-2d-manipulator-shadow-bg-color);
@@ -31,7 +35,6 @@
 .corner.grabbing {
 	cursor: grabbing;
 }
-
 
 @media (prefers-color-scheme: light) {
 	:host {}
