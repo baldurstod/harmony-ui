@@ -440,7 +440,7 @@ function getDirection(s) {
             return ManipulatorDirection.All;
     }
 }
-const CORNERS = [[0, 0], [1, 0], [0, 1], [1, 1]];
+const CORNERS = [[-1, -1], [1, -1], [-1, 1], [1, 1]];
 const SCALE_CORNERS = [[-1, -1], [1, -1], [-1, 1], [1, 1]];
 const SIDES = [[0.5, 0], [0.5, 1], [0, 0.5], [1, 0.5]];
 const SCALE_SIDES = [[0, 1], [0, 1], [1, 0], [1, 0]];
@@ -650,6 +650,7 @@ class HTMLHarmony2dManipulatorElement extends HTMLElement {
             const currentX = event.clientX;
             const currentY = event.clientY;
             this.#rotation = -Math.atan2(currentX - this.#centerX, currentY - this.#centerY) + Math.PI;
+            this.#update();
             this.#refresh();
         }
     }
@@ -695,7 +696,15 @@ class HTMLHarmony2dManipulatorElement extends HTMLElement {
             return null;
         }
         const c = CORNERS[i];
-        return { x: c[0] * this.#width + this.#left, y: c[1] * this.#height + this.#top };
+        this.#htmlQuad.getBoundingClientRect();
+        const centerX = this.#left + this.#width / 2;
+        const centerY = this.#top + this.#height / 2;
+        const x = c[0] * this.#width * 0.5;
+        const y = c[1] * this.#height * 0.5;
+        return {
+            x: x * Math.cos(this.#rotation) - y * Math.sin(this.#rotation) + centerX,
+            y: x * Math.sin(this.#rotation) + y * Math.cos(this.#rotation) + centerY,
+        };
     }
     connectedCallback() {
         this.#refresh();
@@ -713,8 +722,8 @@ class HTMLHarmony2dManipulatorElement extends HTMLElement {
         for (let i = 0; i < 4; i++) {
             const c = CORNERS[i];
             const htmlCorner = this.#htmlScaleCorners[i];
-            htmlCorner.style.left = `${c[0] * this.#width}px`;
-            htmlCorner.style.top = `${c[1] * this.#height}px`;
+            htmlCorner.style.left = `${(c[0] == -1 ? 0 : 1) * this.#width}px`;
+            htmlCorner.style.top = `${(c[1] == -1 ? 0 : 1) * this.#height}px`;
         }
         for (let i = 0; i < 4; i++) {
             const s = SIDES[i];
