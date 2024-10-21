@@ -50,7 +50,7 @@ export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 	#rotate = true;
 	#scale: ManipulatorDirection = ManipulatorDirection.All;
 	#skew: ManipulatorDirection = ManipulatorDirection.All;
-	#htmlScaleCorners = [];
+	#htmlScaleCorners: Array<HTMLElement> = [];
 	#top: number = 0;
 	#left: number = 0;
 	#width: number = 50;
@@ -143,6 +143,8 @@ export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 		if (this.#dragCorner >= 0) {
 
 		}
+
+		this.#htmlScaleCorners[this.#dragCorner].classList.remove('grabbing');
 		this.#dragCorner = ManipulatorCorner.None;
 	}
 
@@ -159,6 +161,8 @@ export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 		if (this.#dragging) {
 			return;
 		}
+		this.#htmlScaleCorners[i].classList.add('grabbing');
+
 		this.#dragging = true;
 		this.#dragCorner = i;
 		this.#initStartPositions(event);
@@ -313,12 +317,7 @@ export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 		const delta: { x: number; y: number } = this.#getDelta(event);
 
 		if (this.#dragCorner > ManipulatorCorner.None) {
-			SCALE_CORNERS
-
 			const c = SCALE_CORNERS[this.#dragCorner];
-			//return { x: c[0] * this.#width + this.#left, y: c[1] * this.#height + this.#top };
-
-
 			const x = (c[0] * delta.x + c[1] * delta.y) * 0.5;
 			delta.x = x * c[0];
 			delta.y = x * c[1];

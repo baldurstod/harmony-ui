@@ -15,6 +15,7 @@
 	position: absolute;
 	background-color: var(--harmony-2d-manipulator-shadow-bg-color);
 	border: var(--harmony-2d-manipulator-shadow-border);
+	cursor: move;
 }
 
 .corner {
@@ -24,8 +25,13 @@
 	background-color: var(--harmony-2d-manipulator-shadow-handle-bg-color);
 	border-radius: calc(var(--harmony-2d-manipulator-shadow-radius) * 0.5);
 	transform: translate(-50%, -50%);
-	cursor: pointer;
+	cursor: grab;
 }
+
+.corner.grabbing {
+	cursor: grabbing;
+}
+
 
 @media (prefers-color-scheme: light) {
 	:host {}

@@ -414,7 +414,7 @@ class I18n {
 	}*/
 }
 
-var manipulator2dCSS = ":host {\n\t--harmony-2d-manipulator-shadow-radius: var(--harmony-2d-manipulator-radius, 0.5rem);\n\t--harmony-2d-manipulator-shadow-bg-color: var(--harmony-2d-manipulator-bg-color, red);\n\t--harmony-2d-manipulator-shadow-border: var(--harmony-2d-manipulator-border, none);\n\t--harmony-2d-manipulator-shadow-handle-bg-color: var(--harmony-2d-manipulator-handle-bg-color, chartreuse);\n\n\twidth: 10rem;\n\theight: 10rem;\n\tdisplay: block;\n\tuser-select: none;\n\tpointer-events: all;\n}\n\n.manipulator {\n\tposition: absolute;\n\tbackground-color: var(--harmony-2d-manipulator-shadow-bg-color);\n\tborder: var(--harmony-2d-manipulator-shadow-border);\n}\n\n.corner {\n\tposition: absolute;\n\twidth: var(--harmony-2d-manipulator-shadow-radius);\n\theight: var(--harmony-2d-manipulator-shadow-radius);\n\tbackground-color: var(--harmony-2d-manipulator-shadow-handle-bg-color);\n\tborder-radius: calc(var(--harmony-2d-manipulator-shadow-radius) * 0.5);\n\ttransform: translate(-50%, -50%);\n\tcursor: pointer;\n}\n\n@media (prefers-color-scheme: light) {\n\t:host {}\n}\n\n@media (prefers-color-scheme: dark) {\n\t:host {}\n}\n";
+var manipulator2dCSS = ":host {\n\t--harmony-2d-manipulator-shadow-radius: var(--harmony-2d-manipulator-radius, 0.5rem);\n\t--harmony-2d-manipulator-shadow-bg-color: var(--harmony-2d-manipulator-bg-color, red);\n\t--harmony-2d-manipulator-shadow-border: var(--harmony-2d-manipulator-border, none);\n\t--harmony-2d-manipulator-shadow-handle-bg-color: var(--harmony-2d-manipulator-handle-bg-color, chartreuse);\n\n\twidth: 10rem;\n\theight: 10rem;\n\tdisplay: block;\n\tuser-select: none;\n\tpointer-events: all;\n}\n\n.manipulator {\n\tposition: absolute;\n\tbackground-color: var(--harmony-2d-manipulator-shadow-bg-color);\n\tborder: var(--harmony-2d-manipulator-shadow-border);\n\tcursor: move;\n}\n\n.corner {\n\tposition: absolute;\n\twidth: var(--harmony-2d-manipulator-shadow-radius);\n\theight: var(--harmony-2d-manipulator-shadow-radius);\n\tbackground-color: var(--harmony-2d-manipulator-shadow-handle-bg-color);\n\tborder-radius: calc(var(--harmony-2d-manipulator-shadow-radius) * 0.5);\n\ttransform: translate(-50%, -50%);\n\tcursor: grab;\n}\n\n.corner.grabbing {\n\tcursor: grabbing;\n}\n\n\n@media (prefers-color-scheme: light) {\n\t:host {}\n}\n\n@media (prefers-color-scheme: dark) {\n\t:host {}\n}\n";
 
 function toBool(s) {
     return s === '1' || s === 'true';
@@ -533,6 +533,7 @@ class HTMLHarmony2dManipulatorElement extends HTMLElement {
     }
     #stopDragCorner(event) {
         if (this.#dragCorner >= 0) ;
+        this.#htmlScaleCorners[this.#dragCorner].classList.remove('grabbing');
         this.#dragCorner = ManipulatorCorner.None;
     }
     #startTranslate(event) {
@@ -547,6 +548,7 @@ class HTMLHarmony2dManipulatorElement extends HTMLElement {
         if (this.#dragging) {
             return;
         }
+        this.#htmlScaleCorners[i].classList.add('grabbing');
         this.#dragging = true;
         this.#dragCorner = i;
         this.#initStartPositions(event);
@@ -676,7 +678,6 @@ class HTMLHarmony2dManipulatorElement extends HTMLElement {
         const delta = this.#getDelta(event);
         if (this.#dragCorner > ManipulatorCorner.None) {
             const c = SCALE_CORNERS[this.#dragCorner];
-            //return { x: c[0] * this.#width + this.#left, y: c[1] * this.#height + this.#top };
             const x = (c[0] * delta.x + c[1] * delta.y) * 0.5;
             delta.x = x * c[0];
             delta.y = x * c[1];
