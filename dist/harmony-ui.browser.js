@@ -769,18 +769,23 @@ class HTMLHarmony2dManipulatorElement extends HTMLElement {
         this.#update();
     }
     #deltaResize(event) {
+        function dot(a, b) {
+            return a.x * b.x + a.y * b.y;
+        }
         const delta = this.#getDelta(event);
         if (this.#dragCorner > ManipulatorCorner.None) {
             const c = SCALE_CORNERS[this.#dragCorner];
-            const x = (c[0] * delta.x + c[1] * delta.y) * 0.5;
-            delta.x = x * c[0];
-            delta.y = x * c[1];
+            const v = { x: c[0] * Math.cos(this.#rotation) - c[1] * Math.sin(this.#rotation), y: c[0] * Math.sin(this.#rotation) + c[1] * Math.cos(this.#rotation) };
+            const d = dot(delta, v);
+            delta.x = v.x * d;
+            delta.y = v.y * d;
         }
         if (this.#dragSide > ManipulatorSide.None) {
             const c = SCALE_SIDES[this.#dragSide];
-            (c[0] * delta.x + c[1] * delta.y) * 0.5;
-            delta.x *= c[0];
-            delta.y *= c[1];
+            const v = { x: c[0] * Math.cos(this.#rotation) - c[1] * Math.sin(this.#rotation), y: c[0] * Math.sin(this.#rotation) + c[1] * Math.cos(this.#rotation) };
+            const d = dot(delta, v);
+            delta.x = v.x * d;
+            delta.y = v.y * d;
         }
         const qp_x = this.#qp0_x + delta.x;
         const qp_y = this.#qp0_y + delta.y;
