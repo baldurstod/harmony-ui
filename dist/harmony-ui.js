@@ -490,6 +490,8 @@ class HTMLHarmony2dManipulatorElement extends HTMLElement {
     #startPageY = 0;
     #minWidth = 0;
     #minHeight = 0;
+    #startWidth = 0;
+    #startHeight = 0;
     #startTop = 0;
     #startLeft = 0;
     #centerX = 0;
@@ -826,8 +828,28 @@ class HTMLHarmony2dManipulatorElement extends HTMLElement {
             w = wtmp;
             h = htmp;
         }
-        const l = matrix.c * q_x + matrix.a * p_x;
-        const t = matrix.d * q_y + matrix.b * p_y;
+        let l = matrix.c * q_x + matrix.a * p_x;
+        let t = matrix.d * q_y + matrix.b * p_y;
+        if (event.altKey) {
+            const deltaWidth = w - this.#startWidth;
+            const deltaHeight = h - this.#startHeight;
+            switch (this.#dragSide) {
+                case ManipulatorSide.Left:
+                    w += deltaWidth;
+                    break;
+                case ManipulatorSide.Right:
+                    w += deltaWidth;
+                    l -= deltaWidth;
+                    break;
+                case ManipulatorSide.Top:
+                    h += deltaHeight;
+                    break;
+                case ManipulatorSide.Bottom:
+                    h += deltaHeight;
+                    t -= deltaHeight;
+                    break;
+            }
+        }
         this.#left = this.convertToUnit(l, 'width');
         this.#width = this.convertToUnit(w, 'width');
         this.#top = this.convertToUnit(t, 'height');
@@ -882,6 +904,8 @@ class HTMLHarmony2dManipulatorElement extends HTMLElement {
         this.#initStartPositionsResize();
     }
     #initStartPositionsMove() {
+        this.#startWidth = this.#width;
+        this.#startHeight = this.#height;
         this.#startTop = this.#top;
         this.#startLeft = this.#left;
     }
