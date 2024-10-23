@@ -464,7 +464,6 @@ var ManipulatorSide;
 class HTMLHarmony2dManipulatorElement extends HTMLElement {
     #shadowRoot;
     #htmlQuad;
-    #doOnce = true;
     #translationMode = ManipulatorDirection.All;
     #canRotate = true;
     #scale = ManipulatorDirection.All;
@@ -490,8 +489,6 @@ class HTMLHarmony2dManipulatorElement extends HTMLElement {
     #startPageY = 0;
     #minWidth = 0;
     #minHeight = 0;
-    #startWidth = 0;
-    #startHeight = 0;
     #startTop = 0;
     #startLeft = 0;
     #centerX = 0;
@@ -500,12 +497,7 @@ class HTMLHarmony2dManipulatorElement extends HTMLElement {
     #qp0_y;
     #pp_x;
     #pp_y;
-    dragBottom = false;
-    dragTop = false;
-    dragStart = false;
-    dragEnd = false;
     #dragging = false;
-    #draggedElement;
     constructor() {
         super();
         this.#shadowRoot = this.attachShadow({ mode: 'open' });
@@ -520,7 +512,6 @@ class HTMLHarmony2dManipulatorElement extends HTMLElement {
                 }
             }),
             events: {
-                //mousedown: (event: MouseEvent) => this.#draggedElement = (event.target as HTMLElement),
                 mousedown: (event) => this.#startTranslate(event),
             }
         });
@@ -766,13 +757,9 @@ class HTMLHarmony2dManipulatorElement extends HTMLElement {
         const deltaX = this.convertToUnit(delta.x, 'width');
         const deltaY = this.convertToUnit(delta.y, 'height');
         if (top) {
-            //const maxTop: number = this.#convertParentUnit(this.parentHeight) - this.startHeight;
-            //this.#top = this.#startTop + deltaY > 0 ? (this.#startTop + deltaY < maxTop ? this.#startTop + deltaY : maxTop) : 0;
             this.#top = this.#startTop + deltaY;
         }
         if (left) {
-            //const maxLeft: number = this.#convertParentUnit(this.parentWidth) - this.startWidth;
-            //this.#left = this.#startLeft + deltaX > 0 ? (this.#startLeft + deltaX < maxLeft ? this.startLeft + deltaX : maxLeft) : 0;
             this.#left = this.#startLeft + deltaX;
         }
         this.#update();
@@ -847,8 +834,8 @@ class HTMLHarmony2dManipulatorElement extends HTMLElement {
         const currentX = event.pageX;
         const currentY = event.pageY;
         return {
-            x: this.dragBottom || this.dragTop ? 0 : currentX - this.#startPageX,
-            y: this.dragStart || this.dragEnd ? 0 : currentY - this.#startPageY
+            x: currentX - this.#startPageX,
+            y: currentY - this.#startPageY,
         };
     }
     #resizeMatrix() {
@@ -887,8 +874,6 @@ class HTMLHarmony2dManipulatorElement extends HTMLElement {
         this.#initStartPositionsResize();
     }
     #initStartPositionsMove() {
-        this.#startWidth = isNaN(this.#width) ? 0 : this.#width;
-        this.#startHeight = isNaN(this.#height) ? 0 : this.#height;
         this.#startTop = this.#top;
         this.#startLeft = this.#left;
     }
@@ -901,11 +886,10 @@ class HTMLHarmony2dManipulatorElement extends HTMLElement {
         const theta = this.#rotation;
         const cos_t = Math.cos(theta);
         const sin_t = Math.sin(theta);
-        //const css: CSSStyleDeclaration = window.getComputedStyle(this.el);
-        const l = this.#left; //parseFloat(css.left);
-        const t = this.#top; //parseFloat(css.top);
-        const w = this.#width; //parseFloat(css.width);
-        const h = this.#height; //parseFloat(css.height);
+        const l = this.#left;
+        const t = this.#top;
+        const w = this.#width;
+        const h = this.#height;
         const matrix = this.#resizeMatrix();
         const c0_x = l + w / 2.0;
         const c0_y = t + h / 2.0;

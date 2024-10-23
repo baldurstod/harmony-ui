@@ -58,7 +58,6 @@ type v2 = { x: number, y: number };
 export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 	#shadowRoot: ShadowRoot;
 	#htmlQuad: HTMLElement;
-	#doOnce = true;
 	#translationMode: ManipulatorDirection = ManipulatorDirection.All;
 	#canRotate = true;
 	#scale: ManipulatorDirection = ManipulatorDirection.All;
@@ -85,8 +84,6 @@ export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 	#minWidth = 0;
 	#minHeight = 0;
 
-	#startWidth: number = 0;
-	#startHeight: number = 0;
 	#startTop: number = 0;
 	#startLeft: number = 0;
 
@@ -98,13 +95,7 @@ export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 	#pp_x: number;
 	#pp_y: number;
 
-	dragBottom = false;
-	dragTop = false;
-	dragStart = false;
-	dragEnd = false;
-
 	#dragging = false;
-	#draggedElement?: HTMLElement;
 
 	constructor() {
 		super();
@@ -121,7 +112,6 @@ export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 				}
 			}),
 			events: {
-				//mousedown: (event: MouseEvent) => this.#draggedElement = (event.target as HTMLElement),
 				mousedown: (event: MouseEvent) => this.#startTranslate(event),
 			}
 		});
@@ -416,14 +406,10 @@ export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 		const deltaY: number = this.convertToUnit(delta.y, 'height');
 
 		if (top) {
-			//const maxTop: number = this.#convertParentUnit(this.parentHeight) - this.startHeight;
-			//this.#top = this.#startTop + deltaY > 0 ? (this.#startTop + deltaY < maxTop ? this.#startTop + deltaY : maxTop) : 0;
 			this.#top = this.#startTop + deltaY;
 		}
 
 		if (left) {
-			//const maxLeft: number = this.#convertParentUnit(this.parentWidth) - this.startWidth;
-			//this.#left = this.#startLeft + deltaX > 0 ? (this.#startLeft + deltaX < maxLeft ? this.startLeft + deltaX : maxLeft) : 0;
 			this.#left = this.#startLeft + deltaX;
 		}
 		this.#update();
@@ -523,8 +509,8 @@ export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 		const currentY: number = event.pageY;
 
 		return {
-			x: this.dragBottom || this.dragTop ? 0 : currentX - this.#startPageX,
-			y: this.dragStart || this.dragEnd ? 0 : currentY - this.#startPageY
+			x: currentX - this.#startPageX,
+			y: currentY - this.#startPageY,
 		};
 	}
 
@@ -571,9 +557,6 @@ export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 	}
 
 	#initStartPositionsMove() {
-		this.#startWidth = isNaN(this.#width) ? 0 : this.#width;
-		this.#startHeight = isNaN(this.#height) ? 0 : this.#height;
-
 		this.#startTop = this.#top;
 		this.#startLeft = this.#left;
 	}
@@ -589,12 +572,10 @@ export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 		const cos_t: number = Math.cos(theta);
 		const sin_t: number = Math.sin(theta);
 
-		//const css: CSSStyleDeclaration = window.getComputedStyle(this.el);
-
-		const l: number = this.#left;//parseFloat(css.left);
-		const t: number = this.#top;//parseFloat(css.top);
-		const w: number = this.#width;//parseFloat(css.width);
-		const h: number = this.#height;//parseFloat(css.height);
+		const l: number = this.#left;
+		const t: number = this.#top;
+		const w: number = this.#width;
+		const h: number = this.#height;
 
 		const matrix: ResizeMatrix = this.#resizeMatrix();
 
