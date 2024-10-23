@@ -241,11 +241,7 @@ export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 			return;
 		}
 
-
 		this.#deltaMove(event, true, true);
-		if (event.ctrlKey) {
-			this.#snapPosition();
-		}
 		this.#refresh();
 
 		/*
@@ -280,12 +276,7 @@ export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 		}
 	}
 
-	#snapPosition() {
-		this.#left = this.#snapPosition2(this.#left);
-		this.#top = this.#snapPosition2(this.#top);
-	}
-
-	#snapPosition2(a: number): number {
+	#snapPosition(a: number): number {
 		return Math.round(a / SNAP_POSITION) * SNAP_POSITION;
 	}
 
@@ -518,8 +509,13 @@ export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 	}
 
 	#getDelta(event: MouseEvent): { x: number; y: number } {
-		const currentX: number = event.pageX;
-		const currentY: number = event.pageY;
+		let currentX: number = event.pageX;
+		let currentY: number = event.pageY;
+
+		if (event.ctrlKey) {
+			currentX = this.#snapPosition(currentX);
+			currentY = this.#snapPosition(currentY);
+		}
 
 		return {
 			x: currentX - this.#startPageX,
