@@ -503,7 +503,8 @@ export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 
 		if (event.altKey) {
 			const deltaWidth = w - this.#startWidth;
-			const deltaHeight = h - this.#startHeight
+			const deltaHeight = h - this.#startHeight;
+
 			switch (this.#dragSide) {
 				case ManipulatorSide.Left:
 					w += deltaWidth;
@@ -517,6 +518,25 @@ export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 					break;
 				case ManipulatorSide.Bottom:
 					h += deltaHeight;
+					t -= deltaHeight;
+					break;
+			}
+
+			if (this.#dragCorner > ManipulatorCorner.None) {
+				w += deltaWidth;
+				h += deltaHeight;
+			}
+
+
+			switch (this.#dragCorner) {
+				case ManipulatorCorner.TopRight:
+					l -= deltaWidth;
+					break;
+				case ManipulatorCorner.BottomLeft:
+					t -= deltaHeight;
+					break;
+				case ManipulatorCorner.BottomRight:
+					l -= deltaWidth;
 					t -= deltaHeight;
 					break;
 			}

@@ -849,6 +849,22 @@ class HTMLHarmony2dManipulatorElement extends HTMLElement {
                     t -= deltaHeight;
                     break;
             }
+            if (this.#dragCorner > ManipulatorCorner.None) {
+                w += deltaWidth;
+                h += deltaHeight;
+            }
+            switch (this.#dragCorner) {
+                case ManipulatorCorner.TopRight:
+                    l -= deltaWidth;
+                    break;
+                case ManipulatorCorner.BottomLeft:
+                    t -= deltaHeight;
+                    break;
+                case ManipulatorCorner.BottomRight:
+                    l -= deltaWidth;
+                    t -= deltaHeight;
+                    break;
+            }
         }
         this.#left = this.convertToUnit(l, 'width');
         this.#width = this.convertToUnit(w, 'width');
