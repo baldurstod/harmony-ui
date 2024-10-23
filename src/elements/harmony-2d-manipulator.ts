@@ -35,6 +35,7 @@ const CORNERS = [[-1, -1], [1, -1], [-1, 1], [1, 1]];
 const SCALE_CORNERS = [[-1, -1], [1, -1], [-1, 1], [1, 1]];
 const SIDES = [[0.5, 0], [0.5, 1], [0, 0.5], [1, 0.5]];
 const SCALE_SIDES = [[0, 1], [0, 1], [1, 0], [1, 0]];
+const SNAP_ROTATION = 15;// Degrees
 
 export enum ManipulatorCorner {
 	None = -1,
@@ -277,9 +278,16 @@ export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 			const currentY: number = event.clientY;
 
 			this.#rotation = -Math.atan2(currentX - this.#centerX, currentY - this.#centerY) + Math.PI;
+			if (event.ctrlKey) {
+				this.#snapRotation();
+			}
 			this.#update();
 			this.#refresh();
 		}
+	}
+
+	#snapRotation() {
+		this.#rotation = Math.round(this.#rotation * 180 / Math.PI / SNAP_ROTATION) * SNAP_ROTATION * Math.PI / 180;
 	}
 
 	#update() {

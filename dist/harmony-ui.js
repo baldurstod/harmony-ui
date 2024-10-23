@@ -444,6 +444,7 @@ const CORNERS = [[-1, -1], [1, -1], [-1, 1], [1, 1]];
 const SCALE_CORNERS = [[-1, -1], [1, -1], [-1, 1], [1, 1]];
 const SIDES = [[0.5, 0], [0.5, 1], [0, 0.5], [1, 0.5]];
 const SCALE_SIDES = [[0, 1], [0, 1], [1, 0], [1, 0]];
+const SNAP_ROTATION = 15; // Degrees
 var ManipulatorCorner;
 (function (ManipulatorCorner) {
     ManipulatorCorner[ManipulatorCorner["None"] = -1] = "None";
@@ -650,9 +651,15 @@ class HTMLHarmony2dManipulatorElement extends HTMLElement {
             const currentX = event.clientX;
             const currentY = event.clientY;
             this.#rotation = -Math.atan2(currentX - this.#centerX, currentY - this.#centerY) + Math.PI;
+            if (event.ctrlKey) {
+                this.#snapRotation();
+            }
             this.#update();
             this.#refresh();
         }
+    }
+    #snapRotation() {
+        this.#rotation = Math.round(this.#rotation * 180 / Math.PI / SNAP_ROTATION) * SNAP_ROTATION * Math.PI / 180;
     }
     #update() {
         if (this.#previousHeight == this.#height && this.#previousLeft == this.#left && this.#previousTop == this.#top && this.#previousWidth == this.#width && this.#previousRotation == this.#rotation) {
