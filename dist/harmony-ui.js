@@ -444,6 +444,7 @@ const CORNERS = [[-1, -1], [1, -1], [-1, 1], [1, 1]];
 const SCALE_CORNERS = [[-1, -1], [1, -1], [-1, 1], [1, 1]];
 const SIDES = [[0.5, 0], [0.5, 1], [0, 0.5], [1, 0.5]];
 const SCALE_SIDES = [[0, 1], [0, 1], [1, 0], [1, 0]];
+const SNAP_POSITION = 20; // Pixels
 const SNAP_ROTATION = 15; // Degrees
 var ManipulatorCorner;
 (function (ManipulatorCorner) {
@@ -620,6 +621,9 @@ class HTMLHarmony2dManipulatorElement extends HTMLElement {
             return;
         }
         this.#deltaMove(event, true, true);
+        if (event.ctrlKey) {
+            this.#snapPosition();
+        }
         this.#refresh();
         /*
         if (this.drag === 'x-axis') {
@@ -648,6 +652,13 @@ class HTMLHarmony2dManipulatorElement extends HTMLElement {
             this.#update();
             this.#refresh();
         }
+    }
+    #snapPosition() {
+        this.#left = this.#snapPosition2(this.#left);
+        this.#top = this.#snapPosition2(this.#top);
+    }
+    #snapPosition2(a) {
+        return Math.round(a / SNAP_POSITION) * SNAP_POSITION;
     }
     #snapRotation() {
         this.#rotation = Math.round(this.#rotation * 180 / Math.PI / SNAP_ROTATION) * SNAP_ROTATION * Math.PI / 180;
