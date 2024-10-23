@@ -774,7 +774,7 @@ class HTMLHarmony2dManipulatorElement extends HTMLElement {
         if (!event.shiftKey && this.#dragCorner > ManipulatorCorner.None) {
             const c = SCALE_CORNERS[this.#dragCorner];
             const v = { x: c[0] * Math.cos(this.#rotation) - c[1] * Math.sin(this.#rotation), y: c[0] * Math.sin(this.#rotation) + c[1] * Math.cos(this.#rotation) };
-            const d = dot(delta, v);
+            const d = dot(delta, v) * 0.5;
             delta.x = v.x * d;
             delta.y = v.y * d;
         }
