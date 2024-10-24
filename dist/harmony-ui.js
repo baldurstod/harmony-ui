@@ -808,7 +808,7 @@ class HTMLHarmony2dManipulatorElement extends HTMLElement {
         if (wtmp < this.#minWidth || htmp < this.#minHeight) {
             w = Math.max(this.#minWidth, wtmp);
             h = Math.max(this.#minHeight, htmp);
-            const theta = -1 * mtheta;
+            const theta = -mtheta;
             const cos_t = Math.cos(theta);
             const sin_t = Math.sin(theta);
             const dh_x = -sin_t * h;

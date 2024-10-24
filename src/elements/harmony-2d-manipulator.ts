@@ -472,7 +472,7 @@ export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 			w = Math.max(this.#minWidth, wtmp);
 			h = Math.max(this.#minHeight, htmp);
 
-			const theta: number = -1 * mtheta;
+			const theta: number = -mtheta;
 			const cos_t: number = Math.cos(theta);
 			const sin_t: number = Math.sin(theta);
 
@@ -526,7 +526,6 @@ export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 				w += deltaWidth;
 				h += deltaHeight;
 			}
-
 
 			switch (this.#dragCorner) {
 				case ManipulatorCorner.TopRight:
