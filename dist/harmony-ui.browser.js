@@ -494,6 +494,8 @@ class HTMLHarmony2dManipulatorElement extends HTMLElement {
     #startLeft = 0;
     #centerX = 0;
     #centerY = 0;
+    #c0_x;
+    #c0_y;
     #qp0_x;
     #qp0_y;
     #pp_x;
@@ -699,8 +701,8 @@ class HTMLHarmony2dManipulatorElement extends HTMLElement {
         }
         const c = CORNERS[i];
         this.#htmlQuad.getBoundingClientRect();
-        const centerX = this.#left + this.#width / 2;
-        const centerY = this.#top + this.#height / 2;
+        const centerX = this.#left + this.#width * 0.5;
+        const centerY = this.#top + this.#height * 0.5;
         const x = c[0] * this.#width * 0.5;
         const y = c[1] * this.#height * 0.5;
         return {
@@ -789,8 +791,8 @@ class HTMLHarmony2dManipulatorElement extends HTMLElement {
         }
         const qp_x = this.#qp0_x + delta.x;
         const qp_y = this.#qp0_y + delta.y;
-        const cp_x = (qp_x + this.#pp_x) / 2.0;
-        const cp_y = (qp_y + this.#pp_y) / 2.0;
+        const cp_x = event.altKey ? this.#c0_x : (qp_x + this.#pp_x) * 0.5;
+        const cp_y = event.altKey ? this.#c0_y : (qp_y + this.#pp_y) * 0.5;
         const mtheta = -this.#rotation;
         const cos_mt = Math.cos(mtheta);
         const sin_mt = Math.sin(mtheta);
@@ -815,8 +817,8 @@ class HTMLHarmony2dManipulatorElement extends HTMLElement {
             const dw_y = sin_t * w;
             const qp_x_min = this.#pp_x + (matrix.a - matrix.c) * dw_x + (matrix.b - matrix.d) * dh_x;
             const qp_y_min = this.#pp_y + (matrix.a - matrix.c) * dw_y + (matrix.b - matrix.d) * dh_y;
-            const cp_x_min = (qp_x_min + this.#pp_x) / 2.0;
-            const cp_y_min = (qp_y_min + this.#pp_y) / 2.0;
+            const cp_x_min = (qp_x_min + this.#pp_x) * 0.5;
+            const cp_y_min = (qp_y_min + this.#pp_y) * 0.5;
             q_x = qp_x_min * cos_mt - qp_y_min * sin_mt - cos_mt * cp_x_min + sin_mt * cp_y_min + cp_x_min;
             q_y = qp_x_min * sin_mt + qp_y_min * cos_mt - sin_mt * cp_x_min - cos_mt * cp_y_min + cp_y_min;
             p_x = this.#pp_x * cos_mt - this.#pp_y * sin_mt - cos_mt * cp_x_min + sin_mt * cp_y_min + cp_x_min;
@@ -925,8 +927,8 @@ class HTMLHarmony2dManipulatorElement extends HTMLElement {
     }
     #initStartPositionsRotation() {
         const rect = this.#htmlQuad.getBoundingClientRect();
-        this.#centerX = rect.left + rect.width / 2;
-        this.#centerY = rect.top + rect.height / 2;
+        this.#centerX = rect.left + rect.width * 0.5;
+        this.#centerY = rect.top + rect.height * 0.5;
     }
     #initStartPositionsResize() {
         const theta = this.#rotation;
@@ -937,16 +939,16 @@ class HTMLHarmony2dManipulatorElement extends HTMLElement {
         const w = this.#width;
         const h = this.#height;
         const matrix = this.#resizeMatrix();
-        const c0_x = l + w / 2.0;
-        const c0_y = t + h / 2.0;
+        this.#c0_x = l + w * 0.5;
+        this.#c0_y = t + h * 0.5;
         const q0_x = l + matrix.a * w;
         const q0_y = t + matrix.b * h;
         const p0_x = l + matrix.c * w;
         const p0_y = t + matrix.d * h;
-        this.#qp0_x = q0_x * cos_t - q0_y * sin_t - c0_x * cos_t + c0_y * sin_t + c0_x;
-        this.#qp0_y = q0_x * sin_t + q0_y * cos_t - c0_x * sin_t - c0_y * cos_t + c0_y;
-        this.#pp_x = p0_x * cos_t - p0_y * sin_t - c0_x * cos_t + c0_y * sin_t + c0_x;
-        this.#pp_y = p0_x * sin_t + p0_y * cos_t - c0_x * sin_t - c0_y * cos_t + c0_y;
+        this.#qp0_x = q0_x * cos_t - q0_y * sin_t - this.#c0_x * cos_t + this.#c0_y * sin_t + this.#c0_x;
+        this.#qp0_y = q0_x * sin_t + q0_y * cos_t - this.#c0_x * sin_t - this.#c0_y * cos_t + this.#c0_y;
+        this.#pp_x = p0_x * cos_t - p0_y * sin_t - this.#c0_x * cos_t + this.#c0_y * sin_t + this.#c0_x;
+        this.#pp_y = p0_x * sin_t + p0_y * cos_t - this.#c0_x * sin_t - this.#c0_y * cos_t + this.#c0_y;
     }
 }
 
