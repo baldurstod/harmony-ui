@@ -171,5 +171,5 @@ export function isVisible(htmlElement) {
 export const visible = isVisible;
 
 export function styleInject(css) {
-	document.head.append(createElement('style', {textContent: css}));
+	document.head.append(createElement('style', { textContent: css }));
 }
