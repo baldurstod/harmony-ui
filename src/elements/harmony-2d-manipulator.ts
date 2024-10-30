@@ -1,7 +1,7 @@
-import { shadowRootStyle } from '../harmony-css';
-import { createElement, hide, show, display } from '../harmony-html.js';
+import { createElement, hide, show, display } from '../harmony-html';
 import manipulator2dCSS from '../css/harmony-2d-manipulator.css';
 import { toBool } from '../utils/attributes';
+import { shadowRootStyle } from '../harmony-css';
 
 interface ResizeMatrix {
 	a: 0 | 1;
@@ -93,12 +93,12 @@ export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 	#centerX: number = 0;
 	#centerY: number = 0;
 
-	#c0_x: number;
-	#c0_y: number;
-	#qp0_x: number;
-	#qp0_y: number;
-	#pp_x: number;
-	#pp_y: number;
+	#c0_x: number = 0;
+	#c0_y: number = 0;
+	#qp0_x: number = 0;
+	#qp0_y: number = 0;
+	#pp_x: number = 0;
+	#pp_y: number = 0;
 
 	#dragging = false;
 
@@ -115,11 +115,11 @@ export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 				events: {
 					mousedown: (event: MouseEvent) => this.#startDragRotator(event),
 				}
-			}),
+			}) as HTMLElement,
 			events: {
 				mousedown: (event: MouseEvent) => this.#startTranslate(event),
 			}
-		});
+		}) as HTMLElement;
 
 		for (let i = 0; i < 4; i++) {
 			const htmlCorner = createElement('div', {
@@ -128,7 +128,7 @@ export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 				events: {
 					mousedown: (event: MouseEvent) => this.#startDragCorner(event, i),
 				}
-			});
+			}) as HTMLElement;
 			this.#htmlScaleCorners.push(htmlCorner);
 		}
 
@@ -139,7 +139,7 @@ export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 				events: {
 					mousedown: (event: MouseEvent) => this.#startDragSide(event, i),
 				}
-			});
+			}) as HTMLElement;
 			this.#htmlResizeSides.push(htmlCorner);
 		}
 
@@ -211,7 +211,7 @@ export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 		}
 		this.#dragging = true;
 		this.#dragRotator = true;
-		this.#htmlRotator.classList.add('grabbing');
+		this.#htmlRotator?.classList.add('grabbing');
 		this.classList.add('grabbing');
 		this.#initStartPositions(event);
 	}
@@ -381,8 +381,10 @@ export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 			htmlSide.style.top = `${s[1] * this.#height}px`;
 		}
 
-		this.#htmlRotator.style.left = `${0.5 * this.#width}px`;
-		this.#htmlRotator.style.top = `${-0.2 * this.#height}px`;
+		if (this.#htmlRotator) {
+			this.#htmlRotator.style.left = `${0.5 * this.#width}px`;
+			this.#htmlRotator.style.top = `${-0.2 * this.#height}px`;
+		}
 	}
 
 	attributeChangedCallback(name: string, oldValue: string, newValue: string) {
