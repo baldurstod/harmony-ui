@@ -53,7 +53,7 @@ function writeElements(isBrowser) {
 
 export default [
 	{
-		input: './src/index.js',
+		input: './src/index.ts',
 		output: {
 			file: TEMP_BUILD,
 			format: 'esm'
@@ -78,7 +78,7 @@ export default [
 		],
 	},
 	{
-		input: './src/index.js',
+		input: './src/index.ts',
 		output: {
 			file: './dist/harmony-ui.browser.js',
 			format: 'esm'
