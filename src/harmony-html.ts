@@ -1,19 +1,19 @@
-export function createElement(tagName, options) {
+export function createElement(tagName: string, options: any) {
 	let element = document.createElement(tagName);
 	return createElementOptions(element, options);
 }
 
-export function createElementNS(namespaceURI, tagName, options) {
-	let element = document.createElementNS(namespaceURI, tagName);
+export function createElementNS(namespaceURI: string, tagName: string, options: any) {
+	const element = (document.createElementNS(namespaceURI, tagName) as HTMLElement);
 	return createElementOptions(element, options);
 }
 
-export function updateElement(element, options) {
+export function updateElement(element: HTMLElement, options: any) {
 	createElementOptions(element, options);
 	return element;
 }
 
-function append(element, child) {
+function append(element: HTMLElement | ShadowRoot, child: HTMLElement) {
 	if (child === null || child === undefined) {
 		return;
 	}
@@ -25,8 +25,8 @@ function append(element, child) {
 	}
 }
 
-function createElementOptions(element, options) {
-	let shadowRoot;
+function createElementOptions(element: HTMLElement, options: any) {
+	let shadowRoot: ShadowRoot | undefined;
 	if (options) {
 		if (options.attachShadow) {
 			shadowRoot = element.attachShadow(options.attachShadow);
@@ -70,7 +70,7 @@ function createElementOptions(element, options) {
 					append(shadowRoot ?? element, optionValue);
 					break;
 				case 'childs':
-					optionValue.forEach(entry => append(shadowRoot ?? element, entry));
+					optionValue.forEach((entry: HTMLElement) => append(shadowRoot ?? element, entry));
 					break;
 				case 'events':
 					for (let eventType in optionValue) {
@@ -99,7 +99,7 @@ function createElementOptions(element, options) {
 					adoptStyleSheet(shadowRoot ?? element, optionValue);
 					break;
 				case 'adoptStyles':
-					optionValue.forEach(entry => {
+					optionValue.forEach((entry: string) => {
 						adoptStyleSheet(shadowRoot ?? element, entry);
 					});
 					break;
@@ -108,7 +108,7 @@ function createElementOptions(element, options) {
 					if (optionName.startsWith('data-')) {
 						element.setAttribute(optionName, optionValue);
 					} else {
-						element[optionName] = optionValue;
+						(element as any)[optionName] = optionValue;
 					}
 					break;
 			}
@@ -119,23 +119,23 @@ function createElementOptions(element, options) {
 	return shadowRoot ?? element;
 }
 
-async function adoptStyleSheet(element, cssText) {
+async function adoptStyleSheet(element: HTMLElement | Document | ShadowRoot, cssText: string) {
 	const sheet = new CSSStyleSheet;
 	await sheet.replace(cssText);
-	if (element.adoptStyleSheet) {
-		element.adoptStyleSheet(sheet);
+	if ((element as any).adoptStyleSheet) {
+		(element as any).adoptStyleSheet(sheet);
 	} else {
-		if (element.adoptedStyleSheets) {
-			element.adoptedStyleSheets.push(sheet);
+		if ((element as Document).adoptedStyleSheets) {
+			(element as Document).adoptedStyleSheets.push(sheet);
 		}
 	}
 }
 
-export function display(htmlElement, visible) {
+export function display(htmlElement: HTMLElement, visible: boolean) {
 	if (htmlElement == undefined) return;
 
 	if (htmlElement instanceof ShadowRoot) {
-		htmlElement = htmlElement.host;
+		htmlElement = (htmlElement.host as HTMLElement);
 	}
 
 	if (visible) {
@@ -145,15 +145,15 @@ export function display(htmlElement, visible) {
 	}
 }
 
-export function show(htmlElement) {
+export function show(htmlElement: HTMLElement) {
 	display(htmlElement, true);
 }
 
-export function hide(htmlElement) {
+export function hide(htmlElement: HTMLElement) {
 	display(htmlElement, false);
 }
 
-export function toggle(htmlElement) {
+export function toggle(htmlElement: HTMLElement) {
 	if (!(htmlElement instanceof HTMLElement)) {
 		return;
 	}
@@ -164,12 +164,12 @@ export function toggle(htmlElement) {
 	}
 }
 
-export function isVisible(htmlElement) {
+export function isVisible(htmlElement: HTMLElement) {
 	return htmlElement.style.display == ''
 }
 
 export const visible = isVisible;
 
-export function styleInject(css) {
+export function styleInject(css: string) {
 	document.head.append(createElement('style', { textContent: css }));
 }
