@@ -2,7 +2,8 @@
 	"name": "harmony-ui",
 	"version": "1.0.0",
 	"description": "",
-	"main": "dist/harmony-ui.js",
+	"main": "dist/index.js",
+	"types": "dist/index.d.ts",
 	"type": "module",
 	"devDependencies": {
 		"@rollup/plugin-image": "^3.0.2",
