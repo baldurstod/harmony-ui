@@ -131,8 +131,10 @@ async function adoptStyleSheet(element: HTMLElement | Document | ShadowRoot, css
 	}
 }
 
-export function display(htmlElement: HTMLElement, visible: boolean) {
-	if (htmlElement == undefined) return;
+export function display(htmlElement: HTMLElement | undefined, visible: boolean) {
+	if (htmlElement == undefined) {
+		return;
+	}
 
 	if (htmlElement instanceof ShadowRoot) {
 		htmlElement = (htmlElement.host as HTMLElement);
@@ -145,11 +147,11 @@ export function display(htmlElement: HTMLElement, visible: boolean) {
 	}
 }
 
-export function show(htmlElement: HTMLElement) {
+export function show(htmlElement?: HTMLElement) {
 	display(htmlElement, true);
 }
 
-export function hide(htmlElement: HTMLElement) {
+export function hide(htmlElement?: HTMLElement) {
 	display(htmlElement, false);
 }
 
