@@ -3,12 +3,13 @@ import { createElement, hide, show } from '../harmony-html.js';
 import { I18n } from '../harmony-i18n.js';
 
 import toggleButtonCSS from '../css/harmony-toggle-button.css';
+import { toBool } from '../utils/attributes.js';
 
 export class HTMLHarmonyToggleButtonElement extends HTMLElement {
-	#buttonOn;
-	#buttonOff;
+	#buttonOn?: HTMLElement;
+	#buttonOff?: HTMLElement;
 	#state = false;
-	#shadowRoot;
+	#shadowRoot: ShadowRoot;
 
 	constructor() {
 		super();
@@ -16,7 +17,7 @@ export class HTMLHarmonyToggleButtonElement extends HTMLElement {
 		I18n.observeElement(this.#shadowRoot);
 		shadowRootStyle(this.#shadowRoot, toggleButtonCSS);
 
-		this.addEventListener('click', event => this.#click(event));
+		this.addEventListener('click', () => this.#click());
 		this.#initObserver();
 	}
 
@@ -32,12 +33,12 @@ export class HTMLHarmonyToggleButtonElement extends HTMLElement {
 
 	#processChilds() {
 		for (let child of this.children) {
-			this.#processChild(child);
+			this.#processChild(child as HTMLElement);
 		}
 		this.#refresh();
 	}
 
-	#processChild(htmlChildElement) {
+	#processChild(htmlChildElement: HTMLElement) {
 		switch (htmlChildElement.tagName) {
 			case 'ON':
 				this.#buttonOn = htmlChildElement;
@@ -51,27 +52,27 @@ export class HTMLHarmonyToggleButtonElement extends HTMLElement {
 		this.#refresh();
 	}
 
-	attributeChangedCallback(name, oldValue, newValue) {
+	attributeChangedCallback(name: string, oldValue: string, newValue: string) {
 		if (name == 'data-i18n-on') {
-			this.#buttonOn.setAttribute('data-i18n-title', newValue);
+			this.#buttonOn?.setAttribute('data-i18n-title', newValue);
 		}
 		if (name == 'data-i18n-off') {
-			this.#buttonOff.setAttribute('data-i18n-title', newValue);
+			this.#buttonOff?.setAttribute('data-i18n-title', newValue);
 		}
 		if (name == 'state') {
-			this.state = newValue;
+			this.state = toBool(newValue);
 		}
 		if (name == 'src-on') {
 			this.#buttonOn = this.#buttonOn ?? createElement('span', {
 				class: 'i18n-title toggle-button-on',
 				hidden: true,
-			});
+			}) as HTMLElement;
 			this.#buttonOn.style.backgroundImage = `url(${newValue})`;
 		}
 		if (name == 'src-off') {
 			this.#buttonOff = this.#buttonOff ?? createElement('span', {
 				class: 'i18n-title toggle-button-off',
-			});
+			}) as HTMLElement;
 			this.#buttonOff.style.backgroundImage = `url(${newValue})`;
 		}
 	}
@@ -105,11 +106,11 @@ export class HTMLHarmonyToggleButtonElement extends HTMLElement {
 
 	#initObserver() {
 		let config = { childList: true, subtree: true };
-		const mutationCallback = (mutationsList, observer) => {
+		const mutationCallback = (mutationsList: Array<MutationRecord>, observer: MutationObserver) => {
 			for (const mutation of mutationsList) {
 				for (let addedNode of mutation.addedNodes) {
 					if (addedNode.parentNode == this) {
-						this.#processChild(addedNode);
+						this.#processChild(addedNode as HTMLElement);
 					}
 				}
 			}
@@ -119,7 +120,7 @@ export class HTMLHarmonyToggleButtonElement extends HTMLElement {
 		observer.observe(this, config);
 	}
 
-	adoptStyleSheet(styleSheet) {
+	adoptStyleSheet(styleSheet: CSSStyleSheet) {
 		this.#shadowRoot.adoptedStyleSheets.push(styleSheet);
 	}
 
