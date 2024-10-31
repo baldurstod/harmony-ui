@@ -1,5 +1,5 @@
-import { attributeIsTrue } from '../functions.js';
-import { createElement, hide, show, display } from '../harmony-html.js';
+import { createElement } from '../harmony-html.js';
+import { toBool } from '../utils/attributes.js';
 
 export class HTMLHarmonyAccordionElement extends HTMLElement {
 	#doOnce = true;
@@ -130,7 +130,7 @@ export class HTMLHarmonyAccordionElement extends HTMLElement {
 	attributeChangedCallback(name: string, oldValue: string, newValue: string) {
 		switch (name) {
 			case 'multiple':
-				this.#multiple = attributeIsTrue(newValue);
+				this.#multiple = toBool(newValue);
 				break;
 		}
 	}
