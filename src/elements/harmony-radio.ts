@@ -1,5 +1,5 @@
 import { shadowRootStyle } from '../harmony-css.js';
-import {createElement, hide, show, display} from '../harmony-html.js';
+import { createElement, hide, show, display } from '../harmony-html.js';
 import { I18n } from '../harmony-i18n.js';
 
 import radioCSS from '../css/harmony-radio.css';
@@ -18,7 +18,7 @@ export class HTMLHarmonyRadioElement extends HTMLElement {
 	constructor() {
 		super();
 		this.#shadowRoot = this.attachShadow({ mode: 'closed' });
-		this.#htmlLabel = createElement('div', {class: 'harmony-radio-label'});
+		this.#htmlLabel = createElement('div', { class: 'harmony-radio-label' });
 		this.#initObserver();
 	}
 
@@ -68,14 +68,14 @@ export class HTMLHarmonyRadioElement extends HTMLElement {
 				for (let child of this.#shadowRoot.children) {
 					if (child.hasAttribute('selected')) {
 						child.removeAttribute('selected');
-						this.dispatchEvent(new CustomEvent('change', {detail:{value:child.value, state:false}}));
-						child.dispatchEvent(new CustomEvent('change', {detail:{value:child.value, state:false}}));
+						this.dispatchEvent(new CustomEvent('change', { detail: { value: child.value, state: false } }));
+						child.dispatchEvent(new CustomEvent('change', { detail: { value: child.value, state: false } }));
 					}
 				}
 			}
 			select ? htmlButton.setAttribute('selected', '') : htmlButton.removeAttribute('selected', '');
-			this.dispatchEvent(new CustomEvent('change', {detail:{value:htmlButton.value, state:select}}));
-			htmlButton.dispatchEvent(new CustomEvent('change', {detail:{value:htmlButton.value, state:select}}));
+			this.dispatchEvent(new CustomEvent('change', { detail: { value: htmlButton.value, state: select } }));
+			htmlButton.dispatchEvent(new CustomEvent('change', { detail: { value: htmlButton.value, state: select } }));
 		}
 	}
 
@@ -94,7 +94,7 @@ export class HTMLHarmonyRadioElement extends HTMLElement {
 	}
 
 	#initObserver() {
-		let config = {childList:true, subtree: true};
+		let config = { childList: true, subtree: true };
 		const mutationCallback = (mutationsList, observer) => {
 			for (const mutation of mutationsList) {
 				let addedNodes = mutation.addedNodes;

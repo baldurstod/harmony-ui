@@ -1,4 +1,4 @@
-import  { checkOutlineSVG } from 'harmony-svg';
+import { checkOutlineSVG } from 'harmony-svg';
 import { I18n } from '../harmony-i18n.js';
 
 import { shadowRootStyle } from '../harmony-css.js';
@@ -80,7 +80,7 @@ export class HTMLHarmonyPaletteElement extends HTMLElement {
 	}
 
 	#selectColor(hex, element, selected) {
-		if (this.#selected.has(hex) && selected !==  true) {
+		if (this.#selected.has(hex) && selected !== true) {
 			this.#setSelected(this.#selected.get(hex), false);
 			this.#dispatchSelect(hex, false);
 			this.#selected.delete(hex);

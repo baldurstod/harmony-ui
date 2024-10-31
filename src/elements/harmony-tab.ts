@@ -1,4 +1,4 @@
-import {createElement, hide, show, display} from '../harmony-html.js';
+import { createElement, hide, show, display } from '../harmony-html.js';
 
 export class HTMLHarmonyTabElement extends HTMLElement {
 	#disabled = false;
@@ -9,8 +9,8 @@ export class HTMLHarmonyTabElement extends HTMLElement {
 		super();
 		this.#header = createElement('div', {
 			class: 'harmony-tab-label',
-			...(this.getAttribute('data-i18n')) && {i18n: this.getAttribute('data-i18n')},
-			...(this.getAttribute('data-text')) && {innerText: this.getAttribute('data-text')},
+			...(this.getAttribute('data-i18n')) && { i18n: this.getAttribute('data-i18n') },
+			...(this.getAttribute('data-text')) && { innerText: this.getAttribute('data-text') },
 			events: {
 				click: event => this.#click(event)
 			}
@@ -47,7 +47,7 @@ export class HTMLHarmonyTabElement extends HTMLElement {
 
 	set disabled(disabled) {
 		this.#disabled = disabled ? true : false;
-		this.#header.classList[this.#disabled?'add':'remove']('disabled');
+		this.#header.classList[this.#disabled ? 'add' : 'remove']('disabled');
 	}
 
 	get disabled() {

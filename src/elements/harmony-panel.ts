@@ -87,19 +87,19 @@ export class HTMLHarmonyPanelElement extends HTMLElement {
 		}
 		if (name == 'panel-direction') {
 			this.direction = newValue;
-		} else  if (name == 'panel-size') {
+		} else if (name == 'panel-size') {
 			this.size = newValue;
-		} else  if (name == 'is-container') {
+		} else if (name == 'is-container') {
 			this.isContainer = newValue;
-		} else  if (name == 'is-movable') {
+		} else if (name == 'is-movable') {
 			this.isMovable = newValue;
-		} else  if (name == 'collapsible') {
+		} else if (name == 'collapsible') {
 			this.collapsible = newValue;
-		} else  if (name == 'collapsed') {
+		} else if (name == 'collapsed') {
 			this.collapsed = newValue;
-		} else  if (name == 'title') {
+		} else if (name == 'title') {
 			this.title = newValue;
-		} else  if (name == 'title-i18n') {
+		} else if (name == 'title-i18n') {
 			this.titleI18n = newValue;
 		}
 	}
@@ -362,7 +362,7 @@ export class HTMLHarmonyPanelElement extends HTMLElement {
 	}
 
 	_toggleCollapse() {
-		this.collapsed = ! this._isCollapsed;
+		this.collapsed = !this._isCollapsed;
 	}
 
 
@@ -372,10 +372,10 @@ export class HTMLHarmonyPanelElement extends HTMLElement {
 
 	static saveDisposition() {
 		let list = document.getElementsByTagName('harmony-panel');
-		let json = {panels:{},dummies:[]};
+		let json = { panels: {}, dummies: [] };
 		for (let panel of list) {
 			if (panel.id && panel.parentElement && panel.parentElement.id && panel.parentElement.tagName == 'HARMONY-PANEL') {
-				json.panels[panel.id] = {parent:panel.parentElement.id, size:panel.size, direction:panel.direction};
+				json.panels[panel.id] = { parent: panel.parentElement.id, size: panel.size, direction: panel.direction };
 				if (panel._isDummy) {
 					json.dummies.push(panel.id);
 				}
@@ -386,7 +386,7 @@ export class HTMLHarmonyPanelElement extends HTMLElement {
 
 	static restoreDisposition(json) {
 		return;
-		if (!json || !json.dummies || !json.panels) {return;}
+		if (!json || !json.dummies || !json.panels) { return; }
 
 		let dummiesList = new Map();
 		for (let oldDummy of json.dummies) {

@@ -1,4 +1,4 @@
-import { createElement, hide, show} from '../harmony-html';
+import { createElement, hide, show } from '../harmony-html';
 
 export class HTMLHarmonyCopyElement extends HTMLElement {
 	#doOnce = true;

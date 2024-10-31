@@ -47,7 +47,7 @@ export class HTMLHarmonySplitterElement extends HTMLElement {
 		});
 
 		this.#htmlGutter.addEventListener('mousedown', event => this.#handleMouseDown(event));
-		document.body.addEventListener('mousemove', event => this.#handleMouseMove(event), {capture: true});
+		document.body.addEventListener('mousemove', event => this.#handleMouseMove(event), { capture: true });
 		document.body.addEventListener('mouseup', () => this.#dragging = false);
 	}
 
@@ -68,7 +68,7 @@ export class HTMLHarmonySplitterElement extends HTMLElement {
 		this.classList.remove('vertical', 'horizontal');
 		switch (orientation) {
 			case 'v':
-				case 'vertical':
+			case 'vertical':
 				this.#orientation = 'v';
 				this.classList.add('vertical');
 				break;

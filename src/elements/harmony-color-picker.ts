@@ -7,7 +7,7 @@ import colorPickerCSS from '../css/harmony-color-picker.css';
 export class HTMLHarmonyColorPickerElement extends HTMLElement {
 	#doOnce = true;
 	#shadowRoot;
-	#color = new Color({hex: '#00ffffff'});
+	#color = new Color({ hex: '#00ffffff' });
 	#htmlHuePicker;
 	#htmlHueSelector;
 	#htmlMainPicker;
@@ -35,7 +35,7 @@ export class HTMLHarmonyColorPickerElement extends HTMLElement {
 			id: 'hue-picker',
 			child: this.#htmlHueSelector = createElement('div', {
 				id: 'hue-selector',
-				class:'selector',
+				class: 'selector',
 				events: {
 					mousedown: event => this.#handleMouseDown(event),
 				},
@@ -52,7 +52,7 @@ export class HTMLHarmonyColorPickerElement extends HTMLElement {
 			id: 'main-picker',
 			child: this.#htmlMainSelector = createElement('div', {
 				id: 'main-selector',
-				class:'selector',
+				class: 'selector',
 				events: {
 					mousedown: event => this.#handleMouseDown(event),
 				},
@@ -67,10 +67,10 @@ export class HTMLHarmonyColorPickerElement extends HTMLElement {
 		this.#htmlAlphaPicker = createElement('div', {
 			parent: this.#shadowRoot,
 			id: 'alpha-picker',
-			class:'alpha-background',
+			class: 'alpha-background',
 			child: this.#htmlAlphaSelector = createElement('div', {
 				id: 'alpha-selector',
-				class:'selector',
+				class: 'selector',
 				events: {
 					mousedown: event => this.#handleMouseDown(event),
 				},
@@ -92,7 +92,7 @@ export class HTMLHarmonyColorPickerElement extends HTMLElement {
 		this.#htmlSample = createElement('div', {
 			parent: this.#shadowRoot,
 			id: 'sample',
-			class:'alpha-background',
+			class: 'alpha-background',
 		});
 		createElement('div', {
 			parent: this.#shadowRoot,

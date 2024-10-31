@@ -1,4 +1,4 @@
-import {createElement, hide, show} from '../harmony-html.js';
+import { createElement, hide, show } from '../harmony-html.js';
 
 export class HTMLHarmonySelectElement extends HTMLElement {
 	#htmlSelect;

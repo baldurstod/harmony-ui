@@ -19,7 +19,7 @@ export class HTMLHarmonyContextMenuElement extends HTMLElement {
 		});
 	}
 
-	show(items, clientX , clientY, userData) {
+	show(items, clientX, clientY, userData) {
 		document.body.append(this);
 		this.setItems(items, userData);
 		this.style.position = 'absolute';
@@ -117,55 +117,54 @@ export class HTMLHarmonyContextMenuElement extends HTMLElement {
 		if (!item) {
 			htmlItem.classList.add('separator');
 		} else {
-				let htmlItemTitle = createElement('div', {
-					class: 'harmony-context-menu-item-title',
+			let htmlItemTitle = createElement('div', {
+				class: 'harmony-context-menu-item-title',
+			});
+
+			if (item.i18n) {
+				htmlItemTitle.classList.add('i18n');
+				htmlItemTitle.setAttribute('data-i18n', item.i18n);
+				htmlItemTitle.innerHTML = item.i18n;
+			} else {
+				htmlItemTitle.innerHTML = item.name;
+			}
+			htmlItem.append(htmlItemTitle);
+
+			if (item.selected) {
+				htmlItem.classList.add('selected');
+			}
+			if (item.disabled) {
+				htmlItem.classList.add('disabled');
+			}
+			if (item.submenu) {
+				let htmlSubMenu = createElement('div', {
+					class: 'submenu',
 				});
-
-				if (item.i18n) {
-					htmlItemTitle.classList.add('i18n');
-					htmlItemTitle.setAttribute('data-i18n', item.i18n);
-					htmlItemTitle.innerHTML = item.i18n;
-				} else {
-					htmlItemTitle.innerHTML = item.name;
-				}
-				htmlItem.append(htmlItemTitle);
-
-				if (item.selected) {
-					htmlItem.classList.add('selected');
-				}
-				if (item.disabled) {
-					htmlItem.classList.add('disabled');
-				}
-				if (item.submenu) {
-					let htmlSubMenu = createElement('div', {
-						class: 'submenu',
-					});
-					this.#subMenus.set(htmlItem, htmlSubMenu);
-					if (item.submenu instanceof Array) {
-						for (let subItem of item.submenu) {
-							htmlSubMenu.append(this.addItem(subItem, userData));
-						}
-					} else {
-						for (let subItemName in item.submenu) {
-							let subItem = item.submenu[subItemName];
-							htmlSubMenu.append(this.addItem(subItem, userData));
-						}
+				this.#subMenus.set(htmlItem, htmlSubMenu);
+				if (item.submenu instanceof Array) {
+					for (let subItem of item.submenu) {
+						htmlSubMenu.append(this.addItem(subItem, userData));
 					}
-					htmlItem.append(htmlSubMenu);
-					//htmlSubMenu.style.display = 'none';
-					htmlItem.classList.add('closed');
-					htmlItem.addEventListener('click', event => {this.#openSubMenu(htmlSubMenu);event.stopPropagation();});
 				} else {
-					htmlItem.addEventListener('click', () =>
-						{
-							if (item.cmd) {
-								this.dispatchEvent(new CustomEvent(item.cmd));
-							}
-							if (item.f) {
-								item.f(userData);
-							}
-						}
-					);
+					for (let subItemName in item.submenu) {
+						let subItem = item.submenu[subItemName];
+						htmlSubMenu.append(this.addItem(subItem, userData));
+					}
+				}
+				htmlItem.append(htmlSubMenu);
+				//htmlSubMenu.style.display = 'none';
+				htmlItem.classList.add('closed');
+				htmlItem.addEventListener('click', event => { this.#openSubMenu(htmlSubMenu); event.stopPropagation(); });
+			} else {
+				htmlItem.addEventListener('click', () => {
+					if (item.cmd) {
+						this.dispatchEvent(new CustomEvent(item.cmd));
+					}
+					if (item.f) {
+						item.f(userData);
+					}
+				}
+				);
 				htmlItem.addEventListener('click', () => this.close());
 			}
 		}

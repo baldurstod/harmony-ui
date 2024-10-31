@@ -1,5 +1,5 @@
 import { shadowRootStyle } from '../harmony-css.js';
-import { createElement, hide, show} from '../harmony-html.js';
+import { createElement, hide, show } from '../harmony-html.js';
 import { I18n } from '../harmony-i18n.js';
 
 import toggleButtonCSS from '../css/harmony-toggle-button.css';
@@ -84,7 +84,7 @@ export class HTMLHarmonyToggleButtonElement extends HTMLElement {
 		state = state ? true : false;
 		if (this.#state != state) {
 			this.#state = state;
-			this.dispatchEvent(new CustomEvent('change', { detail:{ oldState: this.#state, newState: state } }));
+			this.dispatchEvent(new CustomEvent('change', { detail: { oldState: this.#state, newState: state } }));
 			this.#refresh();
 		}
 	}
@@ -104,7 +104,7 @@ export class HTMLHarmonyToggleButtonElement extends HTMLElement {
 	}
 
 	#initObserver() {
-		let config = {childList:true, subtree: true};
+		let config = { childList: true, subtree: true };
 		const mutationCallback = (mutationsList, observer) => {
 			for (const mutation of mutationsList) {
 				for (let addedNode of mutation.addedNodes) {

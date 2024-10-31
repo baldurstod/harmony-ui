@@ -36,7 +36,7 @@ export class HTMLHarmonySwitchElement extends HTMLElement {
 
 	set disabled(disabled) {
 		this.#disabled = disabled ? true : false;
-		this.classList[this.#disabled?'add':'remove']('disabled');
+		this.classList[this.#disabled ? 'add' : 'remove']('disabled');
 	}
 
 	get disabled() {

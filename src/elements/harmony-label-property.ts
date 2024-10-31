@@ -10,7 +10,7 @@ export class HTMLHarmonyLabelPropertyElement extends HTMLElement {
 	}
 
 	#initHtml() {
-		this.#htmlLabel = createElement('label', {i18n:''});
+		this.#htmlLabel = createElement('label', { i18n: '' });
 		this.#htmlProperty = createElement('span');
 	}
 

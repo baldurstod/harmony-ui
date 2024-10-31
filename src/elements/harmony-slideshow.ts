@@ -70,13 +70,13 @@ export class HTMLHarmonySlideshowElement extends HTMLElement {
 				createElement('div', {
 					class: 'previous-image',
 					events: {
-						click: event => {this.previousImage();this.setAutoPlay(false);},
+						click: event => { this.previousImage(); this.setAutoPlay(false); },
 					},
 				}),
 				createElement('div', {
 					class: 'next-image',
 					events: {
-						click: event => {this.nextImage();this.setAutoPlay(false);},
+						click: event => { this.nextImage(); this.setAutoPlay(false); },
 					},
 				}),
 				this.#htmlPlayButton = createElement('div', {
@@ -360,7 +360,7 @@ export class HTMLHarmonySlideshowElement extends HTMLElement {
 	}
 
 	#initObserver() {
-		let config = {childList:true, subtree: true};
+		let config = { childList: true, subtree: true };
 		const mutationCallback = (mutationsList, observer) => {
 			for (const mutation of mutationsList) {
 				for (let addedNode of mutation.addedNodes) {
