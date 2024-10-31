@@ -1,6 +1,6 @@
-import { shadowRootStyle } from '../harmony-css.js';
-import { createElement } from '../harmony-html.js';
-import { Color } from '../utils/color.js';
+import { shadowRootStyle } from '../harmony-css';
+import { createElement } from '../harmony-html';
+import { Color } from '../utils/color';
 
 import colorPickerCSS from '../css/harmony-color-picker.css';
 
@@ -8,21 +8,21 @@ export class HTMLHarmonyColorPickerElement extends HTMLElement {
 	#doOnce = true;
 	#shadowRoot;
 	#color = new Color({ hex: '#00ffffff' });
-	#htmlHuePicker;
-	#htmlHueSelector;
-	#htmlMainPicker;
-	#htmlMainSelector;
-	#htmlAlphaPicker;
-	#htmlAlphaSelector;
-	#htmlInput;
-	#htmlSample;
-	#htmlOk;
-	#htmlCancel;
-	#dragElement;
-	#shiftX;
-	#shiftY;
-	#pageX;
-	#pageY;
+	#htmlHuePicker: HTMLElement;
+	#htmlHueSelector: HTMLElement;
+	#htmlMainPicker: HTMLElement;
+	#htmlMainSelector: HTMLElement;
+	#htmlAlphaPicker: HTMLElement;
+	#htmlAlphaSelector: HTMLElement;
+	#htmlInput: HTMLInputElement;
+	#htmlSample: HTMLElement;
+	#htmlOk: HTMLElement;
+	#htmlCancel: HTMLElement;
+	#dragElement: HTMLElement | null = null;
+	#shiftX: number = 0;
+	#shiftY: number = 0;
+	#pageX: number = 0;
+	#pageY: number = 0;
 	constructor() {
 		super();
 		document.addEventListener('mouseup', () => this.#dragElement = null);
@@ -37,16 +37,16 @@ export class HTMLHarmonyColorPickerElement extends HTMLElement {
 				id: 'hue-selector',
 				class: 'selector',
 				events: {
-					mousedown: event => this.#handleMouseDown(event),
+					mousedown: (event: MouseEvent) => this.#handleMouseDown(event),
 				},
-			}),
+			}) as HTMLElement,
 			events: {
-				mousedown: event => {
+				mousedown: (event: MouseEvent) => {
 					this.#updateHue(event.offsetX / this.#htmlHuePicker.offsetWidth);
 					this.#handleMouseDown(event, this.#htmlHueSelector);
 				},
 			},
-		});
+		}) as HTMLElement;
 		this.#htmlMainPicker = createElement('div', {
 			parent: this.#shadowRoot,
 			id: 'main-picker',
@@ -54,16 +54,16 @@ export class HTMLHarmonyColorPickerElement extends HTMLElement {
 				id: 'main-selector',
 				class: 'selector',
 				events: {
-					mousedown: event => this.#handleMouseDown(event),
+					mousedown: (event: MouseEvent) => this.#handleMouseDown(event),
 				},
-			}),
+			}) as HTMLElement,
 			events: {
-				mousedown: event => {
+				mousedown: (event: MouseEvent) => {
 					this.#updateSatLum(event.offsetX / this.#htmlMainPicker.offsetWidth, 1 - (event.offsetY / this.#htmlMainPicker.offsetHeight));
 					this.#handleMouseDown(event, this.#htmlMainSelector);
 				},
 			},
-		});
+		}) as HTMLElement;
 		this.#htmlAlphaPicker = createElement('div', {
 			parent: this.#shadowRoot,
 			id: 'alpha-picker',
@@ -72,28 +72,28 @@ export class HTMLHarmonyColorPickerElement extends HTMLElement {
 				id: 'alpha-selector',
 				class: 'selector',
 				events: {
-					mousedown: event => this.#handleMouseDown(event),
+					mousedown: (event: MouseEvent) => this.#handleMouseDown(event),
 				},
-			}),
+			}) as HTMLElement,
 			events: {
-				mousedown: event => {
+				mousedown: (event: MouseEvent) => {
 					this.#updateAlpha(1 - (event.offsetY / this.#htmlAlphaPicker.offsetHeight));
 					this.#handleMouseDown(event, this.#htmlAlphaSelector);
 				},
 			},
-		});
+		}) as HTMLElement;
 		this.#htmlInput = createElement('input', {
 			parent: this.#shadowRoot,
 			id: 'input',
 			events: {
 				change: () => this.#updateHex(this.#htmlInput.value),
 			}
-		});
+		}) as HTMLInputElement;
 		this.#htmlSample = createElement('div', {
 			parent: this.#shadowRoot,
 			id: 'sample',
 			class: 'alpha-background',
-		});
+		}) as HTMLElement;
 		createElement('div', {
 			parent: this.#shadowRoot,
 			id: 'buttons',
@@ -107,37 +107,37 @@ export class HTMLHarmonyColorPickerElement extends HTMLElement {
 							this.dispatchEvent(new CustomEvent('ok', { detail: { hex: this.#color.getHex(), rgba: this.#color.getRgba() } }));
 						},
 					},
-				}),
+				}) as HTMLElement,
 				this.#htmlCancel = createElement('button', {
 					parent: this.#shadowRoot,
 					i18n: '#cancel',
 					events: {
 						click: () => this.dispatchEvent(new CustomEvent('cancel')),
 					}
-				}),
+				}) as HTMLElement,
 			],
 		});
 	}
 
-	#updateAlpha(alpha) {
+	#updateAlpha(alpha: number) {
 		this.#color.alpha = alpha;
 		this.#update();
 		this.#colorChanged();
 	}
 
-	#updateHue(hue) {
+	#updateHue(hue: number) {
 		this.#color.setHue(hue);
 		this.#update();
 		this.#colorChanged();
 	}
 
-	#updateHex(hex) {
+	#updateHex(hex: string) {
 		this.#color.setHex(hex);
 		this.#update();
 		this.#colorChanged();
 	}
 
-	#updateSatLum(sat, lum) {
+	#updateSatLum(sat: number, lum: number) {
 		/*const sat = event.offsetX / event.target.offsetWidth;
 		const lum = 1 - event.offsetY / event.target.offsetHeight;*/
 		this.#color.setSatLum(sat, lum);
@@ -156,7 +156,7 @@ export class HTMLHarmonyColorPickerElement extends HTMLElement {
 		}
 	}
 
-	adoptStyleSheet(styleSheet) {
+	adoptStyleSheet(styleSheet: CSSStyleSheet) {
 		this.#shadowRoot.adoptedStyleSheets.push(styleSheet);
 	}
 
@@ -168,12 +168,12 @@ export class HTMLHarmonyColorPickerElement extends HTMLElement {
 		const hue = hsl[0];
 		const sat = hsl[1];
 		const lum = hsl[2];
-		this.#htmlAlphaPicker.style = `--foreground-layer: linear-gradient(rgb(${red} ${green} ${blue} / 1), rgb(${red} ${green} ${blue} / 0));`;
+		this.#htmlAlphaPicker.style.cssText = `--foreground-layer: linear-gradient(rgb(${red} ${green} ${blue} / 1), rgb(${red} ${green} ${blue} / 0));`;
 
 		// Note: As of today (feb 2024) the css image() function is not yet supported by any browser. We resort to use a constant linear gradient
-		this.#htmlSample.style = `--foreground-layer: linear-gradient(rgb(${red} ${green} ${blue} / ${this.#color.alpha}), rgb(${red} ${green} ${blue} / ${this.#color.alpha}));`;
+		this.#htmlSample.style.cssText = `--foreground-layer: linear-gradient(rgb(${red} ${green} ${blue} / ${this.#color.alpha}), rgb(${red} ${green} ${blue} / ${this.#color.alpha}));`;
 
-		this.#htmlMainPicker.style = `color: hsl(${hue}turn 100% 50%)`;
+		this.#htmlMainPicker.style.cssText = `color: hsl(${hue}turn 100% 50%)`;
 
 		this.#htmlInput.value = this.#color.getHex();
 
@@ -188,21 +188,21 @@ export class HTMLHarmonyColorPickerElement extends HTMLElement {
 		return this.#color;
 	}
 
-	setHex(hex) {
+	setHex(hex: string) {
 		this.#color.setHex(hex);
 		this.#update();
 	}
 
-	#handleMouseDown(event, selector) {
-		this.#dragElement = selector ?? event.currentTarget;
-		this.#shiftX = (selector ?? event.currentTarget).offsetLeft;
-		this.#shiftY = (selector ?? event.currentTarget).offsetTop;
+	#handleMouseDown(event: MouseEvent, selector?: HTMLElement) {
+		this.#dragElement = selector ?? (event.currentTarget as HTMLElement);
+		this.#shiftX = (selector ?? (event.currentTarget as HTMLElement)).offsetLeft;
+		this.#shiftY = (selector ?? (event.currentTarget as HTMLElement)).offsetTop;
 		this.#pageX = event.pageX;
 		this.#pageY = event.pageY;
 		event.stopPropagation();
 	}
 
-	#handleMouseMove(event) {
+	#handleMouseMove(event: MouseEvent) {
 		const pageX = event.pageX - this.#pageX;
 		const pageY = event.pageY - this.#pageY;
 
