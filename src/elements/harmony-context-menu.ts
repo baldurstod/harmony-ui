@@ -1,27 +1,38 @@
-import { shadowRootStyle } from '../harmony-css.js';
-import { createElement } from '../harmony-html.js';
-import { I18n } from '../harmony-i18n.js';
-
+import { shadowRootStyle } from '../harmony-css';
+import { createElement } from '../harmony-html';
+import { I18n } from '../harmony-i18n';
 import contextMenuCSS from '../css/harmony-context-menu.css';
+
+type HarmonyContextMenuItem = {
+	i18n: string,
+	name: string,
+	selected: boolean,
+	disabled: boolean,
+	submenu: HarmonyContextMenuItems,
+	cmd: string,
+	f: (arg0: any) => void,
+};
+
+type HarmonyContextMenuItems = Array<HarmonyContextMenuItem> | { [key: string]: HarmonyContextMenuItem };
 
 export class HTMLHarmonyContextMenuElement extends HTMLElement {
 	#doOnce = true;
-	#subMenus = new Map();
+	#subMenus = new Map<HTMLElement, HTMLElement>();
 	#shadowRoot;
 	constructor() {
 		super();
 		this.#shadowRoot = this.attachShadow({ mode: 'closed' });
 
 		document.addEventListener('click', (event) => {
-			if (!this.contains(event.target)) {
+			if (!this.contains(event.target as HTMLElement)) {
 				this.close();
 			}
 		});
 	}
 
-	show(items, clientX, clientY, userData) {
+	show(items: HarmonyContextMenuItems, clientX: number, clientY: number, userData: any) {
 		document.body.append(this);
-		this.setItems(items, userData);
+		this.#setItems(items, userData);
 		this.style.position = 'absolute';
 		this.style.left = clientX + 'px';
 		this.style.top = clientY + 'px';
@@ -70,8 +81,8 @@ export class HTMLHarmonyContextMenuElement extends HTMLElement {
 			I18n.observeElement(this.#shadowRoot);
 			shadowRootStyle(this.#shadowRoot, contextMenuCSS);
 
-			let callback = (entries, observer) => {
-				entries.forEach(entry => {
+			let callback = (entries: Array<ResizeObserverEntry>, observer: ResizeObserver) => {
+				entries.forEach(() => {
 					this.#checkSize();
 				});
 			};
@@ -82,7 +93,7 @@ export class HTMLHarmonyContextMenuElement extends HTMLElement {
 		}
 	}
 
-	setItems(items, userData) {
+	#setItems(items: HarmonyContextMenuItems, userData: any) {
 		this.#shadowRoot.innerHTML = '';
 		if (items instanceof Array) {
 			for (let item of items) {
@@ -96,7 +107,7 @@ export class HTMLHarmonyContextMenuElement extends HTMLElement {
 		}
 	}
 
-	#openSubMenu(htmlSubMenu) {
+	#openSubMenu(htmlSubMenu: HTMLElement) {
 		for (let [htmlItem, sub] of this.#subMenus) {
 			if (sub == htmlSubMenu || sub.contains(htmlSubMenu)) {
 				htmlItem.classList.add('opened');
@@ -109,17 +120,17 @@ export class HTMLHarmonyContextMenuElement extends HTMLElement {
 		this.#checkSize();
 	}
 
-	addItem(item, userData) {
+	addItem(item: HarmonyContextMenuItem, userData: any) {
 		let htmlItem = createElement('div', {
 			class: 'harmony-context-menu-item',
-		});
+		}) as HTMLElement;
 
 		if (!item) {
 			htmlItem.classList.add('separator');
 		} else {
-			let htmlItemTitle = createElement('div', {
+			const htmlItemTitle = createElement('div', {
 				class: 'harmony-context-menu-item-title',
-			});
+			}) as HTMLElement;
 
 			if (item.i18n) {
 				htmlItemTitle.classList.add('i18n');
@@ -137,9 +148,9 @@ export class HTMLHarmonyContextMenuElement extends HTMLElement {
 				htmlItem.classList.add('disabled');
 			}
 			if (item.submenu) {
-				let htmlSubMenu = createElement('div', {
+				const htmlSubMenu = createElement('div', {
 					class: 'submenu',
-				});
+				}) as HTMLElement;
 				this.#subMenus.set(htmlItem, htmlSubMenu);
 				if (item.submenu instanceof Array) {
 					for (let subItem of item.submenu) {
