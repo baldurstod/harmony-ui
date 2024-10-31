@@ -3,22 +3,22 @@ import { createElement, hide, show, display } from '../harmony-html.js';
 import { I18n } from '../harmony-i18n.js';
 
 import radioCSS from '../css/harmony-radio.css';
+import { toBool } from '../utils/attributes.js';
 
 export class HTMLHarmonyRadioElement extends HTMLElement {
 	#doOnce = true;
-	#disabled;
+	#disabled = false;
 	#multiple = false;
-	#htmlLabel;
+	#htmlLabel: HTMLElement;
 	#state = false;
-	#current;
-	#buttons = new Map();
-	#buttons2 = new Set();
+	#buttons = new Map<string, HTMLButtonElement>();
+	#buttons2 = new Set<HTMLButtonElement>();
 	#selected = new Set();
 	#shadowRoot;
 	constructor() {
 		super();
 		this.#shadowRoot = this.attachShadow({ mode: 'closed' });
-		this.#htmlLabel = createElement('div', { class: 'harmony-radio-label' });
+		this.#htmlLabel = createElement('div', { class: 'harmony-radio-label' }) as HTMLElement;
 		this.#initObserver();
 	}
 
@@ -39,7 +39,7 @@ export class HTMLHarmonyRadioElement extends HTMLElement {
 		}
 	}
 
-	#initButton(htmlButton) {
+	#initButton(htmlButton: any) {
 		this.#buttons.set(htmlButton.value, htmlButton);
 		if (!this.#buttons2.has(htmlButton)) {
 			htmlButton.addEventListener('click', () => this.select(htmlButton.value, !this.#multiple || !htmlButton.hasAttribute('selected')));
@@ -51,7 +51,7 @@ export class HTMLHarmonyRadioElement extends HTMLElement {
 		}
 	}
 
-	append(...params) {
+	append(...params: Array<any>) {
 		for (const param of params) {
 			this.#initButton(param);
 			this.#shadowRoot.append(param);
@@ -59,7 +59,7 @@ export class HTMLHarmonyRadioElement extends HTMLElement {
 		}
 	}
 
-	select(value, select) {
+	select(value: string, select: boolean) {
 		this.#selected[select ? 'add' : 'delete'](value);
 
 		let htmlButton = this.#buttons.get(value);
@@ -68,18 +68,18 @@ export class HTMLHarmonyRadioElement extends HTMLElement {
 				for (let child of this.#shadowRoot.children) {
 					if (child.hasAttribute('selected')) {
 						child.removeAttribute('selected');
-						this.dispatchEvent(new CustomEvent('change', { detail: { value: child.value, state: false } }));
-						child.dispatchEvent(new CustomEvent('change', { detail: { value: child.value, state: false } }));
+						this.dispatchEvent(new CustomEvent('change', { detail: { value: (child as HTMLButtonElement).value, state: false } }));
+						child.dispatchEvent(new CustomEvent('change', { detail: { value: (child as HTMLButtonElement).value, state: false } }));
 					}
 				}
 			}
-			select ? htmlButton.setAttribute('selected', '') : htmlButton.removeAttribute('selected', '');
+			select ? htmlButton.setAttribute('selected', '') : htmlButton.removeAttribute('selected');
 			this.dispatchEvent(new CustomEvent('change', { detail: { value: htmlButton.value, state: select } }));
 			htmlButton.dispatchEvent(new CustomEvent('change', { detail: { value: htmlButton.value, state: select } }));
 		}
 	}
 
-	isSelected(value) {
+	isSelected(value: string) {
 		let htmlButton = this.#buttons.get(value);
 		return htmlButton?.value ?? false;
 	}
@@ -95,7 +95,7 @@ export class HTMLHarmonyRadioElement extends HTMLElement {
 
 	#initObserver() {
 		let config = { childList: true, subtree: true };
-		const mutationCallback = (mutationsList, observer) => {
+		const mutationCallback = (mutationsList: Array<MutationRecord>, observer: MutationObserver) => {
 			for (const mutation of mutationsList) {
 				let addedNodes = mutation.addedNodes;
 				for (let addedNode of addedNodes) {
@@ -110,7 +110,7 @@ export class HTMLHarmonyRadioElement extends HTMLElement {
 		observer.observe(this, config);
 	}
 
-	attributeChangedCallback(name, oldValue, newValue) {
+	attributeChangedCallback(name: string, oldValue: string, newValue: string) {
 		switch (name) {
 			case 'data-label':
 				this.#htmlLabel.innerHTML = newValue;
@@ -124,7 +124,7 @@ export class HTMLHarmonyRadioElement extends HTMLElement {
 				show(this.#htmlLabel);
 				break;
 			case 'disabled':
-				this.disabled = newValue;
+				this.disabled = toBool(newValue);
 				break;
 			case 'multiple':
 				this.#multiple = true;
