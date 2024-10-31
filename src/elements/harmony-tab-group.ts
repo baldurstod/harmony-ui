@@ -1,17 +1,17 @@
-import { shadowRootStyle } from '../harmony-css.js';
-import { createElement } from '../harmony-html.js';
-import { I18n } from '../harmony-i18n.js';
-
+import { shadowRootStyle } from '../harmony-css';
+import { createElement } from '../harmony-html';
+import { I18n } from '../harmony-i18n';
 import tabGroupCSS from '../css/harmony-tab-group.css';
 import tabCSS from '../css/harmony-tab.css';
+import { HTMLHarmonyTabElement } from './harmony-tab';
 
 export class HTMLHarmonyTabGroupElement extends HTMLElement {
 	#doOnce = true;
-	#tabs = new Set();
+	#tabs = new Set<HTMLHarmonyTabElement>();
 	#header;
 	#content;
-	#activeTab;
-	#shadowRoot;
+	#activeTab?: HTMLHarmonyTabElement;
+	#shadowRoot: ShadowRoot;
 	constructor() {
 		super();
 		this.#shadowRoot = this.attachShadow({ mode: 'closed' });
@@ -33,11 +33,11 @@ export class HTMLHarmonyTabGroupElement extends HTMLElement {
 		}
 	}
 
-	adoptStyleSheet(styleSheet) {
+	adoptStyleSheet(styleSheet: CSSStyleSheet) {
 		this.#shadowRoot.adoptedStyleSheets.push(styleSheet);
 	}
 
-	addTab(tab) {
+	addTab(tab: HTMLHarmonyTabElement) {
 		this.#tabs.add(tab);
 		if (!this.#activeTab) {
 			this.#activeTab = tab;
@@ -54,10 +54,12 @@ export class HTMLHarmonyTabGroupElement extends HTMLElement {
 			}
 		}
 
-		this.#activeTab.active = true;
+		if (this.#activeTab) {
+			this.#activeTab.active = true;
+		}
 	}
 
-	set active(tab) {
+	set active(tab: HTMLHarmonyTabElement) {
 		if (this.#activeTab != tab) {
 			this.#activeTab = tab;
 			this.#refresh();

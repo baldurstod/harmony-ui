@@ -1,10 +1,12 @@
-import { createElement, hide, show, display } from '../harmony-html.js';
+import { createElement, hide, show, display } from '../harmony-html';
+import { toBool } from '../utils/attributes';
+import { HTMLHarmonyTabGroupElement } from './harmony-tab-group';
 
 export class HTMLHarmonyTabElement extends HTMLElement {
 	#disabled = false;
 	#active = false;
-	#header;
-	#group;
+	#header: HTMLElement;
+	#group?: HTMLHarmonyTabGroupElement;
 	constructor() {
 		super();
 		this.#header = createElement('div', {
@@ -12,9 +14,9 @@ export class HTMLHarmonyTabElement extends HTMLElement {
 			...(this.getAttribute('data-i18n')) && { i18n: this.getAttribute('data-i18n') },
 			...(this.getAttribute('data-text')) && { innerText: this.getAttribute('data-text') },
 			events: {
-				click: event => this.#click(event)
-			}
-		});
+				click: (event: MouseEvent) => this.#click(),
+			},
+		}) as HTMLElement;
 	}
 
 	get htmlHeader() {
@@ -22,14 +24,14 @@ export class HTMLHarmonyTabElement extends HTMLElement {
 	}
 
 	connectedCallback() {
-		let parentElement = this.parentElement;
+		const parentElement = this.parentElement as HTMLHarmonyTabGroupElement;
 		if (parentElement && parentElement.tagName == 'HARMONY-TAB-GROUP') {
 			parentElement.addTab(this);
 			this.#group = parentElement;
 		}
 	}
 
-	attributeChangedCallback(name, oldValue, newValue) {
+	attributeChangedCallback(name: string, oldValue: string, newValue: string) {
 		switch (name) {
 			case 'data-i18n':
 				this.#header.setAttribute('data-i18n', newValue);
@@ -40,7 +42,7 @@ export class HTMLHarmonyTabElement extends HTMLElement {
 				this.#header.innerText = newValue;
 				break;
 			case 'disabled':
-				this.disabled = newValue;
+				this.disabled = toBool(newValue);
 				break;
 		}
 	}
