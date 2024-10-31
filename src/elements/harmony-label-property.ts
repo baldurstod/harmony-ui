@@ -2,23 +2,19 @@ import { createElement } from '../harmony-html.js';
 
 export class HTMLHarmonyLabelPropertyElement extends HTMLElement {
 	#doOnce = false;
-	#htmlLabel;
-	#htmlProperty;
+	#htmlLabel: HTMLElement;
+	#htmlProperty: HTMLElement;
 	constructor() {
 		super();
-		this.#initHtml();
+		this.#htmlLabel = createElement('label', { i18n: '' }) as HTMLElement;
+		this.#htmlProperty = createElement('span') as HTMLElement;
 	}
 
-	#initHtml() {
-		this.#htmlLabel = createElement('label', { i18n: '' });
-		this.#htmlProperty = createElement('span');
-	}
-
-	set label(label) {
+	set label(label: string) {
 		this.#htmlLabel.setAttribute('data-i18n', label);
 	}
 
-	set property(property) {
+	set property(property: string) {
 		this.#htmlProperty.innerHTML = property;
 	}
 
