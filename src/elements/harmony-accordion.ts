@@ -1,18 +1,15 @@
+import { attributeIsTrue } from '../functions.js';
 import { createElement, hide, show, display } from '../harmony-html.js';
 
 export class HTMLHarmonyAccordionElement extends HTMLElement {
-	#doOnce;
-	#multiple;
-	#disabled;
-	#items;
-	#selected;
+	#doOnce = true;
+	#multiple = false;
+	#disabled = false;
+	#items = new Map();
+	#selected = new Set<HTMLElement>();
+
 	constructor() {
 		super();
-		this.#doOnce = true;
-		this.#multiple = false;
-		this.#disabled = false;
-		this.#items = new Map();
-		this.#selected = new Set();
 		this.#initMutationObserver();
 	}
 
@@ -30,16 +27,16 @@ export class HTMLHarmonyAccordionElement extends HTMLElement {
 		for (let child of children) {
 			list.push(child);
 		}
-		list.forEach(element => this.addItem(element));
+		list.forEach(element => this.addItem(element as HTMLElement));
 	}
 
-	addItem(item) {
+	addItem(item: HTMLElement) {
 		if (item.tagName == 'ITEM') {
 			let header = item.getElementsByTagName('header')[0];
 			let content = item.getElementsByTagName('content')[0];
 
-			let htmlItemHeader = createElement('div', { class: 'header' });
-			let htmlItemContent = createElement('div', { class: 'content' });
+			const htmlItemHeader = createElement('div', { class: 'header' }) as HTMLElement;
+			const htmlItemContent = createElement('div', { class: 'content' }) as HTMLElement;
 
 			htmlItemHeader.addEventListener('click', () => this.#toggle(htmlItemHeader));
 
@@ -56,7 +53,7 @@ export class HTMLHarmonyAccordionElement extends HTMLElement {
 		}
 	}
 
-	createItem(header, content) {
+	createItem(header: HTMLElement, content: HTMLElement) {
 		let item = createElement('item', { childs: [header, content] });
 		this.append(item);
 		return item;
@@ -71,7 +68,7 @@ export class HTMLHarmonyAccordionElement extends HTMLElement {
 		}
 	}
 
-	#toggle(header, collapse = true) {
+	#toggle(header: HTMLElement, collapse = true) {
 		let content = this.#items.get(header);
 		if (collapse && !this.#multiple) {
 			for (let selected of this.#selected) {
@@ -99,18 +96,18 @@ export class HTMLHarmonyAccordionElement extends HTMLElement {
 		this.#refresh();
 	}
 
-	#dispatchSelect(selected, header, content) {
+	#dispatchSelect(selected: boolean, header: HTMLElement, content: HTMLElement) {
 		this.dispatchEvent(new CustomEvent(selected ? 'select' : 'unselect', { detail: { header: header.children[0], content: content.children[0] } }));
 	}
 
 	#initMutationObserver() {
 		let config = { childList: true, subtree: true };
-		const mutationCallback = (mutationsList, observer) => {
+		const mutationCallback = (mutationsList: Array<MutationRecord>, observer: MutationObserver) => {
 			for (const mutation of mutationsList) {
 				let addedNodes = mutation.addedNodes;
 				for (let addedNode of addedNodes) {
 					if (addedNode.parentNode == this) {
-						this.addItem(addedNode);
+						this.addItem(addedNode as HTMLElement);
 					}
 				}
 			}
@@ -130,10 +127,10 @@ export class HTMLHarmonyAccordionElement extends HTMLElement {
 		return this.#disabled;
 	}
 
-	attributeChangedCallback(name, oldValue, newValue) {
+	attributeChangedCallback(name: string, oldValue: string, newValue: string) {
 		switch (name) {
 			case 'multiple':
-				this.#multiple = newValue == true;
+				this.#multiple = attributeIsTrue(newValue);
 				break;
 		}
 	}
