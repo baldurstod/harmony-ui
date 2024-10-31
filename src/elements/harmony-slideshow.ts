@@ -1,51 +1,60 @@
-import { I18n } from '../harmony-i18n.js';
-import { createElement, hide, show, display } from '../harmony-html.js';
-
+import { I18n } from '../harmony-i18n';
+import { createElement, hide, show, display } from '../harmony-html';
 import slideshowCSS from '../css/harmony-slideshow.css';
-import { shadowRootStyleSync } from '../harmony-css.js';
+import { shadowRootStyleSync } from '../harmony-css';
+import { toBool } from '../utils/attributes';
 
-const resizeCallback = (entries, observer) => {
+const resizeCallback = (entries: Array<ResizeObserverEntry>, observer: ResizeObserver) => {
 	entries.forEach(entry => {
-		entry.target.onResized(entry);
+		(entry.target as HTMLHarmonySlideshowElement).onResized();
 	});
 };
 
 const DEFAULT_AUTO_PLAY_DELAY = 3000;
 const DEFAULT_SCROLL_TRANSITION_TIME = 0.5;
 
+export type HarmonySlideshowOptions = {
+	autoPlay?: boolean;
+	autoPlayDelay?: number;
+	smoothScroll?: boolean;
+	smoothScrollTransitionTime?: number;
+	images?: Array<string>;
+	class?: string;
+	id?: string;
+}
+
 export class HTMLHarmonySlideshowElement extends HTMLElement {
-	#shadowRoot;
-	#activeImage;
+	#shadowRoot: ShadowRoot;
+	#activeImage?: HTMLImageElement;
 	#currentImage = 0;
 	#doOnce = true;
-	#doOnceOptions;
+	#doOnceOptions: HarmonySlideshowOptions;
 	#dynamic = true;
-	#htmlControls;
-	#htmlImages;
-	#htmlImagesOuter;
-	#htmlImagesInner;
-	#htmlPauseButton;
-	#htmlPlayButton;
-	#htmlThumbnails;
-	#htmlZoomContainer;
-	#images = [];
+	#htmlImages: HTMLElement;
+	#htmlImagesOuter: HTMLElement;
+	#htmlImagesInner: HTMLElement;
+	#htmlPauseButton: HTMLElement;
+	#htmlPlayButton: HTMLElement;
+	#htmlThumbnails: HTMLElement;
+	#htmlZoomContainer: HTMLElement;
+	#images: Array<HTMLImageElement> = [];
 	#imgSet = new Set();
-	#htmlZoomImage;
+	#htmlZoomImage: HTMLImageElement;
 	#resizeObserver = new ResizeObserver(resizeCallback);
+	#autoPlay = false;
+	#autoPlayDelay = 0;
+	#smoothScroll = false;
+	#smoothScrollTransitionTime = 0;
+	#autoplayTimeout: number = 0;
 
-	constructor(options) {
+	constructor(options: HarmonySlideshowOptions) {
 		super();
 		this.#doOnceOptions = options;
 		this.#initObserver();
-	}
 
-	#initHtml() {
 		this.#shadowRoot = this.attachShadow({ mode: 'closed' });
 		I18n.observeElement(this.#shadowRoot);
 		shadowRootStyleSync(this.#shadowRoot, slideshowCSS);// sync version is used to ensure style is loaded before computation occurs
-		if (this.#dynamic) {
-			this.classList.add('dynamic');
-		}
 		this.#htmlImages = createElement('div', {
 			class: 'images',
 			parent: this.#shadowRoot,
@@ -53,15 +62,14 @@ export class HTMLHarmonySlideshowElement extends HTMLElement {
 				class: 'images-outer',
 				child: this.#htmlImagesInner = createElement('div', {
 					class: 'images-inner',
-				}),
+				}) as HTMLElement,
 				events: {
-					mouseover: event => this.#zoomImage(event),
-					mousemove: event => this.#zoomImage(event),
-					mouseout: event => this.#zoomImage(event),
+					mouseover: (event: MouseEvent) => this.#zoomImage(event),
+					mousemove: (event: MouseEvent) => this.#zoomImage(event),
+					mouseout: (event: MouseEvent) => this.#zoomImage(event),
 				},
-			}),
-
-		});
+			}) as HTMLElement,
+		}) as HTMLElement;
 
 		createElement('div', {
 			class: 'controls',
@@ -70,13 +78,13 @@ export class HTMLHarmonySlideshowElement extends HTMLElement {
 				createElement('div', {
 					class: 'previous-image',
 					events: {
-						click: event => { this.previousImage(); this.setAutoPlay(false); },
+						click: (event: MouseEvent) => { this.previousImage(); this.setAutoPlay(false); },
 					},
 				}),
 				createElement('div', {
 					class: 'next-image',
 					events: {
-						click: event => { this.nextImage(); this.setAutoPlay(false); },
+						click: (event: MouseEvent) => { this.nextImage(); this.setAutoPlay(false); },
 					},
 				}),
 				this.#htmlPlayButton = createElement('div', {
@@ -84,33 +92,33 @@ export class HTMLHarmonySlideshowElement extends HTMLElement {
 					events: {
 						click: () => this.play(true),
 					},
-				}),
+				}) as HTMLElement,
 				this.#htmlPauseButton = createElement('div', {
 					class: 'pause',
 					events: {
 						click: () => this.play(false),
 					},
-				}),
+				}) as HTMLElement,
 			],
 			events: {
-				mouseenter: event => event.target.style.opacity = 'unset',
-				mouseleave: event => event.target.style.opacity = '0',
+				mouseenter: (event: MouseEvent) => (event.target as HTMLElement).style.opacity = 'unset',
+				mouseleave: (event: MouseEvent) => (event.target as HTMLElement).style.opacity = '0',
 			},
 		});
 
-		this.#htmlZoomImage = createElement('img');
+		this.#htmlZoomImage = createElement('img') as HTMLImageElement;
 		this.#htmlZoomContainer = createElement('div', {
 			class: 'zoom',
 			parent: document.body,
 			childs: [
 				this.#htmlZoomImage,
 			]
-		});
+		}) as HTMLElement;
 
 		this.#htmlThumbnails = createElement('div', {
 			class: 'thumbnails',
 			parent: this.#shadowRoot,
-		});
+		}) as HTMLElement;
 	}
 
 	previousImage() {
@@ -129,21 +137,25 @@ export class HTMLHarmonySlideshowElement extends HTMLElement {
 		}
 	}
 
-	setImage(imageId) {
+	setImage(imageId: number) {
 		this.#currentImage = imageId;
 		this.active = this.#images[imageId];
 	}
 
 	connectedCallback() {
 		if (this.#doOnce) {
-			this.#initHtml();
-			this.processOptions(this.#doOnceOptions);
+			//this.#initHtml();
+			this.#processOptions(this.#doOnceOptions);
 			this.#processChilds();
 			this.#doOnce = false;
 		}
 		this.#resizeObserver.observe(this);
 		this.checkImagesSize();
 		document.body.append(this.#htmlZoomContainer);
+
+		if (this.#dynamic) {
+			this.classList.add('dynamic');
+		}
 	}
 
 	disconnectedCallback() {
@@ -153,7 +165,7 @@ export class HTMLHarmonySlideshowElement extends HTMLElement {
 		}
 	}
 
-	addImage(htmlImage) {
+	addImage(htmlImage: HTMLImageElement) {
 		if (htmlImage.constructor.name == 'HTMLImageElement') {
 			if (!this.#imgSet.has(htmlImage)) {
 				this.#images.push(htmlImage);
@@ -181,7 +193,7 @@ export class HTMLHarmonySlideshowElement extends HTMLElement {
 		this.#imgSet = new Set();
 		this.#htmlImagesInner.innerHTML = '';
 		this.#htmlThumbnails.innerHTML = '';
-		this.#activeImage = null;
+		this.#activeImage = undefined;
 
 		// Remove pending images
 		let list = [];
@@ -200,15 +212,15 @@ export class HTMLHarmonySlideshowElement extends HTMLElement {
 		}
 	}
 
-	processOptions(options = {}) {
+	#processOptions(options: HarmonySlideshowOptions = {}) {
 		this.setAutoPlay(options.autoPlay ?? true);
-		this.autoPlayDelay = options.autoPlayDelay ?? DEFAULT_AUTO_PLAY_DELAY;
-		this.smoothScroll = options.smoothScroll ?? true;
-		this.smoothScrollTransitionTime = options.smoothScrollTransitionTime ?? DEFAULT_SCROLL_TRANSITION_TIME;
+		this.#autoPlayDelay = options.autoPlayDelay ?? DEFAULT_AUTO_PLAY_DELAY;
+		this.#smoothScroll = options.smoothScroll ?? true;
+		this.#smoothScrollTransitionTime = options.smoothScrollTransitionTime ?? DEFAULT_SCROLL_TRANSITION_TIME;
 
 		if (options.images) {
 			for (let image of options.images) {
-				let htmlImage = createElement('img');
+				const htmlImage = createElement('img') as HTMLImageElement;
 				htmlImage.src = image;
 				this.addImage(htmlImage);
 			}
@@ -223,14 +235,14 @@ export class HTMLHarmonySlideshowElement extends HTMLElement {
 
 	#processChilds() {
 		//This is a 2 steps process cause we may change DOM
-		let list = [];
+		const list: Array<HTMLImageElement> = [];
 		for (let child of this.children) {
-			list.push(child);
+			list.push(child as HTMLImageElement);
 		}
 		list.forEach(element => this.addImage(element));
 	}
 
-	set active(htmlImage) {
+	set active(htmlImage: HTMLImageElement) {
 		if (htmlImage) {
 			this.#activeImage = htmlImage;
 			this.refresh();
@@ -240,7 +252,7 @@ export class HTMLHarmonySlideshowElement extends HTMLElement {
 		}
 	}
 
-	set dynamic(dynamic) {
+	set dynamic(dynamic: boolean) {
 		this.#dynamic = dynamic;
 		if (!dynamic) {
 			this.setAutoPlay(false);
@@ -253,8 +265,8 @@ export class HTMLHarmonySlideshowElement extends HTMLElement {
 		}
 	}
 
-	setAutoPlay(autoPlay) {
-		this.autoPlay = autoPlay && this.#dynamic;
+	setAutoPlay(autoPlay: boolean) {
+		this.#autoPlay = autoPlay && this.#dynamic;
 		if (autoPlay) {
 			hide(this.#htmlPlayButton);
 			show(this.#htmlPauseButton);
@@ -264,14 +276,14 @@ export class HTMLHarmonySlideshowElement extends HTMLElement {
 		}
 	}
 
-	play(autoPlay) {
+	play(autoPlay?: boolean) {
 		if (autoPlay !== undefined) {
 			this.setAutoPlay(autoPlay);
 		}
 
-		clearTimeout(this.autoplayTimeout);
-		if (this.autoPlay) {
-			this.autoplayTimeout = setTimeout(() => this.nextImage(), this.autoPlayDelay);
+		clearTimeout(this.#autoplayTimeout);
+		if (this.#autoPlay) {
+			this.#autoplayTimeout = setTimeout(() => this.nextImage(), this.#autoPlayDelay);
 		}
 	}
 
@@ -288,7 +300,7 @@ export class HTMLHarmonySlideshowElement extends HTMLElement {
 		}
 	}
 
-	checkImageSize(htmlImage, rect = this.#htmlImages.getBoundingClientRect()) {
+	checkImageSize(htmlImage: HTMLImageElement, rect = this.#htmlImages.getBoundingClientRect()) {
 		if (this.#activeImage != htmlImage) {
 			return;
 		}
@@ -313,7 +325,7 @@ export class HTMLHarmonySlideshowElement extends HTMLElement {
 		this.#htmlImagesOuter.style.height = imageHeight;
 	}
 
-	#zoomImage(event) {
+	#zoomImage(event: MouseEvent) {
 		let activeImage = this.#activeImage;
 		switch (event.type) {
 			case 'mouseover':
@@ -361,11 +373,11 @@ export class HTMLHarmonySlideshowElement extends HTMLElement {
 
 	#initObserver() {
 		let config = { childList: true, subtree: true };
-		const mutationCallback = (mutationsList, observer) => {
+		const mutationCallback = (mutationsList: Array<MutationRecord>, observer: MutationObserver) => {
 			for (const mutation of mutationsList) {
 				for (let addedNode of mutation.addedNodes) {
 					if (addedNode.parentNode == this) {
-						this.addImage(addedNode);
+						this.addImage(addedNode as HTMLImageElement);
 					}
 				}
 			}
@@ -376,10 +388,10 @@ export class HTMLHarmonySlideshowElement extends HTMLElement {
 
 	}
 
-	attributeChangedCallback(name, oldValue, newValue) {
+	attributeChangedCallback(name: string, oldValue: string, newValue: string) {
 		switch (name) {
 			case 'dynamic':
-				this.dynamic = newValue == true;
+				this.dynamic = toBool(newValue);
 				break;
 		}
 	}
