@@ -46,7 +46,6 @@ function hslToRgb(h: number, s: number, l: number) {
 	return [r, g, b];
 }
 
-
 export class Color {
 	#rgba: Array<number> = [];
 	constructor({ red = 0, green = 0, blue = 0, alpha = 1, hex = '' } = {}) {
