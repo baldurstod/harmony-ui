@@ -7,7 +7,7 @@ export class I18n {
 	static #refreshTimeout: number | null;
 	static #observerConfig = { childList: true, subtree: true, attributeFilter: ['i18n', 'data-i18n-json', 'data-i18n-values'] };
 	static #observer?: MutationObserver;
-	static #observed = new Set<HTMLElement>();
+	static #observed = new Set<HTMLElement | ShadowRoot>();
 
 	static start() {
 		this.observeElement(document.body);
@@ -46,7 +46,7 @@ export class I18n {
 		this.#observer = new MutationObserver(callback);
 	}
 
-	static observeElement(element: HTMLElement) {
+	static observeElement(element: HTMLElement | ShadowRoot) {
 		this.#observed.add(element);
 
 		this.#initObserver();
@@ -54,11 +54,11 @@ export class I18n {
 		this.updateElement(element);
 	}
 
-	static #processList(parentNode: Element, className: string, attribute: string, subElement: string) {
+	static #processList(parentNode: Element | ShadowRoot, className: string, attribute: string, subElement: string) {
 		const elements = parentNode.querySelectorAll('.' + className);
 
-		if (parentNode.classList?.contains(className)) {
-			this.#processElement(parentNode, attribute, subElement);
+		if ((parentNode as HTMLElement).classList?.contains(className)) {
+			this.#processElement(parentNode as Element, attribute, subElement);
 		}
 
 		for (let element of elements) {
@@ -66,12 +66,12 @@ export class I18n {
 		}
 	}
 
-	static #processJSON(parentNode: Element) {
+	static #processJSON(parentNode: Element | ShadowRoot) {
 		const className = 'i18n';
 		const elements = parentNode.querySelectorAll('.' + className);
 
-		if (parentNode.classList?.contains(className)) {
-			this.#processElementJSON(parentNode);
+		if ((parentNode as HTMLElement).classList?.contains(className)) {
+			this.#processElementJSON((parentNode as HTMLElement));
 		}
 
 		for (let element of elements) {
@@ -134,7 +134,7 @@ export class I18n {
 		return;
 	}
 
-	static updateElement(htmlElement: HTMLElement) {
+	static updateElement(htmlElement: HTMLElement | ShadowRoot) {
 		this.#processList(htmlElement, 'i18n', 'data-i18n', 'innerHTML');
 		this.#processList(htmlElement, 'i18n-title', 'data-i18n-title', 'title');
 		this.#processList(htmlElement, 'i18n-placeholder', 'data-i18n-placeholder', 'placeholder');
