@@ -1,6 +1,6 @@
-function rgbToHsl(r, g, b) {
-	var max = Math.max(r, g, b), min = Math.min(r, g, b);
-	var h, s, l = (max + min) / 2;
+function rgbToHsl(r: number, g: number, b: number) {
+	const max = Math.max(r, g, b), min = Math.min(r, g, b);
+	let h = 0, s, l = (max + min) / 2;
 
 	if (max == min) {
 		h = s = 0; // achromatic
@@ -20,13 +20,13 @@ function rgbToHsl(r, g, b) {
 	return [h, s, l];
 }
 
-function hslToRgb(h, s, l) {
+function hslToRgb(h: number, s: number, l: number) {
 	var r, g, b;
 
 	if (s == 0) {
 		r = g = b = l; // achromatic
 	} else {
-		function hue2rgb(p, q, t) {
+		function hue2rgb(p: number, q: number, t: number) {
 			if (t < 0) t += 1;
 			if (t > 1) t -= 1;
 			if (t < 1 / 6) return p + (q - p) * 6 * t;
@@ -48,8 +48,8 @@ function hslToRgb(h, s, l) {
 
 
 export class Color {
-	#rgba = [];
-	constructor({ red = 0, green = 0, blue = 0, alpha = 1, hex } = {}) {
+	#rgba: Array<number> = [];
+	constructor({ red = 0, green = 0, blue = 0, alpha = 1, hex = '' } = {}) {
 		this.#rgba[0] = red;
 		this.#rgba[1] = green;
 		this.#rgba[2] = blue;
@@ -60,7 +60,7 @@ export class Color {
 		}
 	}
 
-	setHue(hue) {
+	setHue(hue: number) {
 		const hsl = rgbToHsl(this.#rgba[0], this.#rgba[1], this.#rgba[2]);
 
 
@@ -71,7 +71,7 @@ export class Color {
 		this.#rgba[2] = rgb[2];
 	}
 
-	setSatLum(sat, lum) {
+	setSatLum(sat: number, lum: number) {
 		const hsl = rgbToHsl(this.#rgba[0], this.#rgba[1], this.#rgba[2]);
 
 
@@ -83,7 +83,7 @@ export class Color {
 
 	}
 
-	setHex(hex) {
+	setHex(hex: string) {
 		hex = (hex.startsWith('#') ? hex.slice(1) : hex)
 			.replace(/^(\w{3})$/, '$1F')                   //987      -> 987F
 			.replace(/^(\w)(\w)(\w)(\w)$/, '$1$1$2$2$3$3$4$4')      //9876     -> 99887766
@@ -94,13 +94,15 @@ export class Color {
 		}
 
 		const rgba = hex
-			.match(/^(\w\w)(\w\w)(\w\w)(\w\w)$/).slice(1)  //98765432 -> 98 76 54 32
+			.match(/^(\w\w)(\w\w)(\w\w)(\w\w)$/)?.slice(1)  //98765432 -> 98 76 54 32
 			.map(x => parseInt(x, 16));                    //Hex to decimal
 
-		this.#rgba[0] = rgba[0] / 255;
-		this.#rgba[1] = rgba[1] / 255;
-		this.#rgba[2] = rgba[2] / 255;
-		this.#rgba[3] = rgba[3] / 255;
+		if (rgba) {
+			this.#rgba[0] = rgba[0] / 255;
+			this.#rgba[1] = rgba[1] / 255;
+			this.#rgba[2] = rgba[2] / 255;
+			this.#rgba[3] = rgba[3] / 255;
+		}
 	}
 
 	getHex() {
