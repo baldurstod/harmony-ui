@@ -3,24 +3,27 @@ import { createElement } from '../harmony-html.js';
 import { I18n } from '../harmony-i18n.js';
 
 import switchCSS from '../css/harmony-switch.css';
+import { toBool } from '../utils/attributes.js';
 
 export class HTMLHarmonySwitchElement extends HTMLElement {
-	#doOnce;
-	#disabled;
-	#htmlLabel;
-	#htmlSwitchOuter;
-	#htmlSwitchInner;
-	#state = false;
+	#doOnce = true;
+	#disabled = false;
+	#htmlLabel: HTMLElement;
+	#htmlSwitchOuter: HTMLElement;
+	#htmlSwitchInner: HTMLElement;
+	#state? = false;
 	#ternary = false;
 	#shadowRoot;
 	constructor() {
 		super();
-		this.#doOnce = true;
 		this.#shadowRoot = this.attachShadow({ mode: 'closed' });
 		shadowRootStyle(this.#shadowRoot, switchCSS);
-		this.#htmlLabel = createElement('div', { class: 'harmony-switch-label' });
-		this.#htmlSwitchOuter = createElement('span', { class: 'harmony-switch-outer' });
-		this.#htmlSwitchInner = createElement('span', { class: 'harmony-switch-inner' });
+		this.#htmlLabel = createElement('div', { class: 'harmony-switch-label' }) as HTMLElement;
+		this.#htmlSwitchOuter = createElement('span', {
+			class: 'harmony-switch-outer',
+			child: this.#htmlSwitchInner = createElement('span', { class: 'harmony-switch-inner' }) as HTMLElement,
+		}) as HTMLElement;
+
 		this.addEventListener('click', () => this.toggle());
 	}
 
@@ -99,7 +102,7 @@ export class HTMLHarmonySwitchElement extends HTMLElement {
 		this.#htmlSwitchOuter.classList.add(this.#state ? 'on' : 'off');
 	}
 
-	attributeChangedCallback(name, oldValue, newValue) {
+	attributeChangedCallback(name: string, oldValue: string, newValue: string) {
 		switch (name) {
 			case 'data-label':
 				this.#htmlLabel.innerHTML = newValue;
@@ -111,7 +114,7 @@ export class HTMLHarmonySwitchElement extends HTMLElement {
 				this.#htmlLabel.classList.add('i18n');
 				break;
 			case 'disabled':
-				this.disabled = newValue;
+				this.disabled = toBool(newValue);
 				break;
 			case 'ternary':
 				this.ternary = true;
