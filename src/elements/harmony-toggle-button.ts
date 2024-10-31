@@ -32,7 +32,8 @@ export class HTMLHarmonyToggleButtonElement extends HTMLElement {
 	}
 
 	#processChilds() {
-		for (let child of this.children) {
+		const childs = new Set(this.children)
+		for (let child of childs) {
 			this.#processChild(child as HTMLElement);
 		}
 		this.#refresh();
