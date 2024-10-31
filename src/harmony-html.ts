@@ -1,4 +1,4 @@
-export function createElement(tagName: string, options: any) {
+export function createElement(tagName: string, options?: any) {
 	let element = document.createElement(tagName);
 	return createElementOptions(element, options);
 }
