@@ -2,10 +2,10 @@ import { createElement, hide, show } from '../harmony-html';
 
 export class HTMLHarmonyCopyElement extends HTMLElement {
 	#doOnce = true;
-	#htmlCopied;
+	#htmlCopied: HTMLElement;
 	constructor() {
 		super();
-		this.#htmlCopied = createElement('div', { class: 'harmony-copy-copied' });
+		this.#htmlCopied = createElement('div', { class: 'harmony-copy-copied' }) as HTMLElement;
 		this.addEventListener('click', () => this.#copy());
 	}
 
