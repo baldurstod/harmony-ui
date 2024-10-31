@@ -1,40 +1,41 @@
 import { createElement, hide, show } from '../harmony-html.js';
 
 export class HTMLHarmonySelectElement extends HTMLElement {
-	#htmlSelect;
+	#htmlSelect: HTMLElement;
 	constructor() {
 		super();
-		this.#htmlSelect = createElement('select');
+		this.#htmlSelect = createElement('select') as HTMLElement;
 	}
 
 	connectedCallback() {
 		this.append(this.#htmlSelect);
 	}
 
-	attributeChangedCallback(name, oldValue, newValue) {
+	attributeChangedCallback(name: string, oldValue: string, newValue: string) {
 		if (name == 'multiple') {
 			this.#htmlSelect.setAttribute('multiple', newValue);
 		}
 	}
 
-	addEventListener(type, listener) {
+	addEventListener(type: string, listener: EventListenerOrEventListenerObject) {
 		this.#htmlSelect.addEventListener(type, listener);
 	}
+	/*
+		onChange(event: Event) {
+			let newEvent = new event.constructor(event.type, event);
+			this.dispatchEvent(newEvent);
+		}
+	*/
 
-	onChange(event) {
-		let newEvent = new event.constructor(event.type, event);
-		this.dispatchEvent(newEvent);
-	}
-
-	addOption(value, text) {
-		text = text || value;
+	addOption(value: string, text?: string) {
+		text = text ?? value;
 		let option = document.createElement('option');
 		option.value = value;
 		option.innerHTML = text;
 		this.#htmlSelect.append(option);
 	}
 
-	addOptions(values) {
+	addOptions(values: Map<any, any>) {
 		if (values && values.entries) {
 			for (let [value, text] of values.entries()) {
 				this.addOption(value, text);
@@ -42,15 +43,15 @@ export class HTMLHarmonySelectElement extends HTMLElement {
 		}
 	}
 
-	setOptions(values) {
+	setOptions(values: Map<any, any>) {
 		this.removeAllOptions();
 		this.addOptions(values);
 	}
 
-	removeOption(value) {
+	removeOption(value: any) {
 		let list = this.#htmlSelect.children;
 		for (let i = 0; i < list.length; i++) {
-			if (list[i].value === value) {
+			if ((list[i] as HTMLOptionElement).value === value) {
 				list[i].remove();
 			}
 		}
@@ -63,34 +64,34 @@ export class HTMLHarmonySelectElement extends HTMLElement {
 		}
 	}
 
-	select(value) {
+	select(value: any) {
 		let list = this.#htmlSelect.children;
 		for (let i = 0; i < list.length; i++) {
-			if (list[i].value === value) {
-				list[i].selected = true;
+			if ((list[i] as HTMLOptionElement).value === value) {
+				(list[i] as HTMLOptionElement).selected = true;
 			}
 		}
 	}
 
 	selectFirst() {
 		if (this.#htmlSelect.children[0]) {
-			this.#htmlSelect.children[0].selected = true;
+			(this.#htmlSelect.children[0] as HTMLOptionElement).selected = true;
 			this.#htmlSelect.dispatchEvent(new Event('input'));
 		}
 	}
 
-	unselect(value) {
+	unselect(value: any) {
 		let list = this.#htmlSelect.children;
 		for (let i = 0; i < list.length; i++) {
-			if (list[i].value === value) {
-				list[i].selected = false;
+			if ((list[i] as HTMLOptionElement).value === value) {
+				(list[i] as HTMLOptionElement).selected = false;
 			}
 		}
 	}
 	unselectAll() {
 		let list = this.#htmlSelect.children;
 		for (let i = 0; i < list.length; i++) {
-			list[i].selected = false;
+			(list[i] as HTMLOptionElement).selected = false;
 		}
 	}
 
