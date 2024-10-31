@@ -4,16 +4,16 @@ export class I18n {
 	static #lang = 'english';
 	static #translations = new Map();
 	static #executing = false;
-	static #refreshTimeout;
+	static #refreshTimeout: number | null;
 	static #observerConfig = { childList: true, subtree: true, attributeFilter: ['i18n', 'data-i18n-json', 'data-i18n-values'] };
-	static #observer;
-	static #observed = new Set();
+	static #observer?: MutationObserver;
+	static #observed = new Set<HTMLElement>();
 
 	static start() {
 		this.observeElement(document.body);
 	}
 
-	static setOptions(options) {
+	static setOptions(options: { translations: any }) {
 		if (options.translations) {
 			for (let translation of options.translations) {
 				this.addTranslation(translation);
@@ -22,7 +22,7 @@ export class I18n {
 		this.i18n();
 	}
 
-	static addTranslation(translation) {
+	static addTranslation(translation: any) {
 		this.#translations.set(translation.lang, translation);
 	}
 
@@ -30,8 +30,8 @@ export class I18n {
 		if (this.#observer) {
 			return;
 		}
-		const callback = async (mutationsList, observer) => {
-			for(let mutation of mutationsList) {
+		const callback = async (mutationsList: Array<MutationRecord>, observer: MutationObserver) => {
+			for (let mutation of mutationsList) {
 				if (mutation.type === 'childList') {
 					for (let node of mutation.addedNodes) {
 						if (node instanceof HTMLElement) {
@@ -39,22 +39,22 @@ export class I18n {
 						}
 					}
 				} else if (mutation.type === 'attributes') {
-					this.updateElement(mutation.target);
+					this.updateElement(mutation.target as HTMLElement);
 				}
 			}
 		};
 		this.#observer = new MutationObserver(callback);
 	}
 
-	static observeElement(element) {
+	static observeElement(element: HTMLElement) {
 		this.#observed.add(element);
 
 		this.#initObserver();
-		this.#observer.observe(element, this.#observerConfig);
+		this.#observer?.observe(element, this.#observerConfig);
 		this.updateElement(element);
 	}
 
-	static #processList(parentNode, className, attribute, subElement) {
+	static #processList(parentNode: Element, className: string, attribute: string, subElement: string) {
 		const elements = parentNode.querySelectorAll('.' + className);
 
 		if (parentNode.classList?.contains(className)) {
@@ -66,7 +66,7 @@ export class I18n {
 		}
 	}
 
-	static #processJSON(parentNode) {
+	static #processJSON(parentNode: Element) {
 		const className = 'i18n';
 		const elements = parentNode.querySelectorAll('.' + className);
 
@@ -79,14 +79,14 @@ export class I18n {
 		}
 	}
 
-	static #processElement(htmlElement, attribute, subElement) {
+	static #processElement(htmlElement: Element, attribute: string, subElement: string) {
 		let dataLabel = htmlElement.getAttribute(attribute);
 		if (dataLabel) {
-			htmlElement[subElement] = this.getString(dataLabel);
+			(htmlElement as any)[subElement] = this.getString(dataLabel);
 		}
 	}
 
-	static #processElementJSON(htmlElement) {
+	static #processElementJSON(htmlElement: Element) {
 		const str = htmlElement.getAttribute('data-i18n-json');
 		if (!str) {
 			return;
@@ -113,13 +113,13 @@ export class I18n {
 
 	static i18n() {
 		if (!this.#refreshTimeout) {
-			this.#refreshTimeout = setTimeout((event) => this.#i18n(), I18N_DELAY_BEFORE_REFRESH);
+			this.#refreshTimeout = setTimeout(() => this.#i18n(), I18N_DELAY_BEFORE_REFRESH);
 		}
 	}
 
 	static #i18n() {
 		this.#refreshTimeout = null;
-		if (this.#executing) {return;}
+		if (this.#executing) { return; }
 		this.#executing = true;
 
 		for (const element of this.#observed) {
@@ -134,7 +134,7 @@ export class I18n {
 		return;
 	}
 
-	static updateElement(htmlElement) {
+	static updateElement(htmlElement: HTMLElement) {
 		this.#processList(htmlElement, 'i18n', 'data-i18n', 'innerHTML');
 		this.#processList(htmlElement, 'i18n-title', 'data-i18n-title', 'title');
 		this.#processList(htmlElement, 'i18n-placeholder', 'data-i18n-placeholder', 'placeholder');
@@ -142,18 +142,18 @@ export class I18n {
 		this.#processJSON(htmlElement);
 	}
 
-	static set lang(lang) {
+	static set lang(lang: string) {
 		throw 'Deprecated, use setLang() instead';
 	}
 
-	static setLang(lang) {
+	static setLang(lang: string) {
 		if (this.#lang != lang) {
 			this.#lang = lang;
 			this.i18n();
 		}
 	}
 
-	static getString(s) {
+	static getString(s: string) {
 		const strings = this.#translations.get(this.#lang)?.strings;
 		if (strings) {
 			let s2 = strings[s]
@@ -167,7 +167,7 @@ export class I18n {
 		return s;
 	}
 
-	static formatString(s, values) {
+	static formatString(s: string, values: any) {
 		let str = this.getString(s);
 
 		for (let key in values) {
@@ -183,36 +183,36 @@ export class I18n {
 	static getAuthors() {
 		return this.#translations.get(this.#lang)?.authors ?? [];
 	}
-/*
-	static async #checkLang() {
-		if (!this.#path) {
-			return false;
-		}
-		if (this.#translations.has(this.#lang)) {
-			return true;
-		} else {
-			let url = this.#path + this.#lang + '.json';
-			try {
-				const response = await fetch(new Request(url));
-				const json = await response.json();
-				this.#loaded(json);
-				/*.then((response) => {
-					response.json().then((json) => {
-						this.#loaded(json);
-					})
-				});* /
-			} catch(e) {}
-			this.#translations.set(this.#lang, {});
-			return false;
-		}
-	}*/
-/*
-	static #loaded(file) {
-		if (file) {
-			let lang = file.lang;
-			this.#translations.set(lang, file);
-			this.i18n();
-			new I18nEvents().dispatchEvent(new CustomEvent('translationsloaded'));
-		}
-	}*/
+	/*
+		static async #checkLang() {
+			if (!this.#path) {
+				return false;
+			}
+			if (this.#translations.has(this.#lang)) {
+				return true;
+			} else {
+				let url = this.#path + this.#lang + '.json';
+				try {
+					const response = await fetch(new Request(url));
+					const json = await response.json();
+					this.#loaded(json);
+					/*.then((response) => {
+						response.json().then((json) => {
+							this.#loaded(json);
+						})
+					});* /
+				} catch(e) {}
+				this.#translations.set(this.#lang, {});
+				return false;
+			}
+		}*/
+	/*
+		static #loaded(file) {
+			if (file) {
+				let lang = file.lang;
+				this.#translations.set(lang, file);
+				this.i18n();
+				new I18nEvents().dispatchEvent(new CustomEvent('translationsloaded'));
+			}
+		}*/
 }
