@@ -1,3 +1,5 @@
+import { checkOutlineSVG } from 'harmony-svg';
+
 async function documentStyle(cssText) {
     return await shadowRootStyle(document, cssText);
 }
@@ -1551,8 +1553,6 @@ class HTMLHarmonyLabelPropertyElement extends HTMLElement {
         }
     }
 }
-
-const checkOutlineSVG = '<svg xmlns="http://www.w3.org/2000/svg"  height="24" viewBox="0 -960 960 960" width="24" fill="currentColor"><path d="m 381,-240 424,-424 -57,-56 -368,367 -169,-170 -57,57 z m 0,113 -339,-339 169,-170 170,170 366,-367 172,168 z"/><path fill="#ffffff" d="m 381,-240 424,-424 -57,-56 -368,367 -169,-170 -57,57 z m 366,-593 c -498,-84.66667 -249,-42.33333 0,0 z"/></svg>';
 
 var paletteCSS = "html{\r\n\t--harmony-palette-color-size: 2rem;\r\n\t--harmony-palette-gap: 0.5rem;\r\n\t--harmony-palette-border-color: grey;\r\n\t--harmony-palette-selected-border-color: orange;\r\n}\r\n\r\n:host{\r\n\tdisplay: flex;\r\n\tflex-direction: row;\r\n\tflex-wrap: wrap;\r\n\tgap: var(--harmony-palette-gap);\r\n}\r\n\r\n.color{\r\n\theight: var(--harmony-palette-color-size);\r\n\twidth: var(--harmony-palette-color-size);\r\n\tborder-radius: calc(var(--harmony-palette-color-size) * .1);\r\n\tborder: calc(var(--harmony-palette-color-size) * .1) solid var(--harmony-palette-border-color);\r\n\tpadding: calc(var(--harmony-palette-color-size) * .1);\r\n\tcursor: pointer;\r\n}\r\n.color.selected{\r\n\tborder-color: var(--harmony-palette-selected-border-color);\r\n\tborder-width: calc(var(--harmony-palette-color-size) * .2);\r\n\tpadding: 0;\r\n\tcolor: black;\r\n}\r\n\r\n.color > svg{\r\n\theight: 100%;\r\n\twidth: 100%;\r\n}\r\n";
 
