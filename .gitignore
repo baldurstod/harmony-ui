@@ -2,3 +2,4 @@ node_modules/
 dist/dts/
 *.bat
 tsdoc-metadata.json
+.rollup.cache/
