@@ -3,3 +3,4 @@ dist/dts/
 *.bat
 tsdoc-metadata.json
 .rollup.cache/
+tsconfig.tsbuildinfo
