@@ -1,4 +1,4 @@
-import {HTMLHarmonySelectElement, styleInject} from '../harmony-ui.js';
+import {HTMLHarmonySelectElement, styleInject} from '../index.js';
 import {InjectUiStyle} from './.inject-ui-style.js';
 if (window.customElements) {
 	styleInject(``);

@@ -15,7 +15,7 @@ async function writeElement(elementName, elementClass, injectCSS, isBrowser = fa
 	let input = fs.readFileSync(cssPath);
 	let css = await postcss([cssnano()]).process(input, { from: undefined, });
 
-	let fileContent = `import {${elementClass}, styleInject} from '${isBrowser ? '../../harmony-ui.browser.js' : '../harmony-ui.js'}';
+	let fileContent = `import {${elementClass}, styleInject} from '${isBrowser ? '../../harmony-ui.browser.js' : '../index.js'}';
 import {InjectUiStyle} from './.inject-ui-style.js';
 if (window.customElements) {
 ${injectCSS ? `	styleInject(\`${css}\`);` : ''}
@@ -30,7 +30,7 @@ async function writeGlobal(isBrowser = false) {
 	let input = fs.readFileSync(cssPath);
 	let css = await postcss([cssnano()]).process(input, { from: undefined, });
 
-	let fileContent = `import {styleInject} from '${isBrowser ? '../../harmony-ui.browser.js' : '../harmony-ui.js'}';
+	let fileContent = `import {styleInject} from '${isBrowser ? '../../harmony-ui.browser.js' : '../index.js'}';
 export const InjectUiStyle = (function () {
 	styleInject(\`${css}\`);
 }());`;

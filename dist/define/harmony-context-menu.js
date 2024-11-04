@@ -1,4 +1,4 @@
-import {HTMLHarmonyContextMenuElement, styleInject} from '../harmony-ui.js';
+import {HTMLHarmonyContextMenuElement, styleInject} from '../index.js';
 import {InjectUiStyle} from './.inject-ui-style.js';
 if (window.customElements) {
 

@@ -1,4 +1,4 @@
-import {HTMLHarmonySwitchElement, styleInject} from '../harmony-ui.js';
+import {HTMLHarmonySwitchElement, styleInject} from '../index.js';
 import {InjectUiStyle} from './.inject-ui-style.js';
 if (window.customElements) {
 

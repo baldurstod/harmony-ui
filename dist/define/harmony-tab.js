@@ -1,4 +1,4 @@
-import {HTMLHarmonyTabElement, styleInject} from '../harmony-ui.js';
+import {HTMLHarmonyTabElement, styleInject} from '../index.js';
 import {InjectUiStyle} from './.inject-ui-style.js';
 if (window.customElements) {
 

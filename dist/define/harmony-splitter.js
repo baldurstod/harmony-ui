@@ -1,4 +1,4 @@
-import {HTMLHarmonySplitterElement, styleInject} from '../harmony-ui.js';
+import {HTMLHarmonySplitterElement, styleInject} from '../index.js';
 import {InjectUiStyle} from './.inject-ui-style.js';
 if (window.customElements) {
 
