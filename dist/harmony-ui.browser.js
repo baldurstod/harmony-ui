@@ -1712,10 +1712,10 @@ class HTMLHarmonyPaletteElement extends HTMLElement {
     }
 }
 
+let nextId = 0;
+createElement('div', { className: 'harmony-panel-splitter' });
+let highlitPanel;
 class HTMLHarmonyPanelElement extends HTMLElement {
-    static #nextId = 0;
-    static #spliter = createElement('div', { className: 'harmony-panel-splitter' });
-    static #highlitPanel;
     #doOnce = true;
     #parent = null;
     #panels = new Set();
@@ -1725,7 +1725,7 @@ class HTMLHarmonyPanelElement extends HTMLElement {
     #isMovable = false;
     #isCollapsible = false;
     #isCollapsed = false;
-    customPanelId = HTMLHarmonyPanelElement.#nextId++;
+    customPanelId = nextId++;
     htmlTitle;
     htmlContent;
     #isDummy = false;
@@ -1883,12 +1883,12 @@ class HTMLHarmonyPanelElement extends HTMLElement {
         }
             */
     static set highlitPanel(panel) {
-        if (HTMLHarmonyPanelElement.#highlitPanel) {
-            HTMLHarmonyPanelElement.#highlitPanel.style.filter = '';
+        if (highlitPanel) {
+            highlitPanel.style.filter = '';
         }
-        HTMLHarmonyPanelElement.#highlitPanel = panel;
-        if (HTMLHarmonyPanelElement.#highlitPanel) {
-            HTMLHarmonyPanelElement.#highlitPanel.style.filter = 'grayscale(80%)'; ///'contrast(200%)';
+        highlitPanel = panel;
+        if (highlitPanel) {
+            highlitPanel.style.filter = 'grayscale(80%)'; ///'contrast(200%)';
         }
     }
     /*
@@ -2075,7 +2075,7 @@ class HTMLHarmonyPanelElement extends HTMLElement {
         this.collapsed = !this.#isCollapsed;
     }
     static get nextId() {
-        return `harmony-panel-dummy-${++HTMLHarmonyPanelElement.#nextId}`;
+        return `harmony-panel-dummy-${++nextId}`;
     }
     static saveDisposition() {
         let list = document.getElementsByTagName('harmony-panel');

@@ -2,11 +2,11 @@ import { createElement } from "../harmony-html";
 import { toBool } from "../utils/attributes";
 
 let dragged = null;
+let nextId = 0;
+let spliter: HTMLElement = createElement('div', { className: 'harmony-panel-splitter' }) as HTMLElement;
+let highlitPanel: HTMLElement;
 
 export class HTMLHarmonyPanelElement extends HTMLElement {
-	static #nextId = 0;
-	static #spliter: HTMLElement = createElement('div', { className: 'harmony-panel-splitter' }) as HTMLElement;
-	static #highlitPanel?: HTMLElement;
 	#doOnce = true;
 	#parent = null;
 	#panels = new Set();
@@ -16,7 +16,7 @@ export class HTMLHarmonyPanelElement extends HTMLElement {
 	#isMovable = false;
 	#isCollapsible = false;
 	#isCollapsed = false;
-	customPanelId = HTMLHarmonyPanelElement.#nextId++;
+	customPanelId = nextId++;
 	htmlTitle: HTMLElement;
 	htmlContent: HTMLElement;
 	#isDummy = false;
@@ -180,12 +180,12 @@ export class HTMLHarmonyPanelElement extends HTMLElement {
 			*/
 
 	static set highlitPanel(panel: HTMLElement) {
-		if (HTMLHarmonyPanelElement.#highlitPanel) {
-			HTMLHarmonyPanelElement.#highlitPanel.style.filter = '';
+		if (highlitPanel) {
+			highlitPanel.style.filter = '';
 		}
-		HTMLHarmonyPanelElement.#highlitPanel = panel;
-		if (HTMLHarmonyPanelElement.#highlitPanel) {
-			HTMLHarmonyPanelElement.#highlitPanel.style.filter = 'grayscale(80%)';///'contrast(200%)';
+		highlitPanel = panel;
+		if (highlitPanel) {
+			highlitPanel.style.filter = 'grayscale(80%)';///'contrast(200%)';
 		}
 	}
 	/*
@@ -382,7 +382,7 @@ export class HTMLHarmonyPanelElement extends HTMLElement {
 
 
 	static get nextId() {
-		return `harmony-panel-dummy-${++HTMLHarmonyPanelElement.#nextId}`;
+		return `harmony-panel-dummy-${++nextId}`;
 	}
 
 	static saveDisposition() {
