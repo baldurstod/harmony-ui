@@ -104,7 +104,7 @@ export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 
 	constructor() {
 		super();
-		this.#shadowRoot = this.attachShadow({ mode: 'open' });
+		this.#shadowRoot = this.attachShadow({ mode: 'closed' });
 		shadowRootStyle(this.#shadowRoot, manipulator2dCSS);
 
 		this.#htmlQuad = createElement('div', {
