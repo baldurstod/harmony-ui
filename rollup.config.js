@@ -46,6 +46,7 @@ async function writeDefines(isBrowser = false) {
 		let css = await postcss([cssnano()]).process(input, { from: undefined, });
 		const name = element.name.replaceAll('-', '');
 		fileContent += `
+import {${element.class}, styleInject} from '${isBrowser ? '../../harmony-ui.browser.js' : '../index.js'}';
 let defined${name} = false;
 export function define${name}() {
 	if (window.customElements && !defined${name}) {
