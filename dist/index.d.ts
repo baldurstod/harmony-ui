@@ -24,9 +24,11 @@ declare class Color {
     get alpha(): number;
 }
 
-export declare function createElement(tagName: string, options?: any): ShadowRoot | HTMLElement;
+export declare function createElement(tagName: string, options?: any): HTMLElement;
 
-export declare function createElementNS(namespaceURI: string, tagName: string, options: any): ShadowRoot | HTMLElement;
+export declare function createElementNS(namespaceURI: string, tagName: string, options: any): HTMLElement;
+
+export declare function createShadowRoot(tagName: string, options?: any, mode?: 'open' | 'closed'): ShadowRoot;
 
 export declare function display(htmlElement: HTMLElement | undefined, visible: boolean): void;
 
@@ -95,7 +97,7 @@ export declare class HTMLHarmonyAccordionElement extends HTMLElement {
     constructor();
     connectedCallback(): void;
     addItem(item: HTMLElement): void;
-    createItem(header: HTMLElement, content: HTMLElement): ShadowRoot | HTMLElement;
+    createItem(header: HTMLElement, content: HTMLElement): HTMLElement;
     clear(): void;
     set disabled(disabled: boolean);
     get disabled(): boolean;

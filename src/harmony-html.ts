@@ -1,11 +1,20 @@
 export function createElement(tagName: string, options?: any) {
-	let element = document.createElement(tagName);
-	return createElementOptions(element, options);
+	const element = document.createElement(tagName);
+	createElementOptions(element, options);
+	return element;
 }
 
 export function createElementNS(namespaceURI: string, tagName: string, options: any) {
 	const element = (document.createElementNS(namespaceURI, tagName) as HTMLElement);
-	return createElementOptions(element, options);
+	createElementOptions(element, options);
+	return element;
+}
+
+export function createShadowRoot(tagName: string, options?: any, mode: 'open' | 'closed' = 'closed') {
+	const element = document.createElement(tagName);
+	const shadowRoot = element.attachShadow({ mode: mode });
+	createElementOptions(element, options, shadowRoot);
+	return shadowRoot;
 }
 
 export function updateElement(element: HTMLElement, options: any) {
@@ -25,13 +34,8 @@ function append(element: HTMLElement | ShadowRoot, child: HTMLElement) {
 	}
 }
 
-function createElementOptions(element: HTMLElement, options: any) {
-	let shadowRoot: ShadowRoot | undefined;
+function createElementOptions(element: HTMLElement, options: any, shadowRoot?: ShadowRoot) {
 	if (options) {
-		if (options.attachShadow) {
-			shadowRoot = element.attachShadow(options.attachShadow);
-		}
-
 		for (const optionName in options) {
 			const optionValue = options[optionName];
 			switch (optionName) {
@@ -116,7 +120,6 @@ function createElementOptions(element: HTMLElement, options: any) {
 
 		options.elementCreated?.(element, shadowRoot);
 	}
-	return shadowRoot ?? element;
 }
 
 async function adoptStyleSheet(element: HTMLElement | Document | ShadowRoot, cssText: string) {

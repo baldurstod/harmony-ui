@@ -18,12 +18,20 @@ function shadowRootStyleSync(shadowRoot, cssText) {
 }
 
 function createElement(tagName, options) {
-    let element = document.createElement(tagName);
-    return createElementOptions(element, options);
+    const element = document.createElement(tagName);
+    createElementOptions(element, options);
+    return element;
 }
 function createElementNS(namespaceURI, tagName, options) {
     const element = document.createElementNS(namespaceURI, tagName);
-    return createElementOptions(element, options);
+    createElementOptions(element, options);
+    return element;
+}
+function createShadowRoot(tagName, options, mode = 'closed') {
+    const element = document.createElement(tagName);
+    const shadowRoot = element.attachShadow({ mode: mode });
+    createElementOptions(element, options, shadowRoot);
+    return shadowRoot;
 }
 function updateElement(element, options) {
     createElementOptions(element, options);
@@ -40,12 +48,8 @@ function append(element, child) {
         element.append(child);
     }
 }
-function createElementOptions(element, options) {
-    let shadowRoot;
+function createElementOptions(element, options, shadowRoot) {
     if (options) {
-        if (options.attachShadow) {
-            shadowRoot = element.attachShadow(options.attachShadow);
-        }
         for (const optionName in options) {
             const optionValue = options[optionName];
             switch (optionName) {
@@ -130,7 +134,6 @@ function createElementOptions(element, options) {
         }
         options.elementCreated?.(element, shadowRoot);
     }
-    return shadowRoot ?? element;
 }
 async function adoptStyleSheet(element, cssText) {
     const sheet = new CSSStyleSheet;
@@ -3170,4 +3173,4 @@ class HTMLHarmonyToggleButtonElement extends HTMLElement {
     }
 }
 
-export { HTMLHarmony2dManipulatorElement, HTMLHarmonyAccordionElement, HTMLHarmonyColorPickerElement, HTMLHarmonyContextMenuElement, HTMLHarmonyCopyElement, HTMLHarmonyLabelPropertyElement, HTMLHarmonyPaletteElement, HTMLHarmonyPanelElement, HTMLHarmonyRadioElement, HTMLHarmonySelectElement, HTMLHarmonySlideshowElement, HTMLHarmonySplitterElement, HTMLHarmonySwitchElement, HTMLHarmonyTabElement, HTMLHarmonyTabGroupElement, HTMLHarmonyToggleButtonElement, I18n, ManipulatorCorner, ManipulatorDirection, ManipulatorSide, createElement, createElementNS, display, documentStyle, documentStyleSync, hide, isVisible, shadowRootStyle, shadowRootStyleSync, show, styleInject, toggle, updateElement, visible };
+export { HTMLHarmony2dManipulatorElement, HTMLHarmonyAccordionElement, HTMLHarmonyColorPickerElement, HTMLHarmonyContextMenuElement, HTMLHarmonyCopyElement, HTMLHarmonyLabelPropertyElement, HTMLHarmonyPaletteElement, HTMLHarmonyPanelElement, HTMLHarmonyRadioElement, HTMLHarmonySelectElement, HTMLHarmonySlideshowElement, HTMLHarmonySplitterElement, HTMLHarmonySwitchElement, HTMLHarmonyTabElement, HTMLHarmonyTabGroupElement, HTMLHarmonyToggleButtonElement, I18n, ManipulatorCorner, ManipulatorDirection, ManipulatorSide, createElement, createElementNS, createShadowRoot, display, documentStyle, documentStyleSync, hide, isVisible, shadowRootStyle, shadowRootStyleSync, show, styleInject, toggle, updateElement, visible };
