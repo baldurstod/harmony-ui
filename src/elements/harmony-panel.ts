@@ -5,7 +5,7 @@ let dragged = null;
 
 export class HTMLHarmonyPanelElement extends HTMLElement {
 	static #nextId = 0;
-	static #spliter: HTMLElement;
+	static #spliter: HTMLElement = createElement('div', { className: 'harmony-panel-splitter' }) as HTMLElement;
 	static #highlitPanel?: HTMLElement;
 	#doOnce = true;
 	#parent = null;
@@ -20,10 +20,6 @@ export class HTMLHarmonyPanelElement extends HTMLElement {
 	htmlTitle: HTMLElement;
 	htmlContent: HTMLElement;
 	#isDummy = false;
-
-	static {
-		this.#spliter = createElement('div', { className: 'harmony-panel-splitter' }) as HTMLElement;
-	}
 
 	constructor() {
 		super();

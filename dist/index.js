@@ -1714,7 +1714,7 @@ class HTMLHarmonyPaletteElement extends HTMLElement {
 
 class HTMLHarmonyPanelElement extends HTMLElement {
     static #nextId = 0;
-    static #spliter;
+    static #spliter = createElement('div', { className: 'harmony-panel-splitter' });
     static #highlitPanel;
     #doOnce = true;
     #parent = null;
@@ -1729,9 +1729,6 @@ class HTMLHarmonyPanelElement extends HTMLElement {
     htmlTitle;
     htmlContent;
     #isDummy = false;
-    static {
-        this.#spliter = createElement('div', { className: 'harmony-panel-splitter' });
-    }
     constructor() {
         super();
         //this.addEventListener('dragstart', event => this._handleDragStart(event));
