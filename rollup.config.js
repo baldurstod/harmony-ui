@@ -39,14 +39,14 @@ export const InjectUiStyle = (function () {
 }
 
 async function writeDefines(isBrowser = false) {
-	let fileContent = '';
+	let fileContent = `import { styleInject } from '${isBrowser ? '../../harmony-ui.browser.js' : '../index.js'}';`;
 	for (const element of elements) {
 		let cssPath = `./src/css/${element.name}.css`;
 		let input = fs.readFileSync(cssPath);
 		let css = await postcss([cssnano()]).process(input, { from: undefined, });
 		const name = element.name.replaceAll('-', '');
 		fileContent += `
-import {${element.class}, styleInject} from '${isBrowser ? '../../harmony-ui.browser.js' : '../index.js'}';
+import { ${element.class} } from '${isBrowser ? '../../harmony-ui.browser.js' : '../index.js'}';
 let defined${name} = false;
 export function define${name}() {
 	if (window.customElements && !defined${name}) {

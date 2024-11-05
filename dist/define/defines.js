@@ -1,5 +1,5 @@
-
-import {HTMLHarmony2dManipulatorElement, styleInject} from '../index.js';
+import { styleInject } from '../index.js';
+import { HTMLHarmony2dManipulatorElement } from '../index.js';
 let definedharmony2dmanipulator = false;
 export function defineharmony2dmanipulator() {
 	if (window.customElements && !definedharmony2dmanipulator) {
@@ -9,7 +9,7 @@ export function defineharmony2dmanipulator() {
 	}
 }
 
-import {HTMLHarmonyAccordionElement, styleInject} from '../index.js';
+import { HTMLHarmonyAccordionElement } from '../index.js';
 let definedharmonyaccordion = false;
 export function defineharmonyaccordion() {
 	if (window.customElements && !definedharmonyaccordion) {
@@ -19,7 +19,7 @@ export function defineharmonyaccordion() {
 	}
 }
 
-import {HTMLHarmonyColorPickerElement, styleInject} from '../index.js';
+import { HTMLHarmonyColorPickerElement } from '../index.js';
 let definedharmonycolorpicker = false;
 export function defineharmonycolorpicker() {
 	if (window.customElements && !definedharmonycolorpicker) {
@@ -29,7 +29,7 @@ export function defineharmonycolorpicker() {
 	}
 }
 
-import {HTMLHarmonyContextMenuElement, styleInject} from '../index.js';
+import { HTMLHarmonyContextMenuElement } from '../index.js';
 let definedharmonycontextmenu = false;
 export function defineharmonycontextmenu() {
 	if (window.customElements && !definedharmonycontextmenu) {
@@ -39,7 +39,7 @@ export function defineharmonycontextmenu() {
 	}
 }
 
-import {HTMLHarmonyCopyElement, styleInject} from '../index.js';
+import { HTMLHarmonyCopyElement } from '../index.js';
 let definedharmonycopy = false;
 export function defineharmonycopy() {
 	if (window.customElements && !definedharmonycopy) {
@@ -49,7 +49,7 @@ export function defineharmonycopy() {
 	}
 }
 
-import {HTMLHarmonyLabelPropertyElement, styleInject} from '../index.js';
+import { HTMLHarmonyLabelPropertyElement } from '../index.js';
 let definedharmonylabelproperty = false;
 export function defineharmonylabelproperty() {
 	if (window.customElements && !definedharmonylabelproperty) {
@@ -59,7 +59,7 @@ export function defineharmonylabelproperty() {
 	}
 }
 
-import {HTMLHarmonyPaletteElement, styleInject} from '../index.js';
+import { HTMLHarmonyPaletteElement } from '../index.js';
 let definedharmonypalette = false;
 export function defineharmonypalette() {
 	if (window.customElements && !definedharmonypalette) {
@@ -69,7 +69,7 @@ export function defineharmonypalette() {
 	}
 }
 
-import {HTMLHarmonyPanelElement, styleInject} from '../index.js';
+import { HTMLHarmonyPanelElement } from '../index.js';
 let definedharmonypanel = false;
 export function defineharmonypanel() {
 	if (window.customElements && !definedharmonypanel) {
@@ -79,7 +79,7 @@ export function defineharmonypanel() {
 	}
 }
 
-import {HTMLHarmonyRadioElement, styleInject} from '../index.js';
+import { HTMLHarmonyRadioElement } from '../index.js';
 let definedharmonyradio = false;
 export function defineharmonyradio() {
 	if (window.customElements && !definedharmonyradio) {
@@ -89,7 +89,7 @@ export function defineharmonyradio() {
 	}
 }
 
-import {HTMLHarmonySelectElement, styleInject} from '../index.js';
+import { HTMLHarmonySelectElement } from '../index.js';
 let definedharmonyselect = false;
 export function defineharmonyselect() {
 	if (window.customElements && !definedharmonyselect) {
@@ -99,7 +99,7 @@ export function defineharmonyselect() {
 	}
 }
 
-import {HTMLHarmonySlideshowElement, styleInject} from '../index.js';
+import { HTMLHarmonySlideshowElement } from '../index.js';
 let definedharmonyslideshow = false;
 export function defineharmonyslideshow() {
 	if (window.customElements && !definedharmonyslideshow) {
@@ -109,7 +109,7 @@ export function defineharmonyslideshow() {
 	}
 }
 
-import {HTMLHarmonySplitterElement, styleInject} from '../index.js';
+import { HTMLHarmonySplitterElement } from '../index.js';
 let definedharmonysplitter = false;
 export function defineharmonysplitter() {
 	if (window.customElements && !definedharmonysplitter) {
@@ -119,7 +119,7 @@ export function defineharmonysplitter() {
 	}
 }
 
-import {HTMLHarmonySwitchElement, styleInject} from '../index.js';
+import { HTMLHarmonySwitchElement } from '../index.js';
 let definedharmonyswitch = false;
 export function defineharmonyswitch() {
 	if (window.customElements && !definedharmonyswitch) {
@@ -129,7 +129,7 @@ export function defineharmonyswitch() {
 	}
 }
 
-import {HTMLHarmonyTabElement, styleInject} from '../index.js';
+import { HTMLHarmonyTabElement } from '../index.js';
 let definedharmonytab = false;
 export function defineharmonytab() {
 	if (window.customElements && !definedharmonytab) {
@@ -139,7 +139,7 @@ export function defineharmonytab() {
 	}
 }
 
-import {HTMLHarmonyTabGroupElement, styleInject} from '../index.js';
+import { HTMLHarmonyTabGroupElement } from '../index.js';
 let definedharmonytabgroup = false;
 export function defineharmonytabgroup() {
 	if (window.customElements && !definedharmonytabgroup) {
@@ -149,7 +149,7 @@ export function defineharmonytabgroup() {
 	}
 }
 
-import {HTMLHarmonyToggleButtonElement, styleInject} from '../index.js';
+import { HTMLHarmonyToggleButtonElement } from '../index.js';
 let definedharmonytogglebutton = false;
 export function defineharmonytogglebutton() {
 	if (window.customElements && !definedharmonytogglebutton) {
