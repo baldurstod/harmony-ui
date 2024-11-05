@@ -38,6 +38,28 @@ export const InjectUiStyle = (function () {
 	fs.writeFile(`./dist/define/${isBrowser ? 'browser/' : ''}.inject-ui-style.js`, Buffer.from(fileContent), async (err) => { if (err) throw err });
 }
 
+async function writeDefines(isBrowser = false) {
+	let fileContent = '';
+	for (const element of elements) {
+		let cssPath = `./src/css/${element.name}.css`;
+		let input = fs.readFileSync(cssPath);
+		let css = await postcss([cssnano()]).process(input, { from: undefined, });
+		const name = element.name.replaceAll('-', '');
+		fileContent += `
+let defined${name} = false;
+export function define${name}() {
+	if (window.customElements && !defined${name}) {
+		${element.injectCSS ? `	styleInject(\`${css}\`);` : ''}
+		customElements.define('${element.name}', ${element.class});
+		defined${name} = true;
+	}
+}
+`;
+	}
+
+	fs.writeFile(`./dist/define/${isBrowser ? 'browser/' : ''}defines.js`, Buffer.from(fileContent), async (err) => { if (err) throw err });
+}
+
 fs.mkdirSync('./dist/define/', { recursive: true });
 fs.mkdirSync('./dist/define/browser/', { recursive: true });
 
@@ -49,6 +71,7 @@ function writeElements(isBrowser) {
 		writeElement(element.name, element.class, element.injectCSS, isBrowser);
 	}
 	writeGlobal(isBrowser);
+	writeDefines(isBrowser);
 }
 
 export default [
