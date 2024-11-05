@@ -1713,7 +1713,7 @@ class HTMLHarmonyPaletteElement extends HTMLElement {
 }
 
 let nextId = 0;
-createElement('div', { className: 'harmony-panel-splitter' });
+//let spliter: HTMLElement = createElement('div', { className: 'harmony-panel-splitter' }) as HTMLElement;
 let highlitPanel;
 class HTMLHarmonyPanelElement extends HTMLElement {
     #doOnce = true;

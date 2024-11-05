@@ -3,7 +3,7 @@ import { toBool } from "../utils/attributes";
 
 let dragged = null;
 let nextId = 0;
-let spliter: HTMLElement = createElement('div', { className: 'harmony-panel-splitter' }) as HTMLElement;
+//let spliter: HTMLElement = createElement('div', { className: 'harmony-panel-splitter' }) as HTMLElement;
 let highlitPanel: HTMLElement;
 
 export class HTMLHarmonyPanelElement extends HTMLElement {
