@@ -1550,6 +1550,7 @@ class HTMLHarmonyFileInputElement extends HTMLElement {
         super();
         this.#shadowRoot = this.attachShadow({ mode: 'closed' });
         shadowRootStyle(this.#shadowRoot, fileInputCSS);
+        I18n.observeElement(this.#shadowRoot);
         createElement('label', {
             parent: this.#shadowRoot,
             childs: [

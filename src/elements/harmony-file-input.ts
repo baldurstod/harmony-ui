@@ -3,6 +3,7 @@ import { createElement } from '../harmony-html';
 import fileInputCSS from '../css/harmony-file-input.css';
 import { folderOpenSVG } from 'harmony-svg';
 import { cloneEvent } from '../utils/events';
+import { I18n } from '../harmony-i18n';
 
 export class HTMLHarmonyFileInputElement extends HTMLElement {
 	#shadowRoot: ShadowRoot;
@@ -12,6 +13,7 @@ export class HTMLHarmonyFileInputElement extends HTMLElement {
 		super();
 		this.#shadowRoot = this.attachShadow({ mode: 'closed' });
 		shadowRootStyle(this.#shadowRoot, fileInputCSS);
+		I18n.observeElement(this.#shadowRoot);
 
 		createElement('label', {
 			parent: this.#shadowRoot,
