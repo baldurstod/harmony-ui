@@ -40,7 +40,9 @@ export class HTMLHarmonyFileInputElement extends HTMLElement {
 
 	adoptStyleSheet(styleSheet: CSSStyleSheet) {
 		this.#shadowRoot.adoptedStyleSheets.push(styleSheet);
-	} attributeChangedCallback(name: string, oldValue: string, newValue: string) {
+	}
+
+	attributeChangedCallback(name: string, oldValue: string, newValue: string) {
 		switch (name) {
 			case 'data-i18n':
 				this.#htmlText.setAttribute('data-i18n', newValue);
@@ -53,5 +55,4 @@ export class HTMLHarmonyFileInputElement extends HTMLElement {
 	static get observedAttributes() {
 		return ['data-label', 'data-i18n', 'disabled', 'multiple', 'value'];
 	}
-
 }
