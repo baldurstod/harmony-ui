@@ -4,6 +4,7 @@ export const elements = [
 	{ name: 'harmony-color-picker', class: 'HTMLHarmonyColorPickerElement', injectCSS: false },
 	{ name: 'harmony-context-menu', class: 'HTMLHarmonyContextMenuElement', injectCSS: false },
 	{ name: 'harmony-copy', class: 'HTMLHarmonyCopyElement', injectCSS: true },
+	{ name: 'harmony-file-input', class: 'HTMLHarmonyFileInputElement', injectCSS: false },
 	{ name: 'harmony-label-property', class: 'HTMLHarmonyLabelPropertyElement', injectCSS: true },
 	{ name: 'harmony-palette', class: 'HTMLHarmonyPaletteElement', injectCSS: true },
 	{ name: 'harmony-panel', class: 'HTMLHarmonyPanelElement', injectCSS: true },

@@ -129,6 +129,15 @@ export declare class HTMLHarmonyCopyElement extends HTMLElement {
     connectedCallback(): void;
 }
 
+export declare class HTMLHarmonyFileInputElement extends HTMLElement {
+    #private;
+    constructor();
+    get files(): FileList | null;
+    adoptStyleSheet(styleSheet: CSSStyleSheet): void;
+    attributeChangedCallback(name: string, oldValue: string, newValue: string): void;
+    static get observedAttributes(): string[];
+}
+
 export declare class HTMLHarmonyLabelPropertyElement extends HTMLElement {
     #private;
     constructor();

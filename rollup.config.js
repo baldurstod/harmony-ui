@@ -50,7 +50,7 @@ import { ${element.class} } from '${isBrowser ? '../../harmony-ui.browser.js' : 
 let defined${name} = false;
 export function define${name}() {
 	if (window.customElements && !defined${name}) {
-		${element.injectCSS ? `	styleInject(\`${css}\`);` : ''}
+${element.injectCSS ? `		styleInject(\`${css}\`);` : ''}
 		customElements.define('${element.name}', ${element.class});
 		defined${name} = true;
 	}

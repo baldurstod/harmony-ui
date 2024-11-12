@@ -1,0 +1,9 @@
+label {
+	cursor: pointer;
+	height: 100%;
+	display: flex;
+}
+
+label>span {
+	margin: auto;
+}

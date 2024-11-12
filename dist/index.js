@@ -1,4 +1,4 @@
-import { checkOutlineSVG } from 'harmony-svg';
+import { folderOpenSVG, checkOutlineSVG } from 'harmony-svg';
 
 async function documentStyle(cssText) {
     return await shadowRootStyle(document, cssText);
@@ -1531,6 +1531,57 @@ class HTMLHarmonyCopyElement extends HTMLElement {
         catch (e) {
             console.log(e);
         }
+    }
+}
+
+var fileInputCSS = "label {\n\tcursor: pointer;\n\theight: 100%;\n\tdisplay: flex;\n}\n\nlabel>span {\n\tmargin: auto;\n}\n";
+
+function cloneEvent(event) {
+    return new event.constructor(event.type, event);
+}
+
+class HTMLHarmonyFileInputElement extends HTMLElement {
+    #shadowRoot;
+    #htmlText;
+    #htmlInput;
+    constructor() {
+        super();
+        this.#shadowRoot = this.attachShadow({ mode: 'closed' });
+        shadowRootStyle(this.#shadowRoot, fileInputCSS);
+        createElement('label', {
+            parent: this.#shadowRoot,
+            childs: [
+                this.#htmlText = createElement('span', {}),
+                createElement('span', {
+                    innerHTML: folderOpenSVG,
+                }),
+                this.#htmlInput = createElement('input', {
+                    type: 'file',
+                    hidden: true,
+                    events: {
+                        change: (event) => this.dispatchEvent(cloneEvent(event)),
+                    }
+                }),
+            ],
+        });
+    }
+    get files() {
+        return this.#htmlInput.files;
+    }
+    adoptStyleSheet(styleSheet) {
+        this.#shadowRoot.adoptedStyleSheets.push(styleSheet);
+    }
+    attributeChangedCallback(name, oldValue, newValue) {
+        switch (name) {
+            case 'data-i18n':
+                this.#htmlText.setAttribute('data-i18n', newValue);
+                this.#htmlText.innerHTML = newValue;
+                this.#htmlText.classList.add('i18n');
+                break;
+        }
+    }
+    static get observedAttributes() {
+        return ['data-label', 'data-i18n', 'disabled', 'multiple', 'value'];
     }
 }
 
@@ -3173,4 +3224,4 @@ class HTMLHarmonyToggleButtonElement extends HTMLElement {
     }
 }
 
-export { HTMLHarmony2dManipulatorElement, HTMLHarmonyAccordionElement, HTMLHarmonyColorPickerElement, HTMLHarmonyContextMenuElement, HTMLHarmonyCopyElement, HTMLHarmonyLabelPropertyElement, HTMLHarmonyPaletteElement, HTMLHarmonyPanelElement, HTMLHarmonyRadioElement, HTMLHarmonySelectElement, HTMLHarmonySlideshowElement, HTMLHarmonySplitterElement, HTMLHarmonySwitchElement, HTMLHarmonyTabElement, HTMLHarmonyTabGroupElement, HTMLHarmonyToggleButtonElement, I18n, ManipulatorCorner, ManipulatorDirection, ManipulatorSide, createElement, createElementNS, createShadowRoot, display, documentStyle, documentStyleSync, hide, isVisible, shadowRootStyle, shadowRootStyleSync, show, styleInject, toggle, updateElement, visible };
+export { HTMLHarmony2dManipulatorElement, HTMLHarmonyAccordionElement, HTMLHarmonyColorPickerElement, HTMLHarmonyContextMenuElement, HTMLHarmonyCopyElement, HTMLHarmonyFileInputElement, HTMLHarmonyLabelPropertyElement, HTMLHarmonyPaletteElement, HTMLHarmonyPanelElement, HTMLHarmonyRadioElement, HTMLHarmonySelectElement, HTMLHarmonySlideshowElement, HTMLHarmonySplitterElement, HTMLHarmonySwitchElement, HTMLHarmonyTabElement, HTMLHarmonyTabGroupElement, HTMLHarmonyToggleButtonElement, I18n, ManipulatorCorner, ManipulatorDirection, ManipulatorSide, createElement, createElementNS, createShadowRoot, display, documentStyle, documentStyleSync, hide, isVisible, shadowRootStyle, shadowRootStyleSync, show, styleInject, toggle, updateElement, visible };

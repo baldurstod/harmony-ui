@@ -1532,6 +1532,61 @@ class HTMLHarmonyCopyElement extends HTMLElement {
     }
 }
 
+var fileInputCSS = "label {\n\tcursor: pointer;\n\theight: 100%;\n\tdisplay: flex;\n}\n\nlabel>span {\n\tmargin: auto;\n}\n";
+
+const checkOutlineSVG = '<svg xmlns="http://www.w3.org/2000/svg"  height="24" viewBox="0 -960 960 960" width="24" fill="currentColor"><path d="m 381,-240 424,-424 -57,-56 -368,367 -169,-170 -57,57 z m 0,113 -339,-339 169,-170 170,170 366,-367 172,168 z"/><path fill="#ffffff" d="m 381,-240 424,-424 -57,-56 -368,367 -169,-170 -57,57 z m 366,-593 c -498,-84.66667 -249,-42.33333 0,0 z"/></svg>';
+
+const folderOpenSVG = '<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor"><path d="M160-160q-33 0-56.5-23.5T80-240v-480q0-33 23.5-56.5T160-800h240l80 80h320q33 0 56.5 23.5T880-640H447l-80-80H160v480l96-320h684L837-217q-8 26-29.5 41.5T760-160H160Zm84-80h516l72-240H316l-72 240Zm0 0 72-240-72 240Zm-84-400v-80 80Z"/></svg>';
+
+function cloneEvent(event) {
+    return new event.constructor(event.type, event);
+}
+
+class HTMLHarmonyFileInputElement extends HTMLElement {
+    #shadowRoot;
+    #htmlText;
+    #htmlInput;
+    constructor() {
+        super();
+        this.#shadowRoot = this.attachShadow({ mode: 'closed' });
+        shadowRootStyle(this.#shadowRoot, fileInputCSS);
+        createElement('label', {
+            parent: this.#shadowRoot,
+            childs: [
+                this.#htmlText = createElement('span', {}),
+                createElement('span', {
+                    innerHTML: folderOpenSVG,
+                }),
+                this.#htmlInput = createElement('input', {
+                    type: 'file',
+                    hidden: true,
+                    events: {
+                        change: (event) => this.dispatchEvent(cloneEvent(event)),
+                    }
+                }),
+            ],
+        });
+    }
+    get files() {
+        return this.#htmlInput.files;
+    }
+    adoptStyleSheet(styleSheet) {
+        this.#shadowRoot.adoptedStyleSheets.push(styleSheet);
+    }
+    attributeChangedCallback(name, oldValue, newValue) {
+        switch (name) {
+            case 'data-i18n':
+                this.#htmlText.setAttribute('data-i18n', newValue);
+                this.#htmlText.innerHTML = newValue;
+                this.#htmlText.classList.add('i18n');
+                break;
+        }
+    }
+    static get observedAttributes() {
+        return ['data-label', 'data-i18n', 'disabled', 'multiple', 'value'];
+    }
+}
+
 class HTMLHarmonyLabelPropertyElement extends HTMLElement {
     #doOnce = false;
     #htmlLabel;
@@ -1554,8 +1609,6 @@ class HTMLHarmonyLabelPropertyElement extends HTMLElement {
         }
     }
 }
-
-const checkOutlineSVG = '<svg xmlns="http://www.w3.org/2000/svg"  height="24" viewBox="0 -960 960 960" width="24" fill="currentColor"><path d="m 381,-240 424,-424 -57,-56 -368,367 -169,-170 -57,57 z m 0,113 -339,-339 169,-170 170,170 366,-367 172,168 z"/><path fill="#ffffff" d="m 381,-240 424,-424 -57,-56 -368,367 -169,-170 -57,57 z m 366,-593 c -498,-84.66667 -249,-42.33333 0,0 z"/></svg>';
 
 var paletteCSS = "html{\r\n\t--harmony-palette-color-size: 2rem;\r\n\t--harmony-palette-gap: 0.5rem;\r\n\t--harmony-palette-border-color: grey;\r\n\t--harmony-palette-selected-border-color: orange;\r\n}\r\n\r\n:host{\r\n\tdisplay: flex;\r\n\tflex-direction: row;\r\n\tflex-wrap: wrap;\r\n\tgap: var(--harmony-palette-gap);\r\n}\r\n\r\n.color{\r\n\theight: var(--harmony-palette-color-size);\r\n\twidth: var(--harmony-palette-color-size);\r\n\tborder-radius: calc(var(--harmony-palette-color-size) * .1);\r\n\tborder: calc(var(--harmony-palette-color-size) * .1) solid var(--harmony-palette-border-color);\r\n\tpadding: calc(var(--harmony-palette-color-size) * .1);\r\n\tcursor: pointer;\r\n}\r\n.color.selected{\r\n\tborder-color: var(--harmony-palette-selected-border-color);\r\n\tborder-width: calc(var(--harmony-palette-color-size) * .2);\r\n\tpadding: 0;\r\n\tcolor: black;\r\n}\r\n\r\n.color > svg{\r\n\theight: 100%;\r\n\twidth: 100%;\r\n}\r\n";
 
@@ -3173,4 +3226,4 @@ class HTMLHarmonyToggleButtonElement extends HTMLElement {
     }
 }
 
-export { HTMLHarmony2dManipulatorElement, HTMLHarmonyAccordionElement, HTMLHarmonyColorPickerElement, HTMLHarmonyContextMenuElement, HTMLHarmonyCopyElement, HTMLHarmonyLabelPropertyElement, HTMLHarmonyPaletteElement, HTMLHarmonyPanelElement, HTMLHarmonyRadioElement, HTMLHarmonySelectElement, HTMLHarmonySlideshowElement, HTMLHarmonySplitterElement, HTMLHarmonySwitchElement, HTMLHarmonyTabElement, HTMLHarmonyTabGroupElement, HTMLHarmonyToggleButtonElement, I18n, ManipulatorCorner, ManipulatorDirection, ManipulatorSide, createElement, createElementNS, createShadowRoot, display, documentStyle, documentStyleSync, hide, isVisible, shadowRootStyle, shadowRootStyleSync, show, styleInject, toggle, updateElement, visible };
+export { HTMLHarmony2dManipulatorElement, HTMLHarmonyAccordionElement, HTMLHarmonyColorPickerElement, HTMLHarmonyContextMenuElement, HTMLHarmonyCopyElement, HTMLHarmonyFileInputElement, HTMLHarmonyLabelPropertyElement, HTMLHarmonyPaletteElement, HTMLHarmonyPanelElement, HTMLHarmonyRadioElement, HTMLHarmonySelectElement, HTMLHarmonySlideshowElement, HTMLHarmonySplitterElement, HTMLHarmonySwitchElement, HTMLHarmonyTabElement, HTMLHarmonyTabGroupElement, HTMLHarmonyToggleButtonElement, I18n, ManipulatorCorner, ManipulatorDirection, ManipulatorSide, createElement, createElementNS, createShadowRoot, display, documentStyle, documentStyleSync, hide, isVisible, shadowRootStyle, shadowRootStyleSync, show, styleInject, toggle, updateElement, visible };
