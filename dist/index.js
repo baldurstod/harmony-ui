@@ -1,5 +1,9 @@
 import { folderOpenSVG, checkOutlineSVG } from 'harmony-svg';
 
+function cloneEvent(event) {
+    return new event.constructor(event.type, event);
+}
+
 async function documentStyle(cssText) {
     return await shadowRootStyle(document, cssText);
 }
@@ -1535,10 +1539,6 @@ class HTMLHarmonyCopyElement extends HTMLElement {
 }
 
 var fileInputCSS = "label {\n\tcursor: pointer;\n\theight: 100%;\n\tdisplay: flex;\n}\n\nlabel>span {\n\tmargin: auto;\n}\n";
-
-function cloneEvent(event) {
-    return new event.constructor(event.type, event);
-}
 
 class HTMLHarmonyFileInputElement extends HTMLElement {
     #shadowRoot;
@@ -3225,4 +3225,4 @@ class HTMLHarmonyToggleButtonElement extends HTMLElement {
     }
 }
 
-export { HTMLHarmony2dManipulatorElement, HTMLHarmonyAccordionElement, HTMLHarmonyColorPickerElement, HTMLHarmonyContextMenuElement, HTMLHarmonyCopyElement, HTMLHarmonyFileInputElement, HTMLHarmonyLabelPropertyElement, HTMLHarmonyPaletteElement, HTMLHarmonyPanelElement, HTMLHarmonyRadioElement, HTMLHarmonySelectElement, HTMLHarmonySlideshowElement, HTMLHarmonySplitterElement, HTMLHarmonySwitchElement, HTMLHarmonyTabElement, HTMLHarmonyTabGroupElement, HTMLHarmonyToggleButtonElement, I18n, ManipulatorCorner, ManipulatorDirection, ManipulatorSide, createElement, createElementNS, createShadowRoot, display, documentStyle, documentStyleSync, hide, isVisible, shadowRootStyle, shadowRootStyleSync, show, styleInject, toggle, updateElement, visible };
+export { HTMLHarmony2dManipulatorElement, HTMLHarmonyAccordionElement, HTMLHarmonyColorPickerElement, HTMLHarmonyContextMenuElement, HTMLHarmonyCopyElement, HTMLHarmonyFileInputElement, HTMLHarmonyLabelPropertyElement, HTMLHarmonyPaletteElement, HTMLHarmonyPanelElement, HTMLHarmonyRadioElement, HTMLHarmonySelectElement, HTMLHarmonySlideshowElement, HTMLHarmonySplitterElement, HTMLHarmonySwitchElement, HTMLHarmonyTabElement, HTMLHarmonyTabGroupElement, HTMLHarmonyToggleButtonElement, I18n, ManipulatorCorner, ManipulatorDirection, ManipulatorSide, cloneEvent, createElement, createElementNS, createShadowRoot, display, documentStyle, documentStyleSync, hide, isVisible, shadowRootStyle, shadowRootStyleSync, show, styleInject, toggle, updateElement, visible };

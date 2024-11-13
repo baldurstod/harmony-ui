@@ -1,3 +1,4 @@
+export * from './utils/events';
 export * from './harmony-css';
 export * from './harmony-html';
 export * from './harmony-i18n';

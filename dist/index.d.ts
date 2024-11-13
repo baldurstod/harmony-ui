@@ -1,3 +1,5 @@
+export declare function cloneEvent(event: Event): Event;
+
 declare class Color {
     #private;
     constructor({ red, green, blue, alpha, hex }?: {
