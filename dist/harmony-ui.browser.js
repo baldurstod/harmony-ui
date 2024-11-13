@@ -55,6 +55,9 @@ function createElementOptions(element, options, shadowRoot) {
         for (const optionName in options) {
             const optionValue = options[optionName];
             switch (optionName) {
+                case 'id':
+                    element.id = optionValue;
+                    break;
                 case 'class':
                     element.classList.add(...optionValue.split(' '));
                     break;
@@ -115,6 +118,9 @@ function createElementOptions(element, options, shadowRoot) {
                     break;
                 case 'list':
                     element.setAttribute(optionName, optionValue);
+                    break;
+                case 'slot':
+                    element.slot = optionValue;
                     break;
                 case 'adoptStyle':
                     adoptStyleSheet(shadowRoot ?? element, optionValue);

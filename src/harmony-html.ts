@@ -39,6 +39,9 @@ function createElementOptions(element: HTMLElement, options: any, shadowRoot?: S
 		for (const optionName in options) {
 			const optionValue = options[optionName];
 			switch (optionName) {
+				case 'id':
+					element.id = optionValue;
+					break;
 				case 'class':
 					element.classList.add(...optionValue.split(' '));
 					break;
@@ -99,6 +102,9 @@ function createElementOptions(element: HTMLElement, options: any, shadowRoot?: S
 				case 'list':
 					element.setAttribute(optionName, optionValue);
 					break;
+				case 'slot':
+					element.slot = optionValue;
+					break;
 				case 'adoptStyle':
 					adoptStyleSheet(shadowRoot ?? element, optionValue);
 					break;
@@ -106,7 +112,6 @@ function createElementOptions(element: HTMLElement, options: any, shadowRoot?: S
 					optionValue.forEach((entry: string) => {
 						adoptStyleSheet(shadowRoot ?? element, entry);
 					});
-					break;
 					break;
 				default:
 					if (optionName.startsWith('data-')) {
