@@ -1544,7 +1544,7 @@ class HTMLHarmonyCopyElement extends HTMLElement {
     }
 }
 
-var fileInputCSS = "label {\n\tcursor: pointer;\n\theight: 100%;\n\tdisplay: flex;\n}\n\nlabel>span {\n\tmargin: auto;\n}\n";
+var fileInputCSS = "label {\n\tcursor: pointer;\n\theight: 100%;\n\tdisplay: flex;\n\tuser-select: none;\n}\n\nlabel>span {\n\tmargin: auto;\n}\n";
 
 class HTMLHarmonyFileInputElement extends HTMLElement {
     #shadowRoot;
