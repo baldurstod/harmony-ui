@@ -1542,16 +1542,20 @@ class HTMLHarmonyCopyElement extends HTMLElement {
     }
 }
 
-var fileInputCSS = "label {\n\tcursor: pointer;\n\theight: 100%;\n\tdisplay: flex;\n\tuser-select: none;\n}\n\nlabel>span {\n\tmargin: auto;\n}\n";
+var fileInputCSS = "label {\n\tcursor: pointer;\n\theight: 100%;\n\tdisplay: flex;\n\tuser-select: none;\n}\n\nlabel>span {\n\tmargin: auto;\n}\n\n.tooltip .tooltiptext {\n\tvisibility: hidden;\n\tmax-width: 10rem;\n\tbackground-color: #555;\n\tcolor: #fff;\n\ttext-align: center;\n\tborder-radius: 6px;\n\tpadding: 0.3rem 0.3rem;\n\tposition: absolute;\n\tz-index: 1;\n\tbottom: 125%;\n\tleft: 50%;\n\tmargin-left: -4rem;\n\topacity: 0;\n\ttransition: opacity 0.3s;\n}\n\n.tooltip:hover .tooltiptext {\n\tvisibility: visible;\n\topacity: 1;\n}\n";
 
 const checkOutlineSVG = '<svg xmlns="http://www.w3.org/2000/svg"  height="24" viewBox="0 -960 960 960" width="24" fill="currentColor"><path d="m 381,-240 424,-424 -57,-56 -368,367 -169,-170 -57,57 z m 0,113 -339,-339 169,-170 170,170 366,-367 172,168 z"/><path fill="#ffffff" d="m 381,-240 424,-424 -57,-56 -368,367 -169,-170 -57,57 z m 366,-593 c -498,-84.66667 -249,-42.33333 0,0 z"/></svg>';
 
 const folderOpenSVG = '<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor"><path d="M160-160q-33 0-56.5-23.5T80-240v-480q0-33 23.5-56.5T160-800h240l80 80h320q33 0 56.5 23.5T880-640H447l-80-80H160v480l96-320h684L837-217q-8 26-29.5 41.5T760-160H160Zm84-80h516l72-240H316l-72 240Zm0 0 72-240-72 240Zm-84-400v-80 80Z"/></svg>';
 
+const helpSVG = '<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor"><path d="M478-240q21 0 35.5-14.5T528-290q0-21-14.5-35.5T478-340q-21 0-35.5 14.5T428-290q0 21 14.5 35.5T478-240Zm-36-154h74q0-33 7.5-52t42.5-52q26-26 41-49.5t15-56.5q0-56-41-86t-97-30q-57 0-92.5 30T342-618l66 26q5-18 22.5-39t53.5-21q32 0 48 17.5t16 38.5q0 20-12 37.5T506-526q-44 39-54 59t-10 73Zm38 314q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-320Z"/></svg>';
+
 class HTMLHarmonyFileInputElement extends HTMLElement {
     #shadowRoot;
     #htmlText;
     #htmlInput;
+    #htmlHelp;
+    #htmlTooltip;
     constructor() {
         super();
         this.#shadowRoot = this.attachShadow({ mode: 'closed' });
@@ -1563,6 +1567,17 @@ class HTMLHarmonyFileInputElement extends HTMLElement {
                 this.#htmlText = createElement('span', {}),
                 createElement('span', {
                     innerHTML: folderOpenSVG,
+                }),
+                this.#htmlHelp = createElement('span', {
+                    class: 'tooltip',
+                    hidden: true,
+                    childs: [
+                        createElement('span', { innerHTML: helpSVG, }),
+                        this.#htmlTooltip = createElement('span', {
+                            class: 'tooltiptext',
+                            i18n: '',
+                        }),
+                    ]
                 }),
                 this.#htmlInput = createElement('input', {
                     type: 'file',
@@ -1597,13 +1612,22 @@ class HTMLHarmonyFileInputElement extends HTMLElement {
                 this.#htmlText.innerHTML = newValue;
                 this.#htmlText.classList.add('i18n');
                 break;
+            case 'data-tooltip-i18n':
+                if (newValue == '') {
+                    hide(this.#htmlHelp);
+                }
+                else {
+                    show(this.#htmlHelp);
+                    this.#htmlTooltip.setAttribute('data-i18n', newValue);
+                }
+                break;
             case 'data-accept':
                 this.accept = newValue;
                 break;
         }
     }
     static get observedAttributes() {
-        return ['data-label', 'data-i18n', 'data-accept'];
+        return ['data-label', 'data-i18n', 'data-accept', 'data-tooltip-i18n'];
     }
 }
 

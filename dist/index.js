@@ -1,4 +1,4 @@
-import { folderOpenSVG, checkOutlineSVG } from 'harmony-svg';
+import { folderOpenSVG, helpSVG, checkOutlineSVG } from 'harmony-svg';
 
 function cloneEvent(event) {
     return new event.constructor(event.type, event);
@@ -1544,12 +1544,14 @@ class HTMLHarmonyCopyElement extends HTMLElement {
     }
 }
 
-var fileInputCSS = "label {\n\tcursor: pointer;\n\theight: 100%;\n\tdisplay: flex;\n\tuser-select: none;\n}\n\nlabel>span {\n\tmargin: auto;\n}\n";
+var fileInputCSS = "label {\n\tcursor: pointer;\n\theight: 100%;\n\tdisplay: flex;\n\tuser-select: none;\n}\n\nlabel>span {\n\tmargin: auto;\n}\n\n.tooltip .tooltiptext {\n\tvisibility: hidden;\n\tmax-width: 10rem;\n\tbackground-color: #555;\n\tcolor: #fff;\n\ttext-align: center;\n\tborder-radius: 6px;\n\tpadding: 0.3rem 0.3rem;\n\tposition: absolute;\n\tz-index: 1;\n\tbottom: 125%;\n\tleft: 50%;\n\tmargin-left: -4rem;\n\topacity: 0;\n\ttransition: opacity 0.3s;\n}\n\n.tooltip:hover .tooltiptext {\n\tvisibility: visible;\n\topacity: 1;\n}\n";
 
 class HTMLHarmonyFileInputElement extends HTMLElement {
     #shadowRoot;
     #htmlText;
     #htmlInput;
+    #htmlHelp;
+    #htmlTooltip;
     constructor() {
         super();
         this.#shadowRoot = this.attachShadow({ mode: 'closed' });
@@ -1561,6 +1563,17 @@ class HTMLHarmonyFileInputElement extends HTMLElement {
                 this.#htmlText = createElement('span', {}),
                 createElement('span', {
                     innerHTML: folderOpenSVG,
+                }),
+                this.#htmlHelp = createElement('span', {
+                    class: 'tooltip',
+                    hidden: true,
+                    childs: [
+                        createElement('span', { innerHTML: helpSVG, }),
+                        this.#htmlTooltip = createElement('span', {
+                            class: 'tooltiptext',
+                            i18n: '',
+                        }),
+                    ]
                 }),
                 this.#htmlInput = createElement('input', {
                     type: 'file',
@@ -1595,13 +1608,22 @@ class HTMLHarmonyFileInputElement extends HTMLElement {
                 this.#htmlText.innerHTML = newValue;
                 this.#htmlText.classList.add('i18n');
                 break;
+            case 'data-tooltip-i18n':
+                if (newValue == '') {
+                    hide(this.#htmlHelp);
+                }
+                else {
+                    show(this.#htmlHelp);
+                    this.#htmlTooltip.setAttribute('data-i18n', newValue);
+                }
+                break;
             case 'data-accept':
                 this.accept = newValue;
                 break;
         }
     }
     static get observedAttributes() {
-        return ['data-label', 'data-i18n', 'data-accept'];
+        return ['data-label', 'data-i18n', 'data-accept', 'data-tooltip-i18n'];
     }
 }
 

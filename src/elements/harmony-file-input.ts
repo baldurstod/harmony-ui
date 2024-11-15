@@ -1,7 +1,7 @@
 import { shadowRootStyle } from '../harmony-css';
-import { createElement } from '../harmony-html';
+import { createElement, hide, show } from '../harmony-html';
 import fileInputCSS from '../css/harmony-file-input.css';
-import { folderOpenSVG } from 'harmony-svg';
+import { folderOpenSVG, helpSVG } from 'harmony-svg';
 import { cloneEvent } from '../utils/events';
 import { I18n } from '../harmony-i18n';
 
@@ -9,6 +9,8 @@ export class HTMLHarmonyFileInputElement extends HTMLElement {
 	#shadowRoot: ShadowRoot;
 	#htmlText: HTMLSpanElement;
 	#htmlInput: HTMLInputElement;
+	#htmlHelp: HTMLSpanElement;
+	#htmlTooltip: HTMLSpanElement;
 	constructor() {
 		super();
 		this.#shadowRoot = this.attachShadow({ mode: 'closed' });
@@ -22,6 +24,17 @@ export class HTMLHarmonyFileInputElement extends HTMLElement {
 				}),
 				createElement('span', {
 					innerHTML: folderOpenSVG,
+				}),
+				this.#htmlHelp = createElement('span', {
+					class: 'tooltip',
+					hidden: true,
+					childs: [
+						createElement('span', { innerHTML: helpSVG, }),
+						this.#htmlTooltip = createElement('span', {
+							class: 'tooltiptext',
+							i18n: '',
+						}),
+					]
 				}),
 				this.#htmlInput = createElement('input', {
 					type: 'file',
@@ -61,6 +74,14 @@ export class HTMLHarmonyFileInputElement extends HTMLElement {
 				this.#htmlText.innerHTML = newValue;
 				this.#htmlText.classList.add('i18n');
 				break;
+			case 'data-tooltip-i18n':
+				if (newValue == '') {
+					hide(this.#htmlHelp);
+				} else {
+					show(this.#htmlHelp);
+					this.#htmlTooltip.setAttribute('data-i18n', newValue);
+				}
+				break;
 			case 'data-accept':
 				this.accept = newValue;
 				break;
@@ -68,6 +89,6 @@ export class HTMLHarmonyFileInputElement extends HTMLElement {
 	}
 
 	static get observedAttributes() {
-		return ['data-label', 'data-i18n', 'data-accept'];
+		return ['data-label', 'data-i18n', 'data-accept', 'data-tooltip-i18n'];
 	}
 }
