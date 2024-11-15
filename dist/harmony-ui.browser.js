@@ -1542,7 +1542,7 @@ class HTMLHarmonyCopyElement extends HTMLElement {
     }
 }
 
-var fileInputCSS = "label {\n\tcursor: pointer;\n\theight: 100%;\n\tdisplay: flex;\n}\n\nlabel>span {\n\tmargin: auto;\n}\n";
+var fileInputCSS = "label {\n\tcursor: pointer;\n\theight: 100%;\n\tdisplay: flex;\n\tuser-select: none;\n}\n\nlabel>span {\n\tmargin: auto;\n}\n";
 
 const checkOutlineSVG = '<svg xmlns="http://www.w3.org/2000/svg"  height="24" viewBox="0 -960 960 960" width="24" fill="currentColor"><path d="m 381,-240 424,-424 -57,-56 -368,367 -169,-170 -57,57 z m 0,113 -339,-339 169,-170 170,170 366,-367 172,168 z"/><path fill="#ffffff" d="m 381,-240 424,-424 -57,-56 -368,367 -169,-170 -57,57 z m 366,-593 c -498,-84.66667 -249,-42.33333 0,0 z"/></svg>';
 
@@ -1577,20 +1577,33 @@ class HTMLHarmonyFileInputElement extends HTMLElement {
     get files() {
         return this.#htmlInput.files;
     }
+    set accept(accept) {
+        this.#htmlInput.accept = accept;
+    }
+    get accept() {
+        return this.#htmlInput.accept;
+    }
     adoptStyleSheet(styleSheet) {
         this.#shadowRoot.adoptedStyleSheets.push(styleSheet);
     }
     attributeChangedCallback(name, oldValue, newValue) {
         switch (name) {
+            case 'data-label':
+                this.#htmlText.innerHTML = newValue;
+                this.#htmlText.classList.remove('i18n');
+                break;
             case 'data-i18n':
                 this.#htmlText.setAttribute('data-i18n', newValue);
                 this.#htmlText.innerHTML = newValue;
                 this.#htmlText.classList.add('i18n');
                 break;
+            case 'data-accept':
+                this.accept = newValue;
+                break;
         }
     }
     static get observedAttributes() {
-        return ['data-label', 'data-i18n', 'disabled', 'multiple', 'value'];
+        return ['data-label', 'data-i18n', 'data-accept'];
     }
 }
 

@@ -38,21 +38,36 @@ export class HTMLHarmonyFileInputElement extends HTMLElement {
 		return this.#htmlInput.files
 	}
 
+	set accept(accept: string) {
+		this.#htmlInput.accept = accept;
+	}
+
+	get accept(): string {
+		return this.#htmlInput.accept;
+	}
+
 	adoptStyleSheet(styleSheet: CSSStyleSheet) {
 		this.#shadowRoot.adoptedStyleSheets.push(styleSheet);
 	}
 
 	attributeChangedCallback(name: string, oldValue: string, newValue: string) {
 		switch (name) {
+			case 'data-label':
+				this.#htmlText.innerHTML = newValue;
+				this.#htmlText.classList.remove('i18n');
+				break;
 			case 'data-i18n':
 				this.#htmlText.setAttribute('data-i18n', newValue);
 				this.#htmlText.innerHTML = newValue;
 				this.#htmlText.classList.add('i18n');
 				break;
+			case 'data-accept':
+				this.accept = newValue;
+				break;
 		}
 	}
 
 	static get observedAttributes() {
-		return ['data-label', 'data-i18n', 'disabled', 'multiple', 'value'];
+		return ['data-label', 'data-i18n', 'data-accept'];
 	}
 }

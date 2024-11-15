@@ -135,6 +135,8 @@ export declare class HTMLHarmonyFileInputElement extends HTMLElement {
     #private;
     constructor();
     get files(): FileList | null;
+    set accept(accept: string);
+    get accept(): string;
     adoptStyleSheet(styleSheet: CSSStyleSheet): void;
     attributeChangedCallback(name: string, oldValue: string, newValue: string): void;
     static get observedAttributes(): string[];

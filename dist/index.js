@@ -1575,20 +1575,33 @@ class HTMLHarmonyFileInputElement extends HTMLElement {
     get files() {
         return this.#htmlInput.files;
     }
+    set accept(accept) {
+        this.#htmlInput.accept = accept;
+    }
+    get accept() {
+        return this.#htmlInput.accept;
+    }
     adoptStyleSheet(styleSheet) {
         this.#shadowRoot.adoptedStyleSheets.push(styleSheet);
     }
     attributeChangedCallback(name, oldValue, newValue) {
         switch (name) {
+            case 'data-label':
+                this.#htmlText.innerHTML = newValue;
+                this.#htmlText.classList.remove('i18n');
+                break;
             case 'data-i18n':
                 this.#htmlText.setAttribute('data-i18n', newValue);
                 this.#htmlText.innerHTML = newValue;
                 this.#htmlText.classList.add('i18n');
                 break;
+            case 'data-accept':
+                this.accept = newValue;
+                break;
         }
     }
     static get observedAttributes() {
-        return ['data-label', 'data-i18n', 'disabled', 'multiple', 'value'];
+        return ['data-label', 'data-i18n', 'data-accept'];
     }
 }
 
