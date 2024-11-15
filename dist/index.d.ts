@@ -313,6 +313,13 @@ export declare class HTMLHarmonyToggleButtonElement extends HTMLElement {
     static get observedAttributes(): string[];
 }
 
+export declare class HTMLHarmonyTooltipElement extends HTMLElement {
+    #private;
+    constructor();
+    attributeChangedCallback(name: string, oldValue: string, newValue: string): void;
+    static get observedAttributes(): string[];
+}
+
 export declare class I18n {
     #private;
     static start(): void;

@@ -16,4 +16,5 @@ export const elements = [
 	{ name: 'harmony-tab', class: 'HTMLHarmonyTabElement', injectCSS: false },
 	{ name: 'harmony-tab-group', class: 'HTMLHarmonyTabGroupElement', injectCSS: false },
 	{ name: 'harmony-toggle-button', class: 'HTMLHarmonyToggleButtonElement', injectCSS: false },
+	{ name: 'harmony-tooltip', class: 'HTMLHarmonyTooltipElement', injectCSS: true },
 ];

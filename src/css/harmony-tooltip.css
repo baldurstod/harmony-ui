@@ -1,0 +1,95 @@
+:host {
+	display: grid;
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	top: 0;
+	anchor-name: --anchor-el;
+}
+
+:host(:hover) {
+	--harmony-tooltip-hover: 1;
+}
+
+.tooltip {
+	--bottom-tip: conic-gradient(from -30deg at bottom, rgba(0, 0, 0, 0), #000 1deg 60deg, rgba(0, 0, 0, 0) 61deg) bottom / 100% 50% no-repeat;
+	--top-tip: conic-gradient(from 150deg at top, rgba(0, 0, 0, 0), #000 1deg 60deg, rgba(0, 0, 0, 0) 61deg) top / 100% 50% no-repeat;
+	--right-tip: conic-gradient(from -120deg at right, rgba(0, 0, 0, 0), #000 1deg 60deg, rgba(0, 0, 0, 0) 61deg) right / 50% 100% no-repeat;
+	--left-tip: conic-gradient(from 60deg at left, rgba(0, 0, 0, 0), #000 1deg 60deg, rgba(0, 0, 0, 0) 61deg) left / 50% 100% no-repeat;
+
+	--p-inline: 1.5ch;
+	--p-block: .75ch;
+	--triangle-size: 0.5rem;
+	--bg: hsl(0 0% 20%);
+
+
+
+	pointer-events: none;
+	user-select: none;
+	opacity: var(--harmony-tooltip-hover, 0);
+	position: fixed;
+	position-anchor: --anchor-el;
+	/*top: anchor(bottom);*/
+	/*justify-self: anchor-center;*/
+	justify-self: var(--justify);
+	bottom: var(--bottom);
+	left: var(--left);
+	right: var(--right);
+	top: var(--top);
+
+	max-width: 10rem;
+	background-color: var(--bg);
+	color: #fff;
+	text-align: center;
+	border-radius: 6px;
+	padding: 0.3rem 0.3rem;
+	z-index: 1;
+	transition: opacity 0.3s;
+}
+
+.tooltip::after {
+	content: "";
+	background: var(--bg);
+	position: absolute;
+	z-index: -1;
+	inset: 0;
+	mask: var(--tip);
+	inset-block-start: var(--inset-block-start-tip, 0);
+	inset-block-end: var(--inset-block-end-tip, 0);
+	border-block-start: var(--border-block-start-tip, 0);
+	border-block-end: var(--border-block-end-tip, 0);
+	inset-inline-start: var(--inset-inline-start-tip, 0);
+	inset-inline-end: var(--inset-inline-end-tip, 0);
+	border-inline-start: var(--border-inline-start-tip, 0);
+	border-inline-end: var(--border-inline-end-tip, 0);
+}
+
+.tooltip:is([data-position="top"], :not([data-position])) {
+	--bottom: anchor(top);
+	--justify: anchor-center;
+	--tip: var(--bottom-tip);
+	--inset-block-end-tip: calc(var(--triangle-size) * -1);
+	--border-block-end-tip: var(--triangle-size) solid transparent;
+}
+
+.tooltip[data-position="left"] {
+	--right: anchor(left);
+	--tip: var(--right-tip);
+	--inset-inline-end-tip: calc(var(--triangle-size) * -1);
+	--border-inline-end-tip: var(--triangle-size) solid transparent;
+}
+
+.tooltip[data-position="right"] {
+	--left: anchor(right);
+	--tip: var(--left-tip);
+	--inset-inline-start-tip: calc(var(--triangle-size) * -1);
+	--border-inline-start-tip: var(--triangle-size) solid transparent;
+}
+
+.tooltip[data-position="bottom"] {
+	--top: anchor(bottom);
+	--justify: anchor-center;
+	--tip: var(--top-tip);
+	--inset-block-start-tip: calc(var(--triangle-size) * -1);
+	--border-block-start-tip: var(--triangle-size) solid transparent;
+}
