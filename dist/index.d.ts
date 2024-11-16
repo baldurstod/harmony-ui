@@ -32,6 +32,8 @@ export declare function createElementNS(namespaceURI: string, tagName: string, o
 
 export declare function createShadowRoot(tagName: string, options?: any, mode?: 'open' | 'closed'): ShadowRoot;
 
+export declare function defineHarmonyTooltip(): void;
+
 export declare function display(htmlElement: HTMLElement | undefined, visible: boolean): void;
 
 export declare function documentStyle(cssText: string): Promise<void>;

@@ -1542,13 +1542,56 @@ class HTMLHarmonyCopyElement extends HTMLElement {
     }
 }
 
-var fileInputCSS = "label {\n\tcursor: pointer;\n\theight: 100%;\n\tdisplay: flex;\n\tuser-select: none;\n}\n\nlabel>span {\n\tmargin: auto;\n}\n\n.tooltip .tooltiptext {\n\tvisibility: hidden;\n\tmax-width: 10rem;\n\tbackground-color: #555;\n\tcolor: #fff;\n\ttext-align: center;\n\tborder-radius: 6px;\n\tpadding: 0.3rem 0.3rem;\n\tposition: absolute;\n\tz-index: 1;\n\tbottom: 125%;\n\tleft: 50%;\n\tmargin-left: -4rem;\n\topacity: 0;\n\ttransition: opacity 0.3s;\n}\n\n.tooltip:hover .tooltiptext {\n\tvisibility: visible;\n\topacity: 1;\n}\n";
+var fileInputCSS = "label {\n\tcursor: pointer;\n\theight: 100%;\n\tdisplay: flex;\n\tuser-select: none;\n}\n\nlabel>span {\n\tmargin: auto;\n}\n.tooltip{\n\tposition: relative;\n}\n";
 
 const checkOutlineSVG = '<svg xmlns="http://www.w3.org/2000/svg"  height="24" viewBox="0 -960 960 960" width="24" fill="currentColor"><path d="m 381,-240 424,-424 -57,-56 -368,367 -169,-170 -57,57 z m 0,113 -339,-339 169,-170 170,170 366,-367 172,168 z"/><path fill="#ffffff" d="m 381,-240 424,-424 -57,-56 -368,367 -169,-170 -57,57 z m 366,-593 c -498,-84.66667 -249,-42.33333 0,0 z"/></svg>';
 
 const folderOpenSVG = '<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor"><path d="M160-160q-33 0-56.5-23.5T80-240v-480q0-33 23.5-56.5T160-800h240l80 80h320q33 0 56.5 23.5T880-640H447l-80-80H160v480l96-320h684L837-217q-8 26-29.5 41.5T760-160H160Zm84-80h516l72-240H316l-72 240Zm0 0 72-240-72 240Zm-84-400v-80 80Z"/></svg>';
 
 const helpSVG = '<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor"><path d="M478-240q21 0 35.5-14.5T528-290q0-21-14.5-35.5T478-340q-21 0-35.5 14.5T428-290q0 21 14.5 35.5T478-240Zm-36-154h74q0-33 7.5-52t42.5-52q26-26 41-49.5t15-56.5q0-56-41-86t-97-30q-57 0-92.5 30T342-618l66 26q5-18 22.5-39t53.5-21q32 0 48 17.5t16 38.5q0 20-12 37.5T506-526q-44 39-54 59t-10 73Zm38 314q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-320Z"/></svg>';
+
+var tooltipCSS = ":host {\n\tdisplay: grid;\n\tposition: absolute;\n\twidth: 100%;\n\theight: 100%;\n\ttop: 0;\n\tanchor-name: --anchor-el;\n}\n\n:host(:hover) {\n\t--harmony-tooltip-hover: 1;\n}\n\n.tooltip {\n\t--bottom-tip: conic-gradient(from -30deg at bottom, rgba(0, 0, 0, 0), #000 1deg 60deg, rgba(0, 0, 0, 0) 61deg) bottom / 100% 50% no-repeat;\n\t--top-tip: conic-gradient(from 150deg at top, rgba(0, 0, 0, 0), #000 1deg 60deg, rgba(0, 0, 0, 0) 61deg) top / 100% 50% no-repeat;\n\t--right-tip: conic-gradient(from -120deg at right, rgba(0, 0, 0, 0), #000 1deg 60deg, rgba(0, 0, 0, 0) 61deg) right / 50% 100% no-repeat;\n\t--left-tip: conic-gradient(from 60deg at left, rgba(0, 0, 0, 0), #000 1deg 60deg, rgba(0, 0, 0, 0) 61deg) left / 50% 100% no-repeat;\n\n\t--p-inline: 1.5ch;\n\t--p-block: .75ch;\n\t--triangle-size: 0.5rem;\n\t--bg: hsl(0 0% 20%);\n\n\n\n\tpointer-events: none;\n\tuser-select: none;\n\topacity: var(--harmony-tooltip-hover, 0);\n\tposition: fixed;\n\tposition-anchor: --anchor-el;\n\t/*top: anchor(bottom);*/\n\t/*justify-self: anchor-center;*/\n\tjustify-self: var(--justify);\n\tbottom: var(--bottom);\n\tleft: var(--left);\n\tright: var(--right);\n\ttop: var(--top);\n\n\tmax-width: 10rem;\n\tbackground-color: var(--bg);\n\tcolor: #fff;\n\ttext-align: center;\n\tborder-radius: 6px;\n\tpadding: 0.3rem 0.3rem;\n\tz-index: 1;\n\ttransition: opacity 0.3s;\n}\n\n.tooltip::after {\n\tcontent: \"\";\n\tbackground: var(--bg);\n\tposition: absolute;\n\tz-index: -1;\n\tinset: 0;\n\tmask: var(--tip);\n\tinset-block-start: var(--inset-block-start-tip, 0);\n\tinset-block-end: var(--inset-block-end-tip, 0);\n\tborder-block-start: var(--border-block-start-tip, 0);\n\tborder-block-end: var(--border-block-end-tip, 0);\n\tinset-inline-start: var(--inset-inline-start-tip, 0);\n\tinset-inline-end: var(--inset-inline-end-tip, 0);\n\tborder-inline-start: var(--border-inline-start-tip, 0);\n\tborder-inline-end: var(--border-inline-end-tip, 0);\n}\n\n.tooltip:is([data-position=\"top\"], :not([data-position])) {\n\t--bottom: anchor(top);\n\t--justify: anchor-center;\n\t--tip: var(--bottom-tip);\n\t--inset-block-end-tip: calc(var(--triangle-size) * -1);\n\t--border-block-end-tip: var(--triangle-size) solid transparent;\n}\n\n.tooltip[data-position=\"left\"] {\n\t--right: anchor(left);\n\t--tip: var(--right-tip);\n\t--inset-inline-end-tip: calc(var(--triangle-size) * -1);\n\t--border-inline-end-tip: var(--triangle-size) solid transparent;\n}\n\n.tooltip[data-position=\"right\"] {\n\t--left: anchor(right);\n\t--tip: var(--left-tip);\n\t--inset-inline-start-tip: calc(var(--triangle-size) * -1);\n\t--border-inline-start-tip: var(--triangle-size) solid transparent;\n}\n\n.tooltip[data-position=\"bottom\"] {\n\t--top: anchor(bottom);\n\t--justify: anchor-center;\n\t--tip: var(--top-tip);\n\t--inset-block-start-tip: calc(var(--triangle-size) * -1);\n\t--border-block-start-tip: var(--triangle-size) solid transparent;\n}\n";
+
+class HTMLHarmonyTooltipElement extends HTMLElement {
+    #shadowRoot;
+    #htmlText;
+    constructor() {
+        super();
+        this.#shadowRoot = this.attachShadow({ mode: 'closed' });
+        shadowRootStyle(this.#shadowRoot, tooltipCSS);
+        I18n.observeElement(this.#shadowRoot);
+        this.#htmlText = createElement('div', {
+            class: 'tooltip',
+            parent: this.#shadowRoot,
+        });
+    }
+    attributeChangedCallback(name, oldValue, newValue) {
+        switch (name) {
+            case 'data-label':
+                this.#htmlText.innerHTML = newValue;
+                this.#htmlText.classList.remove('i18n');
+                break;
+            case 'data-i18n':
+                this.#htmlText.setAttribute('data-i18n', newValue);
+                this.#htmlText.innerHTML = newValue;
+                this.#htmlText.classList.add('i18n');
+                break;
+            case 'data-position':
+                this.#htmlText.setAttribute('data-position', newValue);
+                break;
+        }
+    }
+    static get observedAttributes() {
+        return ['data-label', 'data-i18n', 'data-position'];
+    }
+}
+let definedHarmonyTooltip = false;
+function defineHarmonyTooltip() {
+    if (window.customElements && !definedHarmonyTooltip) {
+        customElements.define('harmony-tooltip', HTMLHarmonyTooltipElement);
+        definedHarmonyTooltip = true;
+    }
+}
 
 class HTMLHarmonyFileInputElement extends HTMLElement {
     #shadowRoot;
@@ -1561,6 +1604,7 @@ class HTMLHarmonyFileInputElement extends HTMLElement {
         this.#shadowRoot = this.attachShadow({ mode: 'closed' });
         shadowRootStyle(this.#shadowRoot, fileInputCSS);
         I18n.observeElement(this.#shadowRoot);
+        defineHarmonyTooltip();
         createElement('label', {
             parent: this.#shadowRoot,
             childs: [
@@ -1573,8 +1617,7 @@ class HTMLHarmonyFileInputElement extends HTMLElement {
                     hidden: true,
                     childs: [
                         createElement('span', { innerHTML: helpSVG, }),
-                        this.#htmlTooltip = createElement('span', {
-                            class: 'tooltiptext',
+                        this.#htmlTooltip = createElement('harmony-tooltip', {
                             i18n: '',
                         }),
                     ]
@@ -3270,40 +3313,4 @@ class HTMLHarmonyToggleButtonElement extends HTMLElement {
     }
 }
 
-var tooltipCSS = ":host {\n\tdisplay: grid;\n\tposition: absolute;\n\twidth: 100%;\n\theight: 100%;\n\ttop: 0;\n\tanchor-name: --anchor-el;\n}\n\n:host(:hover) {\n\t--harmony-tooltip-hover: 1;\n}\n\n.tooltip {\n\t--bottom-tip: conic-gradient(from -30deg at bottom, rgba(0, 0, 0, 0), #000 1deg 60deg, rgba(0, 0, 0, 0) 61deg) bottom / 100% 50% no-repeat;\n\t--top-tip: conic-gradient(from 150deg at top, rgba(0, 0, 0, 0), #000 1deg 60deg, rgba(0, 0, 0, 0) 61deg) top / 100% 50% no-repeat;\n\t--right-tip: conic-gradient(from -120deg at right, rgba(0, 0, 0, 0), #000 1deg 60deg, rgba(0, 0, 0, 0) 61deg) right / 50% 100% no-repeat;\n\t--left-tip: conic-gradient(from 60deg at left, rgba(0, 0, 0, 0), #000 1deg 60deg, rgba(0, 0, 0, 0) 61deg) left / 50% 100% no-repeat;\n\n\t--p-inline: 1.5ch;\n\t--p-block: .75ch;\n\t--triangle-size: 0.5rem;\n\t--bg: hsl(0 0% 20%);\n\n\n\n\tpointer-events: none;\n\tuser-select: none;\n\topacity: var(--harmony-tooltip-hover, 0);\n\tposition: fixed;\n\tposition-anchor: --anchor-el;\n\t/*top: anchor(bottom);*/\n\t/*justify-self: anchor-center;*/\n\tjustify-self: var(--justify);\n\tbottom: var(--bottom);\n\tleft: var(--left);\n\tright: var(--right);\n\ttop: var(--top);\n\n\tmax-width: 10rem;\n\tbackground-color: var(--bg);\n\tcolor: #fff;\n\ttext-align: center;\n\tborder-radius: 6px;\n\tpadding: 0.3rem 0.3rem;\n\tz-index: 1;\n\ttransition: opacity 0.3s;\n}\n\n.tooltip::after {\n\tcontent: \"\";\n\tbackground: var(--bg);\n\tposition: absolute;\n\tz-index: -1;\n\tinset: 0;\n\tmask: var(--tip);\n\tinset-block-start: var(--inset-block-start-tip, 0);\n\tinset-block-end: var(--inset-block-end-tip, 0);\n\tborder-block-start: var(--border-block-start-tip, 0);\n\tborder-block-end: var(--border-block-end-tip, 0);\n\tinset-inline-start: var(--inset-inline-start-tip, 0);\n\tinset-inline-end: var(--inset-inline-end-tip, 0);\n\tborder-inline-start: var(--border-inline-start-tip, 0);\n\tborder-inline-end: var(--border-inline-end-tip, 0);\n}\n\n.tooltip:is([data-position=\"top\"], :not([data-position])) {\n\t--bottom: anchor(top);\n\t--justify: anchor-center;\n\t--tip: var(--bottom-tip);\n\t--inset-block-end-tip: calc(var(--triangle-size) * -1);\n\t--border-block-end-tip: var(--triangle-size) solid transparent;\n}\n\n.tooltip[data-position=\"left\"] {\n\t--right: anchor(left);\n\t--tip: var(--right-tip);\n\t--inset-inline-end-tip: calc(var(--triangle-size) * -1);\n\t--border-inline-end-tip: var(--triangle-size) solid transparent;\n}\n\n.tooltip[data-position=\"right\"] {\n\t--left: anchor(right);\n\t--tip: var(--left-tip);\n\t--inset-inline-start-tip: calc(var(--triangle-size) * -1);\n\t--border-inline-start-tip: var(--triangle-size) solid transparent;\n}\n\n.tooltip[data-position=\"bottom\"] {\n\t--top: anchor(bottom);\n\t--justify: anchor-center;\n\t--tip: var(--top-tip);\n\t--inset-block-start-tip: calc(var(--triangle-size) * -1);\n\t--border-block-start-tip: var(--triangle-size) solid transparent;\n}\n";
-
-class HTMLHarmonyTooltipElement extends HTMLElement {
-    #shadowRoot;
-    #htmlText;
-    constructor() {
-        super();
-        this.#shadowRoot = this.attachShadow({ mode: 'closed' });
-        shadowRootStyle(this.#shadowRoot, tooltipCSS);
-        I18n.observeElement(this.#shadowRoot);
-        this.#htmlText = createElement('div', {
-            class: 'tooltip',
-            parent: this.#shadowRoot,
-        });
-    }
-    attributeChangedCallback(name, oldValue, newValue) {
-        switch (name) {
-            case 'data-label':
-                this.#htmlText.innerHTML = newValue;
-                this.#htmlText.classList.remove('i18n');
-                break;
-            case 'data-i18n':
-                this.#htmlText.setAttribute('data-i18n', newValue);
-                this.#htmlText.innerHTML = newValue;
-                this.#htmlText.classList.add('i18n');
-                break;
-            case 'data-position':
-                this.#htmlText.setAttribute('data-position', newValue);
-                break;
-        }
-    }
-    static get observedAttributes() {
-        return ['data-label', 'data-i18n', 'data-position'];
-    }
-}
-
-export { HTMLHarmony2dManipulatorElement, HTMLHarmonyAccordionElement, HTMLHarmonyColorPickerElement, HTMLHarmonyContextMenuElement, HTMLHarmonyCopyElement, HTMLHarmonyFileInputElement, HTMLHarmonyLabelPropertyElement, HTMLHarmonyPaletteElement, HTMLHarmonyPanelElement, HTMLHarmonyRadioElement, HTMLHarmonySelectElement, HTMLHarmonySlideshowElement, HTMLHarmonySplitterElement, HTMLHarmonySwitchElement, HTMLHarmonyTabElement, HTMLHarmonyTabGroupElement, HTMLHarmonyToggleButtonElement, HTMLHarmonyTooltipElement, I18n, ManipulatorCorner, ManipulatorDirection, ManipulatorSide, cloneEvent, createElement, createElementNS, createShadowRoot, display, documentStyle, documentStyleSync, hide, isVisible, shadowRootStyle, shadowRootStyleSync, show, styleInject, toggle, updateElement, visible };
+export { HTMLHarmony2dManipulatorElement, HTMLHarmonyAccordionElement, HTMLHarmonyColorPickerElement, HTMLHarmonyContextMenuElement, HTMLHarmonyCopyElement, HTMLHarmonyFileInputElement, HTMLHarmonyLabelPropertyElement, HTMLHarmonyPaletteElement, HTMLHarmonyPanelElement, HTMLHarmonyRadioElement, HTMLHarmonySelectElement, HTMLHarmonySlideshowElement, HTMLHarmonySplitterElement, HTMLHarmonySwitchElement, HTMLHarmonyTabElement, HTMLHarmonyTabGroupElement, HTMLHarmonyToggleButtonElement, HTMLHarmonyTooltipElement, I18n, ManipulatorCorner, ManipulatorDirection, ManipulatorSide, cloneEvent, createElement, createElementNS, createShadowRoot, defineHarmonyTooltip, display, documentStyle, documentStyleSync, hide, isVisible, shadowRootStyle, shadowRootStyleSync, show, styleInject, toggle, updateElement, visible };

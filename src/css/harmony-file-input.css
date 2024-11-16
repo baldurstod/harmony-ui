@@ -8,25 +8,6 @@ label {
 label>span {
 	margin: auto;
 }
-
-.tooltip .tooltiptext {
-	visibility: hidden;
-	max-width: 10rem;
-	background-color: #555;
-	color: #fff;
-	text-align: center;
-	border-radius: 6px;
-	padding: 0.3rem 0.3rem;
-	position: absolute;
-	z-index: 1;
-	bottom: 125%;
-	left: 50%;
-	margin-left: -4rem;
-	opacity: 0;
-	transition: opacity 0.3s;
-}
-
-.tooltip:hover .tooltiptext {
-	visibility: visible;
-	opacity: 1;
+.tooltip{
+	position: relative;
 }

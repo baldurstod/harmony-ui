@@ -39,3 +39,11 @@ export class HTMLHarmonyTooltipElement extends HTMLElement {
 		return ['data-label', 'data-i18n', 'data-position'];
 	}
 }
+
+let definedHarmonyTooltip = false;
+export function defineHarmonyTooltip() {
+	if (window.customElements && !definedHarmonyTooltip) {
+		customElements.define('harmony-tooltip', HTMLHarmonyTooltipElement);
+		definedHarmonyTooltip = true;
+	}
+}
