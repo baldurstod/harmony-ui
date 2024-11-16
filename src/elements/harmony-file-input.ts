@@ -22,18 +22,24 @@ export class HTMLHarmonyFileInputElement extends HTMLElement {
 		createElement('label', {
 			parent: this.#shadowRoot,
 			childs: [
-				this.#htmlText = createElement('span', {
-				}),
 				createElement('span', {
+					class: 'icon',
 					innerHTML: folderOpenSVG,
+				}),
+				this.#htmlText = createElement('span', {
+					class: 'text',
 				}),
 				this.#htmlHelp = createElement('span', {
 					class: 'tooltip',
 					hidden: true,
 					childs: [
-						createElement('span', { innerHTML: helpSVG, }),
+						createElement('span', {
+							class: 'info',
+							innerHTML: helpSVG,
+						}),
 						this.#htmlTooltip = createElement('harmony-tooltip', {
 							i18n: '',
+							'data-position': 'bottom',
 						}),
 					]
 				}),

@@ -1542,7 +1542,7 @@ class HTMLHarmonyCopyElement extends HTMLElement {
     }
 }
 
-var fileInputCSS = "label {\n\tcursor: pointer;\n\theight: 100%;\n\tdisplay: flex;\n\tuser-select: none;\n}\n\nlabel>span {\n\tmargin: auto;\n}\n.tooltip{\n\tposition: relative;\n}\n";
+var fileInputCSS = "label {\n\tcursor: pointer;\n\theight: 100%;\n\tdisplay: flex;\n\tuser-select: none;\n}\n\nlabel>span {\n\tmargin: auto;\n}\n\n.tooltip {\n\tposition: relative;\n}\n\n.text {\n\tflex: 1;\n\tfont-size: 2rem;\n}\n\n.icon,\n.info {\n\tzoom: 2;\n}\n";
 
 const checkOutlineSVG = '<svg xmlns="http://www.w3.org/2000/svg"  height="24" viewBox="0 -960 960 960" width="24" fill="currentColor"><path d="m 381,-240 424,-424 -57,-56 -368,367 -169,-170 -57,57 z m 0,113 -339,-339 169,-170 170,170 366,-367 172,168 z"/><path fill="#ffffff" d="m 381,-240 424,-424 -57,-56 -368,367 -169,-170 -57,57 z m 366,-593 c -498,-84.66667 -249,-42.33333 0,0 z"/></svg>';
 
@@ -1608,17 +1608,24 @@ class HTMLHarmonyFileInputElement extends HTMLElement {
         createElement('label', {
             parent: this.#shadowRoot,
             childs: [
-                this.#htmlText = createElement('span', {}),
                 createElement('span', {
+                    class: 'icon',
                     innerHTML: folderOpenSVG,
+                }),
+                this.#htmlText = createElement('span', {
+                    class: 'text',
                 }),
                 this.#htmlHelp = createElement('span', {
                     class: 'tooltip',
                     hidden: true,
                     childs: [
-                        createElement('span', { innerHTML: helpSVG, }),
+                        createElement('span', {
+                            class: 'info',
+                            innerHTML: helpSVG,
+                        }),
                         this.#htmlTooltip = createElement('harmony-tooltip', {
                             i18n: '',
+                            'data-position': 'bottom',
                         }),
                     ]
                 }),

@@ -8,6 +8,17 @@ label {
 label>span {
 	margin: auto;
 }
-.tooltip{
+
+.tooltip {
 	position: relative;
+}
+
+.text {
+	flex: 1;
+	font-size: 2rem;
+}
+
+.icon,
+.info {
+	zoom: 2;
 }
