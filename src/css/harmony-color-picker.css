@@ -1,4 +1,4 @@
-:host{
+:host {
 	--harmony-color-picker-shadow-width: var(--harmony-color-picker-width, 15rem);
 	--harmony-color-picker-shadow-height: var(--harmony-color-picker-height, 15rem);
 	--harmony-color-picker-shadow-gap: var(--harmony-color-picker-gap, 0.5rem);
@@ -21,7 +21,7 @@
 	grid-template-areas: "h h h h" "m m m a" "i i s s" "b b b b";
 }
 
-#hue-picker{
+#hue-picker {
 	position: relative;
 	/*flex-basis: var(--harmony-color-picker-shadow-width);*/
 	padding: 1rem;
@@ -29,57 +29,68 @@
 	grid-area: h;
 	height: 0;
 }
-#main-picker{
+
+#main-picker {
 	position: relative;
 	grid-area: m;
 	width: var(--harmony-color-picker-shadow-width);
 	height: var(--harmony-color-picker-shadow-height);
-	background-image: linear-gradient(180deg, white, rgba(255, 255, 255, 0) 50%),linear-gradient(0deg, black, rgba(0, 0, 0, 0) 50%),linear-gradient(90deg, #808080, rgba(128, 128, 128, 0));
+	background-image: linear-gradient(180deg, white, rgba(255, 255, 255, 0) 50%), linear-gradient(0deg, black, rgba(0, 0, 0, 0) 50%), linear-gradient(90deg, #808080, rgba(128, 128, 128, 0));
 	background-color: currentColor;
 }
-#alpha-picker{
+
+#alpha-picker {
 	position: relative;
 	padding: 1rem;
 	grid-area: a;
 	width: 0;
 }
-#hue-selector{
+
+#hue-selector {
 	padding: 1rem 0.2rem;
 }
-#alpha-selector{
+
+#alpha-selector {
 	padding: 0.2rem 1rem;
 }
-#main-selector{
+
+#main-selector {
 	padding: 0.5rem;
 	border-radius: 50%;
 }
-#input{
+
+#input {
 	width: calc(var(--harmony-color-picker-shadow-width) * 0.6);
 	grid-area: i;
 	font-family: monospace;
 	font-size: 1.5rem;
 	box-sizing: border-box;
 }
-#sample{
+
+#sample {
 	grid-area: s;
 	/*width: calc(var(--harmony-color-picker-shadow-width) * 0.25);*/
 }
-#buttons{
+
+#buttons {
 	grid-area: b;
 	display: flex;
 	gap: 2rem;
 }
-#buttons>button{
+
+#buttons>button {
 	flex: 1;
 	font-size: 1.5rem;
 	cursor: pointer;
 }
-.alpha-background{
+
+.alpha-background {
 	background: var(--foreground-layer),
-				linear-gradient(45deg, lightgrey 25%, transparent 25%, transparent 75%, lightgrey 75%) 0 0 / 1rem 1rem,
-				linear-gradient(45deg, lightgrey 25%, white 25%, white 75%, lightgrey 75%) 0.5em 0.5em / 1em 1em;
+		linear-gradient(45deg, lightgrey 25%, transparent 25%, transparent 75%, lightgrey 75%) 0 0 / 1rem 1rem,
+		linear-gradient(45deg, lightgrey 25%, white 25%, white 75%, lightgrey 75%) 0.5em 0.5em / 1em 1em;
 }
-.selector{
+
+.selector {
 	position: absolute;
 	border: 2px solid #fff;
 	border-radius: 100%;

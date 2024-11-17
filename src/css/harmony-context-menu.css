@@ -1,4 +1,4 @@
-:host{
+:host {
 	position: absolute;
 	font-size: 1.5em;
 	cursor: not-allowed;
@@ -8,49 +8,55 @@
 	z-index: 100000;
 }
 
-.harmony-context-menu-item{
+.harmony-context-menu-item {
 	background-color: green;
 	cursor: pointer;
 	background-color: var(--theme-context-menu-item-bg-color);
 }
 
-.harmony-context-menu-item.disabled{
+.harmony-context-menu-item.disabled {
 	pointer-events: none;
 }
 
-.harmony-context-menu-item.selected{
+.harmony-context-menu-item.selected {
 	background-color: blue;
 	background-color: var(--theme-context-menu-item-selected-bg-color);
 }
 
 
-.harmony-context-menu-item.separator{
+.harmony-context-menu-item.separator {
 	height: 5px;
 	background-color: black;
 }
-.harmony-context-menu-item>.harmony-context-menu-item-title:hover{
+
+.harmony-context-menu-item>.harmony-context-menu-item-title:hover {
 	background-color: var(--theme-context-menu-item-hover-bg-color);
 }
 
-.harmony-context-menu-item.selected>.harmony-context-menu-item-title::after{
+.harmony-context-menu-item.selected>.harmony-context-menu-item-title::after {
 	content: "✔";
 	right: 0px;
 	position: absolute;
 }
-.harmony-context-menu-item>.harmony-context-menu-item-title::after{
+
+.harmony-context-menu-item>.harmony-context-menu-item-title::after {
 	transition: all 0.2s ease 0s;
 	width: 32px;
 	height: 32px;
 }
-.harmony-context-menu-item.closed>.harmony-context-menu-item-title, .harmony-context-menu-item.opened>.harmony-context-menu-item-title{
+
+.harmony-context-menu-item.closed>.harmony-context-menu-item-title,
+.harmony-context-menu-item.opened>.harmony-context-menu-item-title {
 	padding-right: 32px;
 }
-.harmony-context-menu-item.closed>.harmony-context-menu-item-title::after{
+
+.harmony-context-menu-item.closed>.harmony-context-menu-item-title::after {
 	content: "➤";
 	right: 0px;
 	position: absolute;
 }
-.harmony-context-menu-item.opened>.harmony-context-menu-item-title::after{
+
+.harmony-context-menu-item.opened>.harmony-context-menu-item-title::after {
 	content: "➤";
 	right: 0px;
 	position: absolute;
@@ -58,7 +64,7 @@
 	transform: rotate(90deg);
 }
 
-.harmony-context-menu-item .submenu{
+.harmony-context-menu-item .submenu {
 	background-color: var(--theme-context-menu-submenu-bg-color);
 	padding-left: 10px;
 	margin-left: 2px;
@@ -68,6 +74,6 @@
 	background-color: var(--theme-context-menu-submenu-fg-color);
 }
 
-.harmony-context-menu-item.opened>.submenu{
+.harmony-context-menu-item.opened>.submenu {
 	display: block;
 }

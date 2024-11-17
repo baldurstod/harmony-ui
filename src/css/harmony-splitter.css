@@ -1,28 +1,34 @@
-:host{
+:host {
 	display: flex;
 	pointer-events: none;
 	/*--harmony-color-picker-shadow-gap: var(--harmony-color-picker-gap, 0.5rem);*/
 	--harmony-splitter-shadow-gutter-thickness: var(--harmony-splitter-gutter-thickness, 0.3rem);
 	--harmony-splitter-shadow-gutter-bg-color: var(--harmony-splitter-gutter-bg-color, black);
 }
-:host(.vertical){
+
+:host(.vertical) {
 	flex-direction: row;
 }
-:host(.horizontal){
+
+:host(.horizontal) {
 	flex-direction: column;
 }
-:host .gutter{
+
+:host .gutter {
 	flex: 0 0 var(--harmony-splitter-shadow-gutter-thickness);
 	pointer-events: all;
 	background-color: var(--harmony-splitter-shadow-gutter-bg-color);
 }
-:host(.vertical) .gutter{
+
+:host(.vertical) .gutter {
 	cursor: ew-resize;
 }
-:host(.horizontal) .gutter{
+
+:host(.horizontal) .gutter {
 	cursor: ns-resize;
 }
-:host .panel{
+
+:host .panel {
 	flex: 0 0 50%;
 	display: flex;
 	pointer-events: none;

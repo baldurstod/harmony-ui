@@ -1,24 +1,28 @@
 <!DOCTYPE html>
 <html>
-	<head>
-		<title>Test toggle</title>
-		<script type="module" src="../dist/define/browser/harmony-toggle-button.js"></script>
-		<link rel="stylesheet" type="text/css" href="./assets/css/examples.css" />
-		<style>
-			harmony-toggle-button{
-				background-color: grey;
-			}
-		</style>
-	</head>
-	<body>
-		<harmony-toggle-button id="toggle">
-			<on><img src="./assets/img/flashlight_on_FILL0_wght400_GRAD0_opsz24.svg"></on>
-			<off><img src="./assets/img/flashlight_off_FILL0_wght400_GRAD0_opsz24.svg"></off>
-		</harmony-toggle-button>
-		<harmony-toggle-button id="toggle2" src-on="./assets/img/flashlight_on_FILL0_wght400_GRAD0_opsz24.svg" src-off="./assets/img/flashlight_off_FILL0_wght400_GRAD0_opsz24.svg"></harmony-toggle-button>
-	</body>
-	<script>
-		document.getElementById('toggle').addEventListener('change', (event) => console.log(event.target.checked));
-		document.getElementById('toggle2').addEventListener('change', (event) => console.log(event.target.checked));
-	</script>
+
+<head>
+	<title>Test toggle</title>
+	<script type="module" src="../dist/define/browser/harmony-toggle-button.js"></script>
+	<link rel="stylesheet" type="text/css" href="./assets/css/examples.css" />
+	<style>
+		harmony-toggle-button {
+			background-color: grey;
+		}
+	</style>
+</head>
+
+<body>
+	<harmony-toggle-button id="toggle">
+		<on><img src="./assets/img/flashlight_on_FILL0_wght400_GRAD0_opsz24.svg"></on>
+		<off><img src="./assets/img/flashlight_off_FILL0_wght400_GRAD0_opsz24.svg"></off>
+	</harmony-toggle-button>
+	<harmony-toggle-button id="toggle2" src-on="./assets/img/flashlight_on_FILL0_wght400_GRAD0_opsz24.svg"
+		src-off="./assets/img/flashlight_off_FILL0_wght400_GRAD0_opsz24.svg"></harmony-toggle-button>
+</body>
+<script>
+	document.getElementById('toggle').addEventListener('change', (event) => console.log(event.target.checked));
+	document.getElementById('toggle2').addEventListener('change', (event) => console.log(event.target.checked));
+</script>
+
 </html>

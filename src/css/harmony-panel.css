@@ -1,4 +1,4 @@
-harmony-panel{
+harmony-panel {
 	display: flex;
 	flex: 1;
 	flex-direction: column;
@@ -20,39 +20,48 @@ harmony-panel{
 	flex-direction: column;
 	box-sizing: border-box;
 }
-.harmony-panel-row{
+
+.harmony-panel-row {
 	flex-direction: row;
 }
-.harmony-panel-row > harmony-panel{
-	height:100%;
+
+.harmony-panel-row>harmony-panel {
+	height: 100%;
 }
-.harmony-panel-column{
+
+.harmony-panel-column {
 	flex-direction: column;
 }
-.harmony-panel-column > harmony-panel{
-	width:100%;
+
+.harmony-panel-column>harmony-panel {
+	width: 100%;
 }
-.harmony-panel-splitter{
+
+.harmony-panel-splitter {
 	display: none;
 	flex: 0 0 10px;
 	background-color: red;
 }
-harmony-panel>.title{
+
+harmony-panel>.title {
 	cursor: pointer;
 	text-align: center;
 	font-size: 1.5em;
 	padding: 4px;
 	overflow: hidden;
 }
-harmony-panel>.content{
+
+harmony-panel>.content {
 	width: 100%;
 	box-sizing: border-box;
 }
-harmony-panel[collapsible='1'] > .title::after{
+
+harmony-panel[collapsible='1']>.title::after {
 	content: "-";
 	right: 5px;
 	position: absolute;
 }
-harmony-panel[collapsed='1'] > .title::after{
+
+harmony-panel[collapsed='1']>.title::after {
 	content: "+";
 }

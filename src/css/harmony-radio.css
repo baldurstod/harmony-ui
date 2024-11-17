@@ -1,4 +1,4 @@
-:host{
+:host {
 	--harmony-radio-shadow-button-border-radius: var(--harmony-radio-button-border-radius, 0.5rem);
 	--harmony-radio-shadow-button-padding: var(--harmony-radio-button-padding, 0.5rem);
 	--harmony-radio-shadow-button-font-size: var(--harmony-radio-button-font-size, 1rem);
@@ -7,12 +7,14 @@
 	overflow: hidden;
 	user-select: none;
 }
-.harmony-radio-label{
+
+.harmony-radio-label {
 	margin: auto 0;
 	font-weight: bold;
 	margin-right: 0.25rem;
 }
-button{
+
+button {
 	padding: var(--harmony-radio-shadow-button-padding);
 	color: var(--harmony-ui-text-primary);
 	flex: var(--harmony-radio-shadow-button-flex);
@@ -27,19 +29,24 @@ button{
 	font-size: var(--harmony-radio-shadow-button-font-size);
 	overflow: hidden;
 }
-button:hover{
+
+button:hover {
 	background-color: var(--harmony-ui-input-background-secondary);
 }
-button[selected]{
+
+button[selected] {
 	background-color: var(--harmony-ui-accent-primary);
 }
-button[selected]:hover{
+
+button[selected]:hover {
 	background-color: var(--harmony-ui-accent-secondary);
 }
-button:first-of-type{
+
+button:first-of-type {
 	border-radius: var(--harmony-radio-shadow-button-border-radius) 0 0 var(--harmony-radio-shadow-button-border-radius);
 }
-button:last-child{
+
+button:last-child {
 	border-right-style: solid;
 	border-radius: 0 var(--harmony-radio-shadow-button-border-radius) var(--harmony-radio-shadow-button-border-radius) 0;
 }

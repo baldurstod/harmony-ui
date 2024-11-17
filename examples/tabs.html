@@ -1,58 +1,61 @@
 <!DOCTYPE html>
 <html>
-	<head>
-		<meta charset="utf-8">
-		<title>Test tabs</title>
-		<script type="module" src="../dist/define/browser/harmony-tab-group.js"></script>
-		<script type="module" src="../dist/define/browser/harmony-tab.js"></script>
-	</head>
-	<body>
-		<harmony-tab-group>
-			<harmony-tab data-text=1>
-				<content>Content 1</content>
-			</harmony-tab>
-			<harmony-tab data-text=2>
-				<content>Content 2</content>
-			</harmony-tab>
-			<harmony-tab data-i18n="#i18n_tab">
-				<content>Content i18n</content>
-			</harmony-tab>
-		</harmony-tab-group>
-		<script type="module">
-			import { createElement } from '../dist/harmony-ui.browser.js';
 
-			const group1 = createElement('harmony-tab-group', {
-				parent: document.body,
-				childs: [
-					createElement('harmony-tab', { 'data-text': 1, innerText: 'Content 1' }),
-					createElement('harmony-tab', { 'data-text': 2, innerText: 'Content 2' }),
-					createElement('harmony-tab', { 'data-i18n': '#i18n_tab', innerText: 'Content i18n' }),
-				],
-			});
+<head>
+	<meta charset="utf-8">
+	<title>Test tabs</title>
+	<script type="module" src="../dist/define/browser/harmony-tab-group.js"></script>
+	<script type="module" src="../dist/define/browser/harmony-tab.js"></script>
+</head>
 
-			let dynamic = 0;
-			const group2 = createElement('harmony-tab-group', {
-				parent: document.body,
-				childs: [
-					createElement('harmony-tab', { 'data-text': 1, innerText: 'Content 1' }),
-					createElement('harmony-tab', { 'data-text': 2, innerText: 'Content 2' }),
-					createElement('harmony-tab', { 'data-i18n': '#i18n_tab', innerText: 'Content i18n' }),
-					createElement('harmony-tab', {
-						'data-i18n': '+',
-						events: {
-							click: event => {
-								event.preventDefault();
-								const tab = createElement('harmony-tab', {
-									parent: group2,
-									'data-text': ++dynamic,
-									innerText: 'Content ' + dynamic
-								});
-								tab.activate();
-							}
+<body>
+	<harmony-tab-group>
+		<harmony-tab data-text=1>
+			<content>Content 1</content>
+		</harmony-tab>
+		<harmony-tab data-text=2>
+			<content>Content 2</content>
+		</harmony-tab>
+		<harmony-tab data-i18n="#i18n_tab">
+			<content>Content i18n</content>
+		</harmony-tab>
+	</harmony-tab-group>
+	<script type="module">
+		import { createElement } from '../dist/harmony-ui.browser.js';
+
+		const group1 = createElement('harmony-tab-group', {
+			parent: document.body,
+			childs: [
+				createElement('harmony-tab', { 'data-text': 1, innerText: 'Content 1' }),
+				createElement('harmony-tab', { 'data-text': 2, innerText: 'Content 2' }),
+				createElement('harmony-tab', { 'data-i18n': '#i18n_tab', innerText: 'Content i18n' }),
+			],
+		});
+
+		let dynamic = 0;
+		const group2 = createElement('harmony-tab-group', {
+			parent: document.body,
+			childs: [
+				createElement('harmony-tab', { 'data-text': 1, innerText: 'Content 1' }),
+				createElement('harmony-tab', { 'data-text': 2, innerText: 'Content 2' }),
+				createElement('harmony-tab', { 'data-i18n': '#i18n_tab', innerText: 'Content i18n' }),
+				createElement('harmony-tab', {
+					'data-i18n': '+',
+					events: {
+						click: event => {
+							event.preventDefault();
+							const tab = createElement('harmony-tab', {
+								parent: group2,
+								'data-text': ++dynamic,
+								innerText: 'Content ' + dynamic
+							});
+							tab.activate();
 						}
-					}),
-				],
-			});
-		</script>
-	</body>
+					}
+				}),
+			],
+		});
+	</script>
+</body>
+
 </html>

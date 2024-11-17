@@ -1,13 +1,14 @@
-harmony-copy{
+harmony-copy {
 	cursor: pointer;
 	position: relative;
 }
 
-.harmony-copy-copied{
+.harmony-copy-copied {
 	transition: top 1s;
-	position:absolute;
-	top:0%;
+	position: absolute;
+	top: 0%;
 }
-.harmony-copy-copied-end{
-	top:-100%;
+
+.harmony-copy-copied-end {
+	top: -100%;
 }

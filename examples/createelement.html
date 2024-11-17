@@ -1,21 +1,24 @@
 <!DOCTYPE html>
 <html>
-	<head>
-		<meta charset="utf-8">
-		<title>Test create element</title>
-	</head>
-	<body>
-		<script type="module">
-			import {createElement} from '../dist/harmony-ui.browser.js';
 
-			createElement('div', {
-				parent: document.body,
-				childs: [
-					1, 2, 3, null, 4
-				],
-				child: 5,
-				elementCreated: (element) => console.log(element)
-			});
-		</script>
-	</body>
+<head>
+	<meta charset="utf-8">
+	<title>Test create element</title>
+</head>
+
+<body>
+	<script type="module">
+		import { createElement } from '../dist/harmony-ui.browser.js';
+
+		createElement('div', {
+			parent: document.body,
+			childs: [
+				1, 2, 3, null, 4
+			],
+			child: 5,
+			elementCreated: (element) => console.log(element)
+		});
+	</script>
+</body>
+
 </html>

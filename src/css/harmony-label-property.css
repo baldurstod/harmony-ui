@@ -1,8 +1,8 @@
-:root{
+:root {
 	--harmony-label-property-gap: 0.5rem;
 }
 
-harmony-label-property{
+harmony-label-property {
 	display: flex;
 	gap: var(--harmony-label-property-gap);
 }

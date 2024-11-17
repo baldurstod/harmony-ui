@@ -1,17 +1,19 @@
-harmony-tab{
+harmony-tab {
 	display: block;
 	height: 100%;
 	overflow: auto;
 }
-harmony-tab::first-letter{
+
+harmony-tab::first-letter {
 	text-transform: uppercase;
 }
-.harmony-tab-label{
+
+.harmony-tab-label {
 	display: inline-block;
 	background-color: var(--main-bg-color-bright);
 	padding: 10px;
 	border: 1px solid black;
-	border-top:0px;
+	border-top: 0px;
 	/*border-right:0px;*/
 	/*margin-left: -1px;*/
 	position: relative;
@@ -24,7 +26,8 @@ harmony-tab::first-letter{
 	text-align: center;
 	white-space: nowrap;
 }
-.harmony-tab-label.activated{
+
+.harmony-tab-label.activated {
 	background-color: var(--main-bg-color-dark);
 	border-bottom: 1px solid var(--main-bg-color-dark);
 	border-left: 1px solid white;

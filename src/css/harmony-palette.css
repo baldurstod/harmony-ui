@@ -1,18 +1,18 @@
-html{
+html {
 	--harmony-palette-color-size: 2rem;
 	--harmony-palette-gap: 0.5rem;
 	--harmony-palette-border-color: grey;
 	--harmony-palette-selected-border-color: orange;
 }
 
-:host{
+:host {
 	display: flex;
 	flex-direction: row;
 	flex-wrap: wrap;
 	gap: var(--harmony-palette-gap);
 }
 
-.color{
+.color {
 	height: var(--harmony-palette-color-size);
 	width: var(--harmony-palette-color-size);
 	border-radius: calc(var(--harmony-palette-color-size) * .1);
@@ -20,14 +20,15 @@ html{
 	padding: calc(var(--harmony-palette-color-size) * .1);
 	cursor: pointer;
 }
-.color.selected{
+
+.color.selected {
 	border-color: var(--harmony-palette-selected-border-color);
 	border-width: calc(var(--harmony-palette-color-size) * .2);
 	padding: 0;
 	color: black;
 }
 
-.color > svg{
+.color>svg {
 	height: 100%;
 	width: 100%;
 }

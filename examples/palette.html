@@ -1,65 +1,68 @@
 <!DOCTYPE html>
 <html>
-	<head>
-		<meta charset="utf-8">
-		<title>Test palette</title>
-		<script type="module" src="../dist/define/browser/harmony-palette.js"></script>
-		<link rel="stylesheet" type="text/css" href="./assets/css/examples.css" />
-	</head>
-	<body>
-		<div>Simple
-			<harmony-palette multiple="0" id="palette">
-				<color tooltip="white">#000000</color>
-				<color selected="1">#FFFFFF</color>
-				<color selected="0">#FF0000</color>
-				<color selected="1">#00FF00</color>
-				<color>#0000FF</color>
-			</harmony-palette>
-		</div>
-		<div>Multiple
-			<harmony-palette multiple="1" id="paletteMultiple">
-				<color tooltip="white">#000000</color>
-				<color selected="1">#FFFFFF</color>
-				<color>#FF0000</color>
-				<color selected="selected">#00FF00</color>
-				<color>#0000FF</color>
-			</harmony-palette>
-		</div>
-		<script type="module">
-			function setTimeoutPromise(delay, signal) {
-				return new Promise((resolve, reject) => setTimeout(resolve, delay));
-			}
 
-			let palette = document.getElementById('palette');
-			let paletteMultiple = document.getElementById('paletteMultiple');
-			palette.addEventListener('select', event => {
-				console.error('select', event.detail);
-			});
-			palette.addEventListener('unselect', event => {
-				console.error('unselect', event.detail);
-			});
+<head>
+	<meta charset="utf-8">
+	<title>Test palette</title>
+	<script type="module" src="../dist/define/browser/harmony-palette.js"></script>
+	<link rel="stylesheet" type="text/css" href="./assets/css/examples.css" />
+</head>
 
-			await setTimeoutPromise(1000);
-			palette.selectColor('#0000FF');
-			paletteMultiple.selectColor('#0000FF');
+<body>
+	<div>Simple
+		<harmony-palette multiple="0" id="palette">
+			<color tooltip="white">#000000</color>
+			<color selected="1">#FFFFFF</color>
+			<color selected="0">#FF0000</color>
+			<color selected="1">#00FF00</color>
+			<color>#0000FF</color>
+		</harmony-palette>
+	</div>
+	<div>Multiple
+		<harmony-palette multiple="1" id="paletteMultiple">
+			<color tooltip="white">#000000</color>
+			<color selected="1">#FFFFFF</color>
+			<color>#FF0000</color>
+			<color selected="selected">#00FF00</color>
+			<color>#0000FF</color>
+		</harmony-palette>
+	</div>
+	<script type="module">
+		function setTimeoutPromise(delay, signal) {
+			return new Promise((resolve, reject) => setTimeout(resolve, delay));
+		}
 
-			await setTimeoutPromise(500);
-			palette.toggleColor('#FF0000');
-			paletteMultiple.toggleColor('#FF0000');
+		let palette = document.getElementById('palette');
+		let paletteMultiple = document.getElementById('paletteMultiple');
+		palette.addEventListener('select', event => {
+			console.error('select', event.detail);
+		});
+		palette.addEventListener('unselect', event => {
+			console.error('unselect', event.detail);
+		});
 
-			await setTimeoutPromise(500);
-			palette.toggleColor('#FF0000');
-			paletteMultiple.toggleColor('#FF0000');
+		await setTimeoutPromise(1000);
+		palette.selectColor('#0000FF');
+		paletteMultiple.selectColor('#0000FF');
 
-			await setTimeoutPromise(500);
-			palette.selectColor('#000000', true);
-			paletteMultiple.selectColor('#000000', true);
+		await setTimeoutPromise(500);
+		palette.toggleColor('#FF0000');
+		paletteMultiple.toggleColor('#FF0000');
 
-			await setTimeoutPromise(500);
-			palette.selectColor('#000000', false);
-			paletteMultiple.selectColor('#000000', false);
+		await setTimeoutPromise(500);
+		palette.toggleColor('#FF0000');
+		paletteMultiple.toggleColor('#FF0000');
+
+		await setTimeoutPromise(500);
+		palette.selectColor('#000000', true);
+		paletteMultiple.selectColor('#000000', true);
+
+		await setTimeoutPromise(500);
+		palette.selectColor('#000000', false);
+		paletteMultiple.selectColor('#000000', false);
 
 
-		</script>
-	</body>
+	</script>
+</body>
+
 </html>

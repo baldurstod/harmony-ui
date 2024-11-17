@@ -1,4 +1,4 @@
-harmony-accordion{
+harmony-accordion {
 	overflow: hidden;
 	display: flex;
 	justify-content: center;
@@ -7,7 +7,8 @@ harmony-accordion{
 
 	/*--accordion-text-color: #000;*/
 }
-harmony-accordion .item .header{
+
+harmony-accordion .item .header {
 	cursor: pointer;
 	display: block;
 	user-select: none;
@@ -15,28 +16,31 @@ harmony-accordion .item .header{
 	/*color: var(--accordion-text-color)
 	color: var(--accordion-text-color)*/
 }
-harmony-accordion .item .content{
+
+harmony-accordion .item .content {
 	display: block;
 	overflow: hidden;
 	height: 0;
 	/*transition: all 0.5s ease 0s;*/
 }
-harmony-accordion .item .content.selected{
+
+harmony-accordion .item .content.selected {
 	height: unset;
 	padding: 10px;
 }
 
 
-@media (prefers-color-scheme: light){
-	harmony-accordion{
+@media (prefers-color-scheme: light) {
+	harmony-accordion {
 		--accordion-text-color: #000;
 		--accordion-background-color: #eee;
 		color: #000;
 		background: #eee;
 	}
 }
-@media (prefers-color-scheme: dark){
-	harmony-accordion{
+
+@media (prefers-color-scheme: dark) {
+	harmony-accordion {
 		--accordion-text-color: #eee;
 		--accordion-background-color: #000;
 		color: #eee;

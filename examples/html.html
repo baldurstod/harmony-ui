@@ -1,47 +1,50 @@
 <!DOCTYPE html>
 <html>
-	<head>
-		<title>Test HTML</title>
-		<link rel="stylesheet" type="text/css" href="./assets/css/examples.css" />
-	</head>
-	<body>
-	</body>
-	<script type="module">
-		import { createElement } from '../dist/harmony-ui.browser.js';
+
+<head>
+	<title>Test HTML</title>
+	<link rel="stylesheet" type="text/css" href="./assets/css/examples.css" />
+</head>
+
+<body>
+</body>
+<script type="module">
+	import { createElement } from '../dist/harmony-ui.browser.js';
 
 
-		createElement('div', {
-			id: 'main-node',
-			parent: document.body,
-			attachShadow: { mode: 'closed' },
-			adoptStyle: ':host{width:50px;height:50px;background-color:blue;}',
-			childs: [
-				createElement('div', { id: 'empty-child' }),
-				createElement('div', { 'attachShadow': { mode: 'closed' }, id: 'shadow-child' }),
-				createElement('div', {
-					id: 'nested-shadow',
-					'attachShadow': { mode: 'closed' },
-					child: createElement('div', {
-						id: 'nested-shadow-child',
-						'attachShadow': { mode: 'closed' }
-					}),
+	createElement('div', {
+		id: 'main-node',
+		parent: document.body,
+		attachShadow: { mode: 'closed' },
+		adoptStyle: ':host{width:50px;height:50px;background-color:blue;}',
+		childs: [
+			createElement('div', { id: 'empty-child' }),
+			createElement('div', { 'attachShadow': { mode: 'closed' }, id: 'shadow-child' }),
+			createElement('div', {
+				id: 'nested-shadow',
+				'attachShadow': { mode: 'closed' },
+				child: createElement('div', {
+					id: 'nested-shadow-child',
+					'attachShadow': { mode: 'closed' }
 				}),
-				createElement('div'),
-				createElement('div'),
-			],
-		});
+			}),
+			createElement('div'),
+			createElement('div'),
+		],
+	});
 
-		createElement('div', {
-			attachShadow: { mode: 'closed' },
-			id: 'shadow-root-with-link-child',
-			parent: document.body,
-			//adoptStyle: ':host{width:50px;height:50px;background-color:blue;}',
-			childs: [
-				createElement('a', {
-					href: 'example.org',
-					innerText: 'example',
-				}),
-			],
-		});
-	</script>
+	createElement('div', {
+		attachShadow: { mode: 'closed' },
+		id: 'shadow-root-with-link-child',
+		parent: document.body,
+		//adoptStyle: ':host{width:50px;height:50px;background-color:blue;}',
+		childs: [
+			createElement('a', {
+				href: 'example.org',
+				innerText: 'example',
+			}),
+		],
+	});
+</script>
+
 </html>

@@ -1,4 +1,4 @@
-@media (prefers-color-scheme: light){
+@media (prefers-color-scheme: light) {
 	:root:not(.light):not(.dark) {
 		--harmony-ui-background-primary: #ccc;
 		--harmony-ui-background-secondary: #f9f9fb;
@@ -27,7 +27,8 @@
 		--harmony-ui-scrollbar-color: rgba(0, 0, 0, 0.25);
 	}
 }
-@media (prefers-color-scheme: dark){
+
+@media (prefers-color-scheme: dark) {
 	:root:not(.light):not(.dark) {
 		--harmony-ui-background-primary: #1b1b1b;
 		--harmony-ui-background-secondary: #464747;
@@ -57,7 +58,7 @@
 	}
 }
 
-:root.light{
+:root.light {
 	--harmony-ui-background-primary: #ccc;
 	--harmony-ui-background-secondary: #f9f9fb;
 	--harmony-ui-background-tertiary: #fff;
@@ -85,7 +86,7 @@
 	--harmony-ui-scrollbar-color: rgba(0, 0, 0, 0.25);
 }
 
-:root.dark{
+:root.dark {
 	--harmony-ui-background-primary: #1b1b1b;
 	--harmony-ui-background-secondary: #464747;
 	--harmony-ui-background-tertiary: #4e4e4e;

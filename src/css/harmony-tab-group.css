@@ -1,19 +1,22 @@
-:host, harmony-tab-group{
-	width:100%;
-	height:100%;
+:host,
+harmony-tab-group {
+	width: 100%;
+	height: 100%;
 	display: flex;
 	flex-direction: column;
 	position: relative;
 	overflow: hidden;
 }
-.harmony-tab-group-header{
+
+.harmony-tab-group-header {
 	background-color: var(--main-bg-color-bright);
 	display: flex;
 	flex-wrap: wrap;
 	overflow: hidden;
 	width: 100%;
 }
-.harmony-tab-group-content{
+
+.harmony-tab-group-content {
 	flex: 1;
 	background-color: var(--main-bg-color-dark);
 	overflow: auto;

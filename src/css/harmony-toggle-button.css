@@ -1,11 +1,13 @@
-:host{
+:host {
 	cursor: pointer;
 	height: 50px;
 	width: 50px;
 	display: inline-block;
 	position: relative;
 }
-on, off{
+
+on,
+off {
 	position: absolute;
 	top: 0px;
 	left: 0px;

@@ -1,4 +1,5 @@
-:host, harmony-switch{
+:host,
+harmony-switch {
 	--harmony-switch-shadow-width: var(--harmony-switch-width, 4rem);
 	--harmony-switch-shadow-height: var(--harmony-switch-height, 2rem);
 	--harmony-switch-shadow-on-background-color: var(--harmony-switch-on-background-color, #1072eb);
@@ -13,11 +14,13 @@
 	cursor: pointer;
 	justify-content: space-between;
 }
-.harmony-switch-label{
+
+.harmony-switch-label {
 	margin: auto 0;
 	font-weight: bold;
 }
-.harmony-switch-outer{
+
+.harmony-switch-outer {
 	display: flex;
 	height: var(--harmony-switch-shadow-height);
 	border-radius: calc(var(--harmony-switch-shadow-height) * 0.5);
@@ -27,19 +30,23 @@
 	width: var(--harmony-switch-shadow-width);
 }
 
-.harmony-switch-outer{
+.harmony-switch-outer {
 	background-color: var(--harmony-ui-input-background-primary);
 }
-.harmony-switch-outer:hover{
+
+.harmony-switch-outer:hover {
 	background-color: var(--harmony-ui-input-background-secondary);
 }
-.harmony-switch-outer.on{
+
+.harmony-switch-outer.on {
 	background-color: var(--harmony-ui-accent-primary);
 }
-.harmony-switch-outer.on:hover{
+
+.harmony-switch-outer.on:hover {
 	background-color: var(--harmony-ui-accent-secondary);
 }
-.harmony-switch-inner{
+
+.harmony-switch-inner {
 	display: inline-block;
 	height: var(--harmony-switch-shadow-slider-height);
 	width: var(--harmony-switch-shadow-slider-width);
@@ -52,25 +59,31 @@
 	border-color: var(--harmony-ui-input-border-primary);
 	background-color: var(--harmony-ui-input-background-tertiary);
 }
-.harmony-switch-outer.ternary .harmony-switch-inner{
+
+.harmony-switch-outer.ternary .harmony-switch-inner {
 	left: calc(50% - var(--harmony-switch-shadow-slider-width) * 0.5);
 }
-.harmony-switch-outer.off .harmony-switch-inner{
+
+.harmony-switch-outer.off .harmony-switch-inner {
 	left: var(--harmony-switch-shadow-slider-margin);
 }
-.harmony-switch-outer.on .harmony-switch-inner{
+
+.harmony-switch-outer.on .harmony-switch-inner {
 	left: calc(100% - var(--harmony-switch-shadow-slider-width) - var(--harmony-switch-shadow-slider-margin));
 }
-.harmony-switch-outer.ternary.off{
+
+.harmony-switch-outer.ternary.off {
 	background-color: red;
 }
-.harmony-switch-outer.ternary.off:hover{
+
+.harmony-switch-outer.ternary.off:hover {
 	background-color: red;
 }
-.harmony-switch-outer.ternary.on{
-	background-color: green;
-}
-.harmony-switch-outer.ternary.on:hover{
+
+.harmony-switch-outer.ternary.on {
 	background-color: green;
 }
 
+.harmony-switch-outer.ternary.on:hover {
+	background-color: green;
+}
