@@ -8,8 +8,8 @@
 
 <body>
 	<script type="module">
-		import { createElement } from '../dist/harmony-ui.browser.js';
-		import '../dist/define/browser/harmony-slideshow.js';
+		import { createElement, defineSlideshow } from '../dist/harmony-ui.browser.js';
+		defineSlideshow();
 
 		let slideshow = createElement('harmony-slideshow');
 		slideshow.style = "height:500px;width:500px;";

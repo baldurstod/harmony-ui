@@ -20,7 +20,9 @@
 	<harmony-toggle-button id="toggle2" src-on="./assets/img/flashlight_on_FILL0_wght400_GRAD0_opsz24.svg"
 		src-off="./assets/img/flashlight_off_FILL0_wght400_GRAD0_opsz24.svg"></harmony-toggle-button>
 </body>
-<script>
+<script type="module">
+	import { createElement, defineToggleButton } from '../dist/harmony-ui.browser.js';
+	defineToggleButton();
 	document.getElementById('toggle').addEventListener('change', (event) => console.log(event.target.checked));
 	document.getElementById('toggle2').addEventListener('change', (event) => console.log(event.target.checked));
 </script>

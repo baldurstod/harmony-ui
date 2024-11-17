@@ -4,8 +4,6 @@
 <head>
 	<meta charset="utf-8">
 	<title>Test tabs</title>
-	<script type="module" src="../dist/define/browser/harmony-tab-group.js"></script>
-	<script type="module" src="../dist/define/browser/harmony-tab.js"></script>
 </head>
 
 <body>
@@ -21,7 +19,9 @@
 		</harmony-tab>
 	</harmony-tab-group>
 	<script type="module">
-		import { createElement } from '../dist/harmony-ui.browser.js';
+		import { createElement, defineTabGroup, defineTab } from '../dist/harmony-ui.browser.js';
+		defineTabGroup();
+		defineTab();
 
 		const group1 = createElement('harmony-tab-group', {
 			parent: document.body,

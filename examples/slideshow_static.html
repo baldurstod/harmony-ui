@@ -4,7 +4,6 @@
 <head>
 	<meta charset="utf-8">
 	<title>Test slideshow</title>
-	<script type="module" src="../dist/define/browser/harmony-slideshow.js"></script>
 </head>
 
 <body>
@@ -15,7 +14,8 @@
 		<img src="https://files.cdn.printful.com/files/60c/60cf9cdbaac70ca5e6100a972e886e2e_preview.png">
 	</harmony-slideshow>
 	<script type="module">
-		import { createElement } from '../dist/harmony-ui.js';
+		import { createElement, defineSlideshow } from '../dist/harmony-ui.js';
+		defineSlideshow();
 		function setTimeoutPromise(delay, signal) {
 			return new Promise((resolve, reject) => setTimeout(resolve, delay));
 		}

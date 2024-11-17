@@ -4,7 +4,6 @@
 <head>
 	<meta charset="utf-8">
 	<title>Test file input</title>
-	<script type="module" src="../dist/define/browser/harmony-file-input.js"></script>
 	<link href="./assets/css/examples.css" rel="stylesheet">
 	</link>
 </head>
@@ -14,7 +13,8 @@
 		data-tooltip-i18n="test help"></harmony-file-input>
 </body>
 <script type="module">
-	import { createElement } from '../dist/harmony-ui.browser.js';
+	import { createElement, defineFileInput } from '../dist/harmony-ui.browser.js';
+	defineFileInput();
 	const input = document.getElementById('input');
 
 	input.addEventListener('change', (event) => {

@@ -3,7 +3,6 @@
 
 <head>
 	<title>Test switch</title>
-	<script type="module" src="../dist/define/browser/harmony-switch.js"></script>
 	<link rel="stylesheet" type="text/css" href="./assets/css/examples.css" />
 </head>
 
@@ -13,7 +12,9 @@
 	<harmony-switch data-i18n="#test2" id='switch2' style="width:200px" ternary="1">
 	</harmony-switch>
 </body>
-<script>
+<script type="module">
+	import { defineSwitch } from '../dist/harmony-ui.js';
+	defineSwitch();
 	document.getElementById('switch').addEventListener('change', (event) => console.log(event.target.checked))
 </script>
 

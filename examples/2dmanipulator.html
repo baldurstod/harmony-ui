@@ -4,7 +4,6 @@
 <head>
 	<meta charset="utf-8">
 	<title>Test 2d manipulator</title>
-	<script type="module" src="../dist/define/browser/harmony-2d-manipulator.js"></script>
 </head>
 
 <body>
@@ -12,8 +11,9 @@
 	</harmony-2d-manipulator>
 </body>
 <script type="module">
-	import { createElement } from '../dist/harmony-ui.browser.js';
+	import { createElement, define2dManipulator } from '../dist/harmony-ui.browser.js';
 	const manipulator = document.getElementById('manipulator');
+	define2dManipulator();
 
 	manipulator.addEventListener('change', (event) => {
 		const detail = event.detail;

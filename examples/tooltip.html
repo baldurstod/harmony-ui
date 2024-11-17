@@ -4,7 +4,6 @@
 <head>
 	<meta charset="utf-8">
 	<title>Test tooltip</title>
-	<script type="module" src="../dist/define/browser/harmony-tooltip.js"></script>
 	<link href="./assets/css/examples.css" rel="stylesheet">
 	</link>
 </head>
@@ -23,5 +22,9 @@
 		<harmony-tooltip data-i18n="#browse_files" data-position="right"></harmony-tooltip>
 	</div>
 </body>
+<script type="module">
+	import { defineTooltip } from '../dist/harmony-ui.browser.js';
+	defineTooltip();
+</script>
 
 </html>
