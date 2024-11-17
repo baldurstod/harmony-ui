@@ -106,7 +106,7 @@ export class HTMLHarmonySelectElement extends HTMLElement {
 }
 
 let definedSelect = false;
-export function defineSelect() {
+export function defineHarmonySelect() {
 	if (window.customElements && !definedSelect) {
 		customElements.define('harmony-select', HTMLHarmonySelectElement);
 		definedSelect = true;

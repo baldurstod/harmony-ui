@@ -41,7 +41,7 @@ export class HTMLHarmonyTooltipElement extends HTMLElement {
 }
 
 let definedTooltip = false;
-export function defineTooltip() {
+export function defineHarmonyTooltip() {
 	if (window.customElements && !definedTooltip) {
 		customElements.define('harmony-tooltip', HTMLHarmonyTooltipElement);
 		definedTooltip = true;

@@ -402,7 +402,7 @@ export class HTMLHarmonySlideshowElement extends HTMLElement {
 }
 
 let definedSlideshow = false;
-export function defineSlideshow() {
+export function defineHarmonySlideshow() {
 	if (window.customElements && !definedSlideshow) {
 		customElements.define('harmony-slideshow', HTMLHarmonySlideshowElement);
 		definedSlideshow = true;

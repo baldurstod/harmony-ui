@@ -75,7 +75,7 @@ export class HTMLHarmonyTabGroupElement extends HTMLElement {
 }
 
 let definedTabGroup = false;
-export function defineTabGroup() {
+export function defineHarmonyTabGroup() {
 	if (window.customElements && !definedTabGroup) {
 		customElements.define('harmony-tab-group', HTMLHarmonyTabGroupElement);
 		definedTabGroup = true;

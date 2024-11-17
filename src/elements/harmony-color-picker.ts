@@ -229,7 +229,7 @@ export class HTMLHarmonyColorPickerElement extends HTMLElement {
 }
 
 let definedColorPicker = false;
-export function defineColorPicker() {
+export function defineHarmonyColorPicker() {
 	if (window.customElements && !definedColorPicker) {
 		customElements.define('harmony-color-picker', HTMLHarmonyColorPickerElement);
 		definedColorPicker = true;

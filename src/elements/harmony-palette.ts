@@ -182,7 +182,7 @@ export class HTMLHarmonyPaletteElement extends HTMLElement {
 }
 
 let definedPalette = false;
-export function definePalette() {
+export function defineHarmonyPalette() {
 	if (window.customElements && !definedPalette) {
 		customElements.define('harmony-palette', HTMLHarmonyPaletteElement);
 		definedPalette = true;

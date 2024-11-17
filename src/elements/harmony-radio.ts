@@ -141,7 +141,7 @@ export class HTMLHarmonyRadioElement extends HTMLElement {
 }
 
 let definedRadio = false;
-export function defineRadio() {
+export function defineHarmonyRadio() {
 	if (window.customElements && !definedRadio) {
 		customElements.define('harmony-radio', HTMLHarmonyRadioElement);
 		definedRadio = true;

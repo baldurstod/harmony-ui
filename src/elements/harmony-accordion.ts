@@ -146,7 +146,7 @@ export class HTMLHarmonyAccordionElement extends HTMLElement {
 }
 
 let definedAccordion = false;
-export function defineAccordion() {
+export function defineHarmonyAccordion() {
 	if (window.customElements && !definedAccordion) {
 		customElements.define('harmony-accordion', HTMLHarmonyAccordionElement);
 		definedAccordion = true;

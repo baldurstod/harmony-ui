@@ -4,7 +4,7 @@ import fileInputCSS from '../css/harmony-file-input.css';
 import { folderOpenSVG, helpSVG } from 'harmony-svg';
 import { cloneEvent } from '../utils/events';
 import { I18n } from '../harmony-i18n';
-import { defineTooltip } from './harmony-tooltip';
+import { defineHarmonyTooltip } from './harmony-tooltip';
 
 export class HTMLHarmonyFileInputElement extends HTMLElement {
 	#shadowRoot: ShadowRoot;
@@ -18,7 +18,7 @@ export class HTMLHarmonyFileInputElement extends HTMLElement {
 		shadowRootStyle(this.#shadowRoot, fileInputCSS);
 		I18n.observeElement(this.#shadowRoot);
 
-		defineTooltip();
+		defineHarmonyTooltip();
 		createElement('label', {
 			parent: this.#shadowRoot,
 			childs: [
@@ -101,7 +101,7 @@ export class HTMLHarmonyFileInputElement extends HTMLElement {
 }
 
 let definedFileInput = false;
-export function defineFileInput() {
+export function defineHarmonyFileInput() {
 	if (window.customElements && !definedFileInput) {
 		customElements.define('harmony-file-input', HTMLHarmonyFileInputElement);
 		definedFileInput = true;

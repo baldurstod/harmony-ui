@@ -121,7 +121,7 @@ export class HTMLHarmonySplitterElement extends HTMLElement {
 }
 
 let definedSplitter = false;
-export function defineSplitter() {
+export function defineHarmonySplitter() {
 	if (window.customElements && !definedSplitter) {
 		customElements.define('harmony-splitter', HTMLHarmonySplitterElement);
 		definedSplitter = true;

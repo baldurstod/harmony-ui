@@ -127,7 +127,7 @@ export class HTMLHarmonySwitchElement extends HTMLElement {
 }
 
 let definedSwitch = false;
-export function defineSwitch() {
+export function defineHarmonySwitch() {
 	if (window.customElements && !definedSwitch) {
 		customElements.define('harmony-switch', HTMLHarmonySwitchElement);
 		definedSwitch = true;

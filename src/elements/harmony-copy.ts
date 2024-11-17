@@ -35,7 +35,7 @@ export class HTMLHarmonyCopyElement extends HTMLElement {
 }
 
 let definedCopy = false;
-export function defineCopy() {
+export function defineHarmonyCopy() {
 	if (window.customElements && !definedCopy) {
 		customElements.define('harmony-copy', HTMLHarmonyCopyElement);
 		documentStyle(copyCSS);

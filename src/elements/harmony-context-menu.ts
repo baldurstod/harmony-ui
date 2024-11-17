@@ -184,7 +184,7 @@ export class HTMLHarmonyContextMenuElement extends HTMLElement {
 }
 
 let definedContextMenu = false;
-export function defineContextMenu() {
+export function defineHarmonyContextMenu() {
 	if (window.customElements && !definedContextMenu) {
 		customElements.define('harmony-context-menu', HTMLHarmonyContextMenuElement);
 		definedContextMenu = true;

@@ -654,7 +654,7 @@ export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 }
 
 let defined2dManipulator = false;
-export function define2dManipulator() {
+export function defineHarmony2dManipulator() {
 	if (window.customElements && !defined2dManipulator) {
 		customElements.define('harmony-2d-manipulator', HTMLHarmony2dManipulatorElement);
 		defined2dManipulator = true;

@@ -101,7 +101,7 @@ export class HTMLHarmonyTabElement extends HTMLElement {
 }
 
 let definedTab = false;
-export function defineTab() {
+export function defineHarmonyTab() {
 	if (window.customElements && !definedTab) {
 		customElements.define('harmony-tab', HTMLHarmonyTabElement);
 		definedTab = true;
