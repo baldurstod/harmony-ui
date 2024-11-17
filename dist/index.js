@@ -907,14 +907,19 @@ function define2dManipulator() {
     }
 }
 
+var accordionCSS = ":host {\n\toverflow: hidden;\n\tdisplay: flex;\n\tjustify-content: center;\n\tflex-direction: column;\n\tposition: relative;\n\n\t/*--accordion-text-color: #000;*/\n}\n\n.item .header {\n\tcursor: pointer;\n\tdisplay: block;\n\tuser-select: none;\n\tpadding: 5px;\n\t/*color: var(--accordion-text-color)\n\tcolor: var(--accordion-text-color)*/\n}\n\n.item .content {\n\tdisplay: block;\n\toverflow: hidden;\n\theight: 0;\n\t/*transition: all 0.5s ease 0s;*/\n}\n\n.item .content.selected {\n\theight: unset;\n\tpadding: 10px;\n}\n\n\n@media (prefers-color-scheme: light) {\n\t:host {\n\t\t--accordion-text-color: #000;\n\t\t--accordion-background-color: #eee;\n\t\tcolor: #000;\n\t\tbackground: #eee;\n\t}\n}\n\n@media (prefers-color-scheme: dark) {\n\t:host {\n\t\t--accordion-text-color: #eee;\n\t\t--accordion-background-color: #000;\n\t\tcolor: #eee;\n\t\tbackground: #000;\n\t}\n}\n";
+
 class HTMLHarmonyAccordionElement extends HTMLElement {
     #doOnce = true;
     #multiple = false;
     #disabled = false;
     #items = new Map();
     #selected = new Set();
+    #shadowRoot;
     constructor() {
         super();
+        this.#shadowRoot = this.attachShadow({ mode: 'closed' });
+        shadowRootStyle(this.#shadowRoot, accordionCSS);
         this.#initMutationObserver();
     }
     connectedCallback() {
@@ -951,7 +956,7 @@ class HTMLHarmonyAccordionElement extends HTMLElement {
     }
     createItem(header, content) {
         let item = createElement('item', { childs: [header, content] });
-        this.append(item);
+        this.#shadowRoot.append(item);
         return item;
     }
     #refresh() {
@@ -959,7 +964,7 @@ class HTMLHarmonyAccordionElement extends HTMLElement {
         for (let [header, content] of this.#items) {
             let htmlItem = createElement('div', { class: 'item' });
             htmlItem.append(header, content);
-            this.append(htmlItem);
+            this.#shadowRoot.append(htmlItem);
         }
     }
     #toggle(header, collapse = true) {
@@ -1166,7 +1171,7 @@ class Color {
     }
 }
 
-var colorPickerCSS = ":host{\n\t--harmony-color-picker-shadow-width: var(--harmony-color-picker-width, 15rem);\n\t--harmony-color-picker-shadow-height: var(--harmony-color-picker-height, 15rem);\n\t--harmony-color-picker-shadow-gap: var(--harmony-color-picker-gap, 0.5rem);\n\n\t--foreground-layer: none;\n\n\tbackground-color: var(--main-bg-color-bright);\n\tpadding: var(--harmony-color-picker-shadow-gap);\n\tbox-sizing: border-box;\n\tdisplay: inline-grid;\n\t/*grid-template-rows: 1rem 5fr;\n\tgrid-template-columns: 2fr 2fr 1rem;*/\n\tcolumn-gap: var(--harmony-color-picker-shadow-gap);\n\trow-gap: var(--harmony-color-picker-shadow-gap);\n\n\t/*width: var(--harmony-color-picker-width, 10rem);\n\theight: var(--harmony-color-picker-height, 10rem);*/\n\t/*display: flex;\n\tflex-wrap: wrap;*/\n\tgrid-template-areas: \"h h h h\" \"m m m a\" \"i i s s\" \"b b b b\";\n}\n\n#hue-picker{\n\tposition: relative;\n\t/*flex-basis: var(--harmony-color-picker-shadow-width);*/\n\tpadding: 1rem;\n\tbackground-image: linear-gradient(90deg, red, yellow, lime, cyan, blue, magenta, red);\n\tgrid-area: h;\n\theight: 0;\n}\n#main-picker{\n\tposition: relative;\n\tgrid-area: m;\n\twidth: var(--harmony-color-picker-shadow-width);\n\theight: var(--harmony-color-picker-shadow-height);\n\tbackground-image: linear-gradient(180deg, white, rgba(255, 255, 255, 0) 50%),linear-gradient(0deg, black, rgba(0, 0, 0, 0) 50%),linear-gradient(90deg, #808080, rgba(128, 128, 128, 0));\n\tbackground-color: currentColor;\n}\n#alpha-picker{\n\tposition: relative;\n\tpadding: 1rem;\n\tgrid-area: a;\n\twidth: 0;\n}\n#hue-selector{\n\tpadding: 1rem 0.2rem;\n}\n#alpha-selector{\n\tpadding: 0.2rem 1rem;\n}\n#main-selector{\n\tpadding: 0.5rem;\n\tborder-radius: 50%;\n}\n#input{\n\twidth: calc(var(--harmony-color-picker-shadow-width) * 0.6);\n\tgrid-area: i;\n\tfont-family: monospace;\n\tfont-size: 1.5rem;\n\tbox-sizing: border-box;\n}\n#sample{\n\tgrid-area: s;\n\t/*width: calc(var(--harmony-color-picker-shadow-width) * 0.25);*/\n}\n#buttons{\n\tgrid-area: b;\n\tdisplay: flex;\n\tgap: 2rem;\n}\n#buttons>button{\n\tflex: 1;\n\tfont-size: 1.5rem;\n\tcursor: pointer;\n}\n.alpha-background{\n\tbackground: var(--foreground-layer),\n\t\t\t\tlinear-gradient(45deg, lightgrey 25%, transparent 25%, transparent 75%, lightgrey 75%) 0 0 / 1rem 1rem,\n\t\t\t\tlinear-gradient(45deg, lightgrey 25%, white 25%, white 75%, lightgrey 75%) 0.5em 0.5em / 1em 1em;\n}\n.selector{\n\tposition: absolute;\n\tborder: 2px solid #fff;\n\tborder-radius: 100%;\n\tbox-shadow: 0 0 3px 1px #67b9ff;\n\ttransform: translate(-50%, -50%);\n\tcursor: pointer;\n\tdisplay: block;\n\tbackground: none;\n\tborder-radius: 2px;\n}\n";
+var colorPickerCSS = ":host {\n\t--harmony-color-picker-shadow-width: var(--harmony-color-picker-width, 15rem);\n\t--harmony-color-picker-shadow-height: var(--harmony-color-picker-height, 15rem);\n\t--harmony-color-picker-shadow-gap: var(--harmony-color-picker-gap, 0.5rem);\n\n\t--foreground-layer: none;\n\n\tbackground-color: var(--main-bg-color-bright);\n\tpadding: var(--harmony-color-picker-shadow-gap);\n\tbox-sizing: border-box;\n\tdisplay: inline-grid;\n\t/*grid-template-rows: 1rem 5fr;\n\tgrid-template-columns: 2fr 2fr 1rem;*/\n\tcolumn-gap: var(--harmony-color-picker-shadow-gap);\n\trow-gap: var(--harmony-color-picker-shadow-gap);\n\n\t/*width: var(--harmony-color-picker-width, 10rem);\n\theight: var(--harmony-color-picker-height, 10rem);*/\n\t/*display: flex;\n\tflex-wrap: wrap;*/\n\tgrid-template-areas: \"h h h h\" \"m m m a\" \"i i s s\" \"b b b b\";\n}\n\n#hue-picker {\n\tposition: relative;\n\t/*flex-basis: var(--harmony-color-picker-shadow-width);*/\n\tpadding: 1rem;\n\tbackground-image: linear-gradient(90deg, red, yellow, lime, cyan, blue, magenta, red);\n\tgrid-area: h;\n\theight: 0;\n}\n\n#main-picker {\n\tposition: relative;\n\tgrid-area: m;\n\twidth: var(--harmony-color-picker-shadow-width);\n\theight: var(--harmony-color-picker-shadow-height);\n\tbackground-image: linear-gradient(180deg, white, rgba(255, 255, 255, 0) 50%), linear-gradient(0deg, black, rgba(0, 0, 0, 0) 50%), linear-gradient(90deg, #808080, rgba(128, 128, 128, 0));\n\tbackground-color: currentColor;\n}\n\n#alpha-picker {\n\tposition: relative;\n\tpadding: 1rem;\n\tgrid-area: a;\n\twidth: 0;\n}\n\n#hue-selector {\n\tpadding: 1rem 0.2rem;\n}\n\n#alpha-selector {\n\tpadding: 0.2rem 1rem;\n}\n\n#main-selector {\n\tpadding: 0.5rem;\n\tborder-radius: 50%;\n}\n\n#input {\n\twidth: calc(var(--harmony-color-picker-shadow-width) * 0.6);\n\tgrid-area: i;\n\tfont-family: monospace;\n\tfont-size: 1.5rem;\n\tbox-sizing: border-box;\n}\n\n#sample {\n\tgrid-area: s;\n\t/*width: calc(var(--harmony-color-picker-shadow-width) * 0.25);*/\n}\n\n#buttons {\n\tgrid-area: b;\n\tdisplay: flex;\n\tgap: 2rem;\n}\n\n#buttons>button {\n\tflex: 1;\n\tfont-size: 1.5rem;\n\tcursor: pointer;\n}\n\n.alpha-background {\n\tbackground: var(--foreground-layer),\n\t\tlinear-gradient(45deg, lightgrey 25%, transparent 25%, transparent 75%, lightgrey 75%) 0 0 / 1rem 1rem,\n\t\tlinear-gradient(45deg, lightgrey 25%, white 25%, white 75%, lightgrey 75%) 0.5em 0.5em / 1em 1em;\n}\n\n.selector {\n\tposition: absolute;\n\tborder: 2px solid #fff;\n\tborder-radius: 100%;\n\tbox-shadow: 0 0 3px 1px #67b9ff;\n\ttransform: translate(-50%, -50%);\n\tcursor: pointer;\n\tdisplay: block;\n\tbackground: none;\n\tborder-radius: 2px;\n}\n";
 
 class HTMLHarmonyColorPickerElement extends HTMLElement {
     #doOnce = true;
@@ -1376,7 +1381,7 @@ function defineColorPicker() {
     }
 }
 
-var contextMenuCSS = ":host{\n\tposition: absolute;\n\tfont-size: 1.5em;\n\tcursor: not-allowed;\n\tbackground-color: green;\n\tbackground-color: var(--theme-context-menu-bg-color);\n\toverflow: auto;\n\tz-index: 100000;\n}\n\n.harmony-context-menu-item{\n\tbackground-color: green;\n\tcursor: pointer;\n\tbackground-color: var(--theme-context-menu-item-bg-color);\n}\n\n.harmony-context-menu-item.disabled{\n\tpointer-events: none;\n}\n\n.harmony-context-menu-item.selected{\n\tbackground-color: blue;\n\tbackground-color: var(--theme-context-menu-item-selected-bg-color);\n}\n\n\n.harmony-context-menu-item.separator{\n\theight: 5px;\n\tbackground-color: black;\n}\n.harmony-context-menu-item>.harmony-context-menu-item-title:hover{\n\tbackground-color: var(--theme-context-menu-item-hover-bg-color);\n}\n\n.harmony-context-menu-item.selected>.harmony-context-menu-item-title::after{\n\tcontent: \"✔\";\n\tright: 0px;\n\tposition: absolute;\n}\n.harmony-context-menu-item>.harmony-context-menu-item-title::after{\n\ttransition: all 0.2s ease 0s;\n\twidth: 32px;\n\theight: 32px;\n}\n.harmony-context-menu-item.closed>.harmony-context-menu-item-title, .harmony-context-menu-item.opened>.harmony-context-menu-item-title{\n\tpadding-right: 32px;\n}\n.harmony-context-menu-item.closed>.harmony-context-menu-item-title::after{\n\tcontent: \"➤\";\n\tright: 0px;\n\tposition: absolute;\n}\n.harmony-context-menu-item.opened>.harmony-context-menu-item-title::after{\n\tcontent: \"➤\";\n\tright: 0px;\n\tposition: absolute;\n\t/*writing-mode: vertical-rl; */\n\ttransform: rotate(90deg);\n}\n\n.harmony-context-menu-item .submenu{\n\tbackground-color: var(--theme-context-menu-submenu-bg-color);\n\tpadding-left: 10px;\n\tmargin-left: 2px;\n\tdisplay: none;\n\toverflow: hidden;\n\tposition: relative;\n\tbackground-color: var(--theme-context-menu-submenu-fg-color);\n}\n\n.harmony-context-menu-item.opened>.submenu{\n\tdisplay: block;\n}\n";
+var contextMenuCSS = ":host {\n\tposition: absolute;\n\tfont-size: 1.5em;\n\tcursor: not-allowed;\n\tbackground-color: green;\n\tbackground-color: var(--theme-context-menu-bg-color);\n\toverflow: auto;\n\tz-index: 100000;\n}\n\n.harmony-context-menu-item {\n\tbackground-color: green;\n\tcursor: pointer;\n\tbackground-color: var(--theme-context-menu-item-bg-color);\n}\n\n.harmony-context-menu-item.disabled {\n\tpointer-events: none;\n}\n\n.harmony-context-menu-item.selected {\n\tbackground-color: blue;\n\tbackground-color: var(--theme-context-menu-item-selected-bg-color);\n}\n\n\n.harmony-context-menu-item.separator {\n\theight: 5px;\n\tbackground-color: black;\n}\n\n.harmony-context-menu-item>.harmony-context-menu-item-title:hover {\n\tbackground-color: var(--theme-context-menu-item-hover-bg-color);\n}\n\n.harmony-context-menu-item.selected>.harmony-context-menu-item-title::after {\n\tcontent: \"✔\";\n\tright: 0px;\n\tposition: absolute;\n}\n\n.harmony-context-menu-item>.harmony-context-menu-item-title::after {\n\ttransition: all 0.2s ease 0s;\n\twidth: 32px;\n\theight: 32px;\n}\n\n.harmony-context-menu-item.closed>.harmony-context-menu-item-title,\n.harmony-context-menu-item.opened>.harmony-context-menu-item-title {\n\tpadding-right: 32px;\n}\n\n.harmony-context-menu-item.closed>.harmony-context-menu-item-title::after {\n\tcontent: \"➤\";\n\tright: 0px;\n\tposition: absolute;\n}\n\n.harmony-context-menu-item.opened>.harmony-context-menu-item-title::after {\n\tcontent: \"➤\";\n\tright: 0px;\n\tposition: absolute;\n\t/*writing-mode: vertical-rl; */\n\ttransform: rotate(90deg);\n}\n\n.harmony-context-menu-item .submenu {\n\tbackground-color: var(--theme-context-menu-submenu-bg-color);\n\tpadding-left: 10px;\n\tmargin-left: 2px;\n\tdisplay: none;\n\toverflow: hidden;\n\tposition: relative;\n\tbackground-color: var(--theme-context-menu-submenu-fg-color);\n}\n\n.harmony-context-menu-item.opened>.submenu {\n\tdisplay: block;\n}\n";
 
 class HTMLHarmonyContextMenuElement extends HTMLElement {
     #doOnce = true;
@@ -1542,6 +1547,8 @@ function defineContextMenu() {
     }
 }
 
+var copyCSS = "harmony-copy {\n\tcursor: pointer;\n\tposition: relative;\n}\n\n.harmony-copy-copied {\n\ttransition: top 1s;\n\tposition: absolute;\n\ttop: 0%;\n}\n\n.harmony-copy-copied-end {\n\ttop: -100%;\n}\n";
+
 class HTMLHarmonyCopyElement extends HTMLElement {
     #doOnce = true;
     #htmlCopied;
@@ -1575,6 +1582,7 @@ let definedCopy = false;
 function defineCopy() {
     if (window.customElements && !definedCopy) {
         customElements.define('harmony-copy', HTMLHarmonyCopyElement);
+        documentStyle(copyCSS);
         definedCopy = true;
     }
 }
@@ -1719,14 +1727,19 @@ function defineFileInput() {
     }
 }
 
+var labelPropertyCSS = ":host {\n\tdisplay: flex;\n\tgap: var(--harmony-label-property-gap, 0.5);\n}\n";
+
 class HTMLHarmonyLabelPropertyElement extends HTMLElement {
     #doOnce = false;
     #htmlLabel;
     #htmlProperty;
+    #shadowRoot;
     constructor() {
         super();
-        this.#htmlLabel = createElement('label', { i18n: '' });
-        this.#htmlProperty = createElement('span');
+        this.#shadowRoot = this.attachShadow({ mode: 'closed' });
+        shadowRootStyle(this.#shadowRoot, labelPropertyCSS);
+        this.#htmlLabel = createElement('label', { i18n: '', parent: this.#shadowRoot });
+        this.#htmlProperty = createElement('span', { parent: this.#shadowRoot });
     }
     set label(label) {
         this.#htmlLabel.setAttribute('data-i18n', label);
@@ -1749,7 +1762,7 @@ function defineLabelProperty() {
     }
 }
 
-var paletteCSS = "html{\r\n\t--harmony-palette-color-size: 2rem;\r\n\t--harmony-palette-gap: 0.5rem;\r\n\t--harmony-palette-border-color: grey;\r\n\t--harmony-palette-selected-border-color: orange;\r\n}\r\n\r\n:host{\r\n\tdisplay: flex;\r\n\tflex-direction: row;\r\n\tflex-wrap: wrap;\r\n\tgap: var(--harmony-palette-gap);\r\n}\r\n\r\n.color{\r\n\theight: var(--harmony-palette-color-size);\r\n\twidth: var(--harmony-palette-color-size);\r\n\tborder-radius: calc(var(--harmony-palette-color-size) * .1);\r\n\tborder: calc(var(--harmony-palette-color-size) * .1) solid var(--harmony-palette-border-color);\r\n\tpadding: calc(var(--harmony-palette-color-size) * .1);\r\n\tcursor: pointer;\r\n}\r\n.color.selected{\r\n\tborder-color: var(--harmony-palette-selected-border-color);\r\n\tborder-width: calc(var(--harmony-palette-color-size) * .2);\r\n\tpadding: 0;\r\n\tcolor: black;\r\n}\r\n\r\n.color > svg{\r\n\theight: 100%;\r\n\twidth: 100%;\r\n}\r\n";
+var paletteCSS = ":host {\r\n\t--harmony-palette-shadow-color-size: var(--harmony-palette-color-size, 2rem);\r\n\t--harmony-palette-shadow-gap: var(--harmony-palette-gap, 0.5rem);\r\n\t--harmony-palette-shadow-border-color: var(--harmony-palette-border-color, grey);\r\n\t--harmony-palette-shadow-selected-border-color: var(--harmony-palette-selected-border-color, orange);\r\n\tdisplay: flex;\r\n\tflex-direction: row;\r\n\tflex-wrap: wrap;\r\n\tgap: var(--harmony-palette-shadow-gap);\r\n}\r\n\r\n.color {\r\n\theight: var(--harmony-palette-shadow-color-size);\r\n\twidth: var(--harmony-palette-shadow-color-size);\r\n\tborder-radius: calc(var(--harmony-palette-shadow-color-size) * .1);\r\n\tborder: calc(var(--harmony-palette-shadow-color-size) * .1) solid var(--harmony-palette-shadow-border-color);\r\n\tpadding: calc(var(--harmony-palette-shadow-color-size) * .1);\r\n\tcursor: pointer;\r\n}\r\n\r\n.color.selected {\r\n\tborder-color: var(--harmony-palette-shadow-selected-border-color);\r\n\tborder-width: calc(var(--harmony-palette-shadow-color-size) * .2);\r\n\tpadding: 0;\r\n\tcolor: black;\r\n}\r\n\r\n.color>svg {\r\n\theight: 100%;\r\n\twidth: 100%;\r\n}\r\n";
 
 function clampColor(val) {
     return Math.min(Math.max(0, val), 1);
@@ -1914,6 +1927,8 @@ function definePalette() {
     }
 }
 
+var panelCSS = ":host {\n\tdisplay: flex;\n\tflex: 1;\n\tflex-direction: column;\n\n\tflex: 0 0 auto;\n\t/*flex-grow: 0;\n\tflex-shrink: 0;\n\tflex-basis: auto;*/\n\t/*flex-basis: 0;*/\n\t/*flex: 1;*/\n\t/*height:100%;\n\twidth:100%;*/\n\n\t/*padding: 5px !important;*/\n\tbox-sizing: border-box;\n\tpointer-events: all;\n\toverflow: hidden;\n\tposition: relative;\n\tflex-direction: column;\n\tbox-sizing: border-box;\n}\n\n.harmony-panel-row {\n\tflex-direction: row;\n}\n\n.harmony-panel-row>harmony-panel {\n\theight: 100%;\n}\n\n.harmony-panel-column {\n\tflex-direction: column;\n}\n\n.harmony-panel-column>harmony-panel {\n\twidth: 100%;\n}\n\n.harmony-panel-splitter {\n\tdisplay: none;\n\tflex: 0 0 10px;\n\tbackground-color: red;\n}\n\n.title {\n\tcursor: pointer;\n\ttext-align: center;\n\tfont-size: 1.5em;\n\tpadding: 4px;\n\toverflow: hidden;\n}\n\n.content {\n\twidth: 100%;\n\tbox-sizing: border-box;\n}\n\n[collapsible='1']>.title::after {\n\tcontent: \"-\";\n\tright: 5px;\n\tposition: absolute;\n}\n\n[collapsed='1']>.title::after {\n\tcontent: \"+\";\n}\n";
+
 let nextId = 0;
 //let spliter: HTMLElement = createElement('div', { className: 'harmony-panel-splitter' }) as HTMLElement;
 let highlitPanel;
@@ -1931,8 +1946,11 @@ class HTMLHarmonyPanelElement extends HTMLElement {
     htmlTitle;
     htmlContent;
     #isDummy = false;
+    #shadowRoot;
     constructor() {
         super();
+        this.#shadowRoot = this.attachShadow({ mode: 'closed' });
+        shadowRootStyle(this.#shadowRoot, panelCSS);
         //this.addEventListener('dragstart', event => this._handleDragStart(event));
         //this.addEventListener('dragover', event => this._handleDragOver(event));
         //this.addEventListener('drop', event => this._handleDrop(event));
@@ -1941,11 +1959,15 @@ class HTMLHarmonyPanelElement extends HTMLElement {
         //this.addEventListener('mouseleave', event => this._handleMouseLeave(event));
         this.htmlTitle = createElement('div', {
             className: 'title',
+            parent: this.#shadowRoot,
             events: {
                 click: () => this.#toggleCollapse(),
             }
         });
-        this.htmlContent = createElement('div', { className: 'content' });
+        this.htmlContent = createElement('div', {
+            className: 'content',
+            parent: this.#shadowRoot,
+        });
     }
     connectedCallback() {
         if (this.#doOnce) {
@@ -2338,7 +2360,7 @@ function definePanel() {
     }
 }
 
-var radioCSS = ":host{\n\t--harmony-radio-shadow-button-border-radius: var(--harmony-radio-button-border-radius, 0.5rem);\n\t--harmony-radio-shadow-button-padding: var(--harmony-radio-button-padding, 0.5rem);\n\t--harmony-radio-shadow-button-font-size: var(--harmony-radio-button-font-size, 1rem);\n\t--harmony-radio-shadow-button-flex: var(--harmony-radio-button-flex, auto);\n\tdisplay: inline-flex;\n\toverflow: hidden;\n\tuser-select: none;\n}\n.harmony-radio-label{\n\tmargin: auto 0;\n\tfont-weight: bold;\n\tmargin-right: 0.25rem;\n}\nbutton{\n\tpadding: var(--harmony-radio-shadow-button-padding);\n\tcolor: var(--harmony-ui-text-primary);\n\tflex: var(--harmony-radio-shadow-button-flex);\n\tcursor: pointer;\n\tappearance: none;\n\tborder-style: solid;\n\tborder-width: 0.0625rem;\n\tborder-color: var(--harmony-ui-border-primary);\n\tborder-right-style: none;\n\tbackground-color: var(--harmony-ui-input-background-primary);\n\ttransition: background-color 0.2s linear;\n\tfont-size: var(--harmony-radio-shadow-button-font-size);\n\toverflow: hidden;\n}\nbutton:hover{\n\tbackground-color: var(--harmony-ui-input-background-secondary);\n}\nbutton[selected]{\n\tbackground-color: var(--harmony-ui-accent-primary);\n}\nbutton[selected]:hover{\n\tbackground-color: var(--harmony-ui-accent-secondary);\n}\nbutton:first-of-type{\n\tborder-radius: var(--harmony-radio-shadow-button-border-radius) 0 0 var(--harmony-radio-shadow-button-border-radius);\n}\nbutton:last-child{\n\tborder-right-style: solid;\n\tborder-radius: 0 var(--harmony-radio-shadow-button-border-radius) var(--harmony-radio-shadow-button-border-radius) 0;\n}\n";
+var radioCSS = ":host {\n\t--harmony-radio-shadow-button-border-radius: var(--harmony-radio-button-border-radius, 0.5rem);\n\t--harmony-radio-shadow-button-padding: var(--harmony-radio-button-padding, 0.5rem);\n\t--harmony-radio-shadow-button-font-size: var(--harmony-radio-button-font-size, 1rem);\n\t--harmony-radio-shadow-button-flex: var(--harmony-radio-button-flex, auto);\n\tdisplay: inline-flex;\n\toverflow: hidden;\n\tuser-select: none;\n}\n\n.label {\n\tmargin: auto 0;\n\tfont-weight: bold;\n\tmargin-right: 0.25rem;\n}\n\nbutton {\n\tpadding: var(--harmony-radio-shadow-button-padding);\n\tcolor: var(--harmony-ui-text-primary);\n\tflex: var(--harmony-radio-shadow-button-flex);\n\tcursor: pointer;\n\tappearance: none;\n\tborder-style: solid;\n\tborder-width: 0.0625rem;\n\tborder-color: var(--harmony-ui-border-primary);\n\tborder-right-style: none;\n\tbackground-color: var(--harmony-ui-input-background-primary);\n\ttransition: background-color 0.2s linear;\n\tfont-size: var(--harmony-radio-shadow-button-font-size);\n\toverflow: hidden;\n}\n\nbutton:hover {\n\tbackground-color: var(--harmony-ui-input-background-secondary);\n}\n\nbutton[selected] {\n\tbackground-color: var(--harmony-ui-accent-primary);\n}\n\nbutton[selected]:hover {\n\tbackground-color: var(--harmony-ui-accent-secondary);\n}\n\nbutton:first-of-type {\n\tborder-radius: var(--harmony-radio-shadow-button-border-radius) 0 0 var(--harmony-radio-shadow-button-border-radius);\n}\n\nbutton:last-child {\n\tborder-right-style: solid;\n\tborder-radius: 0 var(--harmony-radio-shadow-button-border-radius) var(--harmony-radio-shadow-button-border-radius) 0;\n}\n";
 
 class HTMLHarmonyRadioElement extends HTMLElement {
     #doOnce = true;
@@ -2353,7 +2375,7 @@ class HTMLHarmonyRadioElement extends HTMLElement {
     constructor() {
         super();
         this.#shadowRoot = this.attachShadow({ mode: 'closed' });
-        this.#htmlLabel = createElement('div', { class: 'harmony-radio-label' });
+        this.#htmlLabel = createElement('div', { class: 'label' });
         this.#initObserver();
     }
     connectedCallback() {
@@ -2367,8 +2389,8 @@ class HTMLHarmonyRadioElement extends HTMLElement {
         }
     }
     #processChilds() {
-        for (let child of this.children) {
-            this.#initButton(child);
+        while (this.children.length) {
+            this.#initButton(this.children[0]);
         }
     }
     #initButton(htmlButton) {
@@ -2380,12 +2402,14 @@ class HTMLHarmonyRadioElement extends HTMLElement {
         if (this.#selected.has(htmlButton.value) || htmlButton.hasAttribute('selected')) {
             this.select(htmlButton.value, true);
         }
+        this.#shadowRoot.append(htmlButton);
+        I18n.updateElement(htmlButton);
     }
     append(...params) {
         for (const param of params) {
             this.#initButton(param);
-            this.#shadowRoot.append(param);
-            I18n.updateElement(param);
+            //this.#shadowRoot.append(param);
+            //I18n.updateElement(param);
         }
     }
     select(value, select) {
@@ -2467,7 +2491,7 @@ function defineRadio() {
     }
 }
 
-var slideshowCSS = ":host{\n\toverflow: hidden;\n\tdisplay: flex;\n\talign-items: center;\n\tjustify-content: center;\n\tflex-direction: column;\n\tposition: relative;\n}\n.image{\n\tposition: relative;\n\tflex-shrink: 0;\n}\n.images{\n\toverflow: hidden;\n\tflex: 1;\n\twidth: 100%;\n}\n.images-outer{\n\toverflow: hidden;\n\tmargin: auto;\n}\n.images-inner{\n\tdisplay: flex;\n\tposition: relative;\n\twidth: 100%;\n\theight: 100%;\n}\n:host(.dynamic) .images-inner{\n\ttransition: all 0.5s ease 0s;\n}\n\n/* Controls */\n.controls{\n\tposition: absolute;\n\tz-index: 1000;\n\topacity: 0;\n\twidth: 100%;\n\theight: 100%;\n\tdisplay: none;\n}\n:host(.dynamic) .controls{\n\tdisplay: unset;\n}\n\n.controls > div{\n\tposition: absolute;\n\n\tbackground-size: 100%;\n\tbackground-repeat: no-repeat;\n\tbackground-position: center;\n\tpointer-events: all;\n\tcursor: pointer;\n}\n\n.previous-image, .next-image{\n\ttop: calc(50% - 24px);\n\twidth: 48px;\n\theight: 48px;\n\tbackground-image: url(\"data:image/svg+xml,%3C%3Fxml version='1.0'%3F%3E%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath style='fill:%23ffffff;stroke:%23000000;stroke-width:10;' d='M 360,100 300,30 30,256 300,482 360,412 175,256 Z'/%3E%3C/svg%3E%0A\");\n\n}\n.previous-image{\n\tleft: 10px;\n}\n.next-image{\n\tright: 10px;\n\ttransform: scaleX(-1);\n}\n.play, .pause{\n\tbottom: 10px;\n\tleft: 10px;\n\twidth: 25px;\n\theight: 25px;\n}\n.play{\n\tbackground-image: url(\"data:image/svg+xml,%3C%3Fxml version='1.0'%3F%3E%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath style='fill:%23ffffff;stroke:%23000000;stroke-width:40;' d='M20 20 L470 256 L20 492 Z'/%3E%3C/svg%3E%0A\");\n}\n.pause{\n\tright: 0px;\n\tbackground-image: url(\"data:image/svg+xml,%3C%3Fxml version='1.0'%3F%3E%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cg style='fill:%23ffffff;stroke:%23000000;stroke-width:30;'%3E%3Crect width='140' height='452' x='30' y='30' /%3E%3Crect width='140' height='452' x='342' y='30' /%3E%3C/g%3E%3C/svg%3E%0A\");\n}\n\n/* thumbnails */\n.thumbnails{\n\twidth: 100%;\n\t/*background-color: red;*/\n\tflex: 0;\n\tdisplay: flex;\n\tjustify-content: center;\n}\n:host(.dynamic) .thumbnails{\n\tdisplay: none;\n}\n.thumbnails > img{\n\tobject-fit: contain;\n\theight: 80px;\n\tcursor: pointer;\n\tmargin: 3px;\n}\n\n.zoom{\n\tposition: fixed;\n\tpointer-events: none;\n\t/*transform: scale(3);*/\n\twidth: 100%;\n\theight: 100%;\n}\n\n.zoom > img{\n\t/*transform: scale(3);*/\n\twidth: 100%;\n\tposition: relative;\n\twidth: 1500px;\n}\n";
+var slideshowCSS = ":host {\n\toverflow: hidden;\n\tdisplay: flex;\n\talign-items: center;\n\tjustify-content: center;\n\tflex-direction: column;\n\tposition: relative;\n}\n\n.image {\n\tposition: relative;\n\tflex-shrink: 0;\n}\n\n.images {\n\toverflow: hidden;\n\tflex: 1;\n\twidth: 100%;\n}\n\n.images-outer {\n\toverflow: hidden;\n\tmargin: auto;\n}\n\n.images-inner {\n\tdisplay: flex;\n\tposition: relative;\n\twidth: 100%;\n\theight: 100%;\n}\n\n:host(.dynamic) .images-inner {\n\ttransition: all 0.5s ease 0s;\n}\n\n/* Controls */\n.controls {\n\tposition: absolute;\n\tz-index: 1000;\n\topacity: 0;\n\twidth: 100%;\n\theight: 100%;\n\tdisplay: none;\n}\n\n:host(.dynamic) .controls {\n\tdisplay: unset;\n}\n\n.controls>div {\n\tposition: absolute;\n\n\tbackground-size: 100%;\n\tbackground-repeat: no-repeat;\n\tbackground-position: center;\n\tpointer-events: all;\n\tcursor: pointer;\n}\n\n.previous-image,\n.next-image {\n\ttop: calc(50% - 24px);\n\twidth: 48px;\n\theight: 48px;\n\tbackground-image: url(\"data:image/svg+xml,%3C%3Fxml version='1.0'%3F%3E%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath style='fill:%23ffffff;stroke:%23000000;stroke-width:10;' d='M 360,100 300,30 30,256 300,482 360,412 175,256 Z'/%3E%3C/svg%3E%0A\");\n\n}\n\n.previous-image {\n\tleft: 10px;\n}\n\n.next-image {\n\tright: 10px;\n\ttransform: scaleX(-1);\n}\n\n.play,\n.pause {\n\tbottom: 10px;\n\tleft: 10px;\n\twidth: 25px;\n\theight: 25px;\n}\n\n.play {\n\tbackground-image: url(\"data:image/svg+xml,%3C%3Fxml version='1.0'%3F%3E%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath style='fill:%23ffffff;stroke:%23000000;stroke-width:40;' d='M20 20 L470 256 L20 492 Z'/%3E%3C/svg%3E%0A\");\n}\n\n.pause {\n\tright: 0px;\n\tbackground-image: url(\"data:image/svg+xml,%3C%3Fxml version='1.0'%3F%3E%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cg style='fill:%23ffffff;stroke:%23000000;stroke-width:30;'%3E%3Crect width='140' height='452' x='30' y='30' /%3E%3Crect width='140' height='452' x='342' y='30' /%3E%3C/g%3E%3C/svg%3E%0A\");\n}\n\n/* thumbnails */\n.thumbnails {\n\twidth: 100%;\n\t/*background-color: red;*/\n\tflex: 0;\n\tdisplay: flex;\n\tjustify-content: center;\n}\n\n:host(.dynamic) .thumbnails {\n\tdisplay: none;\n}\n\n.thumbnails>img {\n\tobject-fit: contain;\n\theight: 80px;\n\tcursor: pointer;\n\tmargin: 3px;\n}\n\n.zoom {\n\tposition: fixed;\n\tpointer-events: none;\n\t/*transform: scale(3);*/\n\twidth: 100%;\n\theight: 100%;\n}\n\n.zoom>img {\n\t/*transform: scale(3);*/\n\twidth: 100%;\n\tposition: relative;\n\twidth: 1500px;\n}\n";
 
 const resizeCallback = (entries, observer) => {
     entries.forEach(entry => {
@@ -2816,14 +2840,19 @@ function defineSlideshow() {
     }
 }
 
+var selectCSS = "";
+
 class HTMLHarmonySelectElement extends HTMLElement {
     #htmlSelect;
+    #shadowRoot;
     constructor() {
         super();
-        this.#htmlSelect = createElement('select');
+        this.#shadowRoot = this.attachShadow({ mode: 'closed' });
+        this.#htmlSelect = createElement('select', { parent: this.#shadowRoot });
     }
     connectedCallback() {
-        this.append(this.#htmlSelect);
+        shadowRootStyle(this.#shadowRoot, selectCSS);
+        this.#shadowRoot.append(this.#htmlSelect);
     }
     attributeChangedCallback(name, oldValue, newValue) {
         if (name == 'multiple') {
@@ -2911,7 +2940,7 @@ function defineSelect() {
     }
 }
 
-var splitterCSS = ":host{\n\tdisplay: flex;\n\tpointer-events: none;\n\t/*--harmony-color-picker-shadow-gap: var(--harmony-color-picker-gap, 0.5rem);*/\n\t--harmony-splitter-shadow-gutter-thickness: var(--harmony-splitter-gutter-thickness, 0.3rem);\n\t--harmony-splitter-shadow-gutter-bg-color: var(--harmony-splitter-gutter-bg-color, black);\n}\n:host(.vertical){\n\tflex-direction: row;\n}\n:host(.horizontal){\n\tflex-direction: column;\n}\n:host .gutter{\n\tflex: 0 0 var(--harmony-splitter-shadow-gutter-thickness);\n\tpointer-events: all;\n\tbackground-color: var(--harmony-splitter-shadow-gutter-bg-color);\n}\n:host(.vertical) .gutter{\n\tcursor: ew-resize;\n}\n:host(.horizontal) .gutter{\n\tcursor: ns-resize;\n}\n:host .panel{\n\tflex: 0 0 50%;\n\tdisplay: flex;\n\tpointer-events: none;\n}\n";
+var splitterCSS = ":host {\n\tdisplay: flex;\n\tpointer-events: none;\n\t/*--harmony-color-picker-shadow-gap: var(--harmony-color-picker-gap, 0.5rem);*/\n\t--harmony-splitter-shadow-gutter-thickness: var(--harmony-splitter-gutter-thickness, 0.3rem);\n\t--harmony-splitter-shadow-gutter-bg-color: var(--harmony-splitter-gutter-bg-color, black);\n}\n\n:host(.vertical) {\n\tflex-direction: row;\n}\n\n:host(.horizontal) {\n\tflex-direction: column;\n}\n\n:host .gutter {\n\tflex: 0 0 var(--harmony-splitter-shadow-gutter-thickness);\n\tpointer-events: all;\n\tbackground-color: var(--harmony-splitter-shadow-gutter-bg-color);\n}\n\n:host(.vertical) .gutter {\n\tcursor: ew-resize;\n}\n\n:host(.horizontal) .gutter {\n\tcursor: ns-resize;\n}\n\n:host .panel {\n\tflex: 0 0 50%;\n\tdisplay: flex;\n\tpointer-events: none;\n}\n";
 
 class HTMLHarmonySplitterElement extends HTMLElement {
     #shadowRoot;
@@ -3025,7 +3054,7 @@ function defineSplitter() {
     }
 }
 
-var switchCSS = ":host, harmony-switch{\n\t--harmony-switch-shadow-width: var(--harmony-switch-width, 4rem);\n\t--harmony-switch-shadow-height: var(--harmony-switch-height, 2rem);\n\t--harmony-switch-shadow-on-background-color: var(--harmony-switch-on-background-color, #1072eb);\n\t--harmony-switch-shadow-on-background-color-hover: var(--harmony-switch-on-background-color-hover, #1040c1);\n\t--harmony-switch-shadow-slider-width: var(--harmony-switch-slider-width, 1.4rem);\n\t--harmony-switch-shadow-slider-height: var(--harmony-switch-slider-height, 1.4rem);\n\t--harmony-switch-shadow-slider-margin: var(--harmony-switch-slider-margin, 0.3rem);\n\t--harmony-switch-shadow-slider-border-width: var(--harmony-switch-slider-border-width, 0rem);\n\n\tdisplay: inline-flex;\n\tuser-select: none;\n\tcursor: pointer;\n\tjustify-content: space-between;\n}\n.harmony-switch-label{\n\tmargin: auto 0;\n\tfont-weight: bold;\n}\n.harmony-switch-outer{\n\tdisplay: flex;\n\theight: var(--harmony-switch-shadow-height);\n\tborder-radius: calc(var(--harmony-switch-shadow-height) * 0.5);\n\talign-items: center;\n\tmargin-left: 0.25rem;\n\ttransition: background-color 0.25s linear;\n\twidth: var(--harmony-switch-shadow-width);\n}\n\n.harmony-switch-outer{\n\tbackground-color: var(--harmony-ui-input-background-primary);\n}\n.harmony-switch-outer:hover{\n\tbackground-color: var(--harmony-ui-input-background-secondary);\n}\n.harmony-switch-outer.on{\n\tbackground-color: var(--harmony-ui-accent-primary);\n}\n.harmony-switch-outer.on:hover{\n\tbackground-color: var(--harmony-ui-accent-secondary);\n}\n.harmony-switch-inner{\n\tdisplay: inline-block;\n\theight: var(--harmony-switch-shadow-slider-height);\n\twidth: var(--harmony-switch-shadow-slider-width);\n\tborder-radius: calc(var(--harmony-switch-shadow-slider-height) * 0.5);\n\ttransition: all 0.25s;\n\tposition: relative;\n\tleft: var(--harmony-switch-shadow-slider-margin);\n\tborder: var(--harmony-switch-shadow-slider-border-width) solid;\n\tbox-sizing: border-box;\n\tborder-color: var(--harmony-ui-input-border-primary);\n\tbackground-color: var(--harmony-ui-input-background-tertiary);\n}\n.harmony-switch-outer.ternary .harmony-switch-inner{\n\tleft: calc(50% - var(--harmony-switch-shadow-slider-width) * 0.5);\n}\n.harmony-switch-outer.off .harmony-switch-inner{\n\tleft: var(--harmony-switch-shadow-slider-margin);\n}\n.harmony-switch-outer.on .harmony-switch-inner{\n\tleft: calc(100% - var(--harmony-switch-shadow-slider-width) - var(--harmony-switch-shadow-slider-margin));\n}\n.harmony-switch-outer.ternary.off{\n\tbackground-color: red;\n}\n.harmony-switch-outer.ternary.off:hover{\n\tbackground-color: red;\n}\n.harmony-switch-outer.ternary.on{\n\tbackground-color: green;\n}\n.harmony-switch-outer.ternary.on:hover{\n\tbackground-color: green;\n}\n\n";
+var switchCSS = ":host {\n\t--harmony-switch-shadow-width: var(--harmony-switch-width, 4rem);\n\t--harmony-switch-shadow-height: var(--harmony-switch-height, 2rem);\n\t--harmony-switch-shadow-on-background-color: var(--harmony-switch-on-background-color, #1072eb);\n\t--harmony-switch-shadow-on-background-color-hover: var(--harmony-switch-on-background-color-hover, #1040c1);\n\t--harmony-switch-shadow-slider-width: var(--harmony-switch-slider-width, 1.4rem);\n\t--harmony-switch-shadow-slider-height: var(--harmony-switch-slider-height, 1.4rem);\n\t--harmony-switch-shadow-slider-margin: var(--harmony-switch-slider-margin, 0.3rem);\n\t--harmony-switch-shadow-slider-border-width: var(--harmony-switch-slider-border-width, 0rem);\n\n\tdisplay: inline-flex;\n\tuser-select: none;\n\tcursor: pointer;\n\tjustify-content: space-between;\n}\n\n.harmony-switch-label {\n\tmargin: auto 0;\n\tfont-weight: bold;\n}\n\n.harmony-switch-outer {\n\tdisplay: flex;\n\theight: var(--harmony-switch-shadow-height);\n\tborder-radius: calc(var(--harmony-switch-shadow-height) * 0.5);\n\talign-items: center;\n\tmargin-left: 0.25rem;\n\ttransition: background-color 0.25s linear;\n\twidth: var(--harmony-switch-shadow-width);\n}\n\n.harmony-switch-outer {\n\tbackground-color: var(--harmony-ui-input-background-primary);\n}\n\n.harmony-switch-outer:hover {\n\tbackground-color: var(--harmony-ui-input-background-secondary);\n}\n\n.harmony-switch-outer.on {\n\tbackground-color: var(--harmony-ui-accent-primary);\n}\n\n.harmony-switch-outer.on:hover {\n\tbackground-color: var(--harmony-ui-accent-secondary);\n}\n\n.harmony-switch-inner {\n\tdisplay: inline-block;\n\theight: var(--harmony-switch-shadow-slider-height);\n\twidth: var(--harmony-switch-shadow-slider-width);\n\tborder-radius: calc(var(--harmony-switch-shadow-slider-height) * 0.5);\n\ttransition: all 0.25s;\n\tposition: relative;\n\tleft: var(--harmony-switch-shadow-slider-margin);\n\tborder: var(--harmony-switch-shadow-slider-border-width) solid;\n\tbox-sizing: border-box;\n\tborder-color: var(--harmony-ui-input-border-primary);\n\tbackground-color: var(--harmony-ui-input-background-tertiary);\n}\n\n.harmony-switch-outer.ternary .harmony-switch-inner {\n\tleft: calc(50% - var(--harmony-switch-shadow-slider-width) * 0.5);\n}\n\n.harmony-switch-outer.off .harmony-switch-inner {\n\tleft: var(--harmony-switch-shadow-slider-margin);\n}\n\n.harmony-switch-outer.on .harmony-switch-inner {\n\tleft: calc(100% - var(--harmony-switch-shadow-slider-width) - var(--harmony-switch-shadow-slider-margin));\n}\n\n.harmony-switch-outer.ternary.off {\n\tbackground-color: red;\n}\n\n.harmony-switch-outer.ternary.off:hover {\n\tbackground-color: red;\n}\n\n.harmony-switch-outer.ternary.on {\n\tbackground-color: green;\n}\n\n.harmony-switch-outer.ternary.on:hover {\n\tbackground-color: green;\n}\n";
 
 class HTMLHarmonySwitchElement extends HTMLElement {
     #doOnce = true;
@@ -3241,9 +3270,9 @@ function defineTab() {
     }
 }
 
-var tabGroupCSS = ":host, harmony-tab-group{\n\twidth:100%;\n\theight:100%;\n\tdisplay: flex;\n\tflex-direction: column;\n\tposition: relative;\n\toverflow: hidden;\n}\n.harmony-tab-group-header{\n\tbackground-color: var(--main-bg-color-bright);\n\tdisplay: flex;\n\tflex-wrap: wrap;\n\toverflow: hidden;\n\twidth: 100%;\n}\n.harmony-tab-group-content{\n\tflex: 1;\n\tbackground-color: var(--main-bg-color-dark);\n\toverflow: auto;\n\twidth: 100%;\n}\n";
+var tabGroupCSS = ":host,\nharmony-tab-group {\n\twidth: 100%;\n\theight: 100%;\n\tdisplay: flex;\n\tflex-direction: column;\n\tposition: relative;\n\toverflow: hidden;\n}\n\n.harmony-tab-group-header {\n\tbackground-color: var(--main-bg-color-bright);\n\tdisplay: flex;\n\tflex-wrap: wrap;\n\toverflow: hidden;\n\twidth: 100%;\n}\n\n.harmony-tab-group-content {\n\tflex: 1;\n\tbackground-color: var(--main-bg-color-dark);\n\toverflow: auto;\n\twidth: 100%;\n}\n";
 
-var tabCSS = "harmony-tab{\n\tdisplay: block;\n\theight: 100%;\n\toverflow: auto;\n}\nharmony-tab::first-letter{\n\ttext-transform: uppercase;\n}\n.harmony-tab-label{\n\tdisplay: inline-block;\n\tbackground-color: var(--main-bg-color-bright);\n\tpadding: 10px;\n\tborder: 1px solid black;\n\tborder-top:0px;\n\t/*border-right:0px;*/\n\t/*margin-left: -1px;*/\n\tposition: relative;\n\t/*left: 1px;*/\n\tcolor: var(--main-text-color-dark2);\n\tcursor: pointer;\n\tuser-select: none;\n\tpointer-events: all;\n\tflex: 0 0;\n\ttext-align: center;\n\twhite-space: nowrap;\n}\n.harmony-tab-label.activated{\n\tbackground-color: var(--main-bg-color-dark);\n\tborder-bottom: 1px solid var(--main-bg-color-dark);\n\tborder-left: 1px solid white;\n\tz-index: 2;\n}\n";
+var tabCSS = "harmony-tab {\n\tdisplay: block;\n\theight: 100%;\n\toverflow: auto;\n}\n\nharmony-tab::first-letter {\n\ttext-transform: uppercase;\n}\n\n.harmony-tab-label {\n\tdisplay: inline-block;\n\tbackground-color: var(--main-bg-color-bright);\n\tpadding: 10px;\n\tborder: 1px solid black;\n\tborder-top: 0px;\n\t/*border-right:0px;*/\n\t/*margin-left: -1px;*/\n\tposition: relative;\n\t/*left: 1px;*/\n\tcolor: var(--main-text-color-dark2);\n\tcursor: pointer;\n\tuser-select: none;\n\tpointer-events: all;\n\tflex: 0 0;\n\ttext-align: center;\n\twhite-space: nowrap;\n}\n\n.harmony-tab-label.activated {\n\tbackground-color: var(--main-bg-color-dark);\n\tborder-bottom: 1px solid var(--main-bg-color-dark);\n\tborder-left: 1px solid white;\n\tz-index: 2;\n}\n";
 
 class HTMLHarmonyTabGroupElement extends HTMLElement {
     #doOnce = true;
@@ -3314,7 +3343,7 @@ function defineTabGroup() {
     }
 }
 
-var toggleButtonCSS = ":host{\n\tcursor: pointer;\n\theight: 50px;\n\twidth: 50px;\n\tdisplay: inline-block;\n\tposition: relative;\n}\non, off{\n\tposition: absolute;\n\ttop: 0px;\n\tleft: 0px;\n\theight: 100%;\n\twidth: 100%;\n\tbackground-size: 100% auto;\n\tbox-sizing: border-box;\n}\n";
+var toggleButtonCSS = ":host {\n\tcursor: pointer;\n\theight: 50px;\n\twidth: 50px;\n\tdisplay: inline-block;\n\tposition: relative;\n}\n\non,\noff {\n\tposition: absolute;\n\ttop: 0px;\n\tleft: 0px;\n\theight: 100%;\n\twidth: 100%;\n\tbackground-size: 100% auto;\n\tbox-sizing: border-box;\n}\n";
 
 class HTMLHarmonyToggleButtonElement extends HTMLElement {
     #buttonOn;
