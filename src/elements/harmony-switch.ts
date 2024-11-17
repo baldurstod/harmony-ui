@@ -1,9 +1,8 @@
-import { shadowRootStyle } from '../harmony-css.js';
-import { createElement } from '../harmony-html.js';
-import { I18n } from '../harmony-i18n.js';
-
+import { shadowRootStyle } from '../harmony-css';
+import { createElement } from '../harmony-html';
+import { I18n } from '../harmony-i18n';
 import switchCSS from '../css/harmony-switch.css';
-import { toBool } from '../utils/attributes.js';
+import { toBool } from '../utils/attributes';
 
 export class HTMLHarmonySwitchElement extends HTMLElement {
 	#doOnce = true;

@@ -1,9 +1,8 @@
-import { shadowRootStyle } from '../harmony-css.js';
-import { createElement, hide, show } from '../harmony-html.js';
-import { I18n } from '../harmony-i18n.js';
-
+import { shadowRootStyle } from '../harmony-css';
+import { createElement, hide, show } from '../harmony-html';
+import { I18n } from '../harmony-i18n';
 import toggleButtonCSS from '../css/harmony-toggle-button.css';
-import { toBool } from '../utils/attributes.js';
+import { toBool } from '../utils/attributes';
 
 export class HTMLHarmonyToggleButtonElement extends HTMLElement {
 	#buttonOn?: HTMLElement;
