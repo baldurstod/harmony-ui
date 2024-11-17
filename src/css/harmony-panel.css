@@ -1,4 +1,4 @@
-harmony-panel {
+:host {
 	display: flex;
 	flex: 1;
 	flex-direction: column;
@@ -43,7 +43,7 @@ harmony-panel {
 	background-color: red;
 }
 
-harmony-panel>.title {
+.title {
 	cursor: pointer;
 	text-align: center;
 	font-size: 1.5em;
@@ -51,17 +51,17 @@ harmony-panel>.title {
 	overflow: hidden;
 }
 
-harmony-panel>.content {
+.content {
 	width: 100%;
 	box-sizing: border-box;
 }
 
-harmony-panel[collapsible='1']>.title::after {
+[collapsible='1']>.title::after {
 	content: "-";
 	right: 5px;
 	position: absolute;
 }
 
-harmony-panel[collapsed='1']>.title::after {
+[collapsed='1']>.title::after {
 	content: "+";
 }

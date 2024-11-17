@@ -1,5 +1,7 @@
+import { shadowRootStyle } from "../harmony-css";
 import { createElement } from "../harmony-html";
 import { toBool } from "../utils/attributes";
+import panelCSS from '../css/harmony-panel.css';
 
 let dragged = null;
 let nextId = 0;
@@ -20,9 +22,12 @@ export class HTMLHarmonyPanelElement extends HTMLElement {
 	htmlTitle: HTMLElement;
 	htmlContent: HTMLElement;
 	#isDummy = false;
+	#shadowRoot: ShadowRoot;
 
 	constructor() {
 		super();
+		this.#shadowRoot = this.attachShadow({ mode: 'closed' });
+		shadowRootStyle(this.#shadowRoot, panelCSS);
 		//this.addEventListener('dragstart', event => this._handleDragStart(event));
 		//this.addEventListener('dragover', event => this._handleDragOver(event));
 		//this.addEventListener('drop', event => this._handleDrop(event));
@@ -32,11 +37,15 @@ export class HTMLHarmonyPanelElement extends HTMLElement {
 
 		this.htmlTitle = createElement('div', {
 			className: 'title',
+			parent: this.#shadowRoot,
 			events: {
 				click: () => this.#toggleCollapse(),
 			}
-		}) as HTMLElement;
-		this.htmlContent = createElement('div', { className: 'content' }) as HTMLElement;
+		});
+		this.htmlContent = createElement('div', {
+			className: 'content',
+			parent: this.#shadowRoot,
+		});
 	}
 
 	connectedCallback() {
