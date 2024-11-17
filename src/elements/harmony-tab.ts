@@ -99,3 +99,11 @@ export class HTMLHarmonyTabElement extends HTMLElement {
 		return ['data-i18n', 'data-text', 'disabled'];
 	}
 }
+
+let definedTab = false;
+export function defineTab() {
+	if (window.customElements && !definedTab) {
+		customElements.define('harmony-tab', HTMLHarmonyTabElement);
+		definedTab = true;
+	}
+}

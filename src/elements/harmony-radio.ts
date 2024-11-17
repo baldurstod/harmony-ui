@@ -138,3 +138,11 @@ export class HTMLHarmonyRadioElement extends HTMLElement {
 		return ['data-label', 'data-i18n', 'disabled', 'multiple', 'value'];
 	}
 }
+
+let definedRadio = false;
+export function defineRadio() {
+	if (window.customElements && !definedRadio) {
+		customElements.define('harmony-radio', HTMLHarmonyRadioElement);
+		definedRadio = true;
+	}
+}

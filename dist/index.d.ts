@@ -32,7 +32,41 @@ export declare function createElementNS(namespaceURI: string, tagName: string, o
 
 export declare function createShadowRoot(tagName: string, options?: any, mode?: 'open' | 'closed'): ShadowRoot;
 
-export declare function defineHarmonyTooltip(): void;
+export declare function define2dManipulator(): void;
+
+export declare function defineAccordion(): void;
+
+export declare function defineColorPicker(): void;
+
+export declare function defineContextMenu(): void;
+
+export declare function defineCopy(): void;
+
+export declare function defineFileInput(): void;
+
+export declare function defineLabelProperty(): void;
+
+export declare function definePalette(): void;
+
+export declare function definePanel(): void;
+
+export declare function defineRadio(): void;
+
+export declare function defineSelect(): void;
+
+export declare function defineSlideshow(): void;
+
+export declare function defineSplitter(): void;
+
+export declare function defineSwitch(): void;
+
+export declare function defineTab(): void;
+
+export declare function defineTabGroup(): void;
+
+export declare function defineToggleButton(): void;
+
+export declare function defineTooltip(): void;
 
 export declare function display(htmlElement: HTMLElement | undefined, visible: boolean): void;
 

@@ -25,3 +25,11 @@ export class HTMLHarmonyLabelPropertyElement extends HTMLElement {
 		}
 	}
 }
+
+let definedLabelProperty = false;
+export function defineLabelProperty() {
+	if (window.customElements && !definedLabelProperty) {
+		customElements.define('harmony-label-property', HTMLHarmonyLabelPropertyElement);
+		definedLabelProperty = true;
+	}
+}

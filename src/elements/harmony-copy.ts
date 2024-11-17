@@ -31,3 +31,11 @@ export class HTMLHarmonyCopyElement extends HTMLElement {
 		}
 	}
 }
+
+let definedCopy = false;
+export function defineCopy() {
+	if (window.customElements && !definedCopy) {
+		customElements.define('harmony-copy', HTMLHarmonyCopyElement);
+		definedCopy = true;
+	}
+}

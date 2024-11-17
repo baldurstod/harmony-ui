@@ -182,3 +182,11 @@ export class HTMLHarmonyContextMenuElement extends HTMLElement {
 		return htmlItem;
 	}
 }
+
+let definedContextMenu = false;
+export function defineContextMenu() {
+	if (window.customElements && !definedContextMenu) {
+		customElements.define('harmony-context-menu', HTMLHarmonyContextMenuElement);
+		definedContextMenu = true;
+	}
+}

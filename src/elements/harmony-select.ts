@@ -99,3 +99,11 @@ export class HTMLHarmonySelectElement extends HTMLElement {
 		return ['multiple'];
 	}
 }
+
+let definedSelect = false;
+export function defineSelect() {
+	if (window.customElements && !definedSelect) {
+		customElements.define('harmony-select', HTMLHarmonySelectElement);
+		definedSelect = true;
+	}
+}

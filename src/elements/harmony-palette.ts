@@ -180,3 +180,11 @@ export class HTMLHarmonyPaletteElement extends HTMLElement {
 		return ['multiple'];
 	}
 }
+
+let definedPalette = false;
+export function definePalette() {
+	if (window.customElements && !definedPalette) {
+		customElements.define('harmony-palette', HTMLHarmonyPaletteElement);
+		definedPalette = true;
+	}
+}

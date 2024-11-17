@@ -119,3 +119,11 @@ export class HTMLHarmonySplitterElement extends HTMLElement {
 		return ['orientation'];
 	}
 }
+
+let definedSplitter = false;
+export function defineSplitter() {
+	if (window.customElements && !definedSplitter) {
+		customElements.define('harmony-splitter', HTMLHarmonySplitterElement);
+		definedSplitter = true;
+	}
+}

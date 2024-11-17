@@ -126,3 +126,11 @@ export class HTMLHarmonySwitchElement extends HTMLElement {
 		return ['data-label', 'data-i18n', 'disabled', 'ternary'];
 	}
 }
+
+let definedSwitch = false;
+export function defineSwitch() {
+	if (window.customElements && !definedSwitch) {
+		customElements.define('harmony-switch', HTMLHarmonySwitchElement);
+		definedSwitch = true;
+	}
+}

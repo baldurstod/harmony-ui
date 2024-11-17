@@ -129,3 +129,11 @@ export class HTMLHarmonyToggleButtonElement extends HTMLElement {
 		return ['data-i18n-on', 'data-i18n-off', 'state', 'src-on', 'src-off'];
 	}
 }
+
+let definedToggleButton = false;
+export function defineToggleButton() {
+	if (window.customElements && !definedToggleButton) {
+		customElements.define('harmony-toggle-button', HTMLHarmonyToggleButtonElement);
+		definedToggleButton = true;
+	}
+}

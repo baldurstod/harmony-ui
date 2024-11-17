@@ -400,3 +400,11 @@ export class HTMLHarmonySlideshowElement extends HTMLElement {
 		return ['dynamic'];
 	}
 }
+
+let definedSlideshow = false;
+export function defineSlideshow() {
+	if (window.customElements && !definedSlideshow) {
+		customElements.define('harmony-slideshow', HTMLHarmonySlideshowElement);
+		definedSlideshow = true;
+	}
+}

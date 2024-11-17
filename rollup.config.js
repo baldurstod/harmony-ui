@@ -37,7 +37,7 @@ export const InjectUiStyle = (function () {
 
 	fs.writeFile(`./dist/define/${isBrowser ? 'browser/' : ''}.inject-ui-style.js`, Buffer.from(fileContent), async (err) => { if (err) throw err });
 }
-
+/*
 async function writeDefines(isBrowser = false) {
 	let fileContent = `import { styleInject } from '${isBrowser ? '../../harmony-ui.browser.js' : '../index.js'}';`;
 	for (const element of elements) {
@@ -59,20 +59,20 @@ ${element.injectCSS ? `		styleInject(\`${css}\`);` : ''}
 	}
 
 	fs.writeFile(`./dist/define/${isBrowser ? 'browser/' : ''}defines.js`, Buffer.from(fileContent), async (err) => { if (err) throw err });
-}
+}*/
 
-fs.mkdirSync('./dist/define/', { recursive: true });
-fs.mkdirSync('./dist/define/browser/', { recursive: true });
+//fs.mkdirSync('./dist/define/', { recursive: true });
+//fs.mkdirSync('./dist/define/browser/', { recursive: true });
 
-writeElements(false);
-writeElements(true);
+//writeElements(false);
+//writeElements(true);
 
 function writeElements(isBrowser) {
 	for (const element of elements) {
 		writeElement(element.name, element.class, element.injectCSS, isBrowser);
 	}
 	writeGlobal(isBrowser);
-	writeDefines(isBrowser);
+	//writeDefines(isBrowser);
 }
 
 export default [

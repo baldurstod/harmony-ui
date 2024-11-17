@@ -40,10 +40,10 @@ export class HTMLHarmonyTooltipElement extends HTMLElement {
 	}
 }
 
-let definedHarmonyTooltip = false;
-export function defineHarmonyTooltip() {
-	if (window.customElements && !definedHarmonyTooltip) {
+let definedTooltip = false;
+export function defineTooltip() {
+	if (window.customElements && !definedTooltip) {
 		customElements.define('harmony-tooltip', HTMLHarmonyTooltipElement);
-		definedHarmonyTooltip = true;
+		definedTooltip = true;
 	}
 }

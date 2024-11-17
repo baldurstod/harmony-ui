@@ -652,3 +652,11 @@ export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 		this.#pp_y = p0_x * sin_t + p0_y * cos_t - this.#c0_x * sin_t - this.#c0_y * cos_t + this.#c0_y;
 	}
 }
+
+let defined2dManipulator = false;
+export function define2dManipulator() {
+	if (window.customElements && !defined2dManipulator) {
+		customElements.define('harmony-2d-manipulator', HTMLHarmony2dManipulatorElement);
+		defined2dManipulator = true;
+	}
+}

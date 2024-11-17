@@ -139,3 +139,11 @@ export class HTMLHarmonyAccordionElement extends HTMLElement {
 		return ['multiple'];
 	}
 }
+
+let definedAccordion = false;
+export function defineAccordion() {
+	if (window.customElements && !definedAccordion) {
+		customElements.define('harmony-accordion', HTMLHarmonyAccordionElement);
+		definedAccordion = true;
+	}
+}

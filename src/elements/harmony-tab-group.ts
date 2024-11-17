@@ -73,3 +73,11 @@ export class HTMLHarmonyTabGroupElement extends HTMLElement {
 		this.#content.innerHTML = '';
 	}
 }
+
+let definedTabGroup = false;
+export function defineTabGroup() {
+	if (window.customElements && !definedTabGroup) {
+		customElements.define('harmony-tab-group', HTMLHarmonyTabGroupElement);
+		definedTabGroup = true;
+	}
+}

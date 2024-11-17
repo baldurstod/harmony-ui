@@ -899,6 +899,13 @@ class HTMLHarmony2dManipulatorElement extends HTMLElement {
         this.#pp_y = p0_x * sin_t + p0_y * cos_t - this.#c0_x * sin_t - this.#c0_y * cos_t + this.#c0_y;
     }
 }
+let defined2dManipulator = false;
+function define2dManipulator() {
+    if (window.customElements && !defined2dManipulator) {
+        customElements.define('harmony-2d-manipulator', HTMLHarmony2dManipulatorElement);
+        defined2dManipulator = true;
+    }
+}
 
 class HTMLHarmonyAccordionElement extends HTMLElement {
     #doOnce = true;
@@ -1016,6 +1023,13 @@ class HTMLHarmonyAccordionElement extends HTMLElement {
     }
     static get observedAttributes() {
         return ['multiple'];
+    }
+}
+let definedAccordion = false;
+function defineAccordion() {
+    if (window.customElements && !definedAccordion) {
+        customElements.define('harmony-accordion', HTMLHarmonyAccordionElement);
+        definedAccordion = true;
     }
 }
 
@@ -1354,6 +1368,13 @@ class HTMLHarmonyColorPickerElement extends HTMLElement {
         }
     }
 }
+let definedColorPicker = false;
+function defineColorPicker() {
+    if (window.customElements && !definedColorPicker) {
+        customElements.define('harmony-color-picker', HTMLHarmonyColorPickerElement);
+        definedColorPicker = true;
+    }
+}
 
 var contextMenuCSS = ":host{\n\tposition: absolute;\n\tfont-size: 1.5em;\n\tcursor: not-allowed;\n\tbackground-color: green;\n\tbackground-color: var(--theme-context-menu-bg-color);\n\toverflow: auto;\n\tz-index: 100000;\n}\n\n.harmony-context-menu-item{\n\tbackground-color: green;\n\tcursor: pointer;\n\tbackground-color: var(--theme-context-menu-item-bg-color);\n}\n\n.harmony-context-menu-item.disabled{\n\tpointer-events: none;\n}\n\n.harmony-context-menu-item.selected{\n\tbackground-color: blue;\n\tbackground-color: var(--theme-context-menu-item-selected-bg-color);\n}\n\n\n.harmony-context-menu-item.separator{\n\theight: 5px;\n\tbackground-color: black;\n}\n.harmony-context-menu-item>.harmony-context-menu-item-title:hover{\n\tbackground-color: var(--theme-context-menu-item-hover-bg-color);\n}\n\n.harmony-context-menu-item.selected>.harmony-context-menu-item-title::after{\n\tcontent: \"✔\";\n\tright: 0px;\n\tposition: absolute;\n}\n.harmony-context-menu-item>.harmony-context-menu-item-title::after{\n\ttransition: all 0.2s ease 0s;\n\twidth: 32px;\n\theight: 32px;\n}\n.harmony-context-menu-item.closed>.harmony-context-menu-item-title, .harmony-context-menu-item.opened>.harmony-context-menu-item-title{\n\tpadding-right: 32px;\n}\n.harmony-context-menu-item.closed>.harmony-context-menu-item-title::after{\n\tcontent: \"➤\";\n\tright: 0px;\n\tposition: absolute;\n}\n.harmony-context-menu-item.opened>.harmony-context-menu-item-title::after{\n\tcontent: \"➤\";\n\tright: 0px;\n\tposition: absolute;\n\t/*writing-mode: vertical-rl; */\n\ttransform: rotate(90deg);\n}\n\n.harmony-context-menu-item .submenu{\n\tbackground-color: var(--theme-context-menu-submenu-bg-color);\n\tpadding-left: 10px;\n\tmargin-left: 2px;\n\tdisplay: none;\n\toverflow: hidden;\n\tposition: relative;\n\tbackground-color: var(--theme-context-menu-submenu-fg-color);\n}\n\n.harmony-context-menu-item.opened>.submenu{\n\tdisplay: block;\n}\n";
 
@@ -1513,6 +1534,13 @@ class HTMLHarmonyContextMenuElement extends HTMLElement {
         return htmlItem;
     }
 }
+let definedContextMenu = false;
+function defineContextMenu() {
+    if (window.customElements && !definedContextMenu) {
+        customElements.define('harmony-context-menu', HTMLHarmonyContextMenuElement);
+        definedContextMenu = true;
+    }
+}
 
 class HTMLHarmonyCopyElement extends HTMLElement {
     #doOnce = true;
@@ -1541,6 +1569,13 @@ class HTMLHarmonyCopyElement extends HTMLElement {
         catch (e) {
             console.log(e);
         }
+    }
+}
+let definedCopy = false;
+function defineCopy() {
+    if (window.customElements && !definedCopy) {
+        customElements.define('harmony-copy', HTMLHarmonyCopyElement);
+        definedCopy = true;
     }
 }
 
@@ -1581,11 +1616,11 @@ class HTMLHarmonyTooltipElement extends HTMLElement {
         return ['data-label', 'data-i18n', 'data-position'];
     }
 }
-let definedHarmonyTooltip = false;
-function defineHarmonyTooltip() {
-    if (window.customElements && !definedHarmonyTooltip) {
+let definedTooltip = false;
+function defineTooltip() {
+    if (window.customElements && !definedTooltip) {
         customElements.define('harmony-tooltip', HTMLHarmonyTooltipElement);
-        definedHarmonyTooltip = true;
+        definedTooltip = true;
     }
 }
 
@@ -1600,7 +1635,7 @@ class HTMLHarmonyFileInputElement extends HTMLElement {
         this.#shadowRoot = this.attachShadow({ mode: 'closed' });
         shadowRootStyle(this.#shadowRoot, fileInputCSS);
         I18n.observeElement(this.#shadowRoot);
-        defineHarmonyTooltip();
+        defineTooltip();
         createElement('label', {
             parent: this.#shadowRoot,
             childs: [
@@ -1676,6 +1711,13 @@ class HTMLHarmonyFileInputElement extends HTMLElement {
         return ['data-label', 'data-i18n', 'data-accept', 'data-tooltip-i18n'];
     }
 }
+let definedFileInput = false;
+function defineFileInput() {
+    if (window.customElements && !definedFileInput) {
+        customElements.define('harmony-file-input', HTMLHarmonyFileInputElement);
+        definedFileInput = true;
+    }
+}
 
 class HTMLHarmonyLabelPropertyElement extends HTMLElement {
     #doOnce = false;
@@ -1697,6 +1739,13 @@ class HTMLHarmonyLabelPropertyElement extends HTMLElement {
             this.#doOnce = true;
             this.append(this.#htmlLabel, this.#htmlProperty);
         }
+    }
+}
+let definedLabelProperty = false;
+function defineLabelProperty() {
+    if (window.customElements && !definedLabelProperty) {
+        customElements.define('harmony-label-property', HTMLHarmonyLabelPropertyElement);
+        definedLabelProperty = true;
     }
 }
 
@@ -1855,6 +1904,13 @@ class HTMLHarmonyPaletteElement extends HTMLElement {
     }
     static get observedAttributes() {
         return ['multiple'];
+    }
+}
+let definedPalette = false;
+function definePalette() {
+    if (window.customElements && !definedPalette) {
+        customElements.define('harmony-palette', HTMLHarmonyPaletteElement);
+        definedPalette = true;
     }
 }
 
@@ -2274,6 +2330,13 @@ class HTMLHarmonyPanelElement extends HTMLElement {
         }*/
     }
 }
+let definedPanel = false;
+function definePanel() {
+    if (window.customElements && !definedPanel) {
+        customElements.define('harmony-panel', HTMLHarmonyPanelElement);
+        definedPanel = true;
+    }
+}
 
 var radioCSS = ":host{\n\t--harmony-radio-shadow-button-border-radius: var(--harmony-radio-button-border-radius, 0.5rem);\n\t--harmony-radio-shadow-button-padding: var(--harmony-radio-button-padding, 0.5rem);\n\t--harmony-radio-shadow-button-font-size: var(--harmony-radio-button-font-size, 1rem);\n\t--harmony-radio-shadow-button-flex: var(--harmony-radio-button-flex, auto);\n\tdisplay: inline-flex;\n\toverflow: hidden;\n\tuser-select: none;\n}\n.harmony-radio-label{\n\tmargin: auto 0;\n\tfont-weight: bold;\n\tmargin-right: 0.25rem;\n}\nbutton{\n\tpadding: var(--harmony-radio-shadow-button-padding);\n\tcolor: var(--harmony-ui-text-primary);\n\tflex: var(--harmony-radio-shadow-button-flex);\n\tcursor: pointer;\n\tappearance: none;\n\tborder-style: solid;\n\tborder-width: 0.0625rem;\n\tborder-color: var(--harmony-ui-border-primary);\n\tborder-right-style: none;\n\tbackground-color: var(--harmony-ui-input-background-primary);\n\ttransition: background-color 0.2s linear;\n\tfont-size: var(--harmony-radio-shadow-button-font-size);\n\toverflow: hidden;\n}\nbutton:hover{\n\tbackground-color: var(--harmony-ui-input-background-secondary);\n}\nbutton[selected]{\n\tbackground-color: var(--harmony-ui-accent-primary);\n}\nbutton[selected]:hover{\n\tbackground-color: var(--harmony-ui-accent-secondary);\n}\nbutton:first-of-type{\n\tborder-radius: var(--harmony-radio-shadow-button-border-radius) 0 0 var(--harmony-radio-shadow-button-border-radius);\n}\nbutton:last-child{\n\tborder-right-style: solid;\n\tborder-radius: 0 var(--harmony-radio-shadow-button-border-radius) var(--harmony-radio-shadow-button-border-radius) 0;\n}\n";
 
@@ -2394,6 +2457,13 @@ class HTMLHarmonyRadioElement extends HTMLElement {
     }
     static get observedAttributes() {
         return ['data-label', 'data-i18n', 'disabled', 'multiple', 'value'];
+    }
+}
+let definedRadio = false;
+function defineRadio() {
+    if (window.customElements && !definedRadio) {
+        customElements.define('harmony-radio', HTMLHarmonyRadioElement);
+        definedRadio = true;
     }
 }
 
@@ -2738,6 +2808,13 @@ class HTMLHarmonySlideshowElement extends HTMLElement {
         return ['dynamic'];
     }
 }
+let definedSlideshow = false;
+function defineSlideshow() {
+    if (window.customElements && !definedSlideshow) {
+        customElements.define('harmony-slideshow', HTMLHarmonySlideshowElement);
+        definedSlideshow = true;
+    }
+}
 
 class HTMLHarmonySelectElement extends HTMLElement {
     #htmlSelect;
@@ -2824,6 +2901,13 @@ class HTMLHarmonySelectElement extends HTMLElement {
     }
     static get observedAttributes() {
         return ['multiple'];
+    }
+}
+let definedSelect = false;
+function defineSelect() {
+    if (window.customElements && !definedSelect) {
+        customElements.define('harmony-select', HTMLHarmonySelectElement);
+        definedSelect = true;
     }
 }
 
@@ -2931,6 +3015,13 @@ class HTMLHarmonySplitterElement extends HTMLElement {
     }
     static get observedAttributes() {
         return ['orientation'];
+    }
+}
+let definedSplitter = false;
+function defineSplitter() {
+    if (window.customElements && !definedSplitter) {
+        customElements.define('harmony-splitter', HTMLHarmonySplitterElement);
+        definedSplitter = true;
     }
 }
 
@@ -3047,6 +3138,13 @@ class HTMLHarmonySwitchElement extends HTMLElement {
         return ['data-label', 'data-i18n', 'disabled', 'ternary'];
     }
 }
+let definedSwitch = false;
+function defineSwitch() {
+    if (window.customElements && !definedSwitch) {
+        customElements.define('harmony-switch', HTMLHarmonySwitchElement);
+        definedSwitch = true;
+    }
+}
 
 class HTMLHarmonyTabElement extends HTMLElement {
     #disabled = false;
@@ -3135,6 +3233,13 @@ class HTMLHarmonyTabElement extends HTMLElement {
         return ['data-i18n', 'data-text', 'disabled'];
     }
 }
+let definedTab = false;
+function defineTab() {
+    if (window.customElements && !definedTab) {
+        customElements.define('harmony-tab', HTMLHarmonyTabElement);
+        definedTab = true;
+    }
+}
 
 var tabGroupCSS = ":host, harmony-tab-group{\n\twidth:100%;\n\theight:100%;\n\tdisplay: flex;\n\tflex-direction: column;\n\tposition: relative;\n\toverflow: hidden;\n}\n.harmony-tab-group-header{\n\tbackground-color: var(--main-bg-color-bright);\n\tdisplay: flex;\n\tflex-wrap: wrap;\n\toverflow: hidden;\n\twidth: 100%;\n}\n.harmony-tab-group-content{\n\tflex: 1;\n\tbackground-color: var(--main-bg-color-dark);\n\toverflow: auto;\n\twidth: 100%;\n}\n";
 
@@ -3199,6 +3304,13 @@ class HTMLHarmonyTabGroupElement extends HTMLElement {
         this.#activeTab = undefined;
         this.#header.innerHTML = '';
         this.#content.innerHTML = '';
+    }
+}
+let definedTabGroup = false;
+function defineTabGroup() {
+    if (window.customElements && !definedTabGroup) {
+        customElements.define('harmony-tab-group', HTMLHarmonyTabGroupElement);
+        definedTabGroup = true;
     }
 }
 
@@ -3315,5 +3427,12 @@ class HTMLHarmonyToggleButtonElement extends HTMLElement {
         return ['data-i18n-on', 'data-i18n-off', 'state', 'src-on', 'src-off'];
     }
 }
+let definedToggleButton = false;
+function defineToggleButton() {
+    if (window.customElements && !definedToggleButton) {
+        customElements.define('harmony-toggle-button', HTMLHarmonyToggleButtonElement);
+        definedToggleButton = true;
+    }
+}
 
-export { HTMLHarmony2dManipulatorElement, HTMLHarmonyAccordionElement, HTMLHarmonyColorPickerElement, HTMLHarmonyContextMenuElement, HTMLHarmonyCopyElement, HTMLHarmonyFileInputElement, HTMLHarmonyLabelPropertyElement, HTMLHarmonyPaletteElement, HTMLHarmonyPanelElement, HTMLHarmonyRadioElement, HTMLHarmonySelectElement, HTMLHarmonySlideshowElement, HTMLHarmonySplitterElement, HTMLHarmonySwitchElement, HTMLHarmonyTabElement, HTMLHarmonyTabGroupElement, HTMLHarmonyToggleButtonElement, HTMLHarmonyTooltipElement, I18n, ManipulatorCorner, ManipulatorDirection, ManipulatorSide, cloneEvent, createElement, createElementNS, createShadowRoot, defineHarmonyTooltip, display, documentStyle, documentStyleSync, hide, isVisible, shadowRootStyle, shadowRootStyleSync, show, styleInject, toggle, updateElement, visible };
+export { HTMLHarmony2dManipulatorElement, HTMLHarmonyAccordionElement, HTMLHarmonyColorPickerElement, HTMLHarmonyContextMenuElement, HTMLHarmonyCopyElement, HTMLHarmonyFileInputElement, HTMLHarmonyLabelPropertyElement, HTMLHarmonyPaletteElement, HTMLHarmonyPanelElement, HTMLHarmonyRadioElement, HTMLHarmonySelectElement, HTMLHarmonySlideshowElement, HTMLHarmonySplitterElement, HTMLHarmonySwitchElement, HTMLHarmonyTabElement, HTMLHarmonyTabGroupElement, HTMLHarmonyToggleButtonElement, HTMLHarmonyTooltipElement, I18n, ManipulatorCorner, ManipulatorDirection, ManipulatorSide, cloneEvent, createElement, createElementNS, createShadowRoot, define2dManipulator, defineAccordion, defineColorPicker, defineContextMenu, defineCopy, defineFileInput, defineLabelProperty, definePalette, definePanel, defineRadio, defineSelect, defineSlideshow, defineSplitter, defineSwitch, defineTab, defineTabGroup, defineToggleButton, defineTooltip, display, documentStyle, documentStyleSync, hide, isVisible, shadowRootStyle, shadowRootStyleSync, show, styleInject, toggle, updateElement, visible };

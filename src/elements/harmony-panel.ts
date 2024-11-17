@@ -437,3 +437,11 @@ export class HTMLHarmonyPanelElement extends HTMLElement {
 		}*/
 	}
 }
+
+let definedPanel = false;
+export function definePanel() {
+	if (window.customElements && !definedPanel) {
+		customElements.define('harmony-panel', HTMLHarmonyPanelElement);
+		definedPanel = true;
+	}
+}
