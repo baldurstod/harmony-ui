@@ -1,5 +1,7 @@
-import { createElement } from '../harmony-html.js';
-import { toBool } from '../utils/attributes.js';
+import { createElement } from '../harmony-html';
+import { toBool } from '../utils/attributes';
+import accordionCSS from '../css/harmony-accordion.css';
+import { shadowRootStyle } from '../harmony-css';
 
 export class HTMLHarmonyAccordionElement extends HTMLElement {
 	#doOnce = true;
@@ -7,9 +9,12 @@ export class HTMLHarmonyAccordionElement extends HTMLElement {
 	#disabled = false;
 	#items = new Map();
 	#selected = new Set<HTMLElement>();
+	#shadowRoot: ShadowRoot;
 
 	constructor() {
 		super();
+		this.#shadowRoot = this.attachShadow({ mode: 'closed' });
+		shadowRootStyle(this.#shadowRoot, accordionCSS);
 		this.#initMutationObserver();
 	}
 
@@ -55,7 +60,7 @@ export class HTMLHarmonyAccordionElement extends HTMLElement {
 
 	createItem(header: HTMLElement, content: HTMLElement) {
 		let item = createElement('item', { childs: [header, content] });
-		this.append(item);
+		this.#shadowRoot.append(item);
 		return item;
 	}
 
@@ -64,7 +69,7 @@ export class HTMLHarmonyAccordionElement extends HTMLElement {
 		for (let [header, content] of this.#items) {
 			let htmlItem = createElement('div', { class: 'item' });
 			htmlItem.append(header, content);
-			this.append(htmlItem);
+			this.#shadowRoot.append(htmlItem);
 		}
 	}
 
