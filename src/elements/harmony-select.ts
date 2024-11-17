@@ -1,14 +1,19 @@
-import { createElement, hide, show } from '../harmony-html.js';
+import { shadowRootStyle } from '../harmony-css';
+import { createElement } from '../harmony-html';
+import selectCSS from '../css/harmony-select.css';
 
 export class HTMLHarmonySelectElement extends HTMLElement {
 	#htmlSelect: HTMLElement;
+	#shadowRoot: ShadowRoot;
 	constructor() {
 		super();
-		this.#htmlSelect = createElement('select') as HTMLElement;
+		this.#shadowRoot = this.attachShadow({ mode: 'closed' });
+		this.#htmlSelect = createElement('select', { parent: this.#shadowRoot });
 	}
 
 	connectedCallback() {
-		this.append(this.#htmlSelect);
+		shadowRootStyle(this.#shadowRoot, selectCSS);
+		this.#shadowRoot.append(this.#htmlSelect);
 	}
 
 	attributeChangedCallback(name: string, oldValue: string, newValue: string) {
