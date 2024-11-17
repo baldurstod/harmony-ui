@@ -1,5 +1,5 @@
 import { shadowRootStyle } from '../harmony-css.js';
-import { createElement, hide, show, display } from '../harmony-html.js';
+import { createElement, hide, show } from '../harmony-html.js';
 import { I18n } from '../harmony-i18n.js';
 
 import radioCSS from '../css/harmony-radio.css';
@@ -18,7 +18,7 @@ export class HTMLHarmonyRadioElement extends HTMLElement {
 	constructor() {
 		super();
 		this.#shadowRoot = this.attachShadow({ mode: 'closed' });
-		this.#htmlLabel = createElement('div', { class: 'harmony-radio-label' }) as HTMLElement;
+		this.#htmlLabel = createElement('div', { class: 'label' });
 		this.#initObserver();
 	}
 
@@ -34,12 +34,12 @@ export class HTMLHarmonyRadioElement extends HTMLElement {
 	}
 
 	#processChilds() {
-		for (let child of this.children) {
-			this.#initButton(child);
+		while (this.children.length) {
+			this.#initButton(this.children[0] as HTMLButtonElement);
 		}
 	}
 
-	#initButton(htmlButton: any) {
+	#initButton(htmlButton: HTMLButtonElement): void {
 		this.#buttons.set(htmlButton.value, htmlButton);
 		if (!this.#buttons2.has(htmlButton)) {
 			htmlButton.addEventListener('click', () => this.select(htmlButton.value, !this.#multiple || !htmlButton.hasAttribute('selected')));
@@ -49,13 +49,15 @@ export class HTMLHarmonyRadioElement extends HTMLElement {
 		if (this.#selected.has(htmlButton.value) || htmlButton.hasAttribute('selected')) {
 			this.select(htmlButton.value, true);
 		}
+		this.#shadowRoot.append(htmlButton);
+		I18n.updateElement(htmlButton);
 	}
 
 	append(...params: Array<any>) {
 		for (const param of params) {
 			this.#initButton(param);
-			this.#shadowRoot.append(param);
-			I18n.updateElement(param);
+			//this.#shadowRoot.append(param);
+			//I18n.updateElement(param);
 		}
 	}
 
@@ -100,7 +102,7 @@ export class HTMLHarmonyRadioElement extends HTMLElement {
 				let addedNodes = mutation.addedNodes;
 				for (let addedNode of addedNodes) {
 					if (addedNode.parentNode == this) {
-						this.#initButton(addedNode);
+						this.#initButton(addedNode as HTMLButtonElement);
 					}
 				}
 			}

@@ -3,7 +3,6 @@
 
 <head>
 	<title>Test radio</title>
-	<script type="module" src="../dist/define/browser/harmony-radio.js"></script>
 	<link rel="stylesheet" type="text/css" href="./assets/css/examples.css" />
 </head>
 
@@ -22,7 +21,8 @@
 	</harmony-radio>
 </body>
 <script type="module">
-	import { createElement } from '../dist/harmony-ui.browser.js';
+	import { createElement, defineRadio } from '../dist/harmony-ui.browser.js';
+	defineRadio();
 	function resolveAfterDelay(delay) {
 		return new Promise(resolve => setTimeout(() => resolve(), delay));
 	}
