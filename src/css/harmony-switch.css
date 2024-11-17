@@ -1,5 +1,4 @@
-:host,
-harmony-switch {
+:host {
 	--harmony-switch-shadow-width: var(--harmony-switch-width, 4rem);
 	--harmony-switch-shadow-height: var(--harmony-switch-height, 2rem);
 	--harmony-switch-shadow-on-background-color: var(--harmony-switch-on-background-color, #1072eb);
