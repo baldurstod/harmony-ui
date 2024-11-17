@@ -1,5 +1,6 @@
 import { createElement, hide, show, display } from '../harmony-html';
 import { toBool } from '../utils/attributes';
+import { injectGlobalCss } from '../utils/globalcss';
 import { HTMLHarmonyTabGroupElement } from './harmony-tab-group';
 
 export class HTMLHarmonyTabElement extends HTMLElement {
@@ -105,5 +106,6 @@ export function defineHarmonyTab() {
 	if (window.customElements && !definedTab) {
 		customElements.define('harmony-tab', HTMLHarmonyTabElement);
 		definedTab = true;
+		injectGlobalCss();
 	}
 }

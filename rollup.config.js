@@ -69,7 +69,7 @@ ${element.injectCSS ? `		styleInject(\`${css}\`);` : ''}
 
 function writeElements(isBrowser) {
 	for (const element of elements) {
-		writeElement(element.name, element.class, element.injectCSS, isBrowser);
+		writeElement(element.name, element.class, false, isBrowser);
 	}
 	writeGlobal(isBrowser);
 	//writeDefines(isBrowser);

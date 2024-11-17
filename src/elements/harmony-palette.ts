@@ -5,6 +5,7 @@ import { createElement } from '../harmony-html';
 import paletteCSS from '../css/harmony-palette.css';
 import { Color } from '../utils/color';
 import { toBool } from '../utils/attributes';
+import { injectGlobalCss } from '../utils/globalcss';
 
 function clampColor(val: number) {
 	return Math.min(Math.max(0, val), 1);
@@ -186,5 +187,6 @@ export function defineHarmonyPalette() {
 	if (window.customElements && !definedPalette) {
 		customElements.define('harmony-palette', HTMLHarmonyPaletteElement);
 		definedPalette = true;
+		injectGlobalCss();
 	}
 }

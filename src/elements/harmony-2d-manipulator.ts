@@ -2,6 +2,7 @@ import { createElement, hide, show, display } from '../harmony-html';
 import manipulator2dCSS from '../css/harmony-2d-manipulator.css';
 import { toBool } from '../utils/attributes';
 import { shadowRootStyle } from '../harmony-css';
+import { injectGlobalCss } from '../utils/globalcss';
 
 interface ResizeMatrix {
 	a: 0 | 1;
@@ -658,5 +659,6 @@ export function defineHarmony2dManipulator() {
 	if (window.customElements && !defined2dManipulator) {
 		customElements.define('harmony-2d-manipulator', HTMLHarmony2dManipulatorElement);
 		defined2dManipulator = true;
+		injectGlobalCss();
 	}
 }

@@ -3,6 +3,7 @@ import { createElement } from '../harmony-html';
 import { Color } from '../utils/color';
 
 import colorPickerCSS from '../css/harmony-color-picker.css';
+import { injectGlobalCss } from '../utils/globalcss';
 
 export class HTMLHarmonyColorPickerElement extends HTMLElement {
 	#doOnce = true;
@@ -233,5 +234,6 @@ export function defineHarmonyColorPicker() {
 	if (window.customElements && !definedColorPicker) {
 		customElements.define('harmony-color-picker', HTMLHarmonyColorPickerElement);
 		definedColorPicker = true;
+		injectGlobalCss();
 	}
 }

@@ -2,6 +2,7 @@ import { shadowRootStyle } from '../harmony-css';
 import { createElement } from '../harmony-html';
 import { I18n } from '../harmony-i18n';
 import contextMenuCSS from '../css/harmony-context-menu.css';
+import { injectGlobalCss } from '../utils/globalcss';
 
 type HarmonyContextMenuItem = {
 	i18n: string,
@@ -188,5 +189,6 @@ export function defineHarmonyContextMenu() {
 	if (window.customElements && !definedContextMenu) {
 		customElements.define('harmony-context-menu', HTMLHarmonyContextMenuElement);
 		definedContextMenu = true;
+		injectGlobalCss();
 	}
 }

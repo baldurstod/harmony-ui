@@ -3,6 +3,7 @@ import { createElement, hide, show } from '../harmony-html';
 import { I18n } from '../harmony-i18n';
 import toggleButtonCSS from '../css/harmony-toggle-button.css';
 import { toBool } from '../utils/attributes';
+import { injectGlobalCss } from '../utils/globalcss';
 
 export class HTMLHarmonyToggleButtonElement extends HTMLElement {
 	#buttonOn?: HTMLElement;
@@ -134,5 +135,6 @@ export function defineHarmonyToggleButton() {
 	if (window.customElements && !definedToggleButton) {
 		customElements.define('harmony-toggle-button', HTMLHarmonyToggleButtonElement);
 		definedToggleButton = true;
+		injectGlobalCss();
 	}
 }

@@ -3,6 +3,7 @@ import { createElement } from '../harmony-html';
 import { I18n } from '../harmony-i18n';
 import switchCSS from '../css/harmony-switch.css';
 import { toBool } from '../utils/attributes';
+import { injectGlobalCss } from '../utils/globalcss';
 
 export class HTMLHarmonySwitchElement extends HTMLElement {
 	#doOnce = true;
@@ -131,5 +132,6 @@ export function defineHarmonySwitch() {
 	if (window.customElements && !definedSwitch) {
 		customElements.define('harmony-switch', HTMLHarmonySwitchElement);
 		definedSwitch = true;
+		injectGlobalCss();
 	}
 }

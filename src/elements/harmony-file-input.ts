@@ -5,6 +5,7 @@ import { folderOpenSVG, helpSVG } from 'harmony-svg';
 import { cloneEvent } from '../utils/events';
 import { I18n } from '../harmony-i18n';
 import { defineHarmonyTooltip } from './harmony-tooltip';
+import { injectGlobalCss } from '../utils/globalcss';
 
 export class HTMLHarmonyFileInputElement extends HTMLElement {
 	#shadowRoot: ShadowRoot;
@@ -105,5 +106,6 @@ export function defineHarmonyFileInput() {
 	if (window.customElements && !definedFileInput) {
 		customElements.define('harmony-file-input', HTMLHarmonyFileInputElement);
 		definedFileInput = true;
+		injectGlobalCss();
 	}
 }

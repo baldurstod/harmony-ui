@@ -4,6 +4,7 @@ import { I18n } from '../harmony-i18n';
 import tabGroupCSS from '../css/harmony-tab-group.css';
 import tabCSS from '../css/harmony-tab.css';
 import { HTMLHarmonyTabElement } from './harmony-tab';
+import { injectGlobalCss } from '../utils/globalcss';
 
 export class HTMLHarmonyTabGroupElement extends HTMLElement {
 	#doOnce = true;
@@ -79,5 +80,6 @@ export function defineHarmonyTabGroup() {
 	if (window.customElements && !definedTabGroup) {
 		customElements.define('harmony-tab-group', HTMLHarmonyTabGroupElement);
 		definedTabGroup = true;
+		injectGlobalCss();
 	}
 }

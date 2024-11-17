@@ -3,6 +3,7 @@ import { createElement, hide, show, display } from '../harmony-html';
 import slideshowCSS from '../css/harmony-slideshow.css';
 import { shadowRootStyleSync } from '../harmony-css';
 import { toBool } from '../utils/attributes';
+import { injectGlobalCss } from '../utils/globalcss';
 
 const resizeCallback = (entries: Array<ResizeObserverEntry>, observer: ResizeObserver) => {
 	entries.forEach(entry => {
@@ -406,5 +407,6 @@ export function defineHarmonySlideshow() {
 	if (window.customElements && !definedSlideshow) {
 		customElements.define('harmony-slideshow', HTMLHarmonySlideshowElement);
 		definedSlideshow = true;
+		injectGlobalCss();
 	}
 }

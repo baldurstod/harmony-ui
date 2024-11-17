@@ -2,6 +2,7 @@ import { documentStyle, shadowRootStyle } from '../harmony-css';
 import { createElement, hide, show } from '../harmony-html';
 import tooltipCSS from '../css/harmony-tooltip.css';
 import { I18n } from '../harmony-i18n';
+import { injectGlobalCss } from '../utils/globalcss';
 
 export class HTMLHarmonyTooltipElement extends HTMLElement {
 	#shadowRoot: ShadowRoot;
@@ -45,5 +46,6 @@ export function defineHarmonyTooltip() {
 	if (window.customElements && !definedTooltip) {
 		customElements.define('harmony-tooltip', HTMLHarmonyTooltipElement);
 		definedTooltip = true;
+		injectGlobalCss();
 	}
 }

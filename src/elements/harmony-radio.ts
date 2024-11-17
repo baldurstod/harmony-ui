@@ -3,6 +3,7 @@ import { createElement, hide, show } from '../harmony-html';
 import { I18n } from '../harmony-i18n';
 import radioCSS from '../css/harmony-radio.css';
 import { toBool } from '../utils/attributes';
+import { injectGlobalCss } from '../utils/globalcss';
 
 export class HTMLHarmonyRadioElement extends HTMLElement {
 	#doOnce = true;
@@ -145,5 +146,6 @@ export function defineHarmonyRadio() {
 	if (window.customElements && !definedRadio) {
 		customElements.define('harmony-radio', HTMLHarmonyRadioElement);
 		definedRadio = true;
+		injectGlobalCss();
 	}
 }

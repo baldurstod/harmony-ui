@@ -2,6 +2,7 @@ import { createElement } from '../harmony-html';
 import { toBool } from '../utils/attributes';
 import accordionCSS from '../css/harmony-accordion.css';
 import { shadowRootStyle } from '../harmony-css';
+import { injectGlobalCss } from '../utils/globalcss';
 
 export class HTMLHarmonyAccordionElement extends HTMLElement {
 	#doOnce = true;
@@ -150,5 +151,6 @@ export function defineHarmonyAccordion() {
 	if (window.customElements && !definedAccordion) {
 		customElements.define('harmony-accordion', HTMLHarmonyAccordionElement);
 		definedAccordion = true;
+		injectGlobalCss();
 	}
 }

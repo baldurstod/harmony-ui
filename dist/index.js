@@ -364,6 +364,17 @@ function toBool(s) {
     return s === '1' || s === 'true';
 }
 
+var uiCSS = "@media (prefers-color-scheme: light) {\n\t:root:not(.light):not(.dark) {\n\t\t--harmony-ui-background-primary: #ccc;\n\t\t--harmony-ui-background-secondary: #f9f9fb;\n\t\t--harmony-ui-background-tertiary: #fff;\n\n\t\t--harmony-ui-input-background-primary: #aaa;\n\t\t--harmony-ui-input-background-secondary: #ccc;\n\t\t--harmony-ui-input-background-tertiary: #4e4e4e;\n\n\t\t--harmony-ui-border-primary: #222;\n\t\t--harmony-ui-border-secondary: #222;\n\n\t\t--harmony-ui-input-border-primary: #222;\n\t\t--harmony-ui-input-border-secondary: #222;\n\n\t\t--harmony-ui-text-primary: #222;\n\t\t--harmony-ui-text-secondary: #222;\n\t\t--harmony-ui-text-inactive: #9e9e9ea6;\n\t\t--harmony-ui-text-link: #0069c2;\n\t\t--harmony-ui-text-invert: #fff;\n\n\t\t--harmony-ui-accent-primary: #1072eb;\n\t\t--harmony-ui-accent-secondary: #1040c1;\n\n\t\t--harmony-ui-scrollbar-bg: transparent;\n\t\t--harmony-ui-scrollbar-color: rgba(0, 0, 0, 0.25);\n\t}\n}\n\n@media (prefers-color-scheme: dark) {\n\t:root:not(.light):not(.dark) {\n\t\t--harmony-ui-background-primary: #1b1b1b;\n\t\t--harmony-ui-background-secondary: #464747;\n\t\t--harmony-ui-background-tertiary: #4e4e4e;\n\n\t\t--harmony-ui-input-background-primary: #555;\n\t\t--harmony-ui-input-background-secondary: #333;\n\t\t--harmony-ui-input-background-tertiary: #fff;\n\n\t\t--harmony-ui-border-primary: #858585;\n\t\t--harmony-ui-border-secondary: #696969;\n\n\t\t--harmony-ui-input-border-primary: #aaa;\n\t\t--harmony-ui-input-border-secondary: #696969;\n\n\t\t--harmony-ui-text-primary: #fff;\n\t\t--harmony-ui-text-secondary: #cdcdcd;\n\t\t--harmony-ui-text-inactive: #cdcdcda6;\n\t\t--harmony-ui-text-link: #8cb4ff;\n\t\t--harmony-ui-text-invert: #1b1b1b;\n\n\t\t--harmony-ui-accent-primary: #1072eb;\n\t\t--harmony-ui-accent-secondary: #1040c1;\n\n\t\t--harmony-ui-scrollbar-bg: transparent;\n\t\t--harmony-ui-scrollbar-color: rgba(255, 255, 255, 0.25);\n\t}\n}\n\n:root.light {\n\t--harmony-ui-background-primary: #ccc;\n\t--harmony-ui-background-secondary: #f9f9fb;\n\t--harmony-ui-background-tertiary: #fff;\n\n\t--harmony-ui-input-background-primary: #aaa;\n\t--harmony-ui-input-background-secondary: #ccc;\n\t--harmony-ui-input-background-tertiary: #4e4e4e;\n\n\t--harmony-ui-border-primary: #222;\n\t--harmony-ui-border-secondary: #222;\n\n\t--harmony-ui-input-border-primary: #222;\n\t--harmony-ui-input-border-secondary: #222;\n\n\t--harmony-ui-text-primary: #222;\n\t--harmony-ui-text-secondary: #222;\n\t--harmony-ui-text-inactive: #9e9e9ea6;\n\t--harmony-ui-text-link: #0069c2;\n\t--harmony-ui-text-invert: #fff;\n\n\t--harmony-ui-accent-primary: #1072eb;\n\t--harmony-ui-accent-secondary: #1040c1;\n\n\t--harmony-ui-scrollbar-bg: transparent;\n\t--harmony-ui-scrollbar-color: rgba(0, 0, 0, 0.25);\n}\n\n:root.dark {\n\t--harmony-ui-background-primary: #1b1b1b;\n\t--harmony-ui-background-secondary: #464747;\n\t--harmony-ui-background-tertiary: #4e4e4e;\n\n\t--harmony-ui-input-background-primary: #555;\n\t--harmony-ui-input-background-secondary: #333;\n\t--harmony-ui-input-background-tertiary: #fff;\n\n\t--harmony-ui-border-primary: #858585;\n\t--harmony-ui-border-secondary: #696969;\n\n\t--harmony-ui-input-border-primary: #aaa;\n\t--harmony-ui-input-border-secondary: #696969;\n\n\t--harmony-ui-text-primary: #fff;\n\t--harmony-ui-text-secondary: #cdcdcd;\n\t--harmony-ui-text-inactive: #cdcdcda6;\n\t--harmony-ui-text-link: #8cb4ff;\n\t--harmony-ui-text-invert: #1b1b1b;\n\n\t--harmony-ui-accent-primary: #1072eb;\n\t--harmony-ui-accent-secondary: #1040c1;\n\n\t--harmony-ui-scrollbar-bg: transparent;\n\t--harmony-ui-scrollbar-color: rgba(255, 255, 255, 0.25);\n}\n";
+
+let injected = false;
+function injectGlobalCss() {
+    if (injected) {
+        return;
+    }
+    documentStyle(uiCSS);
+    injected = true;
+}
+
 var ManipulatorDirection;
 (function (ManipulatorDirection) {
     ManipulatorDirection["All"] = "all";
@@ -904,6 +915,7 @@ function defineHarmony2dManipulator() {
     if (window.customElements && !defined2dManipulator) {
         customElements.define('harmony-2d-manipulator', HTMLHarmony2dManipulatorElement);
         defined2dManipulator = true;
+        injectGlobalCss();
     }
 }
 
@@ -1035,6 +1047,7 @@ function defineHarmonyAccordion() {
     if (window.customElements && !definedAccordion) {
         customElements.define('harmony-accordion', HTMLHarmonyAccordionElement);
         definedAccordion = true;
+        injectGlobalCss();
     }
 }
 
@@ -1378,6 +1391,7 @@ function defineHarmonyColorPicker() {
     if (window.customElements && !definedColorPicker) {
         customElements.define('harmony-color-picker', HTMLHarmonyColorPickerElement);
         definedColorPicker = true;
+        injectGlobalCss();
     }
 }
 
@@ -1544,6 +1558,7 @@ function defineHarmonyContextMenu() {
     if (window.customElements && !definedContextMenu) {
         customElements.define('harmony-context-menu', HTMLHarmonyContextMenuElement);
         definedContextMenu = true;
+        injectGlobalCss();
     }
 }
 
@@ -1584,6 +1599,7 @@ function defineHarmonyCopy() {
         customElements.define('harmony-copy', HTMLHarmonyCopyElement);
         documentStyle(copyCSS);
         definedCopy = true;
+        injectGlobalCss();
     }
 }
 
@@ -1629,6 +1645,7 @@ function defineHarmonyTooltip() {
     if (window.customElements && !definedTooltip) {
         customElements.define('harmony-tooltip', HTMLHarmonyTooltipElement);
         definedTooltip = true;
+        injectGlobalCss();
     }
 }
 
@@ -1724,6 +1741,7 @@ function defineHarmonyFileInput() {
     if (window.customElements && !definedFileInput) {
         customElements.define('harmony-file-input', HTMLHarmonyFileInputElement);
         definedFileInput = true;
+        injectGlobalCss();
     }
 }
 
@@ -1759,6 +1777,7 @@ function defineHarmonyLabelProperty() {
     if (window.customElements && !definedLabelProperty) {
         customElements.define('harmony-label-property', HTMLHarmonyLabelPropertyElement);
         definedLabelProperty = true;
+        injectGlobalCss();
     }
 }
 
@@ -1924,6 +1943,7 @@ function defineHarmonyPalette() {
     if (window.customElements && !definedPalette) {
         customElements.define('harmony-palette', HTMLHarmonyPaletteElement);
         definedPalette = true;
+        injectGlobalCss();
     }
 }
 
@@ -2357,6 +2377,7 @@ function defineHarmonyPanel() {
     if (window.customElements && !definedPanel) {
         customElements.define('harmony-panel', HTMLHarmonyPanelElement);
         definedPanel = true;
+        injectGlobalCss();
     }
 }
 
@@ -2488,6 +2509,7 @@ function defineHarmonyRadio() {
     if (window.customElements && !definedRadio) {
         customElements.define('harmony-radio', HTMLHarmonyRadioElement);
         definedRadio = true;
+        injectGlobalCss();
     }
 }
 
@@ -2837,6 +2859,7 @@ function defineHarmonySlideshow() {
     if (window.customElements && !definedSlideshow) {
         customElements.define('harmony-slideshow', HTMLHarmonySlideshowElement);
         definedSlideshow = true;
+        injectGlobalCss();
     }
 }
 
@@ -2937,6 +2960,7 @@ function defineHarmonySelect() {
     if (window.customElements && !definedSelect) {
         customElements.define('harmony-select', HTMLHarmonySelectElement);
         definedSelect = true;
+        injectGlobalCss();
     }
 }
 
@@ -3051,6 +3075,7 @@ function defineHarmonySplitter() {
     if (window.customElements && !definedSplitter) {
         customElements.define('harmony-splitter', HTMLHarmonySplitterElement);
         definedSplitter = true;
+        injectGlobalCss();
     }
 }
 
@@ -3172,6 +3197,7 @@ function defineHarmonySwitch() {
     if (window.customElements && !definedSwitch) {
         customElements.define('harmony-switch', HTMLHarmonySwitchElement);
         definedSwitch = true;
+        injectGlobalCss();
     }
 }
 
@@ -3267,6 +3293,7 @@ function defineHarmonyTab() {
     if (window.customElements && !definedTab) {
         customElements.define('harmony-tab', HTMLHarmonyTabElement);
         definedTab = true;
+        injectGlobalCss();
     }
 }
 
@@ -3340,6 +3367,7 @@ function defineHarmonyTabGroup() {
     if (window.customElements && !definedTabGroup) {
         customElements.define('harmony-tab-group', HTMLHarmonyTabGroupElement);
         definedTabGroup = true;
+        injectGlobalCss();
     }
 }
 
@@ -3461,6 +3489,7 @@ function defineHarmonyToggleButton() {
     if (window.customElements && !definedToggleButton) {
         customElements.define('harmony-toggle-button', HTMLHarmonyToggleButtonElement);
         definedToggleButton = true;
+        injectGlobalCss();
     }
 }
 

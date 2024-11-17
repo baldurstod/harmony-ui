@@ -1,6 +1,7 @@
 import { createElement } from '../harmony-html';
 import { shadowRootStyle } from '../harmony-css';
 import labelPropertyCSS from '../css/harmony-label-property.css';
+import { injectGlobalCss } from '../utils/globalcss';
 
 export class HTMLHarmonyLabelPropertyElement extends HTMLElement {
 	#doOnce = false;
@@ -36,5 +37,6 @@ export function defineHarmonyLabelProperty() {
 	if (window.customElements && !definedLabelProperty) {
 		customElements.define('harmony-label-property', HTMLHarmonyLabelPropertyElement);
 		definedLabelProperty = true;
+		injectGlobalCss();
 	}
 }
