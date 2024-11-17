@@ -1,29 +1,26 @@
-html {
-	--harmony-palette-color-size: 2rem;
-	--harmony-palette-gap: 0.5rem;
-	--harmony-palette-border-color: grey;
-	--harmony-palette-selected-border-color: orange;
-}
-
 :host {
+	--harmony-palette-shadow-color-size: var(--harmony-palette-color-size, 2rem);
+	--harmony-palette-shadow-gap: var(--harmony-palette-gap, 0.5rem);
+	--harmony-palette-shadow-border-color: var(--harmony-palette-border-color, grey);
+	--harmony-palette-shadow-selected-border-color: var(--harmony-palette-selected-border-color, orange);
 	display: flex;
 	flex-direction: row;
 	flex-wrap: wrap;
-	gap: var(--harmony-palette-gap);
+	gap: var(--harmony-palette-shadow-gap);
 }
 
 .color {
-	height: var(--harmony-palette-color-size);
-	width: var(--harmony-palette-color-size);
-	border-radius: calc(var(--harmony-palette-color-size) * .1);
-	border: calc(var(--harmony-palette-color-size) * .1) solid var(--harmony-palette-border-color);
-	padding: calc(var(--harmony-palette-color-size) * .1);
+	height: var(--harmony-palette-shadow-color-size);
+	width: var(--harmony-palette-shadow-color-size);
+	border-radius: calc(var(--harmony-palette-shadow-color-size) * .1);
+	border: calc(var(--harmony-palette-shadow-color-size) * .1) solid var(--harmony-palette-shadow-border-color);
+	padding: calc(var(--harmony-palette-shadow-color-size) * .1);
 	cursor: pointer;
 }
 
 .color.selected {
-	border-color: var(--harmony-palette-selected-border-color);
-	border-width: calc(var(--harmony-palette-color-size) * .2);
+	border-color: var(--harmony-palette-shadow-selected-border-color);
+	border-width: calc(var(--harmony-palette-shadow-color-size) * .2);
 	padding: 0;
 	color: black;
 }
