@@ -1,4 +1,4 @@
-import { createElement, hide, show, display } from '../harmony-html';
+import { createElement } from '../harmony-html';
 import manipulator2dCSS from '../css/harmony-2d-manipulator.css';
 import { toBool } from '../utils/attributes';
 import { shadowRootStyle } from '../harmony-css';
@@ -38,6 +38,9 @@ const SIDES = [[0.5, 0], [0.5, 1], [0, 0.5], [1, 0.5]];
 const SCALE_SIDES = [[0, 1], [0, 1], [1, 0], [1, 0]];
 const SNAP_POSITION = 20;// Pixels
 const SNAP_ROTATION = 15;// Degrees
+
+const DEG_TO_RAD = Math.PI / 180;
+const RAD_TO_DEG = 180 / Math.PI;
 
 export enum ManipulatorCorner {
 	None = -1,
@@ -114,11 +117,31 @@ export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 			child: this.#htmlRotator = createElement('div', {
 				class: 'rotator',
 				events: {
-					mousedown: (event: MouseEvent) => this.#startDragRotator(event),
+					mousedown: (event: MouseEvent) => {
+						switch (event.button) {
+							case 0:
+								event.stopPropagation();
+								this.#startDragRotator(event);
+								break;
+							case 2:
+								event.stopPropagation();
+								this.#rotateInput(event);
+								break;
+						}
+					},
 				}
 			}) as HTMLElement,
 			events: {
-				mousedown: (event: MouseEvent) => this.#startTranslate(event),
+				mousedown: (event: MouseEvent) => {
+					switch (event.button) {
+						case 0:
+							this.#startTranslate(event);
+							break;
+						case 2:
+							this.#translateInput(event);
+							break;
+					}
+				},
 			}
 		}) as HTMLElement;
 
@@ -286,7 +309,7 @@ export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 	}
 
 	#snapRotation() {
-		this.#rotation = Math.round(this.#rotation * 180 / Math.PI / SNAP_ROTATION) * SNAP_ROTATION * Math.PI / 180;
+		this.#rotation = Math.round(this.#rotation * RAD_TO_DEG / SNAP_ROTATION) * SNAP_ROTATION * DEG_TO_RAD;
 	}
 
 	#update() {
@@ -651,6 +674,28 @@ export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 
 		this.#pp_x = p0_x * cos_t - p0_y * sin_t - this.#c0_x * cos_t + this.#c0_y * sin_t + this.#c0_x;
 		this.#pp_y = p0_x * sin_t + p0_y * cos_t - this.#c0_x * sin_t - this.#c0_y * cos_t + this.#c0_y;
+	}
+
+	#rotateInput(event: MouseEvent) {
+		const result = prompt('rotation', String(this.#rotation * RAD_TO_DEG));
+		if (result) {
+			this.#rotation = Number(result) * DEG_TO_RAD;
+			this.#update();
+			this.#refresh();
+		}
+	}
+
+	#translateInput(event: MouseEvent) {
+		const result = prompt('center', `${this.#left + this.#width * 0.5} ${this.#top + this.#height * 0.5}`);
+		if (result) {
+			const a = result.split(' ');
+			if (a.length >= 2) {
+				this.#left = Number(a[0]) - this.#width * 0.5;
+				this.#top = Number(a[1]) - this.#height * 0.5;
+				this.#update();
+				this.#refresh();
+			}
+		}
 	}
 }
 

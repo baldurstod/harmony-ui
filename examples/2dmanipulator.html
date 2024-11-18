@@ -11,9 +11,9 @@
 	</harmony-2d-manipulator>
 </body>
 <script type="module">
-	import { createElement, define2dManipulator } from '../dist/harmony-ui.browser.js';
+	import { createElement, defineHarmony2dManipulator } from '../dist/harmony-ui.browser.js';
 	const manipulator = document.getElementById('manipulator');
-	define2dManipulator();
+	defineHarmony2dManipulator();
 
 	manipulator.addEventListener('change', (event) => {
 		const detail = event.detail;

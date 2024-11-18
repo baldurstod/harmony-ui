@@ -401,6 +401,8 @@ const SIDES = [[0.5, 0], [0.5, 1], [0, 0.5], [1, 0.5]];
 const SCALE_SIDES = [[0, 1], [0, 1], [1, 0], [1, 0]];
 const SNAP_POSITION = 20; // Pixels
 const SNAP_ROTATION = 15; // Degrees
+const DEG_TO_RAD = Math.PI / 180;
+const RAD_TO_DEG = 180 / Math.PI;
 var ManipulatorCorner;
 (function (ManipulatorCorner) {
     ManipulatorCorner[ManipulatorCorner["None"] = -1] = "None";
@@ -468,11 +470,31 @@ class HTMLHarmony2dManipulatorElement extends HTMLElement {
             child: this.#htmlRotator = createElement('div', {
                 class: 'rotator',
                 events: {
-                    mousedown: (event) => this.#startDragRotator(event),
+                    mousedown: (event) => {
+                        switch (event.button) {
+                            case 0:
+                                event.stopPropagation();
+                                this.#startDragRotator(event);
+                                break;
+                            case 2:
+                                event.stopPropagation();
+                                this.#rotateInput(event);
+                                break;
+                        }
+                    },
                 }
             }),
             events: {
-                mousedown: (event) => this.#startTranslate(event),
+                mousedown: (event) => {
+                    switch (event.button) {
+                        case 0:
+                            this.#startTranslate(event);
+                            break;
+                        case 2:
+                            this.#translateInput(event);
+                            break;
+                    }
+                },
             }
         });
         for (let i = 0; i < 4; i++) {
@@ -613,7 +635,7 @@ class HTMLHarmony2dManipulatorElement extends HTMLElement {
         return Math.round(a / SNAP_POSITION) * SNAP_POSITION;
     }
     #snapRotation() {
-        this.#rotation = Math.round(this.#rotation * 180 / Math.PI / SNAP_ROTATION) * SNAP_ROTATION * Math.PI / 180;
+        this.#rotation = Math.round(this.#rotation * RAD_TO_DEG / SNAP_ROTATION) * SNAP_ROTATION * DEG_TO_RAD;
     }
     #update() {
         if (this.#previousHeight == this.#height && this.#previousLeft == this.#left && this.#previousTop == this.#top && this.#previousWidth == this.#width && this.#previousRotation == this.#rotation) {
@@ -908,6 +930,26 @@ class HTMLHarmony2dManipulatorElement extends HTMLElement {
         this.#qp0_y = q0_x * sin_t + q0_y * cos_t - this.#c0_x * sin_t - this.#c0_y * cos_t + this.#c0_y;
         this.#pp_x = p0_x * cos_t - p0_y * sin_t - this.#c0_x * cos_t + this.#c0_y * sin_t + this.#c0_x;
         this.#pp_y = p0_x * sin_t + p0_y * cos_t - this.#c0_x * sin_t - this.#c0_y * cos_t + this.#c0_y;
+    }
+    #rotateInput(event) {
+        const result = prompt('rotation', String(this.#rotation * RAD_TO_DEG));
+        if (result) {
+            this.#rotation = Number(result) * DEG_TO_RAD;
+            this.#update();
+            this.#refresh();
+        }
+    }
+    #translateInput(event) {
+        const result = prompt('center', `${this.#left + this.#width * 0.5} ${this.#top + this.#height * 0.5}`);
+        if (result) {
+            const a = result.split(' ');
+            if (a.length >= 2) {
+                this.#left = Number(a[0]) - this.#width * 0.5;
+                this.#top = Number(a[1]) - this.#height * 0.5;
+                this.#update();
+                this.#refresh();
+            }
+        }
     }
 }
 let defined2dManipulator = false;
