@@ -502,7 +502,11 @@ class HTMLHarmony2dManipulatorElement extends HTMLElement {
                 class: 'corner',
                 parent: this.#htmlQuad,
                 events: {
-                    mousedown: (event) => this.#startDragCorner(event, i),
+                    mousedown: (event) => {
+                        if (event.button == 0) {
+                            this.#startDragCorner(event, i);
+                        }
+                    },
                 }
             });
             this.#htmlScaleCorners.push(htmlCorner);
@@ -512,7 +516,11 @@ class HTMLHarmony2dManipulatorElement extends HTMLElement {
                 class: 'side',
                 parent: this.#htmlQuad,
                 events: {
-                    mousedown: (event) => this.#startDragSide(event, i),
+                    mousedown: (event) => {
+                        if (event.button == 0) {
+                            this.#startDragSide(event, i);
+                        }
+                    },
                 }
             });
             this.#htmlResizeSides.push(htmlCorner);
@@ -937,6 +945,7 @@ class HTMLHarmony2dManipulatorElement extends HTMLElement {
             this.#rotation = Number(result) * DEG_TO_RAD;
             this.#update();
             this.#refresh();
+            this.#dispatchEvent('updateend');
         }
     }
     #translateInput(event) {
@@ -948,6 +957,7 @@ class HTMLHarmony2dManipulatorElement extends HTMLElement {
                 this.#top = Number(a[1]) - this.#height * 0.5;
                 this.#update();
                 this.#refresh();
+                this.#dispatchEvent('updateend');
             }
         }
     }
