@@ -1,7 +1,7 @@
 import { shadowRootStyle } from '../harmony-css';
 import { createElement, hide, show } from '../harmony-html';
 import fileInputCSS from '../css/harmony-file-input.css';
-import { folderOpenSVG, helpSVG } from 'harmony-svg';
+import { folderOpenSVG, infoSVG } from 'harmony-svg';
 import { cloneEvent } from '../utils/events';
 import { I18n } from '../harmony-i18n';
 import { defineHarmonyTooltip } from './harmony-tooltip';
@@ -36,7 +36,7 @@ export class HTMLHarmonyFileInputElement extends HTMLElement {
 					childs: [
 						createElement('span', {
 							class: 'info',
-							innerHTML: helpSVG,
+							innerHTML: infoSVG,
 						}),
 						this.#htmlTooltip = createElement('harmony-tooltip', {
 							i18n: '',

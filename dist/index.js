@@ -1,4 +1,4 @@
-import { folderOpenSVG, helpSVG, checkOutlineSVG } from 'harmony-svg';
+import { folderOpenSVG, infoSVG, checkOutlineSVG } from 'harmony-svg';
 
 function cloneEvent(event) {
     return new event.constructor(event.type, event);
@@ -1729,7 +1729,7 @@ class HTMLHarmonyFileInputElement extends HTMLElement {
                     childs: [
                         createElement('span', {
                             class: 'info',
-                            innerHTML: helpSVG,
+                            innerHTML: infoSVG,
                         }),
                         this.#htmlTooltip = createElement('harmony-tooltip', {
                             i18n: '',
