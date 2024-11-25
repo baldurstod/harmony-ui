@@ -687,7 +687,6 @@ class HTMLHarmony2dManipulatorElement extends HTMLElement {
             return null;
         }
         const c = CORNERS[i];
-        this.#htmlQuad.getBoundingClientRect();
         const centerX = this.#left + this.#width * 0.5;
         const centerY = this.#top + this.#height * 0.5;
         const x = c[0] * this.#width * 0.5;
@@ -696,6 +695,24 @@ class HTMLHarmony2dManipulatorElement extends HTMLElement {
             x: x * Math.cos(this.#rotation) - y * Math.sin(this.#rotation) + centerX,
             y: x * Math.sin(this.#rotation) + y * Math.cos(this.#rotation) + centerY,
         };
+    }
+    set(values) {
+        if (values.rotation) {
+            this.#rotation = values.rotation;
+        }
+        if (values.left) {
+            this.#left = values.left;
+        }
+        if (values.top) {
+            this.#top = values.top;
+        }
+        if (values.width) {
+            this.#width = values.width;
+        }
+        if (values.height) {
+            this.#height = values.height;
+        }
+        this.#refresh();
     }
     connectedCallback() {
         this.#refresh();
