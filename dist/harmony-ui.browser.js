@@ -695,19 +695,19 @@ class HTMLHarmony2dManipulatorElement extends HTMLElement {
         };
     }
     set(values) {
-        if (values.rotation) {
+        if (values.rotation !== undefined) {
             this.#rotation = values.rotation;
         }
-        if (values.left) {
+        if (values.left !== undefined) {
             this.#left = values.left;
         }
-        if (values.top) {
+        if (values.top !== undefined) {
             this.#top = values.top;
         }
-        if (values.width) {
+        if (values.width !== undefined) {
             this.#width = values.width;
         }
-        if (values.height) {
+        if (values.height !== undefined) {
             this.#height = values.height;
         }
         this.#refresh();
