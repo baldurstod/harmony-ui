@@ -59,7 +59,7 @@ function createElementOptions(element, options, shadowRoot) {
                     element.id = optionValue;
                     break;
                 case 'class':
-                    element.classList.add(...optionValue.split(' '));
+                    element.classList.add(...optionValue.split(' ').filter((n) => n));
                     break;
                 case 'i18n':
                     element.setAttribute('data-i18n', optionValue);
