@@ -113,6 +113,9 @@ function createElementOptions(element: HTMLElement, options: any, shadowRoot?: S
 						adoptStyleSheet(shadowRoot ?? element, entry);
 					});
 					break;
+				case 'style':
+					element.style.cssText = optionValue;
+					break;
 				default:
 					if (optionName.startsWith('data-')) {
 						element.setAttribute(optionName, optionValue);
