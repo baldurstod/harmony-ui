@@ -1580,7 +1580,7 @@ class HTMLHarmonyContextMenuElement extends HTMLElement {
                 htmlItemTitle.innerHTML = item.i18n;
             }
             else {
-                htmlItemTitle.innerHTML = item.name;
+                htmlItemTitle.innerText = item.name ?? '';
             }
             htmlItem.append(htmlItemTitle);
             if (item.selected) {

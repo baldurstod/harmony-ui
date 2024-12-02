@@ -6,11 +6,11 @@ import { injectGlobalCss } from '../utils/globalcss';
 
 type HarmonyContextMenuItem = {
 	i18n: string,
-	name: string,
+	name?: string,
 	selected: boolean,
-	disabled: boolean,
-	submenu: HarmonyContextMenuItems,
-	cmd: string,
+	disabled?: boolean,
+	submenu?: HarmonyContextMenuItems,
+	cmd?: string,
 	f: (arg0: any) => void,
 };
 
@@ -138,7 +138,7 @@ export class HTMLHarmonyContextMenuElement extends HTMLElement {
 				htmlItemTitle.setAttribute('data-i18n', item.i18n);
 				htmlItemTitle.innerHTML = item.i18n;
 			} else {
-				htmlItemTitle.innerHTML = item.name;
+				htmlItemTitle.innerText = item.name ?? '';
 			}
 			htmlItem.append(htmlItemTitle);
 
