@@ -5,13 +5,13 @@ import contextMenuCSS from '../css/harmony-context-menu.css';
 import { injectGlobalCss } from '../utils/globalcss';
 
 type HarmonyContextMenuItem = {
-	i18n: string,
+	i18n?: string,
 	name?: string,
 	selected?: boolean,
 	disabled?: boolean,
 	submenu?: HarmonyContextMenuItems,
 	cmd?: string,
-	f: (arg0: any) => void,
+	f?: (arg0: any) => void,
 };
 
 type HarmonyContextMenuItems = Array<HarmonyContextMenuItem> | { [key: string]: HarmonyContextMenuItem };
