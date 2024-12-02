@@ -14,7 +14,7 @@ type HarmonyContextMenuItem = {
 	f?: (arg0: any) => void,
 };
 
-type HarmonyContextMenuItems = Array<HarmonyContextMenuItem> | { [key: string]: HarmonyContextMenuItem };
+type HarmonyContextMenuItems = Array<HarmonyContextMenuItem> | { [key: string]: HarmonyContextMenuItem | null };
 
 export class HTMLHarmonyContextMenuElement extends HTMLElement {
 	#doOnce = true;
@@ -121,7 +121,7 @@ export class HTMLHarmonyContextMenuElement extends HTMLElement {
 		this.#checkSize();
 	}
 
-	addItem(item: HarmonyContextMenuItem, userData: any) {
+	addItem(item: HarmonyContextMenuItem | null, userData: any) {
 		let htmlItem = createElement('div', {
 			class: 'harmony-context-menu-item',
 		}) as HTMLElement;

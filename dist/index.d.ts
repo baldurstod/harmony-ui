@@ -85,7 +85,7 @@ declare type HarmonyContextMenuItem = {
 };
 
 declare type HarmonyContextMenuItems = Array<HarmonyContextMenuItem> | {
-    [key: string]: HarmonyContextMenuItem;
+    [key: string]: HarmonyContextMenuItem | null;
 };
 
 export declare type HarmonySlideshowOptions = {
@@ -165,7 +165,7 @@ export declare class HTMLHarmonyContextMenuElement extends HTMLElement {
     show(items: HarmonyContextMenuItems, clientX: number, clientY: number, userData: any): void;
     close(): void;
     connectedCallback(): void;
-    addItem(item: HarmonyContextMenuItem, userData: any): HTMLElement;
+    addItem(item: HarmonyContextMenuItem | null, userData: any): HTMLElement;
 }
 
 export declare class HTMLHarmonyCopyElement extends HTMLElement {
