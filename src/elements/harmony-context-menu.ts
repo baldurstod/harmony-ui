@@ -7,7 +7,7 @@ import { injectGlobalCss } from '../utils/globalcss';
 type HarmonyContextMenuItem = {
 	i18n: string,
 	name?: string,
-	selected: boolean,
+	selected?: boolean,
 	disabled?: boolean,
 	submenu?: HarmonyContextMenuItems,
 	cmd?: string,
