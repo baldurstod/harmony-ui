@@ -1,7 +1,5 @@
 :host {
 	cursor: pointer;
-	height: 50px;
-	width: 50px;
 	display: inline-block;
 	position: relative;
 }
@@ -9,8 +7,8 @@
 on,
 off {
 	position: absolute;
-	top: 0px;
-	left: 0px;
+	top: 0;
+	left: 0;
 	height: 100%;
 	width: 100%;
 	background-size: 100% auto;
