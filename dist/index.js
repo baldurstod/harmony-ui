@@ -3290,6 +3290,10 @@ class HTMLHarmonyTabGroupElement extends HTMLElement {
         }
     }
     set active(tab) {
+        console.warn('deprecated, use activateTab instead');
+        this.activateTab(tab);
+    }
+    activateTab(tab) {
         if (this.#activeTab != tab) {
             this.#activeTab = tab;
             this.#refresh();

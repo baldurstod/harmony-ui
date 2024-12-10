@@ -61,6 +61,11 @@ export class HTMLHarmonyTabGroupElement extends HTMLElement {
 	}
 
 	set active(tab: HTMLHarmonyTabElement) {
+		console.warn('deprecated, use activateTab instead');
+		this.activateTab(tab);
+	}
+
+	activateTab(tab: HTMLHarmonyTabElement) {
 		if (this.#activeTab != tab) {
 			this.#activeTab = tab;
 			this.#refresh();

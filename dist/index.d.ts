@@ -318,6 +318,7 @@ export declare class HTMLHarmonyTabGroupElement extends HTMLElement {
     adoptStyleSheet(styleSheet: CSSStyleSheet): void;
     addTab(tab: HTMLHarmonyTabElement): void;
     set active(tab: HTMLHarmonyTabElement);
+    activateTab(tab: HTMLHarmonyTabElement): void;
     clear(): void;
 }
 
