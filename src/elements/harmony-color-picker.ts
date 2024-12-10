@@ -1,9 +1,8 @@
 import { shadowRootStyle } from '../harmony-css';
 import { createElement } from '../harmony-html';
-import { Color } from '../utils/color';
-
 import colorPickerCSS from '../css/harmony-color-picker.css';
 import { injectGlobalCss } from '../utils/globalcss';
+import { Color } from 'harmony-utils';
 
 export class HTMLHarmonyColorPickerElement extends HTMLElement {
 	#doOnce = true;

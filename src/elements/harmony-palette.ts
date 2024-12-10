@@ -3,9 +3,9 @@ import { I18n } from '../harmony-i18n';
 import { shadowRootStyle } from '../harmony-css';
 import { createElement } from '../harmony-html';
 import paletteCSS from '../css/harmony-palette.css';
-import { Color } from '../utils/color';
 import { toBool } from '../utils/attributes';
 import { injectGlobalCss } from '../utils/globalcss';
+import { Color } from 'harmony-utils';
 
 function clampColor(val: number) {
 	return Math.min(Math.max(0, val), 1);

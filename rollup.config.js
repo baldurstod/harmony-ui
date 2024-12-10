@@ -99,6 +99,7 @@ export default [
 		],
 		external: [
 			'harmony-svg',
+			'harmony-utils',
 		],
 	},
 	{
