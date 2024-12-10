@@ -4,7 +4,7 @@ import { I18n } from '../harmony-i18n';
 import contextMenuCSS from '../css/harmony-context-menu.css';
 import { injectGlobalCss } from '../utils/globalcss';
 
-type HarmonyContextMenuItem = {
+export type HarmonyContextMenuItem = {
 	i18n?: string,
 	name?: string,
 	selected?: boolean,
@@ -14,7 +14,7 @@ type HarmonyContextMenuItem = {
 	f?: (arg0: any) => void,
 };
 
-type HarmonyContextMenuItems = Array<HarmonyContextMenuItem> | { [key: string]: HarmonyContextMenuItem | null };
+export type HarmonyContextMenuItems = Array<HarmonyContextMenuItem> | { [key: string]: HarmonyContextMenuItem | null };
 
 export class HTMLHarmonyContextMenuElement extends HTMLElement {
 	#doOnce = true;

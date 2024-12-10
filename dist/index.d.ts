@@ -50,7 +50,7 @@ export declare function documentStyle(cssText: string): Promise<void>;
 
 export declare function documentStyleSync(cssText: string): void;
 
-declare type HarmonyContextMenuItem = {
+export declare type HarmonyContextMenuItem = {
     i18n?: string;
     name?: string;
     selected?: boolean;
@@ -60,7 +60,7 @@ declare type HarmonyContextMenuItem = {
     f?: (arg0: any) => void;
 };
 
-declare type HarmonyContextMenuItems = Array<HarmonyContextMenuItem> | {
+export declare type HarmonyContextMenuItems = Array<HarmonyContextMenuItem> | {
     [key: string]: HarmonyContextMenuItem | null;
 };
 
