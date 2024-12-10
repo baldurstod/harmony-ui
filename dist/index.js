@@ -3190,9 +3190,13 @@ class HTMLHarmonyTabElement extends HTMLElement {
         return this.#disabled;
     }
     activate() {
-        this.active = true;
+        this.setActive(true);
     }
     set active(active) {
+        console.warn('deprecated, use setActive instead');
+        this.setActive(active);
+    }
+    setActive(active) {
         if (this.#active != active) {
             this.#active = active;
             if (active) {
@@ -3210,10 +3214,14 @@ class HTMLHarmonyTabElement extends HTMLElement {
             this.#header.classList.remove('activated');
         }
         if (active && this.#group) {
-            this.#group.active = this;
+            this.#group.activateTab(this);
         }
     }
     get active() {
+        console.warn('deprecated, use getActive instead');
+        return this.isActive();
+    }
+    isActive() {
         return this.#active;
     }
     #click() {
