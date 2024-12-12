@@ -3426,7 +3426,7 @@ class HTMLHarmonyTabGroupElement extends HTMLElement {
             this.#header.append(tab.htmlHeader);
             this.#content.append(tab);
             if (tab != this.#activeTab) {
-                tab.active = false;
+                tab.setActive(false);
             }
         }
         this.#activeTab?.setActive(true);
