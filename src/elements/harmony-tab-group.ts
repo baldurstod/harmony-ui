@@ -55,9 +55,7 @@ export class HTMLHarmonyTabGroupElement extends HTMLElement {
 			}
 		}
 
-		if (this.#activeTab) {
-			this.#activeTab.active = true;
-		}
+		this.#activeTab?.setActive(true);
 	}
 
 	set active(tab: HTMLHarmonyTabElement) {
