@@ -1,5 +1,5 @@
 import { shadowRootStyle } from '../harmony-css';
-import { createElement } from '../harmony-html';
+import { createElement, hide } from '../harmony-html';
 import { I18n } from '../harmony-i18n';
 import contextMenuCSS from '../css/harmony-context-menu.css';
 import { injectGlobalCss } from '../utils/globalcss';
@@ -20,6 +20,7 @@ export class HTMLHarmonyContextMenuElement extends HTMLElement {
 	#doOnce = true;
 	#subMenus = new Map<HTMLElement, HTMLElement>();
 	#shadowRoot;
+
 	constructor() {
 		super();
 		this.#shadowRoot = this.attachShadow({ mode: 'closed' });
@@ -153,20 +154,26 @@ export class HTMLHarmonyContextMenuElement extends HTMLElement {
 					class: 'submenu',
 				}) as HTMLElement;
 				this.#subMenus.set(htmlItem, htmlSubMenu);
+				let subItems = 0;
 				if (item.submenu instanceof Array) {
 					for (let subItem of item.submenu) {
 						htmlSubMenu.append(this.addItem(subItem, userData));
+						++subItems;
 					}
 				} else {
 					for (let subItemName in item.submenu) {
 						let subItem = item.submenu[subItemName];
 						htmlSubMenu.append(this.addItem(subItem, userData));
+						++subItems;
 					}
 				}
 				htmlItem.append(htmlSubMenu);
 				//htmlSubMenu.style.display = 'none';
 				htmlItem.classList.add('closed');
 				htmlItem.addEventListener('click', event => { this.#openSubMenu(htmlSubMenu); event.stopPropagation(); });
+				if (subItems == 0) {
+					hide(htmlItem);
+				}
 			} else {
 				htmlItem.addEventListener('click', () => {
 					if (item.cmd) {

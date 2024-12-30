@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<title>Test color picker</title>
+	<link href="./assets/css/examples.css" rel="stylesheet">
+	</link>
+</head>
+
+<body>
+	<harmony-context-menu id="menu"></harmony-context-menu>
+</body>
+<script type="module">
+	import { defineHarmonyContextMenu } from '../dist/harmony-ui.browser.js';
+	defineHarmonyContextMenu();
+
+
+	const menu = document.getElementById('menu');
+
+	menu.show([
+		{ name: 'test' },
+		{ name: 'submenu1', submenu: [] },
+		{
+			name: 'submenu2', submenu: [
+
+				{ name: 'subitem1' },
+				{ name: 'subitem2' },
+				{ name: 'subitem3' },
+				{ name: 'subitem4' },
+
+			]
+		},
+	], 50, 50, null);
+</script>
+
+</html>

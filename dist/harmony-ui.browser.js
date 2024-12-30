@@ -1592,21 +1592,27 @@ class HTMLHarmonyContextMenuElement extends HTMLElement {
                     class: 'submenu',
                 });
                 this.#subMenus.set(htmlItem, htmlSubMenu);
+                let subItems = 0;
                 if (item.submenu instanceof Array) {
                     for (let subItem of item.submenu) {
                         htmlSubMenu.append(this.addItem(subItem, userData));
+                        ++subItems;
                     }
                 }
                 else {
                     for (let subItemName in item.submenu) {
                         let subItem = item.submenu[subItemName];
                         htmlSubMenu.append(this.addItem(subItem, userData));
+                        ++subItems;
                     }
                 }
                 htmlItem.append(htmlSubMenu);
                 //htmlSubMenu.style.display = 'none';
                 htmlItem.classList.add('closed');
                 htmlItem.addEventListener('click', event => { this.#openSubMenu(htmlSubMenu); event.stopPropagation(); });
+                if (subItems == 0) {
+                    hide(htmlItem);
+                }
             }
             else {
                 htmlItem.addEventListener('click', () => {
