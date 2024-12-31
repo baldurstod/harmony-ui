@@ -47,6 +47,9 @@
 			</harmony-item>
 		</harmony-accordion>
 	</div>
+	<div id="dynamic">
+		<div>Dynamically created</div>
+	</div>
 	<script type="module">
 		import { createElement, defineHarmonyAccordion } from '../dist/harmony-ui.browser.js';
 
@@ -60,6 +63,48 @@
 		accordion.addEventListener('select', event => {
 			console.error(event.detail);
 		})
+
+		createElement('harmony-accordion', {
+			parent: document.getElementById('dynamic'),
+			childs: [
+				createElement('harmony-item', {
+					childs: [
+						createElement('div', {
+							slot: 'header',
+							innerText: 'Item 1',
+						}),
+						createElement('div', {
+							slot: 'content',
+							innerText: 'Content 1',
+						}),
+					]
+				}),
+				createElement('harmony-item', {
+					childs: [
+						createElement('div', {
+							slot: 'header',
+							innerText: 'Item 2',
+						}),
+						createElement('div', {
+							slot: 'content',
+							innerText: 'Content 2',
+						}),
+					]
+				}),
+				createElement('harmony-item', {
+					childs: [
+						createElement('div', {
+							slot: 'header',
+							innerText: 'Item 3',
+						}),
+						createElement('div', {
+							slot: 'content',
+							innerText: 'Content 3',
+						}),
+					]
+				}),
+			]
+		});
 	</script>
 </body>
 

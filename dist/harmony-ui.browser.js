@@ -1055,6 +1055,9 @@ class HTMLHarmonyAccordionElement extends HTMLElement {
         list.forEach(element => this.addItem(element));
     }
     addItem(item) {
+        if (this.#items.has(item)) {
+            return;
+        }
         if (item.tagName == 'HARMONY-ITEM') {
             const htmlSlot = createElement('slot', {
                 parent: this.#shadowRoot,

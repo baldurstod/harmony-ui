@@ -39,6 +39,10 @@ export class HTMLHarmonyAccordionElement extends HTMLElement {
 	}
 
 	addItem(item: HTMLHarmonyItem) {
+		if (this.#items.has(item)) {
+			return;
+		}
+
 		if (item.tagName == 'HARMONY-ITEM') {
 			const htmlSlot: HTMLSlotElement = createElement('slot', {
 				parent: this.#shadowRoot,
