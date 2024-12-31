@@ -91,6 +91,7 @@ export class HTMLHarmonyAccordionElement extends HTMLElement {
 			this.#selected.add(htmlItem);
 			//htmlHeader.classList.add('selected');
 			//htmlContent.classList.add('selected');
+			show(htmlItem);
 			show(htmlItem.getContent());
 			this.#dispatchSelect(true, htmlItem);
 
