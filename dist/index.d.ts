@@ -117,7 +117,7 @@ export declare class HTMLHarmonyAccordionElement extends HTMLElement {
     #private;
     constructor();
     connectedCallback(): void;
-    addItem(item: HTMLElement): void;
+    addItem(item: HTMLHarmonyItem): void;
     createItem(header: HTMLElement, content: HTMLElement): HTMLElement;
     clear(): void;
     set disabled(disabled: boolean);
@@ -159,6 +159,13 @@ export declare class HTMLHarmonyFileInputElement extends HTMLElement {
     adoptStyleSheet(styleSheet: CSSStyleSheet): void;
     attributeChangedCallback(name: string, oldValue: string, newValue: string): void;
     static get observedAttributes(): string[];
+}
+
+declare class HTMLHarmonyItem extends HTMLElement {
+    #private;
+    constructor();
+    getHeader(): HTMLSlotElement;
+    getContent(): HTMLSlotElement;
 }
 
 export declare class HTMLHarmonyLabelPropertyElement extends HTMLElement {

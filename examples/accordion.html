@@ -4,27 +4,49 @@
 <head>
 	<meta charset="utf-8">
 	<title>Test accordion</title>
+	<link href="./assets/css/examples.css" rel="stylesheet">
 	<style>
 		div[slot="header"] {
 			color: red;
 		}
+
 		div[slot="content"] {
 			color: blue;
 		}
-	  </style>
+	</style>
 </head>
 
 <body>
-	<harmony-accordion multiple="0" id="accordion">
-		<harmony-item>
-			<div slot="header">Item 1</div>
-			<div slot="content">Content 1</div>
-		</harmony-item>
-		<harmony-item>
-			<div slot="header">Item 2</div>
-			<div slot="content">Content 2</div>
-		</harmony-item>
-	</harmony-accordion>
+	<div>
+		<div>No multiple</div>
+		<harmony-accordion multiple="0" id="accordion">
+			<harmony-item>
+				<div slot="header">Item 1</div>
+				<div slot="content">Content 1</div>
+			</harmony-item>
+			<harmony-item>
+				<div slot="header">Item 2</div>
+				<div slot="content">Content 2</div>
+			</harmony-item>
+		</harmony-accordion>
+	</div>
+	<div>
+		<div>Multiple</div>
+		<harmony-accordion multiple="1" id="accordion">
+			<harmony-item>
+				<div slot="header">Item 1</div>
+				<div slot="content">Content 1</div>
+			</harmony-item>
+			<harmony-item>
+				<div slot="header">Item 2</div>
+				<div slot="content">Content 2</div>
+			</harmony-item>
+			<harmony-item>
+				<div slot="header">Item 3</div>
+				<div slot="content">Content 3</div>
+			</harmony-item>
+		</harmony-accordion>
+	</div>
 	<script type="module">
 		import { createElement, defineHarmonyAccordion } from '../dist/harmony-ui.browser.js';
 

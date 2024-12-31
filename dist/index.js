@@ -994,16 +994,51 @@ function defineHarmony2dManipulator() {
 
 var accordionCSS = ":host {\n\toverflow: hidden;\n\tdisplay: flex;\n\tjustify-content: center;\n\tflex-direction: column;\n\tposition: relative;\n\n\t/*--accordion-text-color: #000;*/\n}\n\n.item .header {\n\tcursor: pointer;\n\tdisplay: block;\n\tuser-select: none;\n\tpadding: 5px;\n\t/*color: var(--accordion-text-color)\n\tcolor: var(--accordion-text-color)*/\n}\n\n.item .content {\n\tdisplay: block;\n\toverflow: hidden;\n\theight: 0;\n\t/*transition: all 0.5s ease 0s;*/\n}\n\n.item .content.selected {\n\theight: unset;\n\tpadding: 10px;\n}\n\n\n@media (prefers-color-scheme: light) {\n\t:host {\n\t\t--accordion-text-color: #000;\n\t\t--accordion-background-color: #eee;\n\t\tcolor: #000;\n\t\tbackground: #eee;\n\t}\n}\n\n@media (prefers-color-scheme: dark) {\n\t:host {\n\t\t--accordion-text-color: #eee;\n\t\t--accordion-background-color: #000;\n\t\tcolor: #eee;\n\t\tbackground: #000;\n\t}\n}\n";
 
+var itemCSS = "slot[name=\"header\"] {\n\tcursor: pointer;\n}\n";
+
+class HTMLHarmonyItem extends HTMLElement {
+    #shadowRoot;
+    #htmlHeader;
+    #htmlContent;
+    constructor() {
+        super();
+        this.#shadowRoot = this.attachShadow({ mode: 'closed' });
+        shadowRootStyle(this.#shadowRoot, itemCSS);
+        this.#htmlHeader = createElement('slot', {
+            name: 'header',
+            parent: this.#shadowRoot,
+        });
+        this.#htmlContent = createElement('slot', {
+            name: 'content',
+            parent: this.#shadowRoot,
+        });
+    }
+    getHeader() {
+        return this.#htmlHeader;
+    }
+    getContent() {
+        return this.#htmlContent;
+    }
+}
+let definedHarmonyItem = false;
+function defineHarmonyItem() {
+    if (window.customElements && !definedHarmonyItem) {
+        customElements.define('harmony-item', HTMLHarmonyItem);
+        definedHarmonyItem = true;
+    }
+}
+
 class HTMLHarmonyAccordionElement extends HTMLElement {
     #doOnce = true;
     #multiple = false;
     #disabled = false;
-    #items = new Map();
+    #items = new Set();
     #selected = new Set();
     #shadowRoot;
+    //#htmlSlots = new Set<HTMLSlotElement>();
     constructor() {
         super();
-        this.#shadowRoot = this.attachShadow({ mode: 'closed' });
+        this.#shadowRoot = this.attachShadow({ mode: 'closed', slotAssignment: "manual", });
         shadowRootStyle(this.#shadowRoot, accordionCSS);
         this.#initMutationObserver();
     }
@@ -1023,55 +1058,52 @@ class HTMLHarmonyAccordionElement extends HTMLElement {
         list.forEach(element => this.addItem(element));
     }
     addItem(item) {
-        if (item.tagName == 'ITEM') {
-            let header = item.getElementsByTagName('header')[0];
-            let content = item.getElementsByTagName('content')[0];
-            const htmlItemHeader = createElement('div', { class: 'header' });
-            const htmlItemContent = createElement('div', { class: 'content' });
-            htmlItemHeader.addEventListener('click', () => this.#toggle(htmlItemHeader));
-            htmlItemHeader.append(header);
-            htmlItemContent.append(content);
-            this.#items.set(htmlItemHeader, htmlItemContent);
-            this.#refresh();
-            item.remove();
-            if (header.getAttribute('select')) {
-                this.#toggle(htmlItemHeader);
-            }
+        if (item.tagName == 'HARMONY-ITEM') {
+            const htmlSlot = createElement('slot', {
+                parent: this.#shadowRoot,
+            });
+            htmlSlot.assign(item);
+            this.#items.add(item);
+            item.getHeader().addEventListener('click', () => this.#toggle(item));
         }
+        this.#refresh();
     }
     createItem(header, content) {
-        let item = createElement('item', { childs: [header, content] });
-        this.#shadowRoot.append(item);
+        let item = createElement('harmony-item', { childs: [header, content] });
+        header.slot = 'header';
+        content.slot = 'content';
+        this.append(item);
         return item;
     }
     #refresh() {
-        this.innerHTML = '';
-        for (let [header, content] of this.#items) {
-            let htmlItem = createElement('div', { class: 'item' });
-            htmlItem.append(header, content);
-            this.#shadowRoot.append(htmlItem);
+        for (const htmlItem of this.#items) {
+            hide(htmlItem.getContent());
         }
     }
-    #toggle(header, collapse = true) {
-        let content = this.#items.get(header);
+    #toggle(htmlItem, collapse = true) {
+        //let content = this.#items.get(header);
+        const htmlHeader = htmlItem.getHeader();
+        const htmlContent = htmlItem.getContent();
         if (collapse && !this.#multiple) {
             for (let selected of this.#selected) {
-                if (header != selected) {
+                if (htmlItem != selected) {
                     this.#toggle(selected, false);
                 }
             }
         }
-        if (this.#selected.has(header)) {
-            this.#selected.delete(header);
-            header.classList.remove('selected');
-            content.classList.remove('selected');
-            this.#dispatchSelect(false, header, content);
+        if (this.#selected.has(htmlItem)) {
+            this.#selected.delete(htmlItem);
+            //htmlHeader.classList.remove('selected');
+            //htmlContent.classList.remove('selected');
+            hide(htmlItem.getContent());
+            this.#dispatchSelect(false, htmlHeader, htmlContent);
         }
         else {
-            this.#selected.add(header);
-            header.classList.add('selected');
-            content.classList.add('selected');
-            this.#dispatchSelect(true, header, content);
+            this.#selected.add(htmlItem);
+            //htmlHeader.classList.add('selected');
+            //htmlContent.classList.add('selected');
+            show(htmlItem.getContent());
+            this.#dispatchSelect(true, htmlHeader, htmlContent);
         }
     }
     clear() {
@@ -1080,7 +1112,7 @@ class HTMLHarmonyAccordionElement extends HTMLElement {
         this.#refresh();
     }
     #dispatchSelect(selected, header, content) {
-        this.dispatchEvent(new CustomEvent(selected ? 'select' : 'unselect', { detail: { header: header.children[0], content: content.children[0] } }));
+        this.dispatchEvent(new CustomEvent(selected ? 'select' : 'unselect', { detail: { header: header.assignedElements()[0], content: content.assignedElements()[0] } }));
     }
     #initMutationObserver() {
         let config = { childList: true, subtree: true };
@@ -1118,6 +1150,7 @@ class HTMLHarmonyAccordionElement extends HTMLElement {
 let definedAccordion = false;
 function defineHarmonyAccordion() {
     if (window.customElements && !definedAccordion) {
+        defineHarmonyItem();
         customElements.define('harmony-accordion', HTMLHarmonyAccordionElement);
         definedAccordion = true;
         injectGlobalCss();
