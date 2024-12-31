@@ -4,27 +4,35 @@
 <head>
 	<meta charset="utf-8">
 	<title>Test accordion</title>
+	<style>
+		div[slot="header"] {
+			color: red;
+		}
+		div[slot="content"] {
+			color: blue;
+		}
+	  </style>
 </head>
 
 <body>
 	<harmony-accordion multiple="0" id="accordion">
-		<item>
-			<header>Item 1</header>
-			<content>Content 1</content>
-		</item>
-		<item>
-			<header>Item 2</header>
-			<content>Content 2</content>
-		</item>
+		<harmony-item>
+			<div slot="header">Item 1</div>
+			<div slot="content">Content 1</div>
+		</harmony-item>
+		<harmony-item>
+			<div slot="header">Item 2</div>
+			<div slot="content">Content 2</div>
+		</harmony-item>
 	</harmony-accordion>
 	<script type="module">
-		import { createElement, defineAccordion } from '../dist/harmony-ui.browser.js';
+		import { createElement, defineHarmonyAccordion } from '../dist/harmony-ui.browser.js';
 
-		defineAccordion();
+		defineHarmonyAccordion();
 		let accordion = document.getElementById('accordion');
 
-		let h = createElement('header', { innerHTML: 'Item 3' });
-		let c = createElement('content', { innerHTML: 'Content 3' });
+		let h = createElement('div', { innerHTML: 'Item 3' });
+		let c = createElement('div', { innerHTML: 'Content 3' });
 		accordion.createItem(h, c);
 
 		accordion.addEventListener('select', event => {

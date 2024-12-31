@@ -3,6 +3,7 @@ import { toBool } from '../utils/attributes';
 import accordionCSS from '../css/harmony-accordion.css';
 import { shadowRootStyle } from '../harmony-css';
 import { injectGlobalCss } from '../utils/globalcss';
+import { defineHarmonyItem } from './harmony-item';
 
 export class HTMLHarmonyAccordionElement extends HTMLElement {
 	#doOnce = true;
@@ -11,10 +12,11 @@ export class HTMLHarmonyAccordionElement extends HTMLElement {
 	#items = new Map();
 	#selected = new Set<HTMLElement>();
 	#shadowRoot: ShadowRoot;
+	#htmlSlots = new Set<HTMLSlotElement>();
 
 	constructor() {
 		super();
-		this.#shadowRoot = this.attachShadow({ mode: 'closed' });
+		this.#shadowRoot = this.attachShadow({ mode: 'closed', slotAssignment: "manual", });
 		shadowRootStyle(this.#shadowRoot, accordionCSS);
 		this.#initMutationObserver();
 	}
@@ -37,7 +39,7 @@ export class HTMLHarmonyAccordionElement extends HTMLElement {
 	}
 
 	addItem(item: HTMLElement) {
-		if (item.tagName == 'ITEM') {
+		if (item.tagName == 'ITEM'/* || item.tagName == 'HARMONY-ITEM'*/) {
 			let header = item.getElementsByTagName('header')[0];
 			let content = item.getElementsByTagName('content')[0];
 
@@ -56,12 +58,21 @@ export class HTMLHarmonyAccordionElement extends HTMLElement {
 			if (header.getAttribute('select')) {
 				this.#toggle(htmlItemHeader);
 			}
+		} else if (item.tagName == 'HARMONY-ITEM') {
+			let slot: HTMLSlotElement = createElement('slot', {
+				parent: this.#shadowRoot,
+			}) as HTMLSlotElement;
+			slot.assign(item);
+
 		}
 	}
 
 	createItem(header: HTMLElement, content: HTMLElement) {
-		let item = createElement('item', { childs: [header, content] });
-		this.#shadowRoot.append(item);
+		let item = createElement('harmony-item', { childs: [header, content] });
+		header.slot = 'header';
+		content.slot = 'content';
+
+		this.append(item);
 		return item;
 	}
 
@@ -149,6 +160,7 @@ export class HTMLHarmonyAccordionElement extends HTMLElement {
 let definedAccordion = false;
 export function defineHarmonyAccordion() {
 	if (window.customElements && !definedAccordion) {
+		defineHarmonyItem();
 		customElements.define('harmony-accordion', HTMLHarmonyAccordionElement);
 		definedAccordion = true;
 		injectGlobalCss();
