@@ -47,27 +47,43 @@
 			</harmony-item>
 		</harmony-accordion>
 	</div>
-	<div id="dynamic">
-		<div>Dynamically created</div>
+	<div id="dynamic1">
+		<div>Dynamically created no multiple</div>
+	</div>
+	<div id="dynamic2">
+		<div>Dynamically created multiple</div>
 	</div>
 	<script type="module">
 		import { createElement, defineHarmonyAccordion } from '../dist/harmony-ui.browser.js';
 
+		function setTimeoutPromise(timeout) {
+			return new Promise((resolve, reject) => {
+				const timeoutID = setTimeout(resolve, timeout);
+			});
+		}
+
+
 		defineHarmonyAccordion();
-		let accordion = document.getElementById('accordion');
+		const accordion1 = document.getElementById('accordion');
 
 		let h = createElement('div', { innerHTML: 'Item 3' });
 		let c = createElement('div', { innerHTML: 'Content 3' });
-		accordion.createItem(h, c);
+		accordion1.createItem(h, c);
 
-		accordion.addEventListener('select', event => {
+		accordion1.addEventListener('select', event => {
 			console.error(event.detail);
 		})
 
+		const accordion2 = createAccordion(document.getElementById('dynamic1'), 0);
+		const accordion3 = createAccordion(document.getElementById('dynamic2'), 1);
+
+
+		/*
 		createElement('harmony-accordion', {
 			parent: document.getElementById('dynamic'),
 			childs: [
 				createElement('harmony-item', {
+					id: 'item1',
 					childs: [
 						createElement('div', {
 							slot: 'header',
@@ -80,6 +96,7 @@
 					]
 				}),
 				createElement('harmony-item', {
+					id: 'item2',
 					childs: [
 						createElement('div', {
 							slot: 'header',
@@ -92,6 +109,7 @@
 					]
 				}),
 				createElement('harmony-item', {
+					id: 'item3',
 					childs: [
 						createElement('div', {
 							slot: 'header',
@@ -104,7 +122,68 @@
 					]
 				}),
 			]
-		});
+		});*/
+
+		let i = -1;
+		while (true) {
+			if (i % 4 == 3) {
+				accordion2.collapseAll();
+				accordion3.collapseAll();
+			}
+			accordion2.expand(`item${1 + i % 4}`);
+			accordion3.expand(`item${1 + i % 4}`);
+			++i
+			await setTimeoutPromise(1000);
+		}
+
+		function createAccordion(parent, multiple) {
+			return createElement('harmony-accordion', {
+				parent: parent,
+				multiple: multiple,
+				childs: [
+					createElement('harmony-item', {
+						id: 'item1',
+						childs: [
+							createElement('div', {
+								slot: 'header',
+								innerText: 'Item 1',
+							}),
+							createElement('div', {
+								slot: 'content',
+								innerText: 'Content 1',
+							}),
+						]
+					}),
+					createElement('harmony-item', {
+						id: 'item2',
+						childs: [
+							createElement('div', {
+								slot: 'header',
+								innerText: 'Item 2',
+							}),
+							createElement('div', {
+								slot: 'content',
+								innerText: 'Content 2',
+							}),
+						]
+					}),
+					createElement('harmony-item', {
+						id: 'item3',
+						childs: [
+							createElement('div', {
+								slot: 'header',
+								innerText: 'Item 3',
+							}),
+							createElement('div', {
+								slot: 'content',
+								innerText: 'Content 3',
+							}),
+						]
+					}),
+				]
+			});
+
+		}
 	</script>
 </body>
 

@@ -6,6 +6,7 @@ export class HTMLHarmonyItem extends HTMLElement {
 	#shadowRoot: ShadowRoot;
 	#htmlHeader: HTMLSlotElement;
 	#htmlContent: HTMLSlotElement;
+	#id: string = '';
 
 	constructor() {
 		super();
@@ -28,6 +29,23 @@ export class HTMLHarmonyItem extends HTMLElement {
 
 	getContent() {
 		return this.#htmlContent;
+	}
+
+	getId() {
+		return this.#id;
+	}
+
+	attributeChangedCallback(name: string, oldValue: string, newValue: string) {
+		switch (name) {
+			case 'id':
+			case 'item-id':
+				this.#id = newValue;
+				break;
+		}
+	}
+
+	static get observedAttributes() {
+		return ['id', 'item-id'];
 	}
 }
 

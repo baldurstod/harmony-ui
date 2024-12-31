@@ -117,6 +117,7 @@ function createElementOptions(element, options, shadowRoot) {
                     }
                     break;
                 case 'list':
+                case 'multiple':
                     element.setAttribute(optionName, optionValue);
                     break;
                 case 'slot':
@@ -997,6 +998,7 @@ class HTMLHarmonyItem extends HTMLElement {
     #shadowRoot;
     #htmlHeader;
     #htmlContent;
+    #id = '';
     constructor() {
         super();
         this.#shadowRoot = this.attachShadow({ mode: 'closed' });
@@ -1015,6 +1017,20 @@ class HTMLHarmonyItem extends HTMLElement {
     }
     getContent() {
         return this.#htmlContent;
+    }
+    getId() {
+        return this.#id;
+    }
+    attributeChangedCallback(name, oldValue, newValue) {
+        switch (name) {
+            case 'id':
+            case 'item-id':
+                this.#id = newValue;
+                break;
+        }
+    }
+    static get observedAttributes() {
+        return ['id', 'item-id'];
     }
 }
 let definedHarmonyItem = false;
@@ -1082,28 +1098,42 @@ class HTMLHarmonyAccordionElement extends HTMLElement {
     }
     #toggle(htmlItem, collapse = true) {
         //let content = this.#items.get(header);
-        const htmlHeader = htmlItem.getHeader();
-        const htmlContent = htmlItem.getContent();
+        /*
         if (collapse && !this.#multiple) {
             for (let selected of this.#selected) {
                 if (htmlItem != selected) {
                     this.#toggle(selected, false);
                 }
             }
-        }
+        }*/
         if (this.#selected.has(htmlItem)) {
-            this.#selected.delete(htmlItem);
-            //htmlHeader.classList.remove('selected');
-            //htmlContent.classList.remove('selected');
-            hide(htmlItem.getContent());
-            this.#dispatchSelect(false, htmlHeader, htmlContent);
+            this.#display(htmlItem, false);
         }
         else {
+            this.#display(htmlItem, true);
+        }
+    }
+    #display(htmlItem, display) {
+        if (display) {
             this.#selected.add(htmlItem);
             //htmlHeader.classList.add('selected');
             //htmlContent.classList.add('selected');
             show(htmlItem.getContent());
-            this.#dispatchSelect(true, htmlHeader, htmlContent);
+            this.#dispatchSelect(true, htmlItem);
+            if (!this.#multiple) {
+                for (let selected of this.#selected) {
+                    if (htmlItem != selected) {
+                        this.#display(selected, false);
+                    }
+                }
+            }
+        }
+        else {
+            this.#selected.delete(htmlItem);
+            //htmlHeader.classList.remove('selected');
+            //htmlContent.classList.remove('selected');
+            hide(htmlItem.getContent());
+            this.#dispatchSelect(false, htmlItem);
         }
     }
     clear() {
@@ -1111,8 +1141,40 @@ class HTMLHarmonyAccordionElement extends HTMLElement {
         this.#selected.clear();
         this.#refresh();
     }
-    #dispatchSelect(selected, header, content) {
-        this.dispatchEvent(new CustomEvent(selected ? 'select' : 'unselect', { detail: { header: header.assignedElements()[0], content: content.assignedElements()[0] } }));
+    expand(id) {
+        for (const htmlItem of this.#items) {
+            if (htmlItem.getId() == id) {
+                this.#display(htmlItem, true);
+            }
+        }
+    }
+    expandAll() {
+        for (const htmlItem of this.#items) {
+            this.#display(htmlItem, true);
+        }
+    }
+    collapse(id) {
+        for (const htmlItem of this.#items) {
+            if (htmlItem.getId() == id) {
+                this.#display(htmlItem, false);
+            }
+        }
+    }
+    collapseAll() {
+        for (const htmlItem of this.#items) {
+            this.#display(htmlItem, false);
+        }
+    }
+    #dispatchSelect(selected, htmlItem) {
+        const htmlHeader = htmlItem.getHeader();
+        const htmlContent = htmlItem.getContent();
+        this.dispatchEvent(new CustomEvent(selected ? 'select' : 'unselect', {
+            detail: {
+                id: htmlItem.getId(),
+                header: htmlHeader.assignedElements()[0],
+                content: htmlContent.assignedElements()[0]
+            }
+        }));
     }
     #initMutationObserver() {
         let config = { childList: true, subtree: true };

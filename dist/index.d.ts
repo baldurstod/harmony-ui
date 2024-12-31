@@ -120,6 +120,10 @@ export declare class HTMLHarmonyAccordionElement extends HTMLElement {
     addItem(item: HTMLHarmonyItem): void;
     createItem(header: HTMLElement, content: HTMLElement): HTMLElement;
     clear(): void;
+    expand(id: string): void;
+    expandAll(): void;
+    collapse(id: string): void;
+    collapseAll(): void;
     set disabled(disabled: boolean);
     get disabled(): boolean;
     attributeChangedCallback(name: string, oldValue: string, newValue: string): void;
@@ -166,6 +170,9 @@ declare class HTMLHarmonyItem extends HTMLElement {
     constructor();
     getHeader(): HTMLSlotElement;
     getContent(): HTMLSlotElement;
+    getId(): string;
+    attributeChangedCallback(name: string, oldValue: string, newValue: string): void;
+    static get observedAttributes(): string[];
 }
 
 export declare class HTMLHarmonyLabelPropertyElement extends HTMLElement {
