@@ -143,7 +143,17 @@ async function adoptStyleSheet(element: HTMLElement | Document | ShadowRoot, css
 	}
 }
 
-export function display(htmlElement: HTMLElement | undefined, visible: boolean) {
+export function display(htmlElement: HTMLElement | ShadowRoot | Array<HTMLElement | ShadowRoot> | undefined, visible: boolean) {
+	if (Array.isArray(htmlElement)) {
+		for (const e of htmlElement) {
+			disp(e, visible);
+		}
+	} else {
+		disp(htmlElement, visible);
+	}
+}
+
+function disp(htmlElement: HTMLElement | ShadowRoot | undefined, visible: boolean) {
 	if (htmlElement == undefined) {
 		return;
 	}
@@ -159,11 +169,11 @@ export function display(htmlElement: HTMLElement | undefined, visible: boolean) 
 	}
 }
 
-export function show(htmlElement?: HTMLElement) {
+export function show(htmlElement: HTMLElement | ShadowRoot | Array<HTMLElement | ShadowRoot> | undefined) {
 	display(htmlElement, true);
 }
 
-export function hide(htmlElement?: HTMLElement) {
+export function hide(htmlElement: HTMLElement | ShadowRoot | Array<HTMLElement | ShadowRoot> | undefined) {
 	display(htmlElement, false);
 }
 

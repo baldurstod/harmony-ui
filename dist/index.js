@@ -163,6 +163,16 @@ async function adoptStyleSheet(element, cssText) {
     }
 }
 function display(htmlElement, visible) {
+    if (Array.isArray(htmlElement)) {
+        for (const e of htmlElement) {
+            disp(e, visible);
+        }
+    }
+    else {
+        disp(htmlElement, visible);
+    }
+}
+function disp(htmlElement, visible) {
     if (htmlElement == undefined) {
         return;
     }
