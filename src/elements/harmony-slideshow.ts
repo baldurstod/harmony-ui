@@ -1,6 +1,7 @@
 import { I18n } from '../harmony-i18n';
-import { createElement, hide, show, display } from '../harmony-html';
+import { createElement, hide, show, display, createShadowRoot } from '../harmony-html';
 import slideshowCSS from '../css/harmony-slideshow.css';
+import slideshowZoomCSS from '../css/harmony-slideshow-zoom.css';
 import { shadowRootStyleSync } from '../harmony-css';
 import { toBool } from '../utils/attributes';
 import { injectGlobalCss } from '../utils/globalcss';
@@ -26,6 +27,7 @@ export type HarmonySlideshowOptions = {
 
 export class HTMLHarmonySlideshowElement extends HTMLElement {
 	#shadowRoot: ShadowRoot;
+	#zoomShadowRoot: ShadowRoot;
 	#activeImage?: HTMLImageElement;
 	#currentImage = 0;
 	#doOnce = true;
@@ -37,7 +39,6 @@ export class HTMLHarmonySlideshowElement extends HTMLElement {
 	#htmlPauseButton: HTMLElement;
 	#htmlPlayButton: HTMLElement;
 	#htmlThumbnails: HTMLElement;
-	#htmlZoomContainer: HTMLElement;
 	#images: Array<HTMLImageElement> = [];
 	#imgSet = new Set();
 	#htmlZoomImage: HTMLImageElement;
@@ -108,13 +109,13 @@ export class HTMLHarmonySlideshowElement extends HTMLElement {
 		});
 
 		this.#htmlZoomImage = createElement('img') as HTMLImageElement;
-		this.#htmlZoomContainer = createElement('div', {
-			class: 'zoom',
+		this.#zoomShadowRoot = createShadowRoot('div', {
+			adoptStyle: slideshowZoomCSS,
 			parent: document.body,
 			childs: [
 				this.#htmlZoomImage,
 			]
-		}) as HTMLElement;
+		});
 
 		this.#htmlThumbnails = createElement('div', {
 			class: 'thumbnails',
@@ -152,7 +153,6 @@ export class HTMLHarmonySlideshowElement extends HTMLElement {
 		}
 		this.#resizeObserver.observe(this);
 		this.checkImagesSize();
-		document.body.append(this.#htmlZoomContainer);
 
 		if (this.#dynamic) {
 			this.classList.add('dynamic');
@@ -160,9 +160,9 @@ export class HTMLHarmonySlideshowElement extends HTMLElement {
 	}
 
 	disconnectedCallback() {
-		if (this.#htmlZoomContainer) {
-			this.#htmlZoomContainer.remove();
-			hide(this.#htmlZoomContainer);
+		if (this.#zoomShadowRoot) {
+			this.#zoomShadowRoot.host.remove();
+			hide(this.#zoomShadowRoot);
 		}
 	}
 
@@ -332,14 +332,14 @@ export class HTMLHarmonySlideshowElement extends HTMLElement {
 			case 'mouseover':
 				if (activeImage) {
 					this.#htmlZoomImage.src = activeImage.src;
-					show(this.#htmlZoomContainer);
+					show(this.#zoomShadowRoot);
 				}
 				break;
 			case 'mousemove':
 				if (activeImage) {
 
-					let deltaWidth = this.#htmlZoomContainer.clientWidth - this.#htmlZoomImage.clientWidth;
-					let deltaHeight = this.#htmlZoomContainer.clientHeight - this.#htmlZoomImage.clientHeight;
+					let deltaWidth = this.#zoomShadowRoot.host.clientWidth - this.#htmlZoomImage.clientWidth;
+					let deltaHeight = this.#zoomShadowRoot.host.clientHeight - this.#htmlZoomImage.clientHeight;
 
 					let mouseX = event.offsetX / activeImage.offsetWidth - 0.5;
 					let mouseY = event.offsetY / activeImage.offsetHeight - 0.5;
@@ -365,7 +365,7 @@ export class HTMLHarmonySlideshowElement extends HTMLElement {
 				}
 				break;
 			case 'mouseout':
-				hide(this.#htmlZoomContainer);
+				hide(this.#zoomShadowRoot);
 				break;
 			default:
 

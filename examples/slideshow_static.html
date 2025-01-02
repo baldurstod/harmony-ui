@@ -14,8 +14,8 @@
 		<img src="https://files.cdn.printful.com/files/60c/60cf9cdbaac70ca5e6100a972e886e2e_preview.png">
 	</harmony-slideshow>
 	<script type="module">
-		import { createElement, defineSlideshow } from '../dist/harmony-ui.js';
-		defineSlideshow();
+		import { createElement, defineHarmonySlideshow } from '../dist/harmony-ui.browser.js';
+		defineHarmonySlideshow();
 		function setTimeoutPromise(delay, signal) {
 			return new Promise((resolve, reject) => setTimeout(resolve, delay));
 		}
