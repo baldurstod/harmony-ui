@@ -81,10 +81,12 @@ function createElementOptions(element, options, shadowRoot) {
                     element.setAttribute('data-i18n-label', optionValue);
                     element.classList.add('i18n-label');
                     break;
+                case 'i18nJSON':
                 case 'i18n-json':
                     element.setAttribute('data-i18n-json', JSON.stringify(optionValue));
                     element.classList.add('i18n');
                     break;
+                case 'i18nValues':
                 case 'i18n-values':
                     element.setAttribute('data-i18n-values', JSON.stringify(optionValue));
                     element.classList.add('i18n');
@@ -1884,7 +1886,7 @@ class HTMLHarmonyPaletteElement extends HTMLElement {
         if (!this.#initialized) {
             return;
         }
-        this.innerHTML = '';
+        this.innerText = '';
         this.#colorElements.clear();
         for (const [colorHex, color] of this.#colors) {
             const element = createElement('div', {
@@ -2733,8 +2735,8 @@ class HTMLHarmonySlideshowElement extends HTMLElement {
     removeAllImages() {
         this.#images = [];
         this.#imgSet = new Set();
-        this.#htmlImagesInner.innerHTML = '';
-        this.#htmlThumbnails.innerHTML = '';
+        this.#htmlImagesInner.innerText = '';
+        this.#htmlThumbnails.innerText = '';
         this.#activeImage = undefined;
         // Remove pending images
         let list = [];
@@ -3424,8 +3426,8 @@ class HTMLHarmonyTabGroupElement extends HTMLElement {
     clear() {
         this.#tabs.clear();
         this.#activeTab = undefined;
-        this.#header.innerHTML = '';
-        this.#content.innerHTML = '';
+        this.#header.innerText = '';
+        this.#content.innerText = '';
     }
 }
 let definedTabGroup = false;

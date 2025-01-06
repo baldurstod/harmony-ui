@@ -58,7 +58,7 @@ export class HTMLHarmonyPaletteElement extends HTMLElement {
 		if (!this.#initialized) {
 			return;
 		}
-		this.innerHTML = '';
+		this.innerText = '';
 		this.#colorElements.clear();
 
 		for (const [colorHex, color] of this.#colors) {

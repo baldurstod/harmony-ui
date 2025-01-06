@@ -192,8 +192,8 @@ export class HTMLHarmonySlideshowElement extends HTMLElement {
 	removeAllImages() {
 		this.#images = [];
 		this.#imgSet = new Set();
-		this.#htmlImagesInner.innerHTML = '';
-		this.#htmlThumbnails.innerHTML = '';
+		this.#htmlImagesInner.innerText = '';
+		this.#htmlThumbnails.innerText = '';
 		this.#activeImage = undefined;
 
 		// Remove pending images

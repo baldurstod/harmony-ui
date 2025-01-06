@@ -73,8 +73,8 @@ export class HTMLHarmonyTabGroupElement extends HTMLElement {
 	clear() {
 		this.#tabs.clear();
 		this.#activeTab = undefined;
-		this.#header.innerHTML = '';
-		this.#content.innerHTML = '';
+		this.#header.innerText = '';
+		this.#content.innerText = '';
 	}
 }
 
