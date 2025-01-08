@@ -175,7 +175,7 @@ function display(htmlElement, visible) {
     }
 }
 function disp(htmlElement, visible) {
-    if (htmlElement == undefined) {
+    if (!htmlElement) {
         return;
     }
     if (htmlElement instanceof ShadowRoot) {

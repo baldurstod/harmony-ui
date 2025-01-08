@@ -44,7 +44,7 @@ export declare function defineHarmonyToggleButton(): void;
 
 export declare function defineHarmonyTooltip(): void;
 
-export declare function display(htmlElement: HTMLElement | ShadowRoot | Array<HTMLElement | ShadowRoot> | undefined, visible: boolean): void;
+export declare function display(htmlElement: HTMLElement | ShadowRoot | Array<HTMLElement | ShadowRoot> | undefined | null, visible: boolean): void;
 
 export declare function documentStyle(cssText: string): Promise<void>;
 
@@ -74,7 +74,7 @@ export declare type HarmonySlideshowOptions = {
     id?: string;
 };
 
-export declare function hide(htmlElement: HTMLElement | ShadowRoot | Array<HTMLElement | ShadowRoot> | undefined): void;
+export declare function hide(htmlElement: HTMLElement | ShadowRoot | Array<HTMLElement | ShadowRoot> | undefined | null): void;
 
 export declare class HTMLHarmony2dManipulatorElement extends HTMLElement {
     #private;
@@ -403,7 +403,7 @@ export declare function shadowRootStyle(shadowRoot: Document | ShadowRoot, cssTe
 
 export declare function shadowRootStyleSync(shadowRoot: Document | ShadowRoot, cssText: string): void;
 
-export declare function show(htmlElement: HTMLElement | ShadowRoot | Array<HTMLElement | ShadowRoot> | undefined): void;
+export declare function show(htmlElement: HTMLElement | ShadowRoot | Array<HTMLElement | ShadowRoot> | undefined | null): void;
 
 export declare function styleInject(css: string): void;
 
