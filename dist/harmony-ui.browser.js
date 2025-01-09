@@ -192,8 +192,11 @@ function hide(htmlElement) {
     display(htmlElement, false);
 }
 function toggle(htmlElement) {
-    if (!(htmlElement instanceof HTMLElement)) {
+    if (!htmlElement) {
         return;
+    }
+    if (htmlElement instanceof ShadowRoot) {
+        htmlElement = htmlElement.host;
     }
     if (htmlElement.style.display == 'none') {
         htmlElement.style.display = '';

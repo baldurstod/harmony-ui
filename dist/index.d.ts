@@ -407,7 +407,7 @@ export declare function show(htmlElement: HTMLElement | ShadowRoot | Array<HTMLE
 
 export declare function styleInject(css: string): void;
 
-export declare function toggle(htmlElement: HTMLElement): void;
+export declare function toggle(htmlElement: HTMLElement | ShadowRoot | undefined | null): void;
 
 export declare function updateElement(element: HTMLElement, options: any): HTMLElement;
 

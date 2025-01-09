@@ -179,10 +179,15 @@ export function hide(htmlElement: HTMLElement | ShadowRoot | Array<HTMLElement |
 	display(htmlElement, false);
 }
 
-export function toggle(htmlElement: HTMLElement) {
-	if (!(htmlElement instanceof HTMLElement)) {
+export function toggle(htmlElement: HTMLElement | ShadowRoot | undefined | null) {
+	if (!htmlElement) {
 		return;
 	}
+
+	if (htmlElement instanceof ShadowRoot) {
+		htmlElement = (htmlElement.host as HTMLElement);
+	}
+
 	if (htmlElement.style.display == 'none') {
 		htmlElement.style.display = '';
 	} else {
