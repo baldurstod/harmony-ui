@@ -377,7 +377,9 @@ export declare class I18n {
 }
 
 export declare enum I18nEvents {
-    LangChanged = "langchanged"
+    LangChanged = "langchanged",
+    TranslationsUpdated = "translationsupdated",
+    Any = "*"
 }
 
 export declare function isVisible(htmlElement: HTMLElement): boolean;

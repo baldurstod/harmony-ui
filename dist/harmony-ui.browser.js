@@ -217,6 +217,8 @@ const I18N_DELAY_BEFORE_REFRESH = 100;
 var I18nEvents;
 (function (I18nEvents) {
     I18nEvents["LangChanged"] = "langchanged";
+    I18nEvents["TranslationsUpdated"] = "translationsupdated";
+    I18nEvents["Any"] = "*";
 })(I18nEvents || (I18nEvents = {}));
 class I18n {
     static #lang = 'english';
@@ -235,6 +237,8 @@ class I18n {
             for (let translation of options.translations) {
                 this.addTranslation(translation);
             }
+            this.eventTarget.dispatchEvent(new CustomEvent(I18nEvents.TranslationsUpdated));
+            this.eventTarget.dispatchEvent(new CustomEvent(I18nEvents.Any));
         }
         this.i18n();
     }
@@ -347,8 +351,10 @@ class I18n {
     }
     static setLang(lang) {
         if (this.#lang != lang) {
-            this.eventTarget.dispatchEvent(new CustomEvent(I18nEvents.LangChanged, { detail: { oldLang: this.#lang, newLang: lang } }));
+            const oldLang = this.#lang;
             this.#lang = lang;
+            this.eventTarget.dispatchEvent(new CustomEvent(I18nEvents.LangChanged, { detail: { oldLang: oldLang, newLang: lang } }));
+            this.eventTarget.dispatchEvent(new CustomEvent(I18nEvents.Any));
             this.i18n();
         }
     }

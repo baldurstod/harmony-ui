@@ -2,6 +2,8 @@ const I18N_DELAY_BEFORE_REFRESH = 100;
 
 export enum I18nEvents {
 	LangChanged = 'langchanged',
+	TranslationsUpdated = 'translationsupdated',
+	Any = '*',
 }
 
 export type LangChangedEvent = { detail: { oldLang: string, newLang: string } };
@@ -25,6 +27,8 @@ export class I18n {
 			for (let translation of options.translations) {
 				this.addTranslation(translation);
 			}
+			this.eventTarget.dispatchEvent(new CustomEvent(I18nEvents.TranslationsUpdated));
+			this.eventTarget.dispatchEvent(new CustomEvent(I18nEvents.Any));
 		}
 		this.i18n();
 	}
@@ -155,8 +159,10 @@ export class I18n {
 
 	static setLang(lang: string) {
 		if (this.#lang != lang) {
-			this.eventTarget.dispatchEvent(new CustomEvent(I18nEvents.LangChanged, { detail: { oldLang: this.#lang, newLang: lang } }));
+			const oldLang = this.#lang;
 			this.#lang = lang;
+			this.eventTarget.dispatchEvent(new CustomEvent(I18nEvents.LangChanged, { detail: { oldLang: oldLang, newLang: lang } }));
+			this.eventTarget.dispatchEvent(new CustomEvent(I18nEvents.Any));
 			this.i18n();
 		}
 	}
