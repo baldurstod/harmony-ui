@@ -358,6 +358,7 @@ export declare class HTMLHarmonyTooltipElement extends HTMLElement {
 
 export declare class I18n {
     #private;
+    static eventTarget: EventTarget;
     static start(): void;
     static setOptions(options: {
         translations: any;
@@ -368,13 +369,25 @@ export declare class I18n {
     static updateElement(htmlElement: HTMLElement | ShadowRoot): void;
     static set lang(lang: string);
     static setLang(lang: string): void;
+    static addEventListener(type: string, callback: EventListenerOrEventListenerObject | null, options?: AddEventListenerOptions | boolean): void;
     static getString(s: string): string;
     static formatString(s: string, values: any): string;
     static get authors(): void;
     static getAuthors(): any;
 }
 
+export declare enum I18nEvents {
+    LangChanged = "langchanged"
+}
+
 export declare function isVisible(htmlElement: HTMLElement): boolean;
+
+export declare type LangChangedEvent = {
+    detail: {
+        oldLang: string;
+        newLang: string;
+    };
+};
 
 export declare enum ManipulatorCorner {
     None = -1,

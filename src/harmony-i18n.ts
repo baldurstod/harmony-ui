@@ -1,5 +1,11 @@
 const I18N_DELAY_BEFORE_REFRESH = 100;
 
+export enum I18nEvents {
+	LangChanged = 'langchanged',
+}
+
+export type LangChangedEvent = { detail: { oldLang: string, newLang: string } };
+
 export class I18n {
 	static #lang = 'english';
 	static #translations = new Map();
@@ -8,6 +14,7 @@ export class I18n {
 	static #observerConfig = { childList: true, subtree: true, attributeFilter: ['i18n', 'data-i18n-json', 'data-i18n-values'] };
 	static #observer?: MutationObserver;
 	static #observed = new Set<HTMLElement | ShadowRoot>();
+	static eventTarget = new EventTarget();
 
 	static start() {
 		this.observeElement(document.body);
@@ -148,9 +155,14 @@ export class I18n {
 
 	static setLang(lang: string) {
 		if (this.#lang != lang) {
+			this.eventTarget.dispatchEvent(new CustomEvent(I18nEvents.LangChanged, { detail: { oldLang: this.#lang, newLang: lang } }));
 			this.#lang = lang;
 			this.i18n();
 		}
+	}
+
+	static addEventListener(type: string, callback: EventListenerOrEventListenerObject | null, options?: AddEventListenerOptions | boolean): void {
+		this.eventTarget.addEventListener(type, callback, options);
 	}
 
 	static getString(s: string) {

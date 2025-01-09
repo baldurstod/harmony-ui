@@ -217,6 +217,10 @@ function styleInject(css) {
 }
 
 const I18N_DELAY_BEFORE_REFRESH = 100;
+var I18nEvents;
+(function (I18nEvents) {
+    I18nEvents["LangChanged"] = "langchanged";
+})(I18nEvents || (I18nEvents = {}));
 class I18n {
     static #lang = 'english';
     static #translations = new Map();
@@ -225,6 +229,7 @@ class I18n {
     static #observerConfig = { childList: true, subtree: true, attributeFilter: ['i18n', 'data-i18n-json', 'data-i18n-values'] };
     static #observer;
     static #observed = new Set();
+    static eventTarget = new EventTarget();
     static start() {
         this.observeElement(document.body);
     }
@@ -345,9 +350,13 @@ class I18n {
     }
     static setLang(lang) {
         if (this.#lang != lang) {
+            this.eventTarget.dispatchEvent(new CustomEvent(I18nEvents.LangChanged, { detail: { oldLang: this.#lang, newLang: lang } }));
             this.#lang = lang;
             this.i18n();
         }
+    }
+    static addEventListener(type, callback, options) {
+        this.eventTarget.addEventListener(type, callback, options);
     }
     static getString(s) {
         const strings = this.#translations.get(this.#lang)?.strings;
@@ -3564,4 +3573,4 @@ function defineHarmonyToggleButton() {
     }
 }
 
-export { HTMLHarmony2dManipulatorElement, HTMLHarmonyAccordionElement, HTMLHarmonyColorPickerElement, HTMLHarmonyContextMenuElement, HTMLHarmonyCopyElement, HTMLHarmonyFileInputElement, HTMLHarmonyLabelPropertyElement, HTMLHarmonyPaletteElement, HTMLHarmonyPanelElement, HTMLHarmonyRadioElement, HTMLHarmonySelectElement, HTMLHarmonySlideshowElement, HTMLHarmonySplitterElement, HTMLHarmonySwitchElement, HTMLHarmonyTabElement, HTMLHarmonyTabGroupElement, HTMLHarmonyToggleButtonElement, HTMLHarmonyTooltipElement, I18n, ManipulatorCorner, ManipulatorDirection, ManipulatorSide, cloneEvent, createElement, createElementNS, createShadowRoot, defineHarmony2dManipulator, defineHarmonyAccordion, defineHarmonyColorPicker, defineHarmonyContextMenu, defineHarmonyCopy, defineHarmonyFileInput, defineHarmonyLabelProperty, defineHarmonyPalette, defineHarmonyPanel, defineHarmonyRadio, defineHarmonySelect, defineHarmonySlideshow, defineHarmonySplitter, defineHarmonySwitch, defineHarmonyTab, defineHarmonyTabGroup, defineHarmonyToggleButton, defineHarmonyTooltip, display, documentStyle, documentStyleSync, hide, isVisible, shadowRootStyle, shadowRootStyleSync, show, styleInject, toggle, updateElement, visible };
+export { HTMLHarmony2dManipulatorElement, HTMLHarmonyAccordionElement, HTMLHarmonyColorPickerElement, HTMLHarmonyContextMenuElement, HTMLHarmonyCopyElement, HTMLHarmonyFileInputElement, HTMLHarmonyLabelPropertyElement, HTMLHarmonyPaletteElement, HTMLHarmonyPanelElement, HTMLHarmonyRadioElement, HTMLHarmonySelectElement, HTMLHarmonySlideshowElement, HTMLHarmonySplitterElement, HTMLHarmonySwitchElement, HTMLHarmonyTabElement, HTMLHarmonyTabGroupElement, HTMLHarmonyToggleButtonElement, HTMLHarmonyTooltipElement, I18n, I18nEvents, ManipulatorCorner, ManipulatorDirection, ManipulatorSide, cloneEvent, createElement, createElementNS, createShadowRoot, defineHarmony2dManipulator, defineHarmonyAccordion, defineHarmonyColorPicker, defineHarmonyContextMenu, defineHarmonyCopy, defineHarmonyFileInput, defineHarmonyLabelProperty, defineHarmonyPalette, defineHarmonyPanel, defineHarmonyRadio, defineHarmonySelect, defineHarmonySlideshow, defineHarmonySplitter, defineHarmonySwitch, defineHarmonyTab, defineHarmonyTabGroup, defineHarmonyToggleButton, defineHarmonyTooltip, display, documentStyle, documentStyleSync, hide, isVisible, shadowRootStyle, shadowRootStyleSync, show, styleInject, toggle, updateElement, visible };
