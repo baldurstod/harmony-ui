@@ -16,7 +16,7 @@ export class I18n {
 	static #observerConfig = { childList: true, subtree: true, attributeFilter: ['i18n', 'data-i18n-json', 'data-i18n-values'] };
 	static #observer?: MutationObserver;
 	static #observed = new Set<HTMLElement | ShadowRoot>();
-	static eventTarget = new EventTarget();
+	static #eventTarget = new EventTarget();
 
 	static start() {
 		this.observeElement(document.body);
@@ -27,8 +27,8 @@ export class I18n {
 			for (let translation of options.translations) {
 				this.addTranslation(translation);
 			}
-			this.eventTarget.dispatchEvent(new CustomEvent(I18nEvents.TranslationsUpdated));
-			this.eventTarget.dispatchEvent(new CustomEvent(I18nEvents.Any));
+			this.#eventTarget.dispatchEvent(new CustomEvent(I18nEvents.TranslationsUpdated));
+			this.#eventTarget.dispatchEvent(new CustomEvent(I18nEvents.Any));
 		}
 		this.i18n();
 	}
@@ -161,14 +161,14 @@ export class I18n {
 		if (this.#lang != lang) {
 			const oldLang = this.#lang;
 			this.#lang = lang;
-			this.eventTarget.dispatchEvent(new CustomEvent(I18nEvents.LangChanged, { detail: { oldLang: oldLang, newLang: lang } }));
-			this.eventTarget.dispatchEvent(new CustomEvent(I18nEvents.Any));
+			this.#eventTarget.dispatchEvent(new CustomEvent(I18nEvents.LangChanged, { detail: { oldLang: oldLang, newLang: lang } }));
+			this.#eventTarget.dispatchEvent(new CustomEvent(I18nEvents.Any));
 			this.i18n();
 		}
 	}
 
 	static addEventListener(type: string, callback: EventListenerOrEventListenerObject | null, options?: AddEventListenerOptions | boolean): void {
-		this.eventTarget.addEventListener(type, callback, options);
+		this.#eventTarget.addEventListener(type, callback, options);
 	}
 
 	static getString(s: string) {
