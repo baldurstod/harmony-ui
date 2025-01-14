@@ -358,7 +358,6 @@ export declare class HTMLHarmonyTooltipElement extends HTMLElement {
 
 export declare class I18n {
     #private;
-    static eventTarget: EventTarget;
     static start(): void;
     static setOptions(options: {
         translations: any;

@@ -123,6 +123,7 @@ function createElementOptions(element, options, shadowRoot) {
                     break;
                 case 'list':
                 case 'multiple':
+                case 'selected':
                     element.setAttribute(optionName, optionValue);
                     break;
                 case 'slot':
@@ -231,7 +232,7 @@ class I18n {
     static #observerConfig = { childList: true, subtree: true, attributeFilter: ['i18n', 'data-i18n-json', 'data-i18n-values'] };
     static #observer;
     static #observed = new Set();
-    static eventTarget = new EventTarget();
+    static #eventTarget = new EventTarget();
     static start() {
         this.observeElement(document.body);
     }
@@ -240,8 +241,8 @@ class I18n {
             for (let translation of options.translations) {
                 this.addTranslation(translation);
             }
-            this.eventTarget.dispatchEvent(new CustomEvent(I18nEvents.TranslationsUpdated));
-            this.eventTarget.dispatchEvent(new CustomEvent(I18nEvents.Any));
+            this.#eventTarget.dispatchEvent(new CustomEvent(I18nEvents.TranslationsUpdated));
+            this.#eventTarget.dispatchEvent(new CustomEvent(I18nEvents.Any));
         }
         this.i18n();
     }
@@ -356,13 +357,13 @@ class I18n {
         if (this.#lang != lang) {
             const oldLang = this.#lang;
             this.#lang = lang;
-            this.eventTarget.dispatchEvent(new CustomEvent(I18nEvents.LangChanged, { detail: { oldLang: oldLang, newLang: lang } }));
-            this.eventTarget.dispatchEvent(new CustomEvent(I18nEvents.Any));
+            this.#eventTarget.dispatchEvent(new CustomEvent(I18nEvents.LangChanged, { detail: { oldLang: oldLang, newLang: lang } }));
+            this.#eventTarget.dispatchEvent(new CustomEvent(I18nEvents.Any));
             this.i18n();
         }
     }
     static addEventListener(type, callback, options) {
-        this.eventTarget.addEventListener(type, callback, options);
+        this.#eventTarget.addEventListener(type, callback, options);
     }
     static getString(s) {
         const strings = this.#translations.get(this.#lang)?.strings;

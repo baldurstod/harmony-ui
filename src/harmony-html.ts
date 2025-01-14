@@ -103,6 +103,7 @@ function createElementOptions(element: HTMLElement, options: any, shadowRoot?: S
 					break;
 				case 'list':
 				case 'multiple':
+				case 'selected':
 					element.setAttribute(optionName, optionValue);
 					break;
 				case 'slot':
