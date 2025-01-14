@@ -413,6 +413,11 @@ export declare enum ManipulatorSide {
     Right = 3
 }
 
+export declare type RadioChangedEventData = {
+    value: string;
+    state: boolean;
+};
+
 export declare function shadowRootStyle(shadowRoot: Document | ShadowRoot, cssText: string): Promise<void>;
 
 export declare function shadowRootStyleSync(shadowRoot: Document | ShadowRoot, cssText: string): void;

@@ -5,6 +5,8 @@ import radioCSS from '../css/harmony-radio.css';
 import { toBool } from '../utils/attributes';
 import { injectGlobalCss } from '../utils/globalcss';
 
+export type RadioChangedEventData = { value: string, state: boolean };
+
 export class HTMLHarmonyRadioElement extends HTMLElement {
 	#doOnce = true;
 	#disabled = false;
@@ -70,14 +72,14 @@ export class HTMLHarmonyRadioElement extends HTMLElement {
 				for (let child of this.#shadowRoot.children) {
 					if (child.hasAttribute('selected')) {
 						child.removeAttribute('selected');
-						this.dispatchEvent(new CustomEvent('change', { detail: { value: (child as HTMLButtonElement).value, state: false } }));
-						child.dispatchEvent(new CustomEvent('change', { detail: { value: (child as HTMLButtonElement).value, state: false } }));
+						this.dispatchEvent(new CustomEvent<RadioChangedEventData>('change', { detail: { value: (child as HTMLButtonElement).value, state: false } }));
+						child.dispatchEvent(new CustomEvent<RadioChangedEventData>('change', { detail: { value: (child as HTMLButtonElement).value, state: false } }));
 					}
 				}
 			}
 			select ? htmlButton.setAttribute('selected', '') : htmlButton.removeAttribute('selected');
-			this.dispatchEvent(new CustomEvent('change', { detail: { value: htmlButton.value, state: select } }));
-			htmlButton.dispatchEvent(new CustomEvent('change', { detail: { value: htmlButton.value, state: select } }));
+			this.dispatchEvent(new CustomEvent<RadioChangedEventData>('change', { detail: { value: htmlButton.value, state: select } }));
+			htmlButton.dispatchEvent(new CustomEvent<RadioChangedEventData>('change', { detail: { value: htmlButton.value, state: select } }));
 		}
 	}
 
