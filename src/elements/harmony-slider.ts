@@ -17,8 +17,6 @@ export class HTMLHarmonySliderElement extends HTMLHarmonyElement {
 	#htmlAppendIcon?: HTMLImageElement;
 	#min = 0;
 	#max = 100;
-	#inputMin?: number;
-	#inputMax?: number;
 	#value: Array<number> = [50, 50];
 	#isRange = false;
 
@@ -72,27 +70,15 @@ export class HTMLHarmonySliderElement extends HTMLHarmonyElement {
 	}
 
 	#checkMin(value: number): number {
-		if (this.#inputMin !== undefined) {
-			if (value < this.#inputMin) {
-				return this.#inputMin;
-			}
-		} else {
-			if (value < this.#min) {
-				return this.#min;
-			}
+		if (value < this.#min) {
+			return this.#min;
 		}
 		return value;
 	}
 
 	#checkMax(max: number): number {
-		if (this.#inputMax !== undefined) {
-			if (max > this.#inputMax) {
-				return this.#inputMax;
-			}
-		} else {
-			if (max > this.#max) {
-				return this.#max;
-			}
+		if (max > this.#max) {
+			return this.#max;
 		}
 		return max;
 	}
@@ -142,22 +128,6 @@ export class HTMLHarmonySliderElement extends HTMLHarmonyElement {
 		}
 	}
 
-	#setMin() {
-		if (this.#inputMin === undefined) {
-			this.#htmlInput!.setAttribute('min', String(this.#min));
-		} else {
-			this.#htmlInput!.setAttribute('min', String(this.#inputMin));
-		}
-	}
-
-	#setMax() {
-		if (this.#inputMax === undefined) {
-			this.#htmlInput!.setAttribute('max', String(this.#max));
-		} else {
-			this.#htmlInput!.setAttribute('max', String(this.#inputMax));
-		}
-	}
-
 	onAttributeChanged(name: string, oldValue: string | null, newValue: string | null) {
 		let step: number | undefined;
 		switch (name) {
@@ -170,28 +140,12 @@ export class HTMLHarmonySliderElement extends HTMLHarmonyElement {
 			case 'min':
 				this.#min = Number(newValue);
 				this.#htmlSlider!.setAttribute('min', String(this.#min));
-				this.#setMin();
+				this.#htmlInput!.setAttribute('min', String(this.#min));
 				break;
 			case 'max':
 				this.#max = Number(newValue);
 				this.#htmlSlider!.setAttribute('max', String(this.#max));
-				this.#setMax();
-				break;
-			case 'input-min':
-				if (newValue === null) {
-					this.#inputMin = undefined;
-				} else {
-					this.#inputMin = Number(newValue);
-				}
-				this.#setMin();
-				break;
-			case 'input-max':
-				if (newValue === null) {
-					this.#inputMax = undefined;
-				} else {
-					this.#inputMax = Number(newValue);
-				}
-				this.#setMax();
+				this.#htmlInput!.setAttribute('max', String(this.#max));
 				break;
 			case 'value':
 				if (newValue === null) {
@@ -251,7 +205,7 @@ export class HTMLHarmonySliderElement extends HTMLHarmonyElement {
 	}
 
 	static get observedAttributes() {
-		return super.observedAttributes.concat(['label', 'min', 'max', 'input-min', 'input-step', 'input-max', 'has-input', 'append-icon', 'prepend-icon', 'value']);
+		return super.observedAttributes.concat(['label', 'min', 'max', 'input-step', 'has-input', 'append-icon', 'prepend-icon', 'value']);
 	}
 }
 

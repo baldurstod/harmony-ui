@@ -3061,7 +3061,7 @@ function defineHarmonySelect() {
     }
 }
 
-var sliderCSS = ":host {\n\tdisplay: flex;\n}\n\ninput[type=range] {\n\tflex: auto;\n}\n\ninput[type=number] {\n\tflex: 0 0 var(--h-slider-input-width, 6rem);\n\tfont-size: var(--h-slider-input-font-size, 1.2rem);\n\tmin-width: 0;\n\ttext-align: center;\n}\n";
+var sliderCSS = ":host {\n\tdisplay: flex;\n}\n\ninput[type=range] {\n\tflex: auto;\n}\n\ninput[type=number] {\n\tflex: 0 0 var(--h-slider-input-width, 4rem);\n\tfont-size: var(--h-slider-input-font-size, 1.2rem);\n\tmin-width: 0;\n\ttext-align: center;\n}\n";
 
 class HTMLHarmonyElement extends HTMLElement {
     initialized = false;
@@ -3100,9 +3100,6 @@ class HTMLHarmonySliderElement extends HTMLHarmonyElement {
     #htmlAppendIcon;
     #min = 0;
     #max = 100;
-    #hardMin;
-    #hardMax;
-    #step;
     #value = [50, 50];
     #isRange = false;
     createElement() {
@@ -3139,33 +3136,22 @@ class HTMLHarmonySliderElement extends HTMLHarmonyElement {
             hidden: true,
             parent: this.#shadowRoot,
             value: 50,
+            step: 'any',
+            min: 0,
+            max: 1000,
             $change: (event) => this.#setValue(Number(event.target.value), undefined, event.target),
             $input: (event) => this.#setValue(Number(event.target.value), undefined, event.target),
         });
     }
     #checkMin(value) {
-        if (this.#hardMin !== undefined) {
-            if (value < this.#hardMin) {
-                return this.#hardMin;
-            }
-        }
-        else {
-            if (value < this.#min) {
-                return this.#min;
-            }
+        if (value < this.#min) {
+            return this.#min;
         }
         return value;
     }
     #checkMax(max) {
-        if (this.#hardMax !== undefined) {
-            if (max > this.#hardMax) {
-                return this.#hardMax;
-            }
-        }
-        else {
-            if (max > this.#max) {
-                return this.#max;
-            }
+        if (max > this.#max) {
+            return this.#max;
         }
         return max;
     }
@@ -3209,6 +3195,7 @@ class HTMLHarmonySliderElement extends HTMLHarmonyElement {
         }
     }
     onAttributeChanged(name, oldValue, newValue) {
+        let step;
         switch (name) {
             case 'label':
                 this.#htmlLabel.setAttribute('data-i18n', newValue);
@@ -3219,26 +3206,12 @@ class HTMLHarmonySliderElement extends HTMLHarmonyElement {
             case 'min':
                 this.#min = Number(newValue);
                 this.#htmlSlider.setAttribute('min', String(this.#min));
+                this.#htmlInput.setAttribute('min', String(this.#min));
                 break;
             case 'max':
                 this.#max = Number(newValue);
                 this.#htmlSlider.setAttribute('max', String(this.#max));
-                break;
-            case 'hard-min':
-                if (newValue === null) {
-                    this.#hardMin = undefined;
-                }
-                else {
-                    this.#hardMin = Number(newValue);
-                }
-                break;
-            case 'hard-max':
-                if (newValue === null) {
-                    this.#hardMax = undefined;
-                }
-                else {
-                    this.#hardMax = Number(newValue);
-                }
+                this.#htmlInput.setAttribute('max', String(this.#max));
                 break;
             case 'value':
                 if (newValue === null) {
@@ -3256,14 +3229,24 @@ class HTMLHarmonySliderElement extends HTMLHarmonyElement {
                 }
                 break;
             case 'step':
-                const step = Number(newValue);
+                step = Number(newValue);
                 if (Number.isNaN(step)) {
-                    this.#step = undefined;
+                    step = undefined;
                 }
                 else {
-                    this.#step = step;
+                    step = step;
                 }
-                this.#htmlSlider.setAttribute('step', this.#step ? String(this.#step) : 'any');
+                this.#htmlSlider.setAttribute('step', step ? String(step) : 'any');
+                break;
+            case 'input-step':
+                step = Number(newValue);
+                if (Number.isNaN(step)) {
+                    step = undefined;
+                }
+                else {
+                    step = step;
+                }
+                this.#htmlInput.setAttribute('step', step ? String(step) : 'any');
                 break;
             case 'has-input':
                 if (newValue === null) {
@@ -3290,7 +3273,7 @@ class HTMLHarmonySliderElement extends HTMLHarmonyElement {
         }
     }
     static get observedAttributes() {
-        return super.observedAttributes.concat(['label', 'min', 'max', 'hard-min', 'hard-max', 'has-input', 'append-icon', 'prepend-icon', 'value']);
+        return super.observedAttributes.concat(['label', 'min', 'max', 'input-step', 'has-input', 'append-icon', 'prepend-icon', 'value']);
     }
 }
 let definedSlider = false;
