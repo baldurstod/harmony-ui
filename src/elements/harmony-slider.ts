@@ -17,9 +17,8 @@ export class HTMLHarmonySliderElement extends HTMLHarmonyElement {
 	#htmlAppendIcon?: HTMLImageElement;
 	#min = 0;
 	#max = 100;
-	#hardMin?: number;
-	#hardMax?: number;
-	#step?: number;
+	#inputMin?: number;
+	#inputMax?: number;
 	#value: Array<number> = [50, 50];
 	#isRange = false;
 
@@ -64,15 +63,18 @@ export class HTMLHarmonySliderElement extends HTMLHarmonyElement {
 			hidden: true,
 			parent: this.#shadowRoot,
 			value: 50,
+			step: 'any',
+			min: 0,
+			max: 1000,
 			$change: (event: Event) => this.#setValue(Number((event.target as HTMLInputElement).value), undefined, event.target as HTMLElement),
 			$input: (event: Event) => this.#setValue(Number((event.target as HTMLInputElement).value), undefined, event.target as HTMLElement),
 		}) as HTMLInputElement;
 	}
 
 	#checkMin(value: number): number {
-		if (this.#hardMin !== undefined) {
-			if (value < this.#hardMin) {
-				return this.#hardMin;
+		if (this.#inputMin !== undefined) {
+			if (value < this.#inputMin) {
+				return this.#inputMin;
 			}
 		} else {
 			if (value < this.#min) {
@@ -83,9 +85,9 @@ export class HTMLHarmonySliderElement extends HTMLHarmonyElement {
 	}
 
 	#checkMax(max: number): number {
-		if (this.#hardMax !== undefined) {
-			if (max > this.#hardMax) {
-				return this.#hardMax;
+		if (this.#inputMax !== undefined) {
+			if (max > this.#inputMax) {
+				return this.#inputMax;
 			}
 		} else {
 			if (max > this.#max) {
@@ -140,7 +142,24 @@ export class HTMLHarmonySliderElement extends HTMLHarmonyElement {
 		}
 	}
 
+	#setMin() {
+		if (this.#inputMin === undefined) {
+			this.#htmlInput!.setAttribute('min', String(this.#min));
+		} else {
+			this.#htmlInput!.setAttribute('min', String(this.#inputMin));
+		}
+	}
+
+	#setMax() {
+		if (this.#inputMax === undefined) {
+			this.#htmlInput!.setAttribute('max', String(this.#max));
+		} else {
+			this.#htmlInput!.setAttribute('max', String(this.#inputMax));
+		}
+	}
+
 	onAttributeChanged(name: string, oldValue: string | null, newValue: string | null) {
+		let step: number | undefined;
 		switch (name) {
 			case 'label':
 				this.#htmlLabel!.setAttribute('data-i18n', newValue as string);
@@ -151,24 +170,28 @@ export class HTMLHarmonySliderElement extends HTMLHarmonyElement {
 			case 'min':
 				this.#min = Number(newValue);
 				this.#htmlSlider!.setAttribute('min', String(this.#min));
+				this.#setMin();
 				break;
 			case 'max':
 				this.#max = Number(newValue);
 				this.#htmlSlider!.setAttribute('max', String(this.#max));
+				this.#setMax();
 				break;
-			case 'hard-min':
+			case 'input-min':
 				if (newValue === null) {
-					this.#hardMin = undefined;
+					this.#inputMin = undefined;
 				} else {
-					this.#hardMin = Number(newValue);
+					this.#inputMin = Number(newValue);
 				}
+				this.#setMin();
 				break;
-			case 'hard-max':
+			case 'input-max':
 				if (newValue === null) {
-					this.#hardMax = undefined;
+					this.#inputMax = undefined;
 				} else {
-					this.#hardMax = Number(newValue);
+					this.#inputMax = Number(newValue);
 				}
+				this.#setMax();
 				break;
 			case 'value':
 				if (newValue === null) {
@@ -186,13 +209,22 @@ export class HTMLHarmonySliderElement extends HTMLHarmonyElement {
 				}
 				break;
 			case 'step':
-				const step = Number(newValue);
+				step = Number(newValue);
 				if (Number.isNaN(step)) {
-					this.#step = undefined;
+					step = undefined;
 				} else {
-					this.#step = step;
+					step = step;
 				}
-				this.#htmlSlider!.setAttribute('step', this.#step ? String(this.#step) : 'any');
+				this.#htmlSlider!.setAttribute('step', step ? String(step) : 'any');
+				break;
+			case 'input-step':
+				step = Number(newValue);
+				if (Number.isNaN(step)) {
+					step = undefined;
+				} else {
+					step = step;
+				}
+				this.#htmlInput!.setAttribute('step', step ? String(step) : 'any');
 				break;
 			case 'has-input':
 				if (newValue === null) {
@@ -219,7 +251,7 @@ export class HTMLHarmonySliderElement extends HTMLHarmonyElement {
 	}
 
 	static get observedAttributes() {
-		return super.observedAttributes.concat(['label', 'min', 'max', 'hard-min', 'hard-max', 'has-input', 'append-icon', 'prepend-icon', 'value']);
+		return super.observedAttributes.concat(['label', 'min', 'max', 'input-min', 'input-step', 'input-max', 'has-input', 'append-icon', 'prepend-icon', 'value']);
 	}
 }
 
