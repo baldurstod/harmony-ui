@@ -118,12 +118,22 @@ export class HTMLHarmonySwitchElement extends HTMLElement {
 				break;
 			case 'ternary':
 				this.ternary = true;
+			case 'state':
+				if (newValue == '' || newValue == 'undefined') {
+					this.state = undefined
+				} else {
+					if (newValue == 'true' || newValue == '1') {
+						this.state = true;
+					} else {
+						this.state = false;
+					}
+				}
 				break;
 		}
 	}
 
 	static get observedAttributes() {
-		return ['data-label', 'data-i18n', 'disabled', 'ternary'];
+		return ['data-label', 'data-i18n', 'disabled', 'ternary', 'state'];
 	}
 }
 
