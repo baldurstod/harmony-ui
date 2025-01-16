@@ -2191,7 +2191,7 @@ function defineHarmonyPalette() {
 var panelCSS = ":host {\n\tdisplay: flex;\n\tflex: 1;\n\tflex-direction: column;\n\n\tflex: 0 0 auto;\n\t/*flex-grow: 0;\n\tflex-shrink: 0;\n\tflex-basis: auto;*/\n\t/*flex-basis: 0;*/\n\t/*flex: 1;*/\n\t/*height:100%;\n\twidth:100%;*/\n\n\t/*padding: 5px !important;*/\n\tbox-sizing: border-box;\n\tpointer-events: all;\n\toverflow: hidden;\n\tposition: relative;\n\tflex-direction: column;\n\tbox-sizing: border-box;\n}\n\n.harmony-panel-row {\n\tflex-direction: row;\n}\n\n.harmony-panel-row>harmony-panel {\n\theight: 100%;\n}\n\n.harmony-panel-column {\n\tflex-direction: column;\n}\n\n.harmony-panel-column>harmony-panel {\n\twidth: 100%;\n}\n\n.harmony-panel-splitter {\n\tdisplay: none;\n\tflex: 0 0 10px;\n\tbackground-color: red;\n}\n\n.title {\n\tcursor: pointer;\n\ttext-align: center;\n\tfont-size: 1.5em;\n\tpadding: 4px;\n\toverflow: hidden;\n}\n\n.content {\n\twidth: 100%;\n\tbox-sizing: border-box;\n}\n\n[collapsible='1']>.title::after {\n\tcontent: \"-\";\n\tright: 5px;\n\tposition: absolute;\n}\n\n[collapsed='1']>.title::after {\n\tcontent: \"+\";\n}\n";
 
 let nextId = 0;
-//let spliter: HTMLElement = createElement('div', { className: 'harmony-panel-splitter' }) as HTMLElement;
+//let spliter: HTMLElement = createElement('div', { class: 'harmony-panel-splitter' }) as HTMLElement;
 let highlitPanel;
 class HTMLHarmonyPanelElement extends HTMLElement {
     #doOnce = true;
@@ -2219,14 +2219,14 @@ class HTMLHarmonyPanelElement extends HTMLElement {
         //this.addEventListener('mousemove', event => this._handleMouseMove(event));
         //this.addEventListener('mouseleave', event => this._handleMouseLeave(event));
         this.htmlTitle = createElement('div', {
-            className: 'title',
+            class: 'title',
             parent: this.#shadowRoot,
             events: {
                 click: () => this.#toggleCollapse(),
             }
         });
         this.htmlContent = createElement('div', {
-            className: 'content',
+            class: 'content',
             parent: this.#shadowRoot,
         });
     }

@@ -6,7 +6,7 @@ import { injectGlobalCss } from "../utils/globalcss";
 
 let dragged = null;
 let nextId = 0;
-//let spliter: HTMLElement = createElement('div', { className: 'harmony-panel-splitter' }) as HTMLElement;
+//let spliter: HTMLElement = createElement('div', { class: 'harmony-panel-splitter' }) as HTMLElement;
 let highlitPanel: HTMLElement;
 
 export class HTMLHarmonyPanelElement extends HTMLElement {
@@ -37,14 +37,14 @@ export class HTMLHarmonyPanelElement extends HTMLElement {
 		//this.addEventListener('mouseleave', event => this._handleMouseLeave(event));
 
 		this.htmlTitle = createElement('div', {
-			className: 'title',
+			class: 'title',
 			parent: this.#shadowRoot,
 			events: {
 				click: () => this.#toggleCollapse(),
 			}
 		});
 		this.htmlContent = createElement('div', {
-			className: 'content',
+			class: 'content',
 			parent: this.#shadowRoot,
 		});
 	}
