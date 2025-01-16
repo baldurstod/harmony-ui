@@ -54,6 +54,16 @@ function createElementOptions(element, options, shadowRoot) {
     if (options) {
         for (const optionName in options) {
             const optionValue = options[optionName];
+            if (optionName.startsWith('$')) {
+                const eventType = optionName.substring(1);
+                if (typeof optionValue === 'function') {
+                    element.addEventListener(eventType, optionValue);
+                }
+                else {
+                    element.addEventListener(eventType, optionValue.listener, optionValue.options);
+                }
+                continue;
+            }
             switch (optionName) {
                 case 'id':
                     element.id = optionValue;
