@@ -342,8 +342,14 @@ export declare class HTMLHarmonyTabElement extends HTMLElement {
     set disabled(disabled: boolean);
     get disabled(): boolean;
     activate(): void;
+    /**
+     * @deprecated use setActive() instead
+     */
     set active(active: boolean);
     setActive(active: boolean): void;
+    /**
+     * @deprecated use isActive() instead
+     */
     get active(): boolean;
     isActive(): boolean;
     static get observedAttributes(): string[];
@@ -355,6 +361,9 @@ export declare class HTMLHarmonyTabGroupElement extends HTMLElement {
     connectedCallback(): void;
     adoptStyleSheet(styleSheet: CSSStyleSheet): void;
     addTab(tab: HTMLHarmonyTabElement): void;
+    /**
+     * @deprecated use activateTab() instead
+     */
     set active(tab: HTMLHarmonyTabElement);
     activateTab(tab: HTMLHarmonyTabElement): void;
     clear(): void;
@@ -388,11 +397,17 @@ export declare class I18n {
     static observeElement(element: HTMLElement | ShadowRoot): void;
     static i18n(): void;
     static updateElement(htmlElement: HTMLElement | ShadowRoot): void;
+    /**
+     * @deprecated use setLang() instead
+     */
     static set lang(lang: string);
     static setLang(lang: string): void;
     static addEventListener(type: string, callback: EventListenerOrEventListenerObject | null, options?: AddEventListenerOptions | boolean): void;
     static getString(s: string): string;
     static formatString(s: string, values: any): string;
+    /**
+     * @deprecated use getAuthors() instead
+     */
     static get authors(): void;
     static getAuthors(): any;
 }

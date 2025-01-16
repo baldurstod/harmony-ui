@@ -367,6 +367,9 @@ class I18n {
         this.#processList(htmlElement, 'i18n-label', 'data-i18n-label', 'label');
         this.#processJSON(htmlElement);
     }
+    /**
+     * @deprecated use setLang() instead
+     */
     static set lang(lang) {
         throw 'Deprecated, use setLang() instead';
     }
@@ -403,6 +406,9 @@ class I18n {
         }
         return str;
     }
+    /**
+     * @deprecated use getAuthors() instead
+     */
     static get authors() {
         throw 'Deprecated, use getAuthors() instead';
     }
@@ -3721,6 +3727,9 @@ class HTMLHarmonyTabElement extends HTMLElement {
     activate() {
         this.setActive(true);
     }
+    /**
+     * @deprecated use setActive() instead
+     */
     set active(active) {
         console.warn('deprecated, use setActive instead');
         this.setActive(active);
@@ -3746,6 +3755,9 @@ class HTMLHarmonyTabElement extends HTMLElement {
             this.#group.activateTab(this);
         }
     }
+    /**
+     * @deprecated use isActive() instead
+     */
     get active() {
         console.warn('deprecated, use getActive instead');
         return this.isActive();
@@ -3824,6 +3836,9 @@ class HTMLHarmonyTabGroupElement extends HTMLElement {
         }
         this.#activeTab?.setActive(true);
     }
+    /**
+     * @deprecated use activateTab() instead
+     */
     set active(tab) {
         console.warn('deprecated, use activateTab instead');
         this.activateTab(tab);

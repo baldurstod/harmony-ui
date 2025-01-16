@@ -157,6 +157,9 @@ export class I18n {
 		this.#processJSON(htmlElement);
 	}
 
+	/**
+	 * @deprecated use setLang() instead
+	 */
 	static set lang(lang: string) {
 		throw 'Deprecated, use setLang() instead';
 	}
@@ -198,6 +201,9 @@ export class I18n {
 		return str;
 	}
 
+	/**
+	 * @deprecated use getAuthors() instead
+	 */
 	static get authors() {
 		throw 'Deprecated, use getAuthors() instead';
 	}
