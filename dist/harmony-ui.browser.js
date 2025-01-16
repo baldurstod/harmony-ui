@@ -3187,6 +3187,232 @@ function defineHarmonySelect() {
     }
 }
 
+var sliderCSS = ":host {\n\tdisplay: flex;\n}\n\n\ninput[type=range] {\n\tflex: auto;\n}\n\ninput[type=number] {\n\tflex: 0 0 var(--h-slider-input-width, 6rem);\n\tfont-size: var(--h-slider-input-font-size, 1.2rem);\n\tmin-width: 0;\n\ttext-align: center;\n}\n";
+
+class HTMLHarmonyElement extends HTMLElement {
+    initialized = false;
+    initElement() {
+        if (this.initialized) {
+            return;
+        }
+        this.initialized = true;
+        this.createElement();
+    }
+    createElement() {
+    }
+    connectedCallback() {
+        this.initElement();
+    }
+    attributeChangedCallback(name, oldValue, newValue) {
+        this.initElement();
+        this.onAttributeChanged(name, oldValue, newValue);
+    }
+    onAttributeChanged(name, oldValue, newValue) {
+    }
+    static get observedAttributes() {
+        return ['label'];
+    }
+}
+
+class HTMLHarmonySliderElement extends HTMLHarmonyElement {
+    #initialized = false;
+    #shadowRoot;
+    #htmlLabel;
+    #htmlSlider;
+    #htmlInput;
+    #htmlPrependSlot;
+    #htmlAppendSlot;
+    #htmlPrependIcon;
+    #htmlAppendIcon;
+    #min = 0;
+    #max = 100;
+    #hardMin;
+    #hardMax;
+    #step;
+    #value = [50, 50];
+    #isRange = false;
+    createElement() {
+        this.#shadowRoot = this.attachShadow({ mode: 'closed' });
+        shadowRootStyle(this.#shadowRoot, sliderCSS);
+        I18n.observeElement(this.#shadowRoot);
+        this.#htmlLabel = createElement('label', {
+            parent: this.#shadowRoot,
+            hidden: true,
+        });
+        this.#htmlPrependSlot = createElement('slot', {
+            parent: this.#shadowRoot,
+            name: 'prepend',
+        });
+        this.#htmlPrependIcon = createElement('img', {
+            parent: this.#shadowRoot,
+        });
+        this.#htmlSlider = createElement('input', {
+            type: 'range',
+            parent: this.#shadowRoot,
+            step: 'any',
+            $change: (event) => this.#setValue(Number(event.target.value), undefined, event.target),
+            $input: (event) => this.#setValue(Number(event.target.value), undefined, event.target),
+        });
+        this.#htmlAppendIcon = createElement('img', {
+            parent: this.#shadowRoot,
+        });
+        this.#htmlAppendSlot = createElement('slot', {
+            parent: this.#shadowRoot,
+            name: 'append',
+        });
+        this.#htmlInput = createElement('input', {
+            type: 'number',
+            hidden: true,
+            parent: this.#shadowRoot,
+            value: 50,
+            $change: (event) => this.#setValue(Number(event.target.value), undefined, event.target),
+            $input: (event) => this.#setValue(Number(event.target.value), undefined, event.target),
+        });
+    }
+    #checkMin(value) {
+        if (this.#hardMin !== undefined) {
+            if (value < this.#hardMin) {
+                return this.#hardMin;
+            }
+        }
+        else {
+            if (value < this.#min) {
+                return this.#min;
+            }
+        }
+        return value;
+    }
+    #checkMax(max) {
+        if (this.#hardMax !== undefined) {
+            if (max > this.#hardMax) {
+                return this.#hardMax;
+            }
+        }
+        else {
+            if (max > this.#max) {
+                return this.#max;
+            }
+        }
+        return max;
+    }
+    #setValue(min, max, initiator) {
+        //	 TODO: swap min/max
+        if (min !== undefined) {
+            this.#value[0] = this.#checkMin(min);
+        }
+        if (max !== undefined) {
+            this.#value[1] = this.#checkMax(max);
+        }
+        if (initiator != this.#htmlSlider) {
+            this.#htmlSlider.value = String(min ?? this.#value[0]);
+        }
+        if (initiator != this.#htmlInput) {
+            this.#htmlInput.value = String((min ?? this.#value[0]).toFixed(2));
+        }
+        this.dispatchEvent(new CustomEvent('input', {
+            detail: {
+                value: this.#isRange ? this.#value : this.#value[0],
+            }
+        }));
+    }
+    get value() {
+        return this.#isRange ? this.#value : this.#value[0];
+    }
+    isRange() {
+        return this.#isRange;
+    }
+    setValue(value) {
+        if (Array.isArray(value)) {
+            this.#setValue(value[0], value[1]);
+        }
+        else {
+            if (this.#isRange) {
+                console.error('value must be an array');
+            }
+            else {
+                this.#setValue(value);
+            }
+        }
+    }
+    onAttributeChanged(name, oldValue, newValue) {
+        switch (name) {
+            case 'label':
+                this.#htmlLabel.setAttribute('data-i18n', newValue);
+                this.#htmlLabel.innerHTML = newValue;
+                this.#htmlLabel.classList.add('i18n');
+                show(this.#htmlLabel);
+                break;
+            case 'min':
+                this.#min = Number(newValue);
+                this.#htmlSlider.setAttribute('min', String(this.#min));
+                break;
+            case 'max':
+                this.#max = Number(newValue);
+                this.#htmlSlider.setAttribute('max', String(this.#max));
+                break;
+            case 'hard-min':
+                if (newValue === null) {
+                    this.#hardMin = undefined;
+                }
+                else {
+                    this.#hardMin = Number(newValue);
+                }
+                break;
+            case 'hard-max':
+                if (newValue === null) {
+                    this.#hardMax = undefined;
+                }
+                else {
+                    this.#hardMax = Number(newValue);
+                }
+                break;
+            case 'step':
+                const step = Number(newValue);
+                if (Number.isNaN(step)) {
+                    this.#step = undefined;
+                }
+                else {
+                    this.#step = step;
+                }
+                this.#htmlSlider.setAttribute('step', this.#step ? String(this.#step) : 'any');
+                break;
+            case 'has-input':
+                if (newValue === null) {
+                    hide(this.#htmlInput);
+                }
+                else {
+                    show(this.#htmlInput);
+                }
+                break;
+            /*
+            case 'data-label':
+                this.#htmlText.innerHTML = newValue;
+                this.#htmlText.classList.remove('i18n');
+                break;
+            case 'data-i18n':
+                this.#htmlText.setAttribute('data-i18n', newValue);
+                this.#htmlText.innerHTML = newValue;
+                this.#htmlText.classList.add('i18n');
+                break;
+            case 'data-position':
+                this.#htmlText.setAttribute('data-position', newValue);
+                break;
+                */
+        }
+    }
+    static get observedAttributes() {
+        return super.observedAttributes.concat(['label', 'min', 'max', 'hard-min', 'hard-max', 'has-input', 'append-icon', 'prepend-icon']);
+    }
+}
+let definedSlider = false;
+function defineHarmonySlider() {
+    if (window.customElements && !definedSlider) {
+        customElements.define('harmony-slider', HTMLHarmonySliderElement);
+        definedSlider = true;
+        injectGlobalCss();
+    }
+}
+
 var splitterCSS = ":host {\n\tdisplay: flex;\n\tpointer-events: none;\n\t/*--harmony-color-picker-shadow-gap: var(--harmony-color-picker-gap, 0.5rem);*/\n\t--harmony-splitter-shadow-gutter-thickness: var(--harmony-splitter-gutter-thickness, 0.3rem);\n\t--harmony-splitter-shadow-gutter-bg-color: var(--harmony-splitter-gutter-bg-color, black);\n}\n\n:host(.vertical) {\n\tflex-direction: row;\n}\n\n:host(.horizontal) {\n\tflex-direction: column;\n}\n\n:host .gutter {\n\tflex: 0 0 var(--harmony-splitter-shadow-gutter-thickness);\n\tpointer-events: all;\n\tbackground-color: var(--harmony-splitter-shadow-gutter-bg-color);\n}\n\n:host(.vertical) .gutter {\n\tcursor: ew-resize;\n}\n\n:host(.horizontal) .gutter {\n\tcursor: ns-resize;\n}\n\n:host .panel {\n\tflex: 0 0 50%;\n\tdisplay: flex;\n\tpointer-events: none;\n}\n";
 
 class HTMLHarmonySplitterElement extends HTMLElement {
@@ -3726,4 +3952,4 @@ function defineHarmonyToggleButton() {
     }
 }
 
-export { HTMLHarmony2dManipulatorElement, HTMLHarmonyAccordionElement, HTMLHarmonyColorPickerElement, HTMLHarmonyContextMenuElement, HTMLHarmonyCopyElement, HTMLHarmonyFileInputElement, HTMLHarmonyLabelPropertyElement, HTMLHarmonyPaletteElement, HTMLHarmonyPanelElement, HTMLHarmonyRadioElement, HTMLHarmonySelectElement, HTMLHarmonySlideshowElement, HTMLHarmonySplitterElement, HTMLHarmonySwitchElement, HTMLHarmonyTabElement, HTMLHarmonyTabGroupElement, HTMLHarmonyToggleButtonElement, HTMLHarmonyTooltipElement, I18n, I18nEvents, ManipulatorCorner, ManipulatorDirection, ManipulatorSide, cloneEvent, createElement, createElementNS, createShadowRoot, defineHarmony2dManipulator, defineHarmonyAccordion, defineHarmonyColorPicker, defineHarmonyContextMenu, defineHarmonyCopy, defineHarmonyFileInput, defineHarmonyLabelProperty, defineHarmonyPalette, defineHarmonyPanel, defineHarmonyRadio, defineHarmonySelect, defineHarmonySlideshow, defineHarmonySplitter, defineHarmonySwitch, defineHarmonyTab, defineHarmonyTabGroup, defineHarmonyToggleButton, defineHarmonyTooltip, display, documentStyle, documentStyleSync, hide, isVisible, shadowRootStyle, shadowRootStyleSync, show, styleInject, toggle, updateElement, visible };
+export { HTMLHarmony2dManipulatorElement, HTMLHarmonyAccordionElement, HTMLHarmonyColorPickerElement, HTMLHarmonyContextMenuElement, HTMLHarmonyCopyElement, HTMLHarmonyFileInputElement, HTMLHarmonyLabelPropertyElement, HTMLHarmonyPaletteElement, HTMLHarmonyPanelElement, HTMLHarmonyRadioElement, HTMLHarmonySelectElement, HTMLHarmonySliderElement, HTMLHarmonySlideshowElement, HTMLHarmonySplitterElement, HTMLHarmonySwitchElement, HTMLHarmonyTabElement, HTMLHarmonyTabGroupElement, HTMLHarmonyToggleButtonElement, HTMLHarmonyTooltipElement, I18n, I18nEvents, ManipulatorCorner, ManipulatorDirection, ManipulatorSide, cloneEvent, createElement, createElementNS, createShadowRoot, defineHarmony2dManipulator, defineHarmonyAccordion, defineHarmonyColorPicker, defineHarmonyContextMenu, defineHarmonyCopy, defineHarmonyFileInput, defineHarmonyLabelProperty, defineHarmonyPalette, defineHarmonyPanel, defineHarmonyRadio, defineHarmonySelect, defineHarmonySlider, defineHarmonySlideshow, defineHarmonySplitter, defineHarmonySwitch, defineHarmonyTab, defineHarmonyTabGroup, defineHarmonyToggleButton, defineHarmonyTooltip, display, documentStyle, documentStyleSync, hide, isVisible, shadowRootStyle, shadowRootStyleSync, show, styleInject, toggle, updateElement, visible };

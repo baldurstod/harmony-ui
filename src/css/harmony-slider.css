@@ -1,0 +1,14 @@
+:host {
+	display: flex;
+}
+
+input[type=range] {
+	flex: auto;
+}
+
+input[type=number] {
+	flex: 0 0 var(--h-slider-input-width, 6rem);
+	font-size: var(--h-slider-input-font-size, 1.2rem);
+	min-width: 0;
+	text-align: center;
+}

@@ -30,6 +30,8 @@ export declare function defineHarmonyRadio(): void;
 
 export declare function defineHarmonySelect(): void;
 
+export declare function defineHarmonySlider(): void;
+
 export declare function defineHarmonySlideshow(): void;
 
 export declare function defineHarmonySplitter(): void;
@@ -154,6 +156,16 @@ export declare class HTMLHarmonyCopyElement extends HTMLElement {
     connectedCallback(): void;
 }
 
+declare class HTMLHarmonyElement extends HTMLElement {
+    protected initialized: boolean;
+    protected initElement(): void;
+    protected createElement(): void;
+    connectedCallback(): void;
+    attributeChangedCallback(name: string, oldValue: string | null, newValue: string | null): void;
+    onAttributeChanged(name: string, oldValue: string | null, newValue: string | null): void;
+    static get observedAttributes(): string[];
+}
+
 export declare class HTMLHarmonyFileInputElement extends HTMLElement {
     #private;
     constructor();
@@ -260,6 +272,16 @@ export declare class HTMLHarmonySelectElement extends HTMLElement {
     selectFirst(): void;
     unselect(value: any): void;
     unselectAll(): void;
+    static get observedAttributes(): string[];
+}
+
+export declare class HTMLHarmonySliderElement extends HTMLHarmonyElement {
+    #private;
+    createElement(): void;
+    get value(): number | number[];
+    isRange(): boolean;
+    setValue(value: number | undefined): void;
+    onAttributeChanged(name: string, oldValue: string | null, newValue: string | null): void;
     static get observedAttributes(): string[];
 }
 

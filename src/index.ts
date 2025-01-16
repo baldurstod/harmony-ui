@@ -14,6 +14,7 @@ export * from './elements/harmony-panel';
 export * from './elements/harmony-radio';
 export * from './elements/harmony-slideshow';
 export * from './elements/harmony-select';
+export * from './elements/harmony-slider';
 export * from './elements/harmony-splitter';
 export * from './elements/harmony-switch';
 export * from './elements/harmony-tab';

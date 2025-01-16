@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<title>Test slider</title>
+	<link href="./assets/css/examples.css" rel="stylesheet">
+</head>
+
+<body>
+	<div>
+		<harmony-slider id="slider" haas-input></harmony-slider>
+	</div>
+	<script type="module">
+		import { createElement, defineHarmonySlider } from '../dist/harmony-ui.browser.js';
+
+		defineHarmonySlider();
+
+		const slider = document.getElementById('slider');
+		slider.addEventListener('input', (event) => {
+			console.info(event.detail.value);
+			if (event.detail.value < 50) {
+				slider.removeAttribute('has-input');
+			} else {
+				slider.setAttribute('has-input', '');
+			}
+		});
+	</script>
+</body>
+
+</html>
