@@ -131,6 +131,7 @@ function createElementOptions(element, options, shadowRoot) {
                 case 'list':
                 case 'multiple':
                 case 'selected':
+                case 'value':
                     element.setAttribute(optionName, optionValue);
                     break;
                 case 'slot':
@@ -3187,7 +3188,7 @@ function defineHarmonySelect() {
     }
 }
 
-var sliderCSS = ":host {\n\tdisplay: flex;\n}\n\n\ninput[type=range] {\n\tflex: auto;\n}\n\ninput[type=number] {\n\tflex: 0 0 var(--h-slider-input-width, 6rem);\n\tfont-size: var(--h-slider-input-font-size, 1.2rem);\n\tmin-width: 0;\n\ttext-align: center;\n}\n";
+var sliderCSS = ":host {\n\tdisplay: flex;\n}\n\ninput[type=range] {\n\tflex: auto;\n}\n\ninput[type=number] {\n\tflex: 0 0 var(--h-slider-input-width, 6rem);\n\tfont-size: var(--h-slider-input-font-size, 1.2rem);\n\tmin-width: 0;\n\ttext-align: center;\n}\n";
 
 class HTMLHarmonyElement extends HTMLElement {
     initialized = false;
@@ -3366,6 +3367,21 @@ class HTMLHarmonySliderElement extends HTMLHarmonyElement {
                     this.#hardMax = Number(newValue);
                 }
                 break;
+            case 'value':
+                if (newValue === null) {
+                    break;
+                }
+                const value = JSON.parse(newValue);
+                if (Array.isArray(value)) {
+                    this.setValue(value);
+                }
+                else {
+                    const n = Number(value);
+                    if (!Number.isNaN(n)) {
+                        this.setValue(n);
+                    }
+                }
+                break;
             case 'step':
                 const step = Number(newValue);
                 if (Number.isNaN(step)) {
@@ -3401,7 +3417,7 @@ class HTMLHarmonySliderElement extends HTMLHarmonyElement {
         }
     }
     static get observedAttributes() {
-        return super.observedAttributes.concat(['label', 'min', 'max', 'hard-min', 'hard-max', 'has-input', 'append-icon', 'prepend-icon']);
+        return super.observedAttributes.concat(['label', 'min', 'max', 'hard-min', 'hard-max', 'has-input', 'append-icon', 'prepend-icon', 'value']);
     }
 }
 let definedSlider = false;

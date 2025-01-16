@@ -280,7 +280,7 @@ export declare class HTMLHarmonySliderElement extends HTMLHarmonyElement {
     createElement(): void;
     get value(): number | number[];
     isRange(): boolean;
-    setValue(value: number | undefined): void;
+    setValue(value: number | Array<number>): void;
     onAttributeChanged(name: string, oldValue: string | null, newValue: string | null): void;
     static get observedAttributes(): string[];
 }

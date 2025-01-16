@@ -128,7 +128,7 @@ export class HTMLHarmonySliderElement extends HTMLHarmonyElement {
 		return this.#isRange;
 	}
 
-	setValue(value: number | undefined) {
+	setValue(value: number | Array<number>) {
 		if (Array.isArray(value)) {
 			this.#setValue(value[0], value[1]);
 		} else {
@@ -170,6 +170,21 @@ export class HTMLHarmonySliderElement extends HTMLHarmonyElement {
 					this.#hardMax = Number(newValue);
 				}
 				break;
+			case 'value':
+				if (newValue === null) {
+					break;
+				}
+
+				const value = JSON.parse(newValue);
+				if (Array.isArray(value)) {
+					this.setValue(value);
+				} else {
+					const n = Number(value);
+					if (!Number.isNaN(n)) {
+						this.setValue(n);
+					}
+				}
+				break;
 			case 'step':
 				const step = Number(newValue);
 				if (Number.isNaN(step)) {
@@ -204,7 +219,7 @@ export class HTMLHarmonySliderElement extends HTMLHarmonyElement {
 	}
 
 	static get observedAttributes() {
-		return super.observedAttributes.concat(['label', 'min', 'max', 'hard-min', 'hard-max', 'has-input', 'append-icon', 'prepend-icon']);
+		return super.observedAttributes.concat(['label', 'min', 'max', 'hard-min', 'hard-max', 'has-input', 'append-icon', 'prepend-icon', 'value']);
 	}
 }
 
