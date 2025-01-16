@@ -77,7 +77,7 @@ export class I18n {
 		}
 	}
 
-	static #processJSON(parentNode: Element | ShadowRoot) {
+	static #processJSON(parentNode: HTMLElement | ShadowRoot) {
 		const className = 'i18n';
 		const elements = parentNode.querySelectorAll('.' + className);
 
@@ -86,7 +86,7 @@ export class I18n {
 		}
 
 		for (let element of elements) {
-			this.#processElementJSON(element);
+			this.#processElementJSON(element as HTMLElement);
 		}
 	}
 
@@ -97,7 +97,7 @@ export class I18n {
 		}
 	}
 
-	static #processElementJSON(htmlElement: Element) {
+	static #processElementJSON(htmlElement: HTMLElement) {
 		const str = htmlElement.getAttribute('data-i18n-json');
 		if (!str) {
 			return;
@@ -119,6 +119,10 @@ export class I18n {
 		const innerHTML = dataJSON.innerHTML;
 		if (innerHTML) {
 			htmlElement.innerHTML = this.formatString(innerHTML, valuesJSON);
+		}
+		const innerText = dataJSON.innerText;
+		if (innerText) {
+			(htmlElement).innerText = this.formatString(innerText, valuesJSON);
 		}
 	}
 
