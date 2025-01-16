@@ -129,9 +129,6 @@ function createElementOptions(element, options, shadowRoot) {
                     }
                     break;
                 case 'innerHTML':
-                    if (typeof optionValue == 'string' && !optionValue.startsWith('<')) {
-                        console.warn('innerHTML is a string. consider using innerText instead');
-                    }
                     element.innerHTML = optionValue;
                     break;
                 case 'innerText':
@@ -162,13 +159,7 @@ function createElementOptions(element, options, shadowRoot) {
                 case 'elementCreated':
                     break;
                 default:
-                    if (optionName.startsWith('data-')) {
-                        element.setAttribute(optionName, optionValue);
-                    }
-                    else {
-                        element.setAttribute(optionName, optionValue);
-                        console.info(optionName);
-                    }
+                    element.setAttribute(optionName, optionValue);
                     break;
             }
         }
