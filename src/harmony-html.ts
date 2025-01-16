@@ -102,24 +102,35 @@ function createElementOptions(element: HTMLElement, options: any, shadowRoot?: S
 						}
 					}
 					break;
+				case 'properties':
+					for (let name in optionValue) {
+						(element as any)[name] = optionValue[name];
+					}
+					break;
 				case 'hidden':
 					if (optionValue) {
 						hide(element);
 					}
+					break;
+				case 'innerHTML':
+					if (typeof optionValue == 'string' && !optionValue.startsWith('<')) {
+						console.warn('innerHTML is a string. consider using innerText instead');
+					}
+					element.innerHTML = optionValue;
+					break;
+				case 'innerText':
+					element.innerText = optionValue;
 					break;
 				case 'attributes':
 					for (let attributeName in optionValue) {
 						element.setAttribute(attributeName, optionValue[attributeName]);
 					}
 					break;
-				case 'list':
-				case 'multiple':
-				case 'selected':
-				case 'value':
-					element.setAttribute(optionName, optionValue);
-					break;
 				case 'slot':
 					element.slot = optionValue;
+					break;
+				case 'htmlFor':
+					(element as any).htmlFor = optionValue;
 					break;
 				case 'adoptStyle':
 					adoptStyleSheet(shadowRoot ?? element, optionValue);
@@ -132,11 +143,14 @@ function createElementOptions(element: HTMLElement, options: any, shadowRoot?: S
 				case 'style':
 					element.style.cssText = optionValue;
 					break;
+				case 'elementCreated':
+					break;
 				default:
 					if (optionName.startsWith('data-')) {
 						element.setAttribute(optionName, optionValue);
 					} else {
-						(element as any)[optionName] = optionValue;
+						element.setAttribute(optionName, optionValue);
+						console.info(optionName);
 					}
 					break;
 			}

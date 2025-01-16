@@ -121,24 +121,35 @@ function createElementOptions(element, options, shadowRoot) {
                         }
                     }
                     break;
+                case 'properties':
+                    for (let name in optionValue) {
+                        element[name] = optionValue[name];
+                    }
+                    break;
                 case 'hidden':
                     if (optionValue) {
                         hide(element);
                     }
+                    break;
+                case 'innerHTML':
+                    if (typeof optionValue == 'string' && !optionValue.startsWith('<')) {
+                        console.warn('innerHTML is a string. consider using innerText instead');
+                    }
+                    element.innerHTML = optionValue;
+                    break;
+                case 'innerText':
+                    element.innerText = optionValue;
                     break;
                 case 'attributes':
                     for (let attributeName in optionValue) {
                         element.setAttribute(attributeName, optionValue[attributeName]);
                     }
                     break;
-                case 'list':
-                case 'multiple':
-                case 'selected':
-                case 'value':
-                    element.setAttribute(optionName, optionValue);
-                    break;
                 case 'slot':
                     element.slot = optionValue;
+                    break;
+                case 'htmlFor':
+                    element.htmlFor = optionValue;
                     break;
                 case 'adoptStyle':
                     adoptStyleSheet(shadowRoot ?? element, optionValue);
@@ -151,12 +162,15 @@ function createElementOptions(element, options, shadowRoot) {
                 case 'style':
                     element.style.cssText = optionValue;
                     break;
+                case 'elementCreated':
+                    break;
                 default:
                     if (optionName.startsWith('data-')) {
                         element.setAttribute(optionName, optionValue);
                     }
                     else {
-                        element[optionName] = optionValue;
+                        element.setAttribute(optionName, optionValue);
+                        console.info(optionName);
                     }
                     break;
             }
@@ -331,6 +345,10 @@ class I18n {
         const innerHTML = dataJSON.innerHTML;
         if (innerHTML) {
             htmlElement.innerHTML = this.formatString(innerHTML, valuesJSON);
+        }
+        const innerText = dataJSON.innerText;
+        if (innerText) {
+            (htmlElement).innerText = this.formatString(innerText, valuesJSON);
         }
     }
     static i18n() {
@@ -3514,11 +3532,23 @@ class HTMLHarmonySwitchElement extends HTMLElement {
                 break;
             case 'ternary':
                 this.ternary = true;
+            case 'state':
+                if (newValue == '' || newValue == 'undefined') {
+                    this.state = undefined;
+                }
+                else {
+                    if (newValue == 'true' || newValue == '1') {
+                        this.state = true;
+                    }
+                    else {
+                        this.state = false;
+                    }
+                }
                 break;
         }
     }
     static get observedAttributes() {
-        return ['data-label', 'data-i18n', 'disabled', 'ternary'];
+        return ['data-label', 'data-i18n', 'disabled', 'ternary', 'state'];
     }
 }
 let definedSwitch = false;
