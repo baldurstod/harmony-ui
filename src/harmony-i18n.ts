@@ -1,3 +1,5 @@
+import { ET } from './utils/create';
+
 const I18N_DELAY_BEFORE_REFRESH = 100;
 
 export enum I18nEvents {
@@ -8,7 +10,27 @@ export enum I18nEvents {
 
 export type LangChangedEvent = { detail: { oldLang: string, newLang: string } };
 
+const targets = ['innerHTML', 'innerText', 'placeholder', 'title', 'label'];
+export type I18nDescriptor = {
+	innerHTML?: string,
+	innerText?: string,
+	placeholder?: string,
+	title?: string,
+	label?: string,
+	values?: { [key: string]: any },
+}
+
+export const I18nElements = new Map<HTMLElement, I18nDescriptor>();
+
+export function AddI18nElement(element: HTMLElement, descriptor: string | I18nDescriptor) {
+	if (typeof descriptor == 'string') {
+		descriptor = { innerText: descriptor };
+	}
+	I18nElements.set(element, descriptor);
+}
+
 export class I18n {
+	static #started = false;
 	static #lang = 'english';
 	static #translations = new Map();
 	static #executing = false;
@@ -19,7 +41,13 @@ export class I18n {
 	static #eventTarget = new EventTarget();
 
 	static start() {
+		if (this.#started) {
+			return;
+		}
+		this.#started = true;
 		this.observeElement(document.body);
+		ET.addEventListener('created', (event: Event) => this.#processElement2((event as CustomEvent).detail));
+		ET.addEventListener('updated', (event: Event) => this.#processElement2((event as CustomEvent).detail));
 	}
 
 	static setOptions(options: { translations: any }) {
@@ -97,6 +125,24 @@ export class I18n {
 		}
 	}
 
+	// TODO: merge with function above
+	static #processElement2(htmlElement: HTMLElement) {
+		const descriptor = I18nElements.get(htmlElement);
+		if (descriptor) {
+			const values = descriptor.values;
+			for (const target of targets) {
+				const desc = (descriptor as any)[target];
+				if (desc) {
+					if (values) {
+						(htmlElement as any)[target] = this.formatString(desc, values);
+					} else {
+						(htmlElement as any)[target] = this.getString(desc);
+					}
+				}
+			}
+		}
+	}
+
 	static #processElementJSON(htmlElement: HTMLElement) {
 		const str = htmlElement.getAttribute('data-i18n-json');
 		if (!str) {
@@ -143,6 +189,10 @@ export class I18n {
 			this.#processList(element, 'i18n-placeholder', 'data-i18n-placeholder', 'placeholder');
 			this.#processList(element, 'i18n-label', 'data-i18n-label', 'label');
 			this.#processJSON(element);
+		}
+
+		for (const [element, _] of I18nElements) {
+			this.#processElement2(element);
 		}
 
 		this.#executing = false;

@@ -1,6 +1,10 @@
+import { AddI18nElement } from './harmony-i18n';
+import { ET } from './utils/create';
+
 export function createElement(tagName: string, options?: any) {
 	const element = document.createElement(tagName);
 	createElementOptions(element, options);
+	ET.dispatchEvent(new CustomEvent('created', { detail: element }));
 	return element;
 }
 
@@ -19,6 +23,7 @@ export function createShadowRoot(tagName: string, options?: any, mode: 'open' | 
 
 export function updateElement(element: HTMLElement, options: any) {
 	createElementOptions(element, options);
+	ET.dispatchEvent(new CustomEvent('updated', { detail: element }));
 	return element;
 }
 
@@ -57,9 +62,7 @@ function createElementOptions(element: HTMLElement, options: any, shadowRoot?: S
 					element.classList.add(...optionValue.split(' ').filter((n: string) => n));
 					break;
 				case 'i18n':
-					element.setAttribute('data-i18n', optionValue);
-					element.innerHTML = optionValue;
-					element.classList.add('i18n');
+					AddI18nElement(element, optionValue);
 					break;
 				case 'i18n-title':
 					element.setAttribute('data-i18n-title', optionValue);

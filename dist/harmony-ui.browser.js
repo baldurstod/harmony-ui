@@ -19,9 +19,235 @@ function shadowRootStyleSync(shadowRoot, cssText) {
     shadowRoot.adoptedStyleSheets.push(sheet);
 }
 
+const ET = new EventTarget();
+
+const I18N_DELAY_BEFORE_REFRESH = 100;
+var I18nEvents;
+(function (I18nEvents) {
+    I18nEvents["LangChanged"] = "langchanged";
+    I18nEvents["TranslationsUpdated"] = "translationsupdated";
+    I18nEvents["Any"] = "*";
+})(I18nEvents || (I18nEvents = {}));
+const targets = ['innerHTML', 'innerText', 'placeholder', 'title', 'label'];
+const I18nElements = new Map();
+function AddI18nElement(element, descriptor) {
+    if (typeof descriptor == 'string') {
+        descriptor = { innerText: descriptor };
+    }
+    I18nElements.set(element, descriptor);
+}
+class I18n {
+    static #started = false;
+    static #lang = 'english';
+    static #translations = new Map();
+    static #executing = false;
+    static #refreshTimeout;
+    static #observerConfig = { childList: true, subtree: true, attributeFilter: ['i18n', 'data-i18n-json', 'data-i18n-values'] };
+    static #observer;
+    static #observed = new Set();
+    static #eventTarget = new EventTarget();
+    static start() {
+        if (this.#started) {
+            return;
+        }
+        this.#started = true;
+        this.observeElement(document.body);
+        ET.addEventListener('created', (event) => this.#processElement2(event.detail));
+        ET.addEventListener('updated', (event) => this.#processElement2(event.detail));
+    }
+    static setOptions(options) {
+        if (options.translations) {
+            for (let translation of options.translations) {
+                this.addTranslation(translation);
+            }
+            this.#eventTarget.dispatchEvent(new CustomEvent(I18nEvents.TranslationsUpdated));
+            this.#eventTarget.dispatchEvent(new CustomEvent(I18nEvents.Any));
+        }
+        this.i18n();
+    }
+    static addTranslation(translation) {
+        this.#translations.set(translation.lang, translation);
+    }
+    static #initObserver() {
+        if (this.#observer) {
+            return;
+        }
+        const callback = async (mutationsList, observer) => {
+            for (let mutation of mutationsList) {
+                if (mutation.type === 'childList') {
+                    for (let node of mutation.addedNodes) {
+                        if (node instanceof HTMLElement) {
+                            this.updateElement(node);
+                        }
+                    }
+                }
+                else if (mutation.type === 'attributes') {
+                    this.updateElement(mutation.target);
+                }
+            }
+        };
+        this.#observer = new MutationObserver(callback);
+    }
+    static observeElement(element) {
+        this.#observed.add(element);
+        this.#initObserver();
+        this.#observer?.observe(element, this.#observerConfig);
+        this.updateElement(element);
+    }
+    static #processList(parentNode, className, attribute, subElement) {
+        const elements = parentNode.querySelectorAll('.' + className);
+        if (parentNode.classList?.contains(className)) {
+            this.#processElement(parentNode, attribute, subElement);
+        }
+        for (let element of elements) {
+            this.#processElement(element, attribute, subElement);
+        }
+    }
+    static #processJSON(parentNode) {
+        const className = 'i18n';
+        const elements = parentNode.querySelectorAll('.' + className);
+        if (parentNode.classList?.contains(className)) {
+            this.#processElementJSON(parentNode);
+        }
+        for (let element of elements) {
+            this.#processElementJSON(element);
+        }
+    }
+    static #processElement(htmlElement, attribute, subElement) {
+        let dataLabel = htmlElement.getAttribute(attribute);
+        if (dataLabel) {
+            htmlElement[subElement] = this.getString(dataLabel);
+        }
+    }
+    // TODO: merge with function above
+    static #processElement2(htmlElement) {
+        const descriptor = I18nElements.get(htmlElement);
+        if (descriptor) {
+            const values = descriptor.values;
+            for (const target of targets) {
+                const desc = descriptor[target];
+                if (desc) {
+                    if (values) {
+                        htmlElement[target] = this.formatString(desc, values);
+                    }
+                    else {
+                        htmlElement[target] = this.getString(desc);
+                    }
+                }
+            }
+        }
+    }
+    static #processElementJSON(htmlElement) {
+        const str = htmlElement.getAttribute('data-i18n-json');
+        if (!str) {
+            return;
+        }
+        const dataJSON = JSON.parse(str);
+        if (!dataJSON) {
+            return;
+        }
+        let valuesJSON;
+        const values = htmlElement.getAttribute('data-i18n-values');
+        if (values) {
+            valuesJSON = JSON.parse(values);
+        }
+        else {
+            valuesJSON = dataJSON.values;
+        }
+        const innerHTML = dataJSON.innerHTML;
+        if (innerHTML) {
+            htmlElement.innerHTML = this.formatString(innerHTML, valuesJSON);
+        }
+        const innerText = dataJSON.innerText;
+        if (innerText) {
+            (htmlElement).innerText = this.formatString(innerText, valuesJSON);
+        }
+    }
+    static i18n() {
+        if (!this.#refreshTimeout) {
+            this.#refreshTimeout = setTimeout(() => this.#i18n(), I18N_DELAY_BEFORE_REFRESH);
+        }
+    }
+    static #i18n() {
+        this.#refreshTimeout = null;
+        if (this.#executing) {
+            return;
+        }
+        this.#executing = true;
+        for (const element of this.#observed) {
+            this.#processList(element, 'i18n', 'data-i18n', 'innerHTML');
+            this.#processList(element, 'i18n-title', 'data-i18n-title', 'title');
+            this.#processList(element, 'i18n-placeholder', 'data-i18n-placeholder', 'placeholder');
+            this.#processList(element, 'i18n-label', 'data-i18n-label', 'label');
+            this.#processJSON(element);
+        }
+        for (const [element, _] of I18nElements) {
+            this.#processElement2(element);
+        }
+        this.#executing = false;
+        return;
+    }
+    static updateElement(htmlElement) {
+        this.#processList(htmlElement, 'i18n', 'data-i18n', 'innerHTML');
+        this.#processList(htmlElement, 'i18n-title', 'data-i18n-title', 'title');
+        this.#processList(htmlElement, 'i18n-placeholder', 'data-i18n-placeholder', 'placeholder');
+        this.#processList(htmlElement, 'i18n-label', 'data-i18n-label', 'label');
+        this.#processJSON(htmlElement);
+    }
+    /**
+     * @deprecated use setLang() instead
+     */
+    static set lang(lang) {
+        throw 'Deprecated, use setLang() instead';
+    }
+    static setLang(lang) {
+        if (this.#lang != lang) {
+            const oldLang = this.#lang;
+            this.#lang = lang;
+            this.#eventTarget.dispatchEvent(new CustomEvent(I18nEvents.LangChanged, { detail: { oldLang: oldLang, newLang: lang } }));
+            this.#eventTarget.dispatchEvent(new CustomEvent(I18nEvents.Any));
+            this.i18n();
+        }
+    }
+    static addEventListener(type, callback, options) {
+        this.#eventTarget.addEventListener(type, callback, options);
+    }
+    static getString(s) {
+        const strings = this.#translations.get(this.#lang)?.strings;
+        if (strings) {
+            let s2 = strings[s];
+            if (typeof s2 == 'string') {
+                return s2;
+            }
+            else {
+                console.warn('Missing translation for key ' + s);
+                return s;
+            }
+        }
+        return s;
+    }
+    static formatString(s, values) {
+        let str = this.getString(s);
+        for (let key in values) {
+            str = str.replace(new RegExp("\\\${" + key + "\\}", "gi"), values[key]);
+        }
+        return str;
+    }
+    /**
+     * @deprecated use getAuthors() instead
+     */
+    static get authors() {
+        throw 'Deprecated, use getAuthors() instead';
+    }
+    static getAuthors() {
+        return this.#translations.get(this.#lang)?.authors ?? [];
+    }
+}
+
 function createElement(tagName, options) {
     const element = document.createElement(tagName);
     createElementOptions(element, options);
+    ET.dispatchEvent(new CustomEvent('created', { detail: element }));
     return element;
 }
 function createElementNS(namespaceURI, tagName, options) {
@@ -37,6 +263,7 @@ function createShadowRoot(tagName, options, mode = 'closed') {
 }
 function updateElement(element, options) {
     createElementOptions(element, options);
+    ET.dispatchEvent(new CustomEvent('updated', { detail: element }));
     return element;
 }
 function append(element, child) {
@@ -72,9 +299,7 @@ function createElementOptions(element, options, shadowRoot) {
                     element.classList.add(...optionValue.split(' ').filter((n) => n));
                     break;
                 case 'i18n':
-                    element.setAttribute('data-i18n', optionValue);
-                    element.innerHTML = optionValue;
-                    element.classList.add('i18n');
+                    AddI18nElement(element, optionValue);
                     break;
                 case 'i18n-title':
                     element.setAttribute('data-i18n-title', optionValue);
@@ -228,193 +453,6 @@ function isVisible(htmlElement) {
 const visible = isVisible;
 function styleInject(css) {
     document.head.append(createElement('style', { textContent: css }));
-}
-
-const I18N_DELAY_BEFORE_REFRESH = 100;
-var I18nEvents;
-(function (I18nEvents) {
-    I18nEvents["LangChanged"] = "langchanged";
-    I18nEvents["TranslationsUpdated"] = "translationsupdated";
-    I18nEvents["Any"] = "*";
-})(I18nEvents || (I18nEvents = {}));
-class I18n {
-    static #lang = 'english';
-    static #translations = new Map();
-    static #executing = false;
-    static #refreshTimeout;
-    static #observerConfig = { childList: true, subtree: true, attributeFilter: ['i18n', 'data-i18n-json', 'data-i18n-values'] };
-    static #observer;
-    static #observed = new Set();
-    static #eventTarget = new EventTarget();
-    static start() {
-        this.observeElement(document.body);
-    }
-    static setOptions(options) {
-        if (options.translations) {
-            for (let translation of options.translations) {
-                this.addTranslation(translation);
-            }
-            this.#eventTarget.dispatchEvent(new CustomEvent(I18nEvents.TranslationsUpdated));
-            this.#eventTarget.dispatchEvent(new CustomEvent(I18nEvents.Any));
-        }
-        this.i18n();
-    }
-    static addTranslation(translation) {
-        this.#translations.set(translation.lang, translation);
-    }
-    static #initObserver() {
-        if (this.#observer) {
-            return;
-        }
-        const callback = async (mutationsList, observer) => {
-            for (let mutation of mutationsList) {
-                if (mutation.type === 'childList') {
-                    for (let node of mutation.addedNodes) {
-                        if (node instanceof HTMLElement) {
-                            this.updateElement(node);
-                        }
-                    }
-                }
-                else if (mutation.type === 'attributes') {
-                    this.updateElement(mutation.target);
-                }
-            }
-        };
-        this.#observer = new MutationObserver(callback);
-    }
-    static observeElement(element) {
-        this.#observed.add(element);
-        this.#initObserver();
-        this.#observer?.observe(element, this.#observerConfig);
-        this.updateElement(element);
-    }
-    static #processList(parentNode, className, attribute, subElement) {
-        const elements = parentNode.querySelectorAll('.' + className);
-        if (parentNode.classList?.contains(className)) {
-            this.#processElement(parentNode, attribute, subElement);
-        }
-        for (let element of elements) {
-            this.#processElement(element, attribute, subElement);
-        }
-    }
-    static #processJSON(parentNode) {
-        const className = 'i18n';
-        const elements = parentNode.querySelectorAll('.' + className);
-        if (parentNode.classList?.contains(className)) {
-            this.#processElementJSON(parentNode);
-        }
-        for (let element of elements) {
-            this.#processElementJSON(element);
-        }
-    }
-    static #processElement(htmlElement, attribute, subElement) {
-        let dataLabel = htmlElement.getAttribute(attribute);
-        if (dataLabel) {
-            htmlElement[subElement] = this.getString(dataLabel);
-        }
-    }
-    static #processElementJSON(htmlElement) {
-        const str = htmlElement.getAttribute('data-i18n-json');
-        if (!str) {
-            return;
-        }
-        const dataJSON = JSON.parse(str);
-        if (!dataJSON) {
-            return;
-        }
-        let valuesJSON;
-        const values = htmlElement.getAttribute('data-i18n-values');
-        if (values) {
-            valuesJSON = JSON.parse(values);
-        }
-        else {
-            valuesJSON = dataJSON.values;
-        }
-        const innerHTML = dataJSON.innerHTML;
-        if (innerHTML) {
-            htmlElement.innerHTML = this.formatString(innerHTML, valuesJSON);
-        }
-        const innerText = dataJSON.innerText;
-        if (innerText) {
-            (htmlElement).innerText = this.formatString(innerText, valuesJSON);
-        }
-    }
-    static i18n() {
-        if (!this.#refreshTimeout) {
-            this.#refreshTimeout = setTimeout(() => this.#i18n(), I18N_DELAY_BEFORE_REFRESH);
-        }
-    }
-    static #i18n() {
-        this.#refreshTimeout = null;
-        if (this.#executing) {
-            return;
-        }
-        this.#executing = true;
-        for (const element of this.#observed) {
-            this.#processList(element, 'i18n', 'data-i18n', 'innerHTML');
-            this.#processList(element, 'i18n-title', 'data-i18n-title', 'title');
-            this.#processList(element, 'i18n-placeholder', 'data-i18n-placeholder', 'placeholder');
-            this.#processList(element, 'i18n-label', 'data-i18n-label', 'label');
-            this.#processJSON(element);
-        }
-        this.#executing = false;
-        return;
-    }
-    static updateElement(htmlElement) {
-        this.#processList(htmlElement, 'i18n', 'data-i18n', 'innerHTML');
-        this.#processList(htmlElement, 'i18n-title', 'data-i18n-title', 'title');
-        this.#processList(htmlElement, 'i18n-placeholder', 'data-i18n-placeholder', 'placeholder');
-        this.#processList(htmlElement, 'i18n-label', 'data-i18n-label', 'label');
-        this.#processJSON(htmlElement);
-    }
-    /**
-     * @deprecated use setLang() instead
-     */
-    static set lang(lang) {
-        throw 'Deprecated, use setLang() instead';
-    }
-    static setLang(lang) {
-        if (this.#lang != lang) {
-            const oldLang = this.#lang;
-            this.#lang = lang;
-            this.#eventTarget.dispatchEvent(new CustomEvent(I18nEvents.LangChanged, { detail: { oldLang: oldLang, newLang: lang } }));
-            this.#eventTarget.dispatchEvent(new CustomEvent(I18nEvents.Any));
-            this.i18n();
-        }
-    }
-    static addEventListener(type, callback, options) {
-        this.#eventTarget.addEventListener(type, callback, options);
-    }
-    static getString(s) {
-        const strings = this.#translations.get(this.#lang)?.strings;
-        if (strings) {
-            let s2 = strings[s];
-            if (typeof s2 == 'string') {
-                return s2;
-            }
-            else {
-                console.warn('Missing translation for key ' + s);
-                return s;
-            }
-        }
-        return s;
-    }
-    static formatString(s, values) {
-        let str = this.getString(s);
-        for (let key in values) {
-            str = str.replace(new RegExp("\\\${" + key + "\\}", "gi"), values[key]);
-        }
-        return str;
-    }
-    /**
-     * @deprecated use getAuthors() instead
-     */
-    static get authors() {
-        throw 'Deprecated, use getAuthors() instead';
-    }
-    static getAuthors() {
-        return this.#translations.get(this.#lang)?.authors ?? [];
-    }
 }
 
 var manipulator2dCSS = ":host {\n\t--harmony-2d-manipulator-shadow-radius: var(--harmony-2d-manipulator-radius, 0.5rem);\n\t--harmony-2d-manipulator-shadow-bg-color: var(--harmony-2d-manipulator-bg-color, red);\n\t--harmony-2d-manipulator-shadow-border: var(--harmony-2d-manipulator-border, none);\n\t--harmony-2d-manipulator-shadow-handle-bg-color: var(--harmony-2d-manipulator-handle-bg-color, chartreuse);\n\n\twidth: 10rem;\n\theight: 10rem;\n\tdisplay: block;\n\tuser-select: none;\n\tpointer-events: all;\n}\n\n:host-context(.grabbing) {\n\tcursor: grabbing;\n}\n\n.manipulator {\n\tposition: absolute;\n\tbackground-color: var(--harmony-2d-manipulator-shadow-bg-color);\n\tborder: var(--harmony-2d-manipulator-shadow-border);\n\tcursor: move;\n\tpointer-events: all;\n}\n\n.rotator {\n\tposition: absolute;\n\twidth: var(--harmony-2d-manipulator-shadow-radius);\n\theight: var(--harmony-2d-manipulator-shadow-radius);\n\tbackground-color: var(--harmony-2d-manipulator-shadow-handle-bg-color);\n\tborder-radius: calc(var(--harmony-2d-manipulator-shadow-radius) * 0.5);\n\ttransform: translate(-50%, -50%);\n\tcursor: grab;\n}\n\n.corner {\n\tposition: absolute;\n\twidth: var(--harmony-2d-manipulator-shadow-radius);\n\theight: var(--harmony-2d-manipulator-shadow-radius);\n\tbackground-color: var(--harmony-2d-manipulator-shadow-handle-bg-color);\n\tborder-radius: calc(var(--harmony-2d-manipulator-shadow-radius) * 0.5);\n\ttransform: translate(-50%, -50%);\n\tcursor: grab;\n}\n\n.side {\n\tposition: absolute;\n\twidth: var(--harmony-2d-manipulator-shadow-radius);\n\theight: var(--harmony-2d-manipulator-shadow-radius);\n\tbackground-color: var(--harmony-2d-manipulator-shadow-handle-bg-color);\n\tborder-radius: calc(var(--harmony-2d-manipulator-shadow-radius) * 0.5);\n\ttransform: translate(-50%, -50%);\n\tcursor: grab;\n}\n\n.corner.grabbing {\n\tcursor: grabbing;\n}\n";
@@ -3987,4 +4025,4 @@ function defineHarmonyToggleButton() {
     }
 }
 
-export { HTMLHarmony2dManipulatorElement, HTMLHarmonyAccordionElement, HTMLHarmonyColorPickerElement, HTMLHarmonyContextMenuElement, HTMLHarmonyCopyElement, HTMLHarmonyFileInputElement, HTMLHarmonyLabelPropertyElement, HTMLHarmonyPaletteElement, HTMLHarmonyPanelElement, HTMLHarmonyRadioElement, HTMLHarmonySelectElement, HTMLHarmonySliderElement, HTMLHarmonySlideshowElement, HTMLHarmonySplitterElement, HTMLHarmonySwitchElement, HTMLHarmonyTabElement, HTMLHarmonyTabGroupElement, HTMLHarmonyToggleButtonElement, HTMLHarmonyTooltipElement, I18n, I18nEvents, ManipulatorCorner, ManipulatorDirection, ManipulatorSide, cloneEvent, createElement, createElementNS, createShadowRoot, defineHarmony2dManipulator, defineHarmonyAccordion, defineHarmonyColorPicker, defineHarmonyContextMenu, defineHarmonyCopy, defineHarmonyFileInput, defineHarmonyLabelProperty, defineHarmonyPalette, defineHarmonyPanel, defineHarmonyRadio, defineHarmonySelect, defineHarmonySlider, defineHarmonySlideshow, defineHarmonySplitter, defineHarmonySwitch, defineHarmonyTab, defineHarmonyTabGroup, defineHarmonyToggleButton, defineHarmonyTooltip, display, documentStyle, documentStyleSync, hide, isVisible, shadowRootStyle, shadowRootStyleSync, show, styleInject, toggle, updateElement, visible };
+export { AddI18nElement, HTMLHarmony2dManipulatorElement, HTMLHarmonyAccordionElement, HTMLHarmonyColorPickerElement, HTMLHarmonyContextMenuElement, HTMLHarmonyCopyElement, HTMLHarmonyFileInputElement, HTMLHarmonyLabelPropertyElement, HTMLHarmonyPaletteElement, HTMLHarmonyPanelElement, HTMLHarmonyRadioElement, HTMLHarmonySelectElement, HTMLHarmonySliderElement, HTMLHarmonySlideshowElement, HTMLHarmonySplitterElement, HTMLHarmonySwitchElement, HTMLHarmonyTabElement, HTMLHarmonyTabGroupElement, HTMLHarmonyToggleButtonElement, HTMLHarmonyTooltipElement, I18n, I18nElements, I18nEvents, ManipulatorCorner, ManipulatorDirection, ManipulatorSide, cloneEvent, createElement, createElementNS, createShadowRoot, defineHarmony2dManipulator, defineHarmonyAccordion, defineHarmonyColorPicker, defineHarmonyContextMenu, defineHarmonyCopy, defineHarmonyFileInput, defineHarmonyLabelProperty, defineHarmonyPalette, defineHarmonyPanel, defineHarmonyRadio, defineHarmonySelect, defineHarmonySlider, defineHarmonySlideshow, defineHarmonySplitter, defineHarmonySwitch, defineHarmonyTab, defineHarmonyTabGroup, defineHarmonyToggleButton, defineHarmonyTooltip, display, documentStyle, documentStyleSync, hide, isVisible, shadowRootStyle, shadowRootStyleSync, show, styleInject, toggle, updateElement, visible };

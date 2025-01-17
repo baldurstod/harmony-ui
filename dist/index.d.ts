@@ -1,5 +1,7 @@
 import { Color } from 'harmony-utils';
 
+export declare function AddI18nElement(element: HTMLElement, descriptor: string | I18nDescriptor): void;
+
 export declare function cloneEvent(event: Event): Event;
 
 export declare function createElement(tagName: string, options?: any): HTMLElement;
@@ -411,6 +413,19 @@ export declare class I18n {
     static get authors(): void;
     static getAuthors(): any;
 }
+
+export declare type I18nDescriptor = {
+    innerHTML?: string;
+    innerText?: string;
+    placeholder?: string;
+    title?: string;
+    label?: string;
+    values?: {
+        [key: string]: any;
+    };
+};
+
+export declare const I18nElements: Map<HTMLElement, I18nDescriptor>;
 
 export declare enum I18nEvents {
     LangChanged = "langchanged",
