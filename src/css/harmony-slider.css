@@ -2,6 +2,10 @@
 	display: flex;
 }
 
+label {
+	width: var(--h-slider-label-width, auto);
+}
+
 input[type=range] {
 	flex: auto;
 }

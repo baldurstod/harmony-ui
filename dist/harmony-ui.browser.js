@@ -3242,7 +3242,7 @@ function defineHarmonySelect() {
     }
 }
 
-var sliderCSS = ":host {\n\tdisplay: flex;\n}\n\ninput[type=range] {\n\tflex: auto;\n}\n\ninput[type=number] {\n\tflex: 0 0 var(--h-slider-input-width, 4rem);\n\tfont-size: var(--h-slider-input-font-size, 1.2rem);\n\tmin-width: 0;\n\ttext-align: center;\n}\n";
+var sliderCSS = ":host {\n\tdisplay: flex;\n}\n\nlabel {\n\twidth: var(--h-slider-label-width, auto);\n}\n\ninput[type=range] {\n\tflex: auto;\n}\n\ninput[type=number] {\n\tflex: 0 0 var(--h-slider-input-width, 4rem);\n\tfont-size: var(--h-slider-input-font-size, 1.2rem);\n\tmin-width: 0;\n\ttext-align: center;\n}\n";
 
 class HTMLHarmonyElement extends HTMLElement {
     initialized = false;
