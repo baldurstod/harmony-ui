@@ -1,5 +1,5 @@
 import { shadowRootStyle } from '../harmony-css';
-import { createElement, hide, show } from '../harmony-html';
+import { createElement, hide, show, updateElement } from '../harmony-html';
 import { I18n } from '../harmony-i18n';
 import toggleButtonCSS from '../css/harmony-toggle-button.css';
 import { toBool } from '../utils/attributes';
@@ -10,6 +10,8 @@ export class HTMLHarmonyToggleButtonElement extends HTMLElement {
 	#buttonOff?: HTMLElement;
 	#state = false;
 	#shadowRoot: ShadowRoot;
+	#i18nOn?: string;
+	#i18nOff?: string;
 
 	constructor() {
 		super();
@@ -44,10 +46,16 @@ export class HTMLHarmonyToggleButtonElement extends HTMLElement {
 			case 'ON':
 				this.#buttonOn = htmlChildElement;
 				this.#shadowRoot.append(this.#buttonOn);
+				if (this.#i18nOn) {
+					updateElement(this.#buttonOn, { i18n: { title: this.#i18nOn, }, });
+				}
 				break;
 			case 'OFF':
 				this.#buttonOff = htmlChildElement;
 				this.#shadowRoot.append(this.#buttonOff);
+				if (this.#i18nOff) {
+					updateElement(this.#buttonOff, { i18n: { title: this.#i18nOff, }, });
+				}
 				break;
 		}
 		this.#refresh();
@@ -55,24 +63,26 @@ export class HTMLHarmonyToggleButtonElement extends HTMLElement {
 
 	attributeChangedCallback(name: string, oldValue: string, newValue: string) {
 		if (name == 'data-i18n-on') {
-			this.#buttonOn?.setAttribute('data-i18n-title', newValue);
+			this.#i18nOn = newValue;
+			this.#buttonOn && updateElement(this.#buttonOn, { i18n: { title: newValue, }, });
 		}
 		if (name == 'data-i18n-off') {
-			this.#buttonOff?.setAttribute('data-i18n-title', newValue);
+			this.#i18nOff = newValue;
+			this.#buttonOff && updateElement(this.#buttonOff, { i18n: { title: newValue, }, });
 		}
 		if (name == 'state') {
 			this.state = toBool(newValue);
 		}
 		if (name == 'src-on') {
 			this.#buttonOn = this.#buttonOn ?? createElement('span', {
-				class: 'i18n-title toggle-button-on',
+				class: 'toggle-button-on',
 				hidden: true,
 			}) as HTMLElement;
 			this.#buttonOn.style.backgroundImage = `url(${newValue})`;
 		}
 		if (name == 'src-off') {
 			this.#buttonOff = this.#buttonOff ?? createElement('span', {
-				class: 'i18n-title toggle-button-off',
+				class: 'toggle-button-off',
 			}) as HTMLElement;
 			this.#buttonOff.style.backgroundImage = `url(${newValue})`;
 		}
@@ -131,7 +141,7 @@ export class HTMLHarmonyToggleButtonElement extends HTMLElement {
 }
 
 let definedToggleButton = false;
-export function defineHarmonyToggleButton() {
+export function defineToggleButton() {
 	if (window.customElements && !definedToggleButton) {
 		customElements.define('harmony-toggle-button', HTMLHarmonyToggleButtonElement);
 		definedToggleButton = true;

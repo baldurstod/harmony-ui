@@ -64,10 +64,6 @@ function createElementOptions(element: HTMLElement, options: any, shadowRoot?: S
 				case 'i18n':
 					AddI18nElement(element, optionValue);
 					break;
-				case 'i18n-title':
-					element.setAttribute('data-i18n-title', optionValue);
-					element.classList.add('i18n-title');
-					break;
 				case 'i18n-placeholder':
 					element.setAttribute('data-i18n-placeholder', optionValue);
 					element.classList.add('i18n-placeholder');

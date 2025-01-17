@@ -176,7 +176,6 @@ class I18n {
         this.#executing = true;
         for (const element of this.#observed) {
             this.#processList(element, 'i18n', 'data-i18n', 'innerHTML');
-            this.#processList(element, 'i18n-title', 'data-i18n-title', 'title');
             this.#processList(element, 'i18n-placeholder', 'data-i18n-placeholder', 'placeholder');
             this.#processList(element, 'i18n-label', 'data-i18n-label', 'label');
             this.#processJSON(element);
@@ -189,7 +188,6 @@ class I18n {
     }
     static updateElement(htmlElement) {
         this.#processList(htmlElement, 'i18n', 'data-i18n', 'innerHTML');
-        this.#processList(htmlElement, 'i18n-title', 'data-i18n-title', 'title');
         this.#processList(htmlElement, 'i18n-placeholder', 'data-i18n-placeholder', 'placeholder');
         this.#processList(htmlElement, 'i18n-label', 'data-i18n-label', 'label');
         this.#processJSON(htmlElement);
@@ -300,10 +298,6 @@ function createElementOptions(element, options, shadowRoot) {
                     break;
                 case 'i18n':
                     AddI18nElement(element, optionValue);
-                    break;
-                case 'i18n-title':
-                    element.setAttribute('data-i18n-title', optionValue);
-                    element.classList.add('i18n-title');
                     break;
                 case 'i18n-placeholder':
                     element.setAttribute('data-i18n-placeholder', optionValue);
@@ -3910,6 +3904,8 @@ class HTMLHarmonyToggleButtonElement extends HTMLElement {
     #buttonOff;
     #state = false;
     #shadowRoot;
+    #i18nOn;
+    #i18nOff;
     constructor() {
         super();
         this.#shadowRoot = this.attachShadow({ mode: 'closed' });
@@ -3939,34 +3935,42 @@ class HTMLHarmonyToggleButtonElement extends HTMLElement {
             case 'ON':
                 this.#buttonOn = htmlChildElement;
                 this.#shadowRoot.append(this.#buttonOn);
+                if (this.#i18nOn) {
+                    updateElement(this.#buttonOn, { i18n: { title: this.#i18nOn, }, });
+                }
                 break;
             case 'OFF':
                 this.#buttonOff = htmlChildElement;
                 this.#shadowRoot.append(this.#buttonOff);
+                if (this.#i18nOff) {
+                    updateElement(this.#buttonOff, { i18n: { title: this.#i18nOff, }, });
+                }
                 break;
         }
         this.#refresh();
     }
     attributeChangedCallback(name, oldValue, newValue) {
         if (name == 'data-i18n-on') {
-            this.#buttonOn?.setAttribute('data-i18n-title', newValue);
+            this.#i18nOn = newValue;
+            this.#buttonOn && updateElement(this.#buttonOn, { i18n: { title: newValue, }, });
         }
         if (name == 'data-i18n-off') {
-            this.#buttonOff?.setAttribute('data-i18n-title', newValue);
+            this.#i18nOff = newValue;
+            this.#buttonOff && updateElement(this.#buttonOff, { i18n: { title: newValue, }, });
         }
         if (name == 'state') {
             this.state = toBool(newValue);
         }
         if (name == 'src-on') {
             this.#buttonOn = this.#buttonOn ?? createElement('span', {
-                class: 'i18n-title toggle-button-on',
+                class: 'toggle-button-on',
                 hidden: true,
             });
             this.#buttonOn.style.backgroundImage = `url(${newValue})`;
         }
         if (name == 'src-off') {
             this.#buttonOff = this.#buttonOff ?? createElement('span', {
-                class: 'i18n-title toggle-button-off',
+                class: 'toggle-button-off',
             });
             this.#buttonOff.style.backgroundImage = `url(${newValue})`;
         }
@@ -4017,7 +4021,7 @@ class HTMLHarmonyToggleButtonElement extends HTMLElement {
     }
 }
 let definedToggleButton = false;
-function defineHarmonyToggleButton() {
+function defineToggleButton() {
     if (window.customElements && !definedToggleButton) {
         customElements.define('harmony-toggle-button', HTMLHarmonyToggleButtonElement);
         definedToggleButton = true;
@@ -4025,4 +4029,4 @@ function defineHarmonyToggleButton() {
     }
 }
 
-export { AddI18nElement, HTMLHarmony2dManipulatorElement, HTMLHarmonyAccordionElement, HTMLHarmonyColorPickerElement, HTMLHarmonyContextMenuElement, HTMLHarmonyCopyElement, HTMLHarmonyFileInputElement, HTMLHarmonyLabelPropertyElement, HTMLHarmonyPaletteElement, HTMLHarmonyPanelElement, HTMLHarmonyRadioElement, HTMLHarmonySelectElement, HTMLHarmonySliderElement, HTMLHarmonySlideshowElement, HTMLHarmonySplitterElement, HTMLHarmonySwitchElement, HTMLHarmonyTabElement, HTMLHarmonyTabGroupElement, HTMLHarmonyToggleButtonElement, HTMLHarmonyTooltipElement, I18n, I18nElements, I18nEvents, ManipulatorCorner, ManipulatorDirection, ManipulatorSide, cloneEvent, createElement, createElementNS, createShadowRoot, defineHarmony2dManipulator, defineHarmonyAccordion, defineHarmonyColorPicker, defineHarmonyContextMenu, defineHarmonyCopy, defineHarmonyFileInput, defineHarmonyLabelProperty, defineHarmonyPalette, defineHarmonyPanel, defineHarmonyRadio, defineHarmonySelect, defineHarmonySlider, defineHarmonySlideshow, defineHarmonySplitter, defineHarmonySwitch, defineHarmonyTab, defineHarmonyTabGroup, defineHarmonyToggleButton, defineHarmonyTooltip, display, documentStyle, documentStyleSync, hide, isVisible, shadowRootStyle, shadowRootStyleSync, show, styleInject, toggle, updateElement, visible };
+export { AddI18nElement, HTMLHarmony2dManipulatorElement, HTMLHarmonyAccordionElement, HTMLHarmonyColorPickerElement, HTMLHarmonyContextMenuElement, HTMLHarmonyCopyElement, HTMLHarmonyFileInputElement, HTMLHarmonyLabelPropertyElement, HTMLHarmonyPaletteElement, HTMLHarmonyPanelElement, HTMLHarmonyRadioElement, HTMLHarmonySelectElement, HTMLHarmonySliderElement, HTMLHarmonySlideshowElement, HTMLHarmonySplitterElement, HTMLHarmonySwitchElement, HTMLHarmonyTabElement, HTMLHarmonyTabGroupElement, HTMLHarmonyToggleButtonElement, HTMLHarmonyTooltipElement, I18n, I18nElements, I18nEvents, ManipulatorCorner, ManipulatorDirection, ManipulatorSide, cloneEvent, createElement, createElementNS, createShadowRoot, defineHarmony2dManipulator, defineHarmonyAccordion, defineHarmonyColorPicker, defineHarmonyContextMenu, defineHarmonyCopy, defineHarmonyFileInput, defineHarmonyLabelProperty, defineHarmonyPalette, defineHarmonyPanel, defineHarmonyRadio, defineHarmonySelect, defineHarmonySlider, defineHarmonySlideshow, defineHarmonySplitter, defineHarmonySwitch, defineHarmonyTab, defineHarmonyTabGroup, defineHarmonyTooltip, defineToggleButton, display, documentStyle, documentStyleSync, hide, isVisible, shadowRootStyle, shadowRootStyleSync, show, styleInject, toggle, updateElement, visible };

@@ -13,7 +13,7 @@
 </head>
 
 <body>
-	<harmony-toggle-button id="toggle">
+	<harmony-toggle-button id="toggle" data-i18n-on="#i18n_on" data-i18n-off="#i18n_off">
 		<on><img src="./assets/img/flashlight_on_FILL0_wght400_GRAD0_opsz24.svg"></on>
 		<off><img src="./assets/img/flashlight_off_FILL0_wght400_GRAD0_opsz24.svg"></off>
 	</harmony-toggle-button>
@@ -21,7 +21,8 @@
 		src-off="./assets/img/flashlight_off_FILL0_wght400_GRAD0_opsz24.svg"></harmony-toggle-button>
 </body>
 <script type="module">
-	import { createElement, defineToggleButton } from '../dist/harmony-ui.browser.js';
+	import { createElement, defineToggleButton, I18n } from '../dist/harmony-ui.browser.js';
+	I18n.start();
 	defineToggleButton();
 	document.getElementById('toggle').addEventListener('change', (event) => console.log(event.target.checked));
 	document.getElementById('toggle2').addEventListener('change', (event) => console.log(event.target.checked));
