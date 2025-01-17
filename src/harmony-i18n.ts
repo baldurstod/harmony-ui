@@ -276,6 +276,17 @@ export class I18n {
 	static getAuthors() {
 		return this.#translations.get(this.#lang)?.authors ?? [];
 	}
+
+	static setValue(element: HTMLElement | undefined, name: string, value: any) {
+		if (!element) {
+			return;
+		}
+
+		const i18n: { [key: string]: any } = {};
+		i18n[name] = value;
+
+		AddI18nElement(element, i18n);
+	}
 	/*
 		static async #checkLang() {
 			if (!this.#path) {

@@ -256,6 +256,14 @@ class I18n {
     static getAuthors() {
         return this.#translations.get(this.#lang)?.authors ?? [];
     }
+    static setValue(element, name, value) {
+        if (!element) {
+            return;
+        }
+        const i18n = {};
+        i18n[name] = value;
+        AddI18nElement(element, i18n);
+    }
 }
 
 function createElement(tagName, options) {

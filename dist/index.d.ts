@@ -412,6 +412,7 @@ export declare class I18n {
      */
     static get authors(): void;
     static getAuthors(): any;
+    static setValue(element: HTMLElement | undefined, name: string, value: any): void;
 }
 
 export declare type I18nDescriptor = {
