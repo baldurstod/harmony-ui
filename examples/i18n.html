@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>Test HTML</title>
+	<link rel="stylesheet" type="text/css" href="./assets/css/examples.css" />
+</head>
+
+<body>
+</body>
+<script type="module">
+	import { createElement, updateElement, I18n } from '../dist/harmony-ui.browser.js';
+	I18n.start();
+
+	I18n.addTranslation({
+		lang: 'english',
+		strings: {
+			test: 'test variables ${constant_value} ${variable}',
+		}
+	});
+
+
+	const a = createElement('div', {
+		i18n: {
+			innerText: 'test',
+			values: {
+				constant_value: 42,
+			}
+		},
+		parent: document.body,
+	});
+
+	let i = 0;
+	setInterval(() => updateElement(a, {
+		i18n: {
+			title: 'test',
+			values: {
+				variable: i++,
+			}
+		}
+	}), 100);
+</script>
+
+</html>

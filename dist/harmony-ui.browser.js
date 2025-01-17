@@ -34,7 +34,29 @@ function AddI18nElement(element, descriptor) {
     if (typeof descriptor == 'string') {
         descriptor = { innerText: descriptor };
     }
-    I18nElements.set(element, descriptor);
+    const existing = I18nElements.get(element);
+    if (existing) {
+        for (const target of targets) {
+            const desc = descriptor[target];
+            if (desc === null) {
+                delete existing[target];
+            }
+            else if (desc !== undefined) {
+                existing[target] = desc;
+            }
+        }
+        if (descriptor.values) {
+            if (!existing.values) {
+                existing.values = {};
+            }
+            for (const name in descriptor.values) {
+                existing.values[name] = descriptor.values[name];
+            }
+        }
+    }
+    else {
+        I18nElements.set(element, descriptor);
+    }
 }
 class I18n {
     static #started = false;
@@ -123,16 +145,11 @@ class I18n {
     static #processElement2(htmlElement) {
         const descriptor = I18nElements.get(htmlElement);
         if (descriptor) {
-            const values = descriptor.values;
+            const values = descriptor.values ?? {};
             for (const target of targets) {
                 const desc = descriptor[target];
                 if (desc) {
-                    if (values) {
-                        htmlElement[target] = this.formatString(desc, values);
-                    }
-                    else {
-                        htmlElement[target] = this.getString(desc);
-                    }
+                    htmlElement[target] = this.formatString(desc, values);
                 }
             }
         }
@@ -256,6 +273,9 @@ function createShadowRoot(tagName, options, mode = 'closed') {
     return shadowRoot;
 }
 function updateElement(element, options) {
+    if (!element) {
+        return;
+    }
     createElementOptions(element, options);
     ET.dispatchEvent(new CustomEvent('updated', { detail: element }));
     return element;
@@ -298,11 +318,6 @@ function createElementOptions(element, options, shadowRoot) {
                 case 'i18nJSON':
                 case 'i18n-json':
                     element.setAttribute('data-i18n-json', JSON.stringify(optionValue));
-                    element.classList.add('i18n');
-                    break;
-                case 'i18nValues':
-                case 'i18n-values':
-                    element.setAttribute('data-i18n-values', JSON.stringify(optionValue));
                     element.classList.add('i18n');
                     break;
                 case 'parent':

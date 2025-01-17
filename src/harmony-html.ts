@@ -21,7 +21,10 @@ export function createShadowRoot(tagName: string, options?: any, mode: 'open' | 
 	return shadowRoot;
 }
 
-export function updateElement(element: HTMLElement, options: any) {
+export function updateElement(element: HTMLElement | undefined, options: any) {
+	if (!element) {
+		return;
+	}
 	createElementOptions(element, options);
 	ET.dispatchEvent(new CustomEvent('updated', { detail: element }));
 	return element;
@@ -67,11 +70,6 @@ function createElementOptions(element: HTMLElement, options: any, shadowRoot?: S
 				case 'i18nJSON':
 				case 'i18n-json':
 					element.setAttribute('data-i18n-json', JSON.stringify(optionValue));
-					element.classList.add('i18n');
-					break;
-				case 'i18nValues':
-				case 'i18n-values':
-					element.setAttribute('data-i18n-values', JSON.stringify(optionValue));
 					element.classList.add('i18n');
 					break;
 				case 'parent':

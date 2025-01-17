@@ -415,11 +415,11 @@ export declare class I18n {
 }
 
 export declare type I18nDescriptor = {
-    innerHTML?: string;
-    innerText?: string;
-    placeholder?: string;
-    title?: string;
-    label?: string;
+    innerHTML?: string | null;
+    innerText?: string | null;
+    placeholder?: string | null;
+    title?: string | null;
+    label?: string | null;
     values?: {
         [key: string]: any;
     };
@@ -480,7 +480,7 @@ export declare function styleInject(css: string): void;
 
 export declare function toggle(htmlElement: HTMLElement | ShadowRoot | undefined | null): void;
 
-export declare function updateElement(element: HTMLElement, options: any): HTMLElement;
+export declare function updateElement(element: HTMLElement | undefined, options: any): HTMLElement | undefined;
 
 export declare const visible: typeof isVisible;
 

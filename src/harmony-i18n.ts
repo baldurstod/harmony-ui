@@ -12,11 +12,11 @@ export type LangChangedEvent = { detail: { oldLang: string, newLang: string } };
 
 const targets = ['innerHTML', 'innerText', 'placeholder', 'title', 'label'];
 export type I18nDescriptor = {
-	innerHTML?: string,
-	innerText?: string,
-	placeholder?: string,
-	title?: string,
-	label?: string,
+	innerHTML?: string | null,
+	innerText?: string | null,
+	placeholder?: string | null,
+	title?: string | null,
+	label?: string | null,
 	values?: { [key: string]: any },
 }
 
@@ -26,7 +26,32 @@ export function AddI18nElement(element: HTMLElement, descriptor: string | I18nDe
 	if (typeof descriptor == 'string') {
 		descriptor = { innerText: descriptor };
 	}
-	I18nElements.set(element, descriptor);
+
+	const existing = I18nElements.get(element);
+	if (existing) {
+		for (const target of targets) {
+			const desc = (descriptor as any)[target];
+			if (desc === null) {
+				delete (existing as any)[target];
+			} else if (desc !== undefined) {
+				(existing as any)[target] = desc;
+			}
+		}
+
+		if (descriptor.values) {
+			if (!existing.values) {
+				existing.values = {};
+			}
+
+			for (const name in descriptor.values) {
+				existing.values[name] = descriptor.values[name];
+			}
+		}
+
+	} else {
+		I18nElements.set(element, descriptor);
+	}
+
 }
 
 export class I18n {
@@ -129,15 +154,11 @@ export class I18n {
 	static #processElement2(htmlElement: HTMLElement) {
 		const descriptor = I18nElements.get(htmlElement);
 		if (descriptor) {
-			const values = descriptor.values;
+			const values = descriptor.values ?? {};
 			for (const target of targets) {
 				const desc = (descriptor as any)[target];
 				if (desc) {
-					if (values) {
-						(htmlElement as any)[target] = this.formatString(desc, values);
-					} else {
-						(htmlElement as any)[target] = this.getString(desc);
-					}
+					(htmlElement as any)[target] = this.formatString(desc, values);
 				}
 			}
 		}
