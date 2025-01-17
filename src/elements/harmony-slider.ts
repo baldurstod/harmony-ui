@@ -1,5 +1,5 @@
-import { documentStyle, shadowRootStyle } from '../harmony-css';
-import { createElement, hide, show } from '../harmony-html';
+import { shadowRootStyle } from '../harmony-css';
+import { createElement, hide, show, updateElement } from '../harmony-html';
 import sliderCSS from '../css/harmony-slider.css';
 import { I18n } from '../harmony-i18n';
 import { injectGlobalCss } from '../utils/globalcss';
@@ -132,9 +132,8 @@ export class HTMLHarmonySliderElement extends HTMLHarmonyElement {
 		let step: number | undefined;
 		switch (name) {
 			case 'label':
-				this.#htmlLabel!.setAttribute('data-i18n', newValue as string);
+				updateElement(this.#htmlLabel, { i18n: newValue, });
 				this.#htmlLabel!.innerHTML = newValue as string;
-				this.#htmlLabel!.classList.add('i18n');
 				show(this.#htmlLabel);
 				break;
 			case 'min':

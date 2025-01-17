@@ -324,11 +324,6 @@ function createElementOptions(element, options, shadowRoot) {
                 case 'i18n':
                     AddI18nElement(element, optionValue);
                     break;
-                case 'i18nJSON':
-                case 'i18n-json':
-                    element.setAttribute('data-i18n-json', JSON.stringify(optionValue));
-                    element.classList.add('i18n');
-                    break;
                 case 'parent':
                     optionValue.append(element);
                     break;
@@ -3384,9 +3379,8 @@ class HTMLHarmonySliderElement extends HTMLHarmonyElement {
         let step;
         switch (name) {
             case 'label':
-                this.#htmlLabel.setAttribute('data-i18n', newValue);
+                updateElement(this.#htmlLabel, { i18n: newValue, });
                 this.#htmlLabel.innerHTML = newValue;
-                this.#htmlLabel.classList.add('i18n');
                 show(this.#htmlLabel);
                 break;
             case 'min':
