@@ -31,14 +31,7 @@
 	});
 
 	let i = 0;
-	setInterval(() => updateElement(a, {
-		i18n: {
-			title: 'test',
-			values: {
-				variable: i++,
-			}
-		}
-	}), 100);
+	setInterval(() => I18n.setValue(a, 'variable', i++), 100);
 </script>
 
 </html>

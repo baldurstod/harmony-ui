@@ -262,7 +262,8 @@ class I18n {
         }
         const i18n = {};
         i18n[name] = value;
-        AddI18nElement(element, i18n);
+        AddI18nElement(element, { values: i18n });
+        this.#processElement2(element);
     }
 }
 
