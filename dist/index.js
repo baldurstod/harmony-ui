@@ -179,8 +179,6 @@ class I18n {
         this.#executing = true;
         for (const element of this.#observed) {
             this.#processList(element, 'i18n', 'data-i18n', 'innerHTML');
-            this.#processList(element, 'i18n-placeholder', 'data-i18n-placeholder', 'placeholder');
-            this.#processList(element, 'i18n-label', 'data-i18n-label', 'label');
             this.#processJSON(element);
         }
         for (const [element, _] of I18nElements) {
@@ -191,8 +189,6 @@ class I18n {
     }
     static updateElement(htmlElement) {
         this.#processList(htmlElement, 'i18n', 'data-i18n', 'innerHTML');
-        this.#processList(htmlElement, 'i18n-placeholder', 'data-i18n-placeholder', 'placeholder');
-        this.#processList(htmlElement, 'i18n-label', 'data-i18n-label', 'label');
         this.#processJSON(htmlElement);
     }
     /**
@@ -301,14 +297,6 @@ function createElementOptions(element, options, shadowRoot) {
                     break;
                 case 'i18n':
                     AddI18nElement(element, optionValue);
-                    break;
-                case 'i18n-placeholder':
-                    element.setAttribute('data-i18n-placeholder', optionValue);
-                    element.classList.add('i18n-placeholder');
-                    break;
-                case 'i18n-label':
-                    element.setAttribute('data-i18n-label', optionValue);
-                    element.classList.add('i18n-label');
                     break;
                 case 'i18nJSON':
                 case 'i18n-json':
