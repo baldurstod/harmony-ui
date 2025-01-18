@@ -172,7 +172,7 @@ export class I18n {
 			const values = descriptor.values ?? {};
 			for (const target of targets) {
 				const desc = descriptor[target];
-				if (desc && (htmlElement as Target)[target]) {
+				if (desc && ((htmlElement as Target)[target] !== undefined)) {
 					(htmlElement as Target)[target] = this.formatString(desc, values);
 				}
 			}
@@ -203,7 +203,7 @@ export class I18n {
 			htmlElement.innerHTML = this.formatString(innerHTML, valuesJSON);
 		}
 		const innerText = dataJSON.innerText;
-		if (innerText && (htmlElement as HTMLElement).innerText) {
+		if (innerText && ((htmlElement as HTMLElement).innerText !== undefined)) {
 			(htmlElement as HTMLElement).innerText = this.formatString(innerText, valuesJSON);
 		}
 	}

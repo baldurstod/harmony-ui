@@ -151,7 +151,7 @@ class I18n {
             const values = descriptor.values ?? {};
             for (const target of targets) {
                 const desc = descriptor[target];
-                if (desc && htmlElement[target]) {
+                if (desc && (htmlElement[target] !== undefined)) {
                     htmlElement[target] = this.formatString(desc, values);
                 }
             }
@@ -179,7 +179,7 @@ class I18n {
             htmlElement.innerHTML = this.formatString(innerHTML, valuesJSON);
         }
         const innerText = dataJSON.innerText;
-        if (innerText && htmlElement.innerText) {
+        if (innerText && (htmlElement.innerText !== undefined)) {
             htmlElement.innerText = this.formatString(innerText, valuesJSON);
         }
     }
