@@ -4,7 +4,7 @@ import { toBool } from "../utils/attributes";
 import panelCSS from '../css/harmony-panel.css';
 import { injectGlobalCss } from "../utils/globalcss";
 
-let dragged = null;
+const dragged = null;
 let nextId = 0;
 //let spliter: HTMLElement = createElement('div', { class: 'harmony-panel-splitter' }) as HTMLElement;
 let highlitPanel: HTMLElement;
@@ -396,9 +396,9 @@ export class HTMLHarmonyPanelElement extends HTMLElement {
 	}
 
 	static saveDisposition() {
-		let list = document.getElementsByTagName('harmony-panel');
-		let json: { panels: { [key: string]: any }, dummies: Array<any> } = { panels: {}, dummies: [] };
-		for (let panel of list) {
+		const list = document.getElementsByTagName('harmony-panel');
+		const json: { panels: { [key: string]: any }, dummies: Array<any> } = { panels: {}, dummies: [] };
+		for (const panel of list) {
 			if (panel.id && panel.parentElement && panel.parentElement.id && panel.parentElement.tagName == 'HARMONY-PANEL') {
 				json.panels[(panel as any).id] = { parent: panel.parentElement.id, size: (panel as any).size, direction: (panel as any).direction };
 				if ((panel as HTMLHarmonyPanelElement).#isDummy) {

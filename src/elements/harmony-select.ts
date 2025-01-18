@@ -35,7 +35,7 @@ export class HTMLHarmonySelectElement extends HTMLElement {
 
 	addOption(value: string, text?: string) {
 		text = text ?? value;
-		let option = document.createElement('option');
+		const option = document.createElement('option');
 		option.value = value;
 		option.innerHTML = text;
 		this.#htmlSelect.append(option);
@@ -43,7 +43,7 @@ export class HTMLHarmonySelectElement extends HTMLElement {
 
 	addOptions(values: Map<any, any>) {
 		if (values && values.entries) {
-			for (let [value, text] of values.entries()) {
+			for (const [value, text] of values.entries()) {
 				this.addOption(value, text);
 			}
 		}
@@ -55,7 +55,7 @@ export class HTMLHarmonySelectElement extends HTMLElement {
 	}
 
 	removeOption(value: any) {
-		let list = this.#htmlSelect.children;
+		const list = this.#htmlSelect.children;
 		for (let i = 0; i < list.length; i++) {
 			if ((list[i] as HTMLOptionElement).value === value) {
 				list[i].remove();
@@ -64,14 +64,14 @@ export class HTMLHarmonySelectElement extends HTMLElement {
 	}
 
 	removeAllOptions() {
-		let list = this.#htmlSelect.children;
+		const list = this.#htmlSelect.children;
 		while (list[0]) {
 			list[0].remove();
 		}
 	}
 
 	select(value: any) {
-		let list = this.#htmlSelect.children;
+		const list = this.#htmlSelect.children;
 		for (let i = 0; i < list.length; i++) {
 			if ((list[i] as HTMLOptionElement).value === value) {
 				(list[i] as HTMLOptionElement).selected = true;
@@ -87,7 +87,7 @@ export class HTMLHarmonySelectElement extends HTMLElement {
 	}
 
 	unselect(value: any) {
-		let list = this.#htmlSelect.children;
+		const list = this.#htmlSelect.children;
 		for (let i = 0; i < list.length; i++) {
 			if ((list[i] as HTMLOptionElement).value === value) {
 				(list[i] as HTMLOptionElement).selected = false;
@@ -95,7 +95,7 @@ export class HTMLHarmonySelectElement extends HTMLElement {
 		}
 	}
 	unselectAll() {
-		let list = this.#htmlSelect.children;
+		const list = this.#htmlSelect.children;
 		for (let i = 0; i < list.length; i++) {
 			(list[i] as HTMLOptionElement).selected = false;
 		}

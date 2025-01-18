@@ -82,7 +82,7 @@ class I18n {
     }
     static setOptions(options) {
         if (options.translations) {
-            for (let translation of options.translations) {
+            for (const translation of options.translations) {
                 this.addTranslation(translation);
             }
             this.#eventTarget.dispatchEvent(new CustomEvent(I18nEvents.TranslationsUpdated));
@@ -98,9 +98,9 @@ class I18n {
             return;
         }
         const callback = async (mutationsList, observer) => {
-            for (let mutation of mutationsList) {
+            for (const mutation of mutationsList) {
                 if (mutation.type === 'childList') {
-                    for (let node of mutation.addedNodes) {
+                    for (const node of mutation.addedNodes) {
                         if (node instanceof HTMLElement) {
                             this.updateElement(node);
                         }
@@ -124,7 +124,7 @@ class I18n {
         if (parentNode.classList?.contains(className)) {
             this.#processElement(parentNode, attribute, subElement);
         }
-        for (let element of elements) {
+        for (const element of elements) {
             this.#processElement(element, attribute, subElement);
         }
     }
@@ -134,12 +134,12 @@ class I18n {
         if (parentNode.classList?.contains(className)) {
             this.#processElementJSON(parentNode);
         }
-        for (let element of elements) {
+        for (const element of elements) {
             this.#processElementJSON(element);
         }
     }
     static #processElement(htmlElement, attribute, subElement) {
-        let dataLabel = htmlElement.getAttribute(attribute);
+        const dataLabel = htmlElement.getAttribute(attribute);
         if (dataLabel) {
             htmlElement[subElement] = this.getString(dataLabel);
         }
@@ -229,7 +229,7 @@ class I18n {
     static getString(s) {
         const strings = this.#translations.get(this.#lang)?.strings;
         if (strings) {
-            let s2 = strings[s];
+            const s2 = strings[s];
             if (typeof s2 == 'string') {
                 return s2;
             }
@@ -242,7 +242,7 @@ class I18n {
     }
     static formatString(s, values) {
         let str = this.getString(s);
-        for (let key in values) {
+        for (const key in values) {
             str = str.replace(new RegExp("\\\${" + key + "\\}", "gi"), values[key]);
         }
         return str;
@@ -337,8 +337,8 @@ function createElementOptions(element, options, shadowRoot) {
                     optionValue.forEach((entry) => append(shadowRoot ?? element, entry));
                     break;
                 case 'events':
-                    for (let eventType in optionValue) {
-                        let eventParams = optionValue[eventType];
+                    for (const eventType in optionValue) {
+                        const eventParams = optionValue[eventType];
                         if (typeof eventParams === 'function') {
                             element.addEventListener(eventType, eventParams);
                         }
@@ -348,7 +348,7 @@ function createElementOptions(element, options, shadowRoot) {
                     }
                     break;
                 case 'properties':
-                    for (let name in optionValue) {
+                    for (const name in optionValue) {
                         element[name] = optionValue[name];
                     }
                     break;
@@ -364,7 +364,7 @@ function createElementOptions(element, options, shadowRoot) {
                     element.innerText = optionValue;
                     break;
                 case 'attributes':
-                    for (let attributeName in optionValue) {
+                    for (const attributeName in optionValue) {
                         element.setAttribute(attributeName, optionValue[attributeName]);
                     }
                     break;
@@ -1163,8 +1163,8 @@ class HTMLHarmonyAccordionElement extends HTMLElement {
     #processChilds() {
         //This is a 2 steps process cause we may change DOM
         const children = this.children;
-        let list = [];
-        for (let child of children) {
+        const list = [];
+        for (const child of children) {
             list.push(child);
         }
         list.forEach(element => this.addItem(element));
@@ -1184,7 +1184,7 @@ class HTMLHarmonyAccordionElement extends HTMLElement {
         this.#refresh();
     }
     createItem(header, content) {
-        let item = createElement('harmony-item', { childs: [header, content] });
+        const item = createElement('harmony-item', { childs: [header, content] });
         header.slot = 'header';
         content.slot = 'content';
         this.append(item);
@@ -1221,7 +1221,7 @@ class HTMLHarmonyAccordionElement extends HTMLElement {
             show(htmlItem.getContent());
             this.#dispatchSelect(true, htmlItem);
             if (!this.#multiple) {
-                for (let selected of this.#selected) {
+                for (const selected of this.#selected) {
                     if (htmlItem != selected) {
                         this.#display(selected, false);
                     }
@@ -1277,18 +1277,18 @@ class HTMLHarmonyAccordionElement extends HTMLElement {
         }));
     }
     #initMutationObserver() {
-        let config = { childList: true, subtree: true };
+        const config = { childList: true, subtree: true };
         const mutationCallback = (mutationsList, observer) => {
             for (const mutation of mutationsList) {
-                let addedNodes = mutation.addedNodes;
-                for (let addedNode of addedNodes) {
+                const addedNodes = mutation.addedNodes;
+                for (const addedNode of addedNodes) {
                     if (addedNode.parentNode == this) {
                         this.addItem(addedNode);
                     }
                 }
             }
         };
-        let observer = new MutationObserver(mutationCallback);
+        const observer = new MutationObserver(mutationCallback);
         observer.observe(this, config);
     }
     set disabled(disabled) {
@@ -1554,8 +1554,8 @@ class HTMLHarmonyContextMenuElement extends HTMLElement {
         this.#checkSize();
     }
     #checkSize() {
-        let bodyRect = document.body.getBoundingClientRect();
-        let elemRect = this.getBoundingClientRect();
+        const bodyRect = document.body.getBoundingClientRect();
+        const elemRect = this.getBoundingClientRect();
         this.style.maxWidth = bodyRect.width + 'px';
         this.style.maxHeight = bodyRect.height + 'px';
         if (elemRect.right > bodyRect.right) {
@@ -1588,12 +1588,12 @@ class HTMLHarmonyContextMenuElement extends HTMLElement {
         if (this.#doOnce) {
             I18n.observeElement(this.#shadowRoot);
             shadowRootStyle(this.#shadowRoot, contextMenuCSS);
-            let callback = (entries, observer) => {
+            const callback = (entries, observer) => {
                 entries.forEach(() => {
                     this.#checkSize();
                 });
             };
-            let resizeObserver = new ResizeObserver(callback);
+            const resizeObserver = new ResizeObserver(callback);
             resizeObserver.observe(this);
             resizeObserver.observe(document.body);
             this.#doOnce = false;
@@ -1602,19 +1602,19 @@ class HTMLHarmonyContextMenuElement extends HTMLElement {
     #setItems(items, userData) {
         this.#shadowRoot.innerHTML = '';
         if (items instanceof Array) {
-            for (let item of items) {
+            for (const item of items) {
                 this.#shadowRoot.append(this.addItem(item, userData));
             }
         }
         else {
-            for (let itemId in items) {
-                let item = items[itemId];
+            for (const itemId in items) {
+                const item = items[itemId];
                 this.#shadowRoot.append(this.addItem(item, userData));
             }
         }
     }
     #openSubMenu(htmlSubMenu) {
-        for (let [htmlItem, sub] of this.#subMenus) {
+        for (const [htmlItem, sub] of this.#subMenus) {
             if (sub == htmlSubMenu || sub.contains(htmlSubMenu)) {
                 htmlItem.classList.add('opened');
                 htmlItem.classList.remove('closed');
@@ -1627,7 +1627,7 @@ class HTMLHarmonyContextMenuElement extends HTMLElement {
         this.#checkSize();
     }
     addItem(item, userData) {
-        let htmlItem = createElement('div', {
+        const htmlItem = createElement('div', {
             class: 'harmony-context-menu-item',
         });
         if (!item) {
@@ -1659,14 +1659,14 @@ class HTMLHarmonyContextMenuElement extends HTMLElement {
                 this.#subMenus.set(htmlItem, htmlSubMenu);
                 let subItems = 0;
                 if (item.submenu instanceof Array) {
-                    for (let subItem of item.submenu) {
+                    for (const subItem of item.submenu) {
                         htmlSubMenu.append(this.addItem(subItem, userData));
                         ++subItems;
                     }
                 }
                 else {
-                    for (let subItemName in item.submenu) {
-                        let subItem = item.submenu[subItemName];
+                    for (const subItemName in item.submenu) {
+                        const subItem = item.submenu[subItemName];
                         htmlSubMenu.append(this.addItem(subItem, userData));
                         ++subItems;
                     }
@@ -1953,8 +1953,8 @@ class HTMLHarmonyPaletteElement extends HTMLElement {
     #processChilds() {
         //This is a 2 steps process cause we may change DOM
         const children = this.children;
-        let list = [];
-        for (let child of children) {
+        const list = [];
+        for (const child of children) {
             list.push(child);
         }
         list.forEach(element => {
@@ -2055,7 +2055,7 @@ class HTMLHarmonyPaletteElement extends HTMLElement {
         let r = 0, g = 0, b = 0;
         switch (true) {
             case typeof color == 'string':
-                let c = parseInt('0x' + color.replace('#', ''), 16);
+                const c = parseInt('0x' + color.replace('#', ''), 16);
                 r = ((c >> 16) & 0xFF) / 255;
                 g = ((c >> 8) & 0xFF) / 255;
                 b = (c & 0xFF) / 255;
@@ -2463,9 +2463,9 @@ class HTMLHarmonyPanelElement extends HTMLElement {
         return `harmony-panel-dummy-${++nextId}`;
     }
     static saveDisposition() {
-        let list = document.getElementsByTagName('harmony-panel');
-        let json = { panels: {}, dummies: [] };
-        for (let panel of list) {
+        const list = document.getElementsByTagName('harmony-panel');
+        const json = { panels: {}, dummies: [] };
+        for (const panel of list) {
             if (panel.id && panel.parentElement && panel.parentElement.id && panel.parentElement.tagName == 'HARMONY-PANEL') {
                 json.panels[panel.id] = { parent: panel.parentElement.id, size: panel.size, direction: panel.direction };
                 if (panel.#isDummy) {
@@ -2576,10 +2576,10 @@ class HTMLHarmonyRadioElement extends HTMLElement {
     }
     select(value, select) {
         this.#selected[select ? 'add' : 'delete'](value);
-        let htmlButton = this.#buttons.get(value);
+        const htmlButton = this.#buttons.get(value);
         if (htmlButton) {
             if (select && !this.#multiple) {
-                for (let child of this.#shadowRoot.children) {
+                for (const child of this.#shadowRoot.children) {
                     if (child.hasAttribute('selected')) {
                         child.removeAttribute('selected');
                         this.dispatchEvent(new CustomEvent('change', { detail: { value: child.value, state: false } }));
@@ -2593,7 +2593,7 @@ class HTMLHarmonyRadioElement extends HTMLElement {
         }
     }
     isSelected(value) {
-        let htmlButton = this.#buttons.get(value);
+        const htmlButton = this.#buttons.get(value);
         return htmlButton?.value ?? false;
     }
     set disabled(disabled) {
@@ -2604,18 +2604,18 @@ class HTMLHarmonyRadioElement extends HTMLElement {
         return this.#disabled;
     }
     #initObserver() {
-        let config = { childList: true, subtree: true };
+        const config = { childList: true, subtree: true };
         const mutationCallback = (mutationsList, observer) => {
             for (const mutation of mutationsList) {
-                let addedNodes = mutation.addedNodes;
-                for (let addedNode of addedNodes) {
+                const addedNodes = mutation.addedNodes;
+                for (const addedNode of addedNodes) {
                     if (addedNode.parentNode == this) {
                         this.#initButton(addedNode);
                     }
                 }
             }
         };
-        let observer = new MutationObserver(mutationCallback);
+        const observer = new MutationObserver(mutationCallback);
         observer.observe(this, config);
     }
     attributeChangedCallback(name, oldValue, newValue) {
@@ -2810,7 +2810,7 @@ class HTMLHarmonySlideshowElement extends HTMLElement {
                     this.refresh();
                 });
                 htmlImage.onload = () => this.checkImageSize(htmlImage);
-                let htmlThumbnailImage = htmlImage.cloneNode();
+                const htmlThumbnailImage = htmlImage.cloneNode();
                 this.#htmlThumbnails.append(htmlThumbnailImage);
                 htmlThumbnailImage.addEventListener('click', () => this.active = htmlImage);
             }
@@ -2823,8 +2823,8 @@ class HTMLHarmonySlideshowElement extends HTMLElement {
         this.#htmlThumbnails.innerText = '';
         this.#activeImage = undefined;
         // Remove pending images
-        let list = [];
-        for (let child of this.children) {
+        const list = [];
+        for (const child of this.children) {
             if (child.constructor.name == 'HTMLImageElement') {
                 list.push(child);
             }
@@ -2832,7 +2832,7 @@ class HTMLHarmonySlideshowElement extends HTMLElement {
         list.forEach(element => element.remove());
     }
     refresh() {
-        for (let image of this.#images) {
+        for (const image of this.#images) {
             //image.style.display = (image ==  this.#activeImage) ? '' : 'none';
             image.style.display = '';
         }
@@ -2843,7 +2843,7 @@ class HTMLHarmonySlideshowElement extends HTMLElement {
         this.#smoothScroll = options.smoothScroll ?? true;
         this.#smoothScrollTransitionTime = options.smoothScrollTransitionTime ?? DEFAULT_SCROLL_TRANSITION_TIME;
         if (options.images) {
-            for (let image of options.images) {
+            for (const image of options.images) {
                 const htmlImage = createElement('img');
                 htmlImage.src = image;
                 this.addImage(htmlImage);
@@ -2859,7 +2859,7 @@ class HTMLHarmonySlideshowElement extends HTMLElement {
     #processChilds() {
         //This is a 2 steps process cause we may change DOM
         const list = [];
-        for (let child of this.children) {
+        for (const child of this.children) {
             list.push(child);
         }
         list.forEach(element => this.addImage(element));
@@ -2910,8 +2910,8 @@ class HTMLHarmonySlideshowElement extends HTMLElement {
         this.checkImagesSize();
     }
     checkImagesSize() {
-        let rect = this.#htmlImages.getBoundingClientRect();
-        for (let image of this.#images) {
+        const rect = this.#htmlImages.getBoundingClientRect();
+        for (const image of this.#images) {
             this.checkImageSize(image, rect);
         }
     }
@@ -2921,22 +2921,22 @@ class HTMLHarmonySlideshowElement extends HTMLElement {
         }
         let widthRatio = 1.0;
         let heightRatio = 1.0;
-        let naturalWidth = htmlImage.naturalWidth;
-        let naturalHeight = htmlImage.naturalHeight;
+        const naturalWidth = htmlImage.naturalWidth;
+        const naturalHeight = htmlImage.naturalHeight;
         if (naturalWidth > rect.width) {
             widthRatio = rect.width / naturalWidth;
         }
         if (naturalHeight > rect.height) {
             heightRatio = rect.height / naturalHeight;
         }
-        let ratio = Math.min(widthRatio, heightRatio);
-        let imageWidth = naturalWidth * ratio + 'px';
-        let imageHeight = naturalHeight * ratio + 'px';
+        const ratio = Math.min(widthRatio, heightRatio);
+        const imageWidth = naturalWidth * ratio + 'px';
+        const imageHeight = naturalHeight * ratio + 'px';
         this.#htmlImagesOuter.style.width = imageWidth;
         this.#htmlImagesOuter.style.height = imageHeight;
     }
     #zoomImage(event) {
-        let activeImage = this.#activeImage;
+        const activeImage = this.#activeImage;
         switch (event.type) {
             case 'mouseover':
                 if (activeImage) {
@@ -2946,10 +2946,10 @@ class HTMLHarmonySlideshowElement extends HTMLElement {
                 break;
             case 'mousemove':
                 if (activeImage) {
-                    let deltaWidth = this.#zoomShadowRoot.host.clientWidth - this.#htmlZoomImage.clientWidth;
-                    let deltaHeight = this.#zoomShadowRoot.host.clientHeight - this.#htmlZoomImage.clientHeight;
-                    let mouseX = event.offsetX / activeImage.offsetWidth - 0.5;
-                    let mouseY = event.offsetY / activeImage.offsetHeight - 0.5;
+                    const deltaWidth = this.#zoomShadowRoot.host.clientWidth - this.#htmlZoomImage.clientWidth;
+                    const deltaHeight = this.#zoomShadowRoot.host.clientHeight - this.#htmlZoomImage.clientHeight;
+                    const mouseX = event.offsetX / activeImage.offsetWidth - 0.5;
+                    const mouseY = event.offsetY / activeImage.offsetHeight - 0.5;
                     /*if (deltaWidth >= 0) {
                         this.#htmlZoomImage.style.left = `${-mouseX * deltaWidth}px`;
                     } else {
@@ -2972,17 +2972,17 @@ class HTMLHarmonySlideshowElement extends HTMLElement {
         }
     }
     #initObserver() {
-        let config = { childList: true, subtree: true };
+        const config = { childList: true, subtree: true };
         const mutationCallback = (mutationsList, observer) => {
             for (const mutation of mutationsList) {
-                for (let addedNode of mutation.addedNodes) {
+                for (const addedNode of mutation.addedNodes) {
                     if (addedNode.parentNode == this) {
                         this.addImage(addedNode);
                     }
                 }
             }
         };
-        let observer = new MutationObserver(mutationCallback);
+        const observer = new MutationObserver(mutationCallback);
         observer.observe(this, config);
     }
     attributeChangedCallback(name, oldValue, newValue) {
@@ -3035,14 +3035,14 @@ class HTMLHarmonySelectElement extends HTMLElement {
     */
     addOption(value, text) {
         text = text ?? value;
-        let option = document.createElement('option');
+        const option = document.createElement('option');
         option.value = value;
         option.innerHTML = text;
         this.#htmlSelect.append(option);
     }
     addOptions(values) {
         if (values && values.entries) {
-            for (let [value, text] of values.entries()) {
+            for (const [value, text] of values.entries()) {
                 this.addOption(value, text);
             }
         }
@@ -3052,7 +3052,7 @@ class HTMLHarmonySelectElement extends HTMLElement {
         this.addOptions(values);
     }
     removeOption(value) {
-        let list = this.#htmlSelect.children;
+        const list = this.#htmlSelect.children;
         for (let i = 0; i < list.length; i++) {
             if (list[i].value === value) {
                 list[i].remove();
@@ -3060,13 +3060,13 @@ class HTMLHarmonySelectElement extends HTMLElement {
         }
     }
     removeAllOptions() {
-        let list = this.#htmlSelect.children;
+        const list = this.#htmlSelect.children;
         while (list[0]) {
             list[0].remove();
         }
     }
     select(value) {
-        let list = this.#htmlSelect.children;
+        const list = this.#htmlSelect.children;
         for (let i = 0; i < list.length; i++) {
             if (list[i].value === value) {
                 list[i].selected = true;
@@ -3080,7 +3080,7 @@ class HTMLHarmonySelectElement extends HTMLElement {
         }
     }
     unselect(value) {
-        let list = this.#htmlSelect.children;
+        const list = this.#htmlSelect.children;
         for (let i = 0; i < list.length; i++) {
             if (list[i].value === value) {
                 list[i].selected = false;
@@ -3088,7 +3088,7 @@ class HTMLHarmonySelectElement extends HTMLElement {
         }
     }
     unselectAll() {
-        let list = this.#htmlSelect.children;
+        const list = this.#htmlSelect.children;
         for (let i = 0; i < list.length; i++) {
             list[i].selected = false;
         }
@@ -3411,7 +3411,7 @@ class HTMLHarmonySplitterElement extends HTMLElement {
         if (!this.#dragging) {
             return;
         }
-        let elemRect = this.getBoundingClientRect();
+        const elemRect = this.getBoundingClientRect();
         const clientX = event.clientX;
         const clientY = event.clientY;
         if (this.#orientation == 'v') {
@@ -3729,7 +3729,7 @@ class HTMLHarmonyTabGroupElement extends HTMLElement {
         this.#refresh();
     }
     #refresh() {
-        for (let tab of this.#tabs) {
+        for (const tab of this.#tabs) {
             this.#header.append(tab.htmlHeader);
             this.#content.append(tab);
             if (tab != this.#activeTab) {
@@ -3795,7 +3795,7 @@ class HTMLHarmonyToggleButtonElement extends HTMLElement {
     }
     #processChilds() {
         const childs = new Set(this.children);
-        for (let child of childs) {
+        for (const child of childs) {
             this.#processChild(child);
         }
         this.#refresh();
@@ -3870,17 +3870,17 @@ class HTMLHarmonyToggleButtonElement extends HTMLElement {
         this.state = !this.#state;
     }
     #initObserver() {
-        let config = { childList: true, subtree: true };
+        const config = { childList: true, subtree: true };
         const mutationCallback = (mutationsList, observer) => {
             for (const mutation of mutationsList) {
-                for (let addedNode of mutation.addedNodes) {
+                for (const addedNode of mutation.addedNodes) {
                     if (addedNode.parentNode == this) {
                         this.#processChild(addedNode);
                     }
                 }
             }
         };
-        let observer = new MutationObserver(mutationCallback);
+        const observer = new MutationObserver(mutationCallback);
         observer.observe(this, config);
     }
     adoptStyleSheet(styleSheet) {

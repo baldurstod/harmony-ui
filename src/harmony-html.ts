@@ -77,8 +77,8 @@ function createElementOptions(element: HTMLElement, options: any, shadowRoot?: S
 					optionValue.forEach((entry: HTMLElement) => append(shadowRoot ?? element, entry));
 					break;
 				case 'events':
-					for (let eventType in optionValue) {
-						let eventParams = optionValue[eventType];
+					for (const eventType in optionValue) {
+						const eventParams = optionValue[eventType];
 						if (typeof eventParams === 'function') {
 							element.addEventListener(eventType, eventParams);
 						} else {
@@ -87,7 +87,7 @@ function createElementOptions(element: HTMLElement, options: any, shadowRoot?: S
 					}
 					break;
 				case 'properties':
-					for (let name in optionValue) {
+					for (const name in optionValue) {
 						(element as any)[name] = optionValue[name];
 					}
 					break;
@@ -103,7 +103,7 @@ function createElementOptions(element: HTMLElement, options: any, shadowRoot?: S
 					element.innerText = optionValue;
 					break;
 				case 'attributes':
-					for (let attributeName in optionValue) {
+					for (const attributeName in optionValue) {
 						element.setAttribute(attributeName, optionValue[attributeName]);
 					}
 					break;

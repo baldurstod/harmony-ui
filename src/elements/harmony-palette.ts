@@ -40,8 +40,8 @@ export class HTMLHarmonyPaletteElement extends HTMLElement {
 	#processChilds() {
 		//This is a 2 steps process cause we may change DOM
 		const children = this.children;
-		let list: Array<HTMLElement> = [];
-		for (let child of children) {
+		const list: Array<HTMLElement> = [];
+		for (const child of children) {
 			list.push(child as HTMLElement);
 		}
 		list.forEach(element => {
@@ -155,7 +155,7 @@ export class HTMLHarmonyPaletteElement extends HTMLElement {
 		let r = 0, g = 0, b = 0;
 		switch (true) {
 			case typeof color == 'string':
-				let c = parseInt('0x' + color.replace('#', ''), 16);
+				const c = parseInt('0x' + color.replace('#', ''), 16);
 				r = ((c >> 16) & 0xFF) / 255;
 				g = ((c >> 8) & 0xFF) / 255;
 				b = (c & 0xFF) / 255;

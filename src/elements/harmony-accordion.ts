@@ -31,8 +31,8 @@ export class HTMLHarmonyAccordionElement extends HTMLElement {
 	#processChilds() {
 		//This is a 2 steps process cause we may change DOM
 		const children = this.children;
-		let list = [];
-		for (let child of children) {
+		const list = [];
+		for (const child of children) {
 			list.push(child);
 		}
 		list.forEach(element => this.addItem(element as HTMLHarmonyItem));
@@ -55,7 +55,7 @@ export class HTMLHarmonyAccordionElement extends HTMLElement {
 	}
 
 	createItem(header: HTMLElement, content: HTMLElement) {
-		let item = createElement('harmony-item', { childs: [header, content] });
+		const item = createElement('harmony-item', { childs: [header, content] });
 		header.slot = 'header';
 		content.slot = 'content';
 
@@ -96,7 +96,7 @@ export class HTMLHarmonyAccordionElement extends HTMLElement {
 			this.#dispatchSelect(true, htmlItem);
 
 			if (!this.#multiple) {
-				for (let selected of this.#selected) {
+				for (const selected of this.#selected) {
 					if (htmlItem != selected) {
 						this.#display(selected, false);
 					}
@@ -159,11 +159,11 @@ export class HTMLHarmonyAccordionElement extends HTMLElement {
 	}
 
 	#initMutationObserver() {
-		let config = { childList: true, subtree: true };
+		const config = { childList: true, subtree: true };
 		const mutationCallback = (mutationsList: Array<MutationRecord>, observer: MutationObserver) => {
 			for (const mutation of mutationsList) {
-				let addedNodes = mutation.addedNodes;
-				for (let addedNode of addedNodes) {
+				const addedNodes = mutation.addedNodes;
+				for (const addedNode of addedNodes) {
 					if (addedNode.parentNode == this) {
 						this.addItem(addedNode as HTMLHarmonyItem);
 					}
@@ -171,7 +171,7 @@ export class HTMLHarmonyAccordionElement extends HTMLElement {
 			}
 		};
 
-		let observer = new MutationObserver(mutationCallback);
+		const observer = new MutationObserver(mutationCallback);
 		observer.observe(this, config);
 
 	}

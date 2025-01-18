@@ -47,7 +47,7 @@ export class HTMLHarmonyTabGroupElement extends HTMLElement {
 	}
 
 	#refresh() {
-		for (let tab of this.#tabs) {
+		for (const tab of this.#tabs) {
 			this.#header.append(tab.htmlHeader);
 			this.#content.append(tab);
 			if (tab != this.#activeTab) {

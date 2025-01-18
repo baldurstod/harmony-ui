@@ -77,7 +77,7 @@ export class I18n {
 
 	static setOptions(options: { translations: any }) {
 		if (options.translations) {
-			for (let translation of options.translations) {
+			for (const translation of options.translations) {
 				this.addTranslation(translation);
 			}
 			this.#eventTarget.dispatchEvent(new CustomEvent(I18nEvents.TranslationsUpdated));
@@ -95,9 +95,9 @@ export class I18n {
 			return;
 		}
 		const callback = async (mutationsList: Array<MutationRecord>, observer: MutationObserver) => {
-			for (let mutation of mutationsList) {
+			for (const mutation of mutationsList) {
 				if (mutation.type === 'childList') {
-					for (let node of mutation.addedNodes) {
+					for (const node of mutation.addedNodes) {
 						if (node instanceof HTMLElement) {
 							this.updateElement(node);
 						}
@@ -125,7 +125,7 @@ export class I18n {
 			this.#processElement(parentNode as Element, attribute, subElement);
 		}
 
-		for (let element of elements) {
+		for (const element of elements) {
 			this.#processElement(element, attribute, subElement);
 		}
 	}
@@ -138,13 +138,13 @@ export class I18n {
 			this.#processElementJSON((parentNode as HTMLElement));
 		}
 
-		for (let element of elements) {
+		for (const element of elements) {
 			this.#processElementJSON(element as HTMLElement);
 		}
 	}
 
 	static #processElement(htmlElement: Element, attribute: string, subElement: string) {
-		let dataLabel = htmlElement.getAttribute(attribute);
+		const dataLabel = htmlElement.getAttribute(attribute);
 		if (dataLabel) {
 			(htmlElement as any)[subElement] = this.getString(dataLabel);
 		}
@@ -246,7 +246,7 @@ export class I18n {
 	static getString(s: string) {
 		const strings = this.#translations.get(this.#lang)?.strings;
 		if (strings) {
-			let s2 = strings[s]
+			const s2 = strings[s]
 			if (typeof s2 == 'string') {
 				return s2;
 			} else {
@@ -260,7 +260,7 @@ export class I18n {
 	static formatString(s: string, values: any) {
 		let str = this.getString(s);
 
-		for (let key in values) {
+		for (const key in values) {
 			str = str.replace(new RegExp("\\\${" + key + "\\}", "gi"), values[key]);
 		}
 		return str;

@@ -92,7 +92,7 @@ export class HTMLHarmonySplitterElement extends HTMLElement {
 			return;
 		}
 
-		let elemRect = this.getBoundingClientRect();
+		const elemRect = this.getBoundingClientRect();
 		const clientX = event.clientX;
 		const clientY = event.clientY;
 		if (this.#orientation == 'v') {

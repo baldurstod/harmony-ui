@@ -66,10 +66,10 @@ export class HTMLHarmonyRadioElement extends HTMLElement {
 	select(value: string, select: boolean) {
 		this.#selected[select ? 'add' : 'delete'](value);
 
-		let htmlButton = this.#buttons.get(value);
+		const htmlButton = this.#buttons.get(value);
 		if (htmlButton) {
 			if (select && !this.#multiple) {
-				for (let child of this.#shadowRoot.children) {
+				for (const child of this.#shadowRoot.children) {
 					if (child.hasAttribute('selected')) {
 						child.removeAttribute('selected');
 						this.dispatchEvent(new CustomEvent<RadioChangedEventData>('change', { detail: { value: (child as HTMLButtonElement).value, state: false } }));
@@ -84,7 +84,7 @@ export class HTMLHarmonyRadioElement extends HTMLElement {
 	}
 
 	isSelected(value: string) {
-		let htmlButton = this.#buttons.get(value);
+		const htmlButton = this.#buttons.get(value);
 		return htmlButton?.value ?? false;
 	}
 
@@ -98,11 +98,11 @@ export class HTMLHarmonyRadioElement extends HTMLElement {
 	}
 
 	#initObserver() {
-		let config = { childList: true, subtree: true };
+		const config = { childList: true, subtree: true };
 		const mutationCallback = (mutationsList: Array<MutationRecord>, observer: MutationObserver) => {
 			for (const mutation of mutationsList) {
-				let addedNodes = mutation.addedNodes;
-				for (let addedNode of addedNodes) {
+				const addedNodes = mutation.addedNodes;
+				for (const addedNode of addedNodes) {
 					if (addedNode.parentNode == this) {
 						this.#initButton(addedNode as HTMLButtonElement);
 					}
@@ -110,7 +110,7 @@ export class HTMLHarmonyRadioElement extends HTMLElement {
 			}
 		};
 
-		let observer = new MutationObserver(mutationCallback);
+		const observer = new MutationObserver(mutationCallback);
 		observer.observe(this, config);
 	}
 

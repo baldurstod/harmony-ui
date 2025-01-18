@@ -35,7 +35,7 @@ export class HTMLHarmonyToggleButtonElement extends HTMLElement {
 
 	#processChilds() {
 		const childs = new Set(this.children)
-		for (let child of childs) {
+		for (const child of childs) {
 			this.#processChild(child as HTMLElement);
 		}
 		this.#refresh();
@@ -116,10 +116,10 @@ export class HTMLHarmonyToggleButtonElement extends HTMLElement {
 	}
 
 	#initObserver() {
-		let config = { childList: true, subtree: true };
+		const config = { childList: true, subtree: true };
 		const mutationCallback = (mutationsList: Array<MutationRecord>, observer: MutationObserver) => {
 			for (const mutation of mutationsList) {
-				for (let addedNode of mutation.addedNodes) {
+				for (const addedNode of mutation.addedNodes) {
 					if (addedNode.parentNode == this) {
 						this.#processChild(addedNode as HTMLElement);
 					}
@@ -127,7 +127,7 @@ export class HTMLHarmonyToggleButtonElement extends HTMLElement {
 			}
 		};
 
-		let observer = new MutationObserver(mutationCallback);
+		const observer = new MutationObserver(mutationCallback);
 		observer.observe(this, config);
 	}
 

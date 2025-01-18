@@ -182,7 +182,7 @@ export class HTMLHarmonySlideshowElement extends HTMLElement {
 
 				htmlImage.onload = () => this.checkImageSize(htmlImage);
 
-				let htmlThumbnailImage = htmlImage.cloneNode();
+				const htmlThumbnailImage = htmlImage.cloneNode();
 				this.#htmlThumbnails.append(htmlThumbnailImage);
 				htmlThumbnailImage.addEventListener('click', () => this.active = htmlImage);
 			}
@@ -197,8 +197,8 @@ export class HTMLHarmonySlideshowElement extends HTMLElement {
 		this.#activeImage = undefined;
 
 		// Remove pending images
-		let list = [];
-		for (let child of this.children) {
+		const list = [];
+		for (const child of this.children) {
 			if (child.constructor.name == 'HTMLImageElement') {
 				list.push(child);
 			}
@@ -207,7 +207,7 @@ export class HTMLHarmonySlideshowElement extends HTMLElement {
 	}
 
 	refresh() {
-		for (let image of this.#images) {
+		for (const image of this.#images) {
 			//image.style.display = (image ==  this.#activeImage) ? '' : 'none';
 			image.style.display = '';
 		}
@@ -220,7 +220,7 @@ export class HTMLHarmonySlideshowElement extends HTMLElement {
 		this.#smoothScrollTransitionTime = options.smoothScrollTransitionTime ?? DEFAULT_SCROLL_TRANSITION_TIME;
 
 		if (options.images) {
-			for (let image of options.images) {
+			for (const image of options.images) {
 				const htmlImage = createElement('img') as HTMLImageElement;
 				htmlImage.src = image;
 				this.addImage(htmlImage);
@@ -237,7 +237,7 @@ export class HTMLHarmonySlideshowElement extends HTMLElement {
 	#processChilds() {
 		//This is a 2 steps process cause we may change DOM
 		const list: Array<HTMLImageElement> = [];
-		for (let child of this.children) {
+		for (const child of this.children) {
 			list.push(child as HTMLImageElement);
 		}
 		list.forEach(element => this.addImage(element));
@@ -293,10 +293,10 @@ export class HTMLHarmonySlideshowElement extends HTMLElement {
 	}
 
 	checkImagesSize() {
-		let rect = this.#htmlImages.getBoundingClientRect();
-		let widthRatio = 1.0;
-		let heightRatio = 1.0;
-		for (let image of this.#images) {
+		const rect = this.#htmlImages.getBoundingClientRect();
+		const widthRatio = 1.0;
+		const heightRatio = 1.0;
+		for (const image of this.#images) {
 			this.checkImageSize(image, rect);
 		}
 	}
@@ -308,8 +308,8 @@ export class HTMLHarmonySlideshowElement extends HTMLElement {
 		let widthRatio = 1.0;
 		let heightRatio = 1.0;
 
-		let naturalWidth = htmlImage.naturalWidth;
-		let naturalHeight = htmlImage.naturalHeight;
+		const naturalWidth = htmlImage.naturalWidth;
+		const naturalHeight = htmlImage.naturalHeight;
 
 		if (naturalWidth > rect.width) {
 			widthRatio = rect.width / naturalWidth;
@@ -318,16 +318,16 @@ export class HTMLHarmonySlideshowElement extends HTMLElement {
 			heightRatio = rect.height / naturalHeight;
 		}
 
-		let ratio = Math.min(widthRatio, heightRatio);
+		const ratio = Math.min(widthRatio, heightRatio);
 
-		let imageWidth = naturalWidth * ratio + 'px';
-		let imageHeight = naturalHeight * ratio + 'px';
+		const imageWidth = naturalWidth * ratio + 'px';
+		const imageHeight = naturalHeight * ratio + 'px';
 		this.#htmlImagesOuter.style.width = imageWidth;
 		this.#htmlImagesOuter.style.height = imageHeight;
 	}
 
 	#zoomImage(event: MouseEvent) {
-		let activeImage = this.#activeImage;
+		const activeImage = this.#activeImage;
 		switch (event.type) {
 			case 'mouseover':
 				if (activeImage) {
@@ -338,11 +338,11 @@ export class HTMLHarmonySlideshowElement extends HTMLElement {
 			case 'mousemove':
 				if (activeImage) {
 
-					let deltaWidth = this.#zoomShadowRoot.host.clientWidth - this.#htmlZoomImage.clientWidth;
-					let deltaHeight = this.#zoomShadowRoot.host.clientHeight - this.#htmlZoomImage.clientHeight;
+					const deltaWidth = this.#zoomShadowRoot.host.clientWidth - this.#htmlZoomImage.clientWidth;
+					const deltaHeight = this.#zoomShadowRoot.host.clientHeight - this.#htmlZoomImage.clientHeight;
 
-					let mouseX = event.offsetX / activeImage.offsetWidth - 0.5;
-					let mouseY = event.offsetY / activeImage.offsetHeight - 0.5;
+					const mouseX = event.offsetX / activeImage.offsetWidth - 0.5;
+					const mouseY = event.offsetY / activeImage.offsetHeight - 0.5;
 
 					/*if (deltaWidth >= 0) {
 						this.#htmlZoomImage.style.left = `${-mouseX * deltaWidth}px`;
@@ -373,10 +373,10 @@ export class HTMLHarmonySlideshowElement extends HTMLElement {
 	}
 
 	#initObserver() {
-		let config = { childList: true, subtree: true };
+		const config = { childList: true, subtree: true };
 		const mutationCallback = (mutationsList: Array<MutationRecord>, observer: MutationObserver) => {
 			for (const mutation of mutationsList) {
-				for (let addedNode of mutation.addedNodes) {
+				for (const addedNode of mutation.addedNodes) {
 					if (addedNode.parentNode == this) {
 						this.addImage(addedNode as HTMLImageElement);
 					}
@@ -384,7 +384,7 @@ export class HTMLHarmonySlideshowElement extends HTMLElement {
 			}
 		};
 
-		let observer = new MutationObserver(mutationCallback);
+		const observer = new MutationObserver(mutationCallback);
 		observer.observe(this, config);
 
 	}
