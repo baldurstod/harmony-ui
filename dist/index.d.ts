@@ -1,6 +1,6 @@
 import { Color } from 'harmony-utils';
 
-export declare function AddI18nElement(element: HTMLElement, descriptor: string | I18nDescriptor): void;
+export declare function AddI18nElement(element: Element, descriptor: string | I18nDescriptor): void;
 
 export declare function cloneEvent(event: Event): Event;
 
@@ -398,7 +398,7 @@ export declare class I18n {
     static addTranslation(translation: I18nTranslation): void;
     static observeElement(element: HTMLElement | ShadowRoot): void;
     static i18n(): void;
-    static updateElement(htmlElement: HTMLElement | ShadowRoot): void;
+    static updateElement(htmlElement: Element | ShadowRoot): void;
     /**
      * @deprecated use setLang() instead
      */
@@ -406,13 +406,15 @@ export declare class I18n {
     static setLang(lang: string): void;
     static addEventListener(type: string, callback: EventListenerOrEventListenerObject | null, options?: AddEventListenerOptions | boolean): void;
     static getString(s: string): string;
-    static formatString(s: string, values: any): string;
+    static formatString(s: string, values: {
+        [key: string]: I18nValue;
+    }): string;
     /**
      * @deprecated use getAuthors() instead
      */
     static get authors(): void;
     static getAuthors(): any;
-    static setValue(element: HTMLElement | undefined, name: string, value: any): void;
+    static setValue(element: HTMLElement | undefined, name: string, value: I18nValue): void;
 }
 
 export declare type I18nDescriptor = {
@@ -426,7 +428,7 @@ export declare type I18nDescriptor = {
     };
 };
 
-export declare const I18nElements: Map<HTMLElement, I18nDescriptor>;
+export declare const I18nElements: Map<Element, I18nDescriptor>;
 
 export declare enum I18nEvents {
     LangChanged = "langchanged",

@@ -27,6 +27,14 @@ export type I18nDescriptor = {
 	values?: { [key: string]: I18nValue },
 }
 
+type Target = {
+	innerHTML?: string,
+	innerText?: string,
+	placeholder?: string,
+	title?: string,
+	label?: string,
+}
+
 export const I18nElements = new Map<Element, I18nDescriptor>();
 
 export function AddI18nElement(element: Element, descriptor: string | I18nDescriptor) {
@@ -101,7 +109,7 @@ export class I18n {
 		if (this.#observer) {
 			return;
 		}
-		const callback = async (mutationsList: Array<MutationRecord>, observer: MutationObserver) => {
+		const callback = async (mutationsList: Array<MutationRecord>) => {
 			for (const mutation of mutationsList) {
 				if (mutation.type === 'childList') {
 					for (const node of mutation.addedNodes) {
@@ -125,7 +133,7 @@ export class I18n {
 		this.updateElement(element);
 	}
 
-	static #processList(parentNode: Element | ShadowRoot, className: string, attribute: string, subElement: string) {
+	static #processList(parentNode: Element | ShadowRoot, className: string, attribute: string, subElement: 'innerHTML') {
 		const elements = parentNode.querySelectorAll('.' + className);
 
 		if ((parentNode as HTMLElement).classList?.contains(className)) {
@@ -150,10 +158,10 @@ export class I18n {
 		}
 	}
 
-	static #processElement(htmlElement: Element, attribute: string, subElement: string) {
+	static #processElement(htmlElement: Element, attribute: string, subElement: 'innerHTML') {
 		const dataLabel = htmlElement.getAttribute(attribute);
 		if (dataLabel) {
-			(htmlElement as any)[subElement] = this.getString(dataLabel);
+			htmlElement[subElement] = this.getString(dataLabel);
 		}
 	}
 
@@ -164,8 +172,8 @@ export class I18n {
 			const values = descriptor.values ?? {};
 			for (const target of targets) {
 				const desc = descriptor[target];
-				if (desc) {
-					(htmlElement as any)[target] = this.formatString(desc, values);
+				if (desc && (htmlElement as Target)[target]) {
+					(htmlElement as Target)[target] = this.formatString(desc, values);
 				}
 			}
 		}
@@ -216,7 +224,7 @@ export class I18n {
 			this.#processJSON(element);
 		}
 
-		for (const [element, _] of I18nElements) {
+		for (const [element] of I18nElements) {
 			this.#processElement2(element);
 		}
 
@@ -264,11 +272,11 @@ export class I18n {
 		return s;
 	}
 
-	static formatString(s: string, values: any) {
+	static formatString(s: string, values: { [key: string]: I18nValue }) {
 		let str = this.getString(s);
 
 		for (const key in values) {
-			str = str.replace(new RegExp("\\\${" + key + "\\}", "gi"), values[key]);
+			str = str.replace(new RegExp("\\${" + key + "\\}", "gi"), String(values[key]));
 		}
 		return str;
 	}
@@ -284,12 +292,12 @@ export class I18n {
 		return this.#translations.get(this.#lang)?.authors ?? [];
 	}
 
-	static setValue(element: HTMLElement | undefined, name: string, value: any) {
+	static setValue(element: HTMLElement | undefined, name: string, value: I18nValue) {
 		if (!element) {
 			return;
 		}
 
-		const i18n: { [key: string]: any } = {};
+		const i18n: { [key: string]: I18nValue } = {};
 		i18n[name] = value;
 
 		AddI18nElement(element, { values: i18n });

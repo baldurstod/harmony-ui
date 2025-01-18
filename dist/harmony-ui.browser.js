@@ -94,7 +94,7 @@ class I18n {
         if (this.#observer) {
             return;
         }
-        const callback = async (mutationsList, observer) => {
+        const callback = async (mutationsList) => {
             for (const mutation of mutationsList) {
                 if (mutation.type === 'childList') {
                     for (const node of mutation.addedNodes) {
@@ -148,7 +148,7 @@ class I18n {
             const values = descriptor.values ?? {};
             for (const target of targets) {
                 const desc = descriptor[target];
-                if (desc) {
+                if (desc && htmlElement[target]) {
                     htmlElement[target] = this.formatString(desc, values);
                 }
             }
@@ -176,8 +176,8 @@ class I18n {
             htmlElement.innerHTML = this.formatString(innerHTML, valuesJSON);
         }
         const innerText = dataJSON.innerText;
-        if (innerText) {
-            (htmlElement).innerText = this.formatString(innerText, valuesJSON);
+        if (innerText && htmlElement.innerText) {
+            htmlElement.innerText = this.formatString(innerText, valuesJSON);
         }
     }
     static i18n() {
@@ -195,7 +195,7 @@ class I18n {
             this.#processList(element, 'i18n', 'data-i18n', 'innerHTML');
             this.#processJSON(element);
         }
-        for (const [element, _] of I18nElements) {
+        for (const [element] of I18nElements) {
             this.#processElement2(element);
         }
         this.#executing = false;
@@ -240,7 +240,7 @@ class I18n {
     static formatString(s, values) {
         let str = this.getString(s);
         for (const key in values) {
-            str = str.replace(new RegExp("\\\${" + key + "\\}", "gi"), values[key]);
+            str = str.replace(new RegExp("\\${" + key + "\\}", "gi"), String(values[key]));
         }
         return str;
     }
