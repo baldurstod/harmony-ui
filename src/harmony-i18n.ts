@@ -27,9 +27,9 @@ export type I18nDescriptor = {
 	values?: { [key: string]: I18nValue },
 }
 
-export const I18nElements = new Map<HTMLElement, I18nDescriptor>();
+export const I18nElements = new Map<Element, I18nDescriptor>();
 
-export function AddI18nElement(element: HTMLElement, descriptor: string | I18nDescriptor) {
+export function AddI18nElement(element: Element, descriptor: string | I18nDescriptor) {
 	if (typeof descriptor == 'string') {
 		descriptor = { innerText: descriptor };
 	}
@@ -110,7 +110,7 @@ export class I18n {
 						}
 					}
 				} else if (mutation.type === 'attributes') {
-					this.updateElement(mutation.target as HTMLElement);
+					this.updateElement(mutation.target as Element);
 				}
 			}
 		};
@@ -137,7 +137,7 @@ export class I18n {
 		}
 	}
 
-	static #processJSON(parentNode: HTMLElement | ShadowRoot) {
+	static #processJSON(parentNode: Element | ShadowRoot) {
 		const className = 'i18n';
 		const elements = parentNode.querySelectorAll('.' + className);
 
@@ -146,7 +146,7 @@ export class I18n {
 		}
 
 		for (const element of elements) {
-			this.#processElementJSON(element as HTMLElement);
+			this.#processElementJSON(element);
 		}
 	}
 
@@ -158,7 +158,7 @@ export class I18n {
 	}
 
 	// TODO: merge with function above
-	static #processElement2(htmlElement: HTMLElement) {
+	static #processElement2(htmlElement: Element) {
 		const descriptor = I18nElements.get(htmlElement);
 		if (descriptor) {
 			const values = descriptor.values ?? {};
@@ -171,7 +171,7 @@ export class I18n {
 		}
 	}
 
-	static #processElementJSON(htmlElement: HTMLElement) {
+	static #processElementJSON(htmlElement: Element) {
 		const str = htmlElement.getAttribute('data-i18n-json');
 		if (!str) {
 			return;
@@ -195,8 +195,8 @@ export class I18n {
 			htmlElement.innerHTML = this.formatString(innerHTML, valuesJSON);
 		}
 		const innerText = dataJSON.innerText;
-		if (innerText) {
-			(htmlElement).innerText = this.formatString(innerText, valuesJSON);
+		if (innerText && (htmlElement as HTMLElement).innerText) {
+			(htmlElement as HTMLElement).innerText = this.formatString(innerText, valuesJSON);
 		}
 	}
 
@@ -224,7 +224,7 @@ export class I18n {
 		return;
 	}
 
-	static updateElement(htmlElement: HTMLElement | ShadowRoot) {
+	static updateElement(htmlElement: Element | ShadowRoot) {
 		this.#processList(htmlElement, 'i18n', 'data-i18n', 'innerHTML');
 		this.#processJSON(htmlElement);
 	}
