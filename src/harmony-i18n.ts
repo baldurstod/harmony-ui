@@ -14,7 +14,7 @@ const targets: ['innerHTML', 'innerText', 'placeholder', 'title', 'label'] = ['i
 export type I18nValue = string | number | boolean | null | undefined;
 export type I18nTranslation = {
 	lang: string,
-	authors: Array<string>,
+	authors?: Array<string>,
 	strings: { [key: string]: string },
 };
 

@@ -438,7 +438,7 @@ export declare enum I18nEvents {
 
 export declare type I18nTranslation = {
     lang: string;
-    authors: Array<string>;
+    authors?: Array<string>;
     strings: {
         [key: string]: string;
     };
