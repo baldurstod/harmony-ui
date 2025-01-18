@@ -354,8 +354,6 @@ export class HTMLHarmonySlideshowElement extends HTMLElement {
 					}*/
 					//console.log(deltaWidth, deltaHeight);
 					//console.log(mouseX, mouseY);
-					this.#htmlZoomImage.style.left = `${Math.sign(deltaWidth) * mouseX * deltaWidth}px`;
-					this.#htmlZoomImage.style.top = `${Math.sign(deltaHeight) * mouseY * deltaHeight}px`;
 
 
 
