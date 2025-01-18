@@ -10,14 +10,21 @@ export enum I18nEvents {
 
 export type LangChangedEvent = { detail: { oldLang: string, newLang: string } };
 
-const targets = ['innerHTML', 'innerText', 'placeholder', 'title', 'label'];
+const targets: ['innerHTML', 'innerText', 'placeholder', 'title', 'label'] = ['innerHTML', 'innerText', 'placeholder', 'title', 'label'];
+export type I18nValue = string | number | boolean | null | undefined;
+export type I18nTranslation = {
+	lang: string,
+	authors: Array<string>,
+	strings: { [key: string]: string },
+};
+
 export type I18nDescriptor = {
 	innerHTML?: string | null,
 	innerText?: string | null,
 	placeholder?: string | null,
 	title?: string | null,
 	label?: string | null,
-	values?: { [key: string]: any },
+	values?: { [key: string]: I18nValue },
 }
 
 export const I18nElements = new Map<HTMLElement, I18nDescriptor>();
@@ -30,11 +37,11 @@ export function AddI18nElement(element: HTMLElement, descriptor: string | I18nDe
 	const existing = I18nElements.get(element);
 	if (existing) {
 		for (const target of targets) {
-			const desc = (descriptor as any)[target];
+			const desc = descriptor[target];
 			if (desc === null) {
-				delete (existing as any)[target];
+				delete existing[target];
 			} else if (desc !== undefined) {
-				(existing as any)[target] = desc;
+				existing[target] = desc;
 			}
 		}
 
@@ -75,7 +82,7 @@ export class I18n {
 		ET.addEventListener('updated', (event: Event) => this.#processElement2((event as CustomEvent).detail));
 	}
 
-	static setOptions(options: { translations: any }) {
+	static setOptions(options: { translations: Array<I18nTranslation> }) {
 		if (options.translations) {
 			for (const translation of options.translations) {
 				this.addTranslation(translation);
@@ -86,7 +93,7 @@ export class I18n {
 		this.i18n();
 	}
 
-	static addTranslation(translation: any) {
+	static addTranslation(translation: I18nTranslation) {
 		this.#translations.set(translation.lang, translation);
 	}
 
@@ -156,7 +163,7 @@ export class I18n {
 		if (descriptor) {
 			const values = descriptor.values ?? {};
 			for (const target of targets) {
-				const desc = (descriptor as any)[target];
+				const desc = descriptor[target];
 				if (desc) {
 					(htmlElement as any)[target] = this.formatString(desc, values);
 				}

@@ -393,9 +393,9 @@ export declare class I18n {
     #private;
     static start(): void;
     static setOptions(options: {
-        translations: any;
+        translations: Array<I18nTranslation>;
     }): void;
-    static addTranslation(translation: any): void;
+    static addTranslation(translation: I18nTranslation): void;
     static observeElement(element: HTMLElement | ShadowRoot): void;
     static i18n(): void;
     static updateElement(htmlElement: HTMLElement | ShadowRoot): void;
@@ -422,7 +422,7 @@ export declare type I18nDescriptor = {
     title?: string | null;
     label?: string | null;
     values?: {
-        [key: string]: any;
+        [key: string]: I18nValue;
     };
 };
 
@@ -433,6 +433,16 @@ export declare enum I18nEvents {
     TranslationsUpdated = "translationsupdated",
     Any = "*"
 }
+
+export declare type I18nTranslation = {
+    lang: string;
+    authors: Array<string>;
+    strings: {
+        [key: string]: string;
+    };
+};
+
+export declare type I18nValue = string | number | boolean | null | undefined;
 
 export declare function isVisible(htmlElement: HTMLElement): boolean;
 
