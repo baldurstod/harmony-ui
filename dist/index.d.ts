@@ -255,6 +255,7 @@ export declare class HTMLHarmonyRadioElement extends HTMLElement {
     isSelected(value: string): string | false;
     set disabled(disabled: boolean);
     get disabled(): boolean;
+    clear(): void;
     attributeChangedCallback(name: string, oldValue: string, newValue: string): void;
     static get observedAttributes(): string[];
 }

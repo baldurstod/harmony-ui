@@ -13,8 +13,8 @@
 	</harmony-switch>
 </body>
 <script type="module">
-	import { defineSwitch } from '../dist/harmony-ui.js';
-	defineSwitch();
+	import { defineHarmonySwitch } from '../dist/harmony-ui.browser.js';
+	defineHarmonySwitch();
 	document.getElementById('switch').addEventListener('change', (event) => console.log(event.target.checked))
 </script>
 

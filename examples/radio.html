@@ -21,8 +21,10 @@
 	</harmony-radio>
 </body>
 <script type="module">
-	import { createElement, defineRadio } from '../dist/harmony-ui.browser.js';
-	defineRadio();
+	import { createElement, defineHarmonyRadio, I18n } from '../dist/harmony-ui.browser.js';
+
+	I18n.start();
+	defineHarmonyRadio();
 	function resolveAfterDelay(delay) {
 		return new Promise(resolve => setTimeout(() => resolve(), delay));
 	}
@@ -32,7 +34,7 @@
 	document.getElementById('radio-multiple').select('4', true);
 
 
-	createElement('harmony-radio', {
+	const dynamic1 = createElement('harmony-radio', {
 		parent: document.body,
 		childs: [
 			createElement('button', { i18n: '#button_1', value: 'button_1', attributes: { selected: 1 } }),
@@ -47,6 +49,40 @@
 			}
 		}
 	});
+
+
+	const dynamic2 = createElement('harmony-radio', {
+		parent: document.body,
+		childs: [
+			createElement('button', { i18n: '#button_1', value: 'button_1', attributes: { selected: 1 } }),
+			createElement('button', { i18n: '#button_2', value: 'button_2' }),
+			createElement('button', { i18n: '#button_3', value: 'button_3' }),
+		],
+		events: {
+			change: (event) => {
+				if (event.detail.state) {
+					console.log(event.detail.value);
+				}
+			}
+		}
+	});
+
+	let i = 0;
+	setInterval(() => {
+		dynamic2.clear();
+		let select = i;
+
+		for (let j = 0; j < Math.round(Math.random() * 3 + 2); j++) {
+			createElement('button', { i18n: '#button_' + i, value: i, parent: dynamic2 });
+			if (Math.random() > 0.5) {
+				select = String(i);
+			}
+			i++;
+		}
+
+		dynamic2.select(select, true)
+
+	}, 1000);
 </script>
 
 </html>

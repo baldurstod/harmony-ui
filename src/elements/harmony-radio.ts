@@ -97,6 +97,16 @@ export class HTMLHarmonyRadioElement extends HTMLElement {
 		return this.#disabled;
 	}
 
+	clear() {
+		for (const button of this.#buttons2) {
+			button.remove();
+		}
+
+		this.#buttons.clear();
+		this.#buttons2.clear();
+		this.#selected.clear();
+	}
+
 	#initObserver() {
 		const config = { childList: true, subtree: true };
 		const mutationCallback = (mutationsList: Array<MutationRecord>, observer: MutationObserver) => {
