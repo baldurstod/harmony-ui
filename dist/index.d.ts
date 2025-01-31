@@ -405,6 +405,7 @@ export declare class I18n {
      */
     static set lang(lang: string);
     static setLang(lang: string): void;
+    static setDefaultLang(defaultLang: string): void;
     static addEventListener(type: string, callback: EventListenerOrEventListenerObject | null, options?: AddEventListenerOptions | boolean): void;
     static getString(s: string): string;
     static formatString(s: string, values: {

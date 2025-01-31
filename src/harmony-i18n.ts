@@ -72,6 +72,7 @@ export function AddI18nElement(element: Element, descriptor: string | I18nDescri
 export class I18n {
 	static #started = false;
 	static #lang = 'english';
+	static #defaultLang = 'english';
 	static #translations = new Map();
 	static #executing = false;
 	static #refreshTimeout: number | null;
@@ -254,21 +255,24 @@ export class I18n {
 		}
 	}
 
+	static setDefaultLang(defaultLang: string) {
+		this.#defaultLang = defaultLang;
+	}
+
 	static addEventListener(type: string, callback: EventListenerOrEventListenerObject | null, options?: AddEventListenerOptions | boolean): void {
 		this.#eventTarget.addEventListener(type, callback, options);
 	}
 
 	static getString(s: string) {
-		const strings = this.#translations.get(this.#lang)?.strings;
-		if (strings) {
-			const s2 = strings[s]
-			if (typeof s2 == 'string') {
-				return s2;
-			} else {
-				console.warn('Missing translation for key ' + s);
-				return s;
-			}
+		const s2 = this.#translations.get(this.#lang)?.strings?.[s] ?? this.#translations.get(this.#defaultLang)?.strings?.[s];
+
+		if (typeof s2 == 'string') {
+			return s2;
+		} else {
+			console.warn('Missing translation for key ' + s);
+			return s;
 		}
+
 		return s;
 	}
 

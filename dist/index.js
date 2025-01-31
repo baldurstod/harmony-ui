@@ -64,6 +64,7 @@ function AddI18nElement(element, descriptor) {
 class I18n {
     static #started = false;
     static #lang = 'english';
+    static #defaultLang = 'english';
     static #translations = new Map();
     static #executing = false;
     static #refreshTimeout;
@@ -223,22 +224,21 @@ class I18n {
             this.i18n();
         }
     }
+    static setDefaultLang(defaultLang) {
+        this.#defaultLang = defaultLang;
+    }
     static addEventListener(type, callback, options) {
         this.#eventTarget.addEventListener(type, callback, options);
     }
     static getString(s) {
-        const strings = this.#translations.get(this.#lang)?.strings;
-        if (strings) {
-            const s2 = strings[s];
-            if (typeof s2 == 'string') {
-                return s2;
-            }
-            else {
-                console.warn('Missing translation for key ' + s);
-                return s;
-            }
+        const s2 = this.#translations.get(this.#lang)?.strings?.[s] ?? this.#translations.get(this.#defaultLang)?.strings?.[s];
+        if (typeof s2 == 'string') {
+            return s2;
         }
-        return s;
+        else {
+            console.warn('Missing translation for key ' + s);
+            return s;
+        }
     }
     static formatString(s, values) {
         let str = this.getString(s);
