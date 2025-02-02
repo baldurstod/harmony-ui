@@ -3918,9 +3918,17 @@ class HTMLHarmonyToggleButtonElement extends HTMLElement {
     #shadowRoot;
     #i18nOn;
     #i18nOff;
+    #htmlSlotOn;
+    #htmlSlotOff;
     constructor() {
         super();
-        this.#shadowRoot = this.attachShadow({ mode: 'closed' });
+        this.#shadowRoot = this.attachShadow({ mode: 'closed', slotAssignment: "manual", });
+        this.#htmlSlotOn = createElement('slot', {
+            parent: this.#shadowRoot,
+        });
+        this.#htmlSlotOff = createElement('slot', {
+            parent: this.#shadowRoot,
+        });
         I18n.observeElement(this.#shadowRoot);
         shadowRootStyle(this.#shadowRoot, toggleButtonCSS);
         this.addEventListener('click', () => this.#click());
@@ -3946,14 +3954,14 @@ class HTMLHarmonyToggleButtonElement extends HTMLElement {
         switch (htmlChildElement.tagName) {
             case 'ON':
                 this.#buttonOn = htmlChildElement;
-                this.#shadowRoot.append(this.#buttonOn);
+                this.#htmlSlotOn.assign(htmlChildElement);
                 if (this.#i18nOn) {
                     updateElement(this.#buttonOn, { i18n: { title: this.#i18nOn, }, });
                 }
                 break;
             case 'OFF':
                 this.#buttonOff = htmlChildElement;
-                this.#shadowRoot.append(this.#buttonOff);
+                this.#htmlSlotOff.assign(htmlChildElement);
                 if (this.#i18nOff) {
                     updateElement(this.#buttonOff, { i18n: { title: this.#i18nOff, }, });
                 }
@@ -3973,19 +3981,6 @@ class HTMLHarmonyToggleButtonElement extends HTMLElement {
         if (name == 'state') {
             this.state = toBool(newValue);
         }
-        if (name == 'src-on') {
-            this.#buttonOn = this.#buttonOn ?? createElement('span', {
-                class: 'toggle-button-on',
-                hidden: true,
-            });
-            this.#buttonOn.style.backgroundImage = `url(${newValue})`;
-        }
-        if (name == 'src-off') {
-            this.#buttonOff = this.#buttonOff ?? createElement('span', {
-                class: 'toggle-button-off',
-            });
-            this.#buttonOff.style.backgroundImage = `url(${newValue})`;
-        }
     }
     get state() {
         return this.#state;
@@ -3999,13 +3994,20 @@ class HTMLHarmonyToggleButtonElement extends HTMLElement {
         }
     }
     #refresh() {
+        this.classList.remove('on', 'off');
         if (this.#state) {
-            show(this.#buttonOn);
-            hide(this.#buttonOff);
+            this.classList.add('on');
+            if (this.#buttonOn) {
+                show(this.#buttonOn);
+                hide(this.#buttonOff);
+            }
         }
         else {
-            hide(this.#buttonOn);
-            show(this.#buttonOff);
+            this.classList.add('off');
+            if (this.#buttonOff) {
+                hide(this.#buttonOn);
+                show(this.#buttonOff);
+            }
         }
     }
     #click() {
