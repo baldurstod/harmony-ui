@@ -6,23 +6,21 @@ import { toBool } from '../utils/attributes';
 import { injectGlobalCss } from '../utils/globalcss';
 
 export class HTMLHarmonyToggleButtonElement extends HTMLElement {
-	#buttonOn?: HTMLElement;
-	#buttonOff?: HTMLElement;
 	#state = false;
 	#shadowRoot: ShadowRoot;
-	#i18nOn?: string;
-	#i18nOff?: string;
 	#htmlSlotOn: HTMLSlotElement;
 	#htmlSlotOff: HTMLSlotElement;
 
 	constructor() {
 		super();
-		this.#shadowRoot = this.attachShadow({ mode: 'closed', slotAssignment: "manual", });
+		this.#shadowRoot = this.attachShadow({ mode: 'closed' });
 		this.#htmlSlotOn = createElement('slot', {
 			parent: this.#shadowRoot,
+			name: 'on',
 		}) as HTMLSlotElement;
 		this.#htmlSlotOff = createElement('slot', {
 			parent: this.#shadowRoot,
+			name: 'off',
 		}) as HTMLSlotElement;
 
 
@@ -34,62 +32,20 @@ export class HTMLHarmonyToggleButtonElement extends HTMLElement {
 	}
 
 	connectedCallback() {
-		if (this.#buttonOn) {
-			this.#shadowRoot.append(this.#buttonOn);
-		}
-		if (this.#buttonOff) {
-			this.#shadowRoot.append(this.#buttonOff);
-		}
-		this.#processChilds();
-	}
-
-	#processChilds() {
-		const childs = new Set(this.children)
-		for (const child of childs) {
-			this.#processChild(child as HTMLElement);
-		}
-		this.#refresh();
-	}
-
-	#processChild(htmlChildElement: HTMLElement) {
-		switch (htmlChildElement.tagName) {
-			case 'ON':
-				this.#buttonOn = htmlChildElement;
-				this.#htmlSlotOn.assign(htmlChildElement);
-				if (this.#i18nOn) {
-					updateElement(this.#buttonOn, { i18n: { title: this.#i18nOn, }, });
-				}
-				break;
-			case 'OFF':
-				this.#buttonOff = htmlChildElement;
-				this.#htmlSlotOff.assign(htmlChildElement);
-				if (this.#i18nOff) {
-					updateElement(this.#buttonOff, { i18n: { title: this.#i18nOff, }, });
-				}
-				break;
-		}
 		this.#refresh();
 	}
 
 	attributeChangedCallback(name: string, oldValue: string, newValue: string) {
-		if (name == 'data-i18n-on') {
-			this.#i18nOn = newValue;
-			this.#buttonOn && updateElement(this.#buttonOn, { i18n: { title: newValue, }, });
-		}
-		if (name == 'data-i18n-off') {
-			this.#i18nOff = newValue;
-			this.#buttonOff && updateElement(this.#buttonOff, { i18n: { title: newValue, }, });
-		}
 		if (name == 'state') {
-			this.state = toBool(newValue);
+			this.setState(toBool(newValue));
 		}
 	}
 
-	get state() {
+	getState() {
 		return this.#state;
 	}
 
-	set state(state) {
+	setState(state: boolean) {
 		state = state ? true : false;
 		if (this.#state != state) {
 			this.#state = state;
@@ -102,21 +58,21 @@ export class HTMLHarmonyToggleButtonElement extends HTMLElement {
 		this.classList.remove('on', 'off');
 		if (this.#state) {
 			this.classList.add('on');
-			if (this.#buttonOn) {
-				show(this.#buttonOn);
-				hide(this.#buttonOff);
+			if (this.#htmlSlotOn.assignedElements().length) {
+				show(this.#htmlSlotOn);
+				hide(this.#htmlSlotOff);
 			}
 		} else {
 			this.classList.add('off');
-			if (this.#buttonOff) {
-				hide(this.#buttonOn);
-				show(this.#buttonOff);
+			if (this.#htmlSlotOff.assignedElements().length) {
+				hide(this.#htmlSlotOn);
+				show(this.#htmlSlotOff);
 			}
 		}
 	}
 
 	#click() {
-		this.state = !this.#state;
+		this.setState(!this.#state);
 	}
 
 	#initObserver() {
@@ -125,7 +81,7 @@ export class HTMLHarmonyToggleButtonElement extends HTMLElement {
 			for (const mutation of mutationsList) {
 				for (const addedNode of mutation.addedNodes) {
 					if (addedNode.parentNode == this) {
-						this.#processChild(addedNode as HTMLElement);
+						this.#refresh();
 					}
 				}
 			}
@@ -140,7 +96,7 @@ export class HTMLHarmonyToggleButtonElement extends HTMLElement {
 	}
 
 	static get observedAttributes() {
-		return ['data-i18n-on', 'data-i18n-off', 'state', 'src-on', 'src-off'];
+		return ['state'];
 	}
 }
 

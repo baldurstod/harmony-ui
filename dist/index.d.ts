@@ -377,8 +377,8 @@ export declare class HTMLHarmonyToggleButtonElement extends HTMLElement {
     constructor();
     connectedCallback(): void;
     attributeChangedCallback(name: string, oldValue: string, newValue: string): void;
-    get state(): boolean;
-    set state(state: boolean);
+    getState(): boolean;
+    setState(state: boolean): void;
     adoptStyleSheet(styleSheet: CSSStyleSheet): void;
     static get observedAttributes(): string[];
 }
