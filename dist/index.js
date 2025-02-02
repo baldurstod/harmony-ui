@@ -3801,13 +3801,13 @@ class HTMLHarmonyToggleButtonElement extends HTMLElement {
     }
     attributeChangedCallback(name, oldValue, newValue) {
         if (name == 'state') {
-            this.setState(toBool(newValue));
+            this.state = toBool(newValue);
         }
     }
-    getState() {
+    get state() {
         return this.#state;
     }
-    setState(state) {
+    set state(state) {
         state = state ? true : false;
         if (this.#state != state) {
             this.#state = state;
@@ -3833,7 +3833,7 @@ class HTMLHarmonyToggleButtonElement extends HTMLElement {
         }
     }
     #click() {
-        this.setState(!this.#state);
+        this.state = !this.#state;
     }
     #initObserver() {
         const config = { childList: true, subtree: true };

@@ -37,15 +37,15 @@ export class HTMLHarmonyToggleButtonElement extends HTMLElement {
 
 	attributeChangedCallback(name: string, oldValue: string, newValue: string) {
 		if (name == 'state') {
-			this.setState(toBool(newValue));
+			this.state = toBool(newValue);
 		}
 	}
 
-	getState() {
+	get state() {
 		return this.#state;
 	}
 
-	setState(state: boolean) {
+	set state(state) {
 		state = state ? true : false;
 		if (this.#state != state) {
 			this.#state = state;
@@ -72,7 +72,7 @@ export class HTMLHarmonyToggleButtonElement extends HTMLElement {
 	}
 
 	#click() {
-		this.setState(!this.#state);
+		this.state = !this.#state;
 	}
 
 	#initObserver() {
