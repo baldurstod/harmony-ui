@@ -1677,11 +1677,11 @@ class HTMLHarmonyMenuElement extends HTMLElement {
         });
     }
     show(items, userData) {
-        document.body.append(this);
         this.#setItems(items, userData);
         this.#checkSize();
     }
     showContextual(items, clientX, clientY, userData) {
+        document.body.append(this);
         this.style.left = clientX + 'px';
         this.style.top = clientY + 'px';
         this.classList.add('contextual');
@@ -1717,7 +1717,9 @@ class HTMLHarmonyMenuElement extends HTMLElement {
         }
     }
     close() {
-        this.remove();
+        if (this.#contextual) {
+            this.remove();
+        }
     }
     connectedCallback() {
         if (this.#doOnce) {
