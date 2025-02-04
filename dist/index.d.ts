@@ -123,7 +123,7 @@ export declare class HTMLHarmonyAccordionElement extends HTMLElement {
     #private;
     constructor();
     connectedCallback(): void;
-    addItem(item: HTMLHarmonyItem): void;
+    addItem(item: HTMLHarmonyItemElement): void;
     createItem(header: HTMLElement, content: HTMLElement): HTMLElement;
     clear(): void;
     expand(id: string): void;
@@ -181,7 +181,7 @@ export declare class HTMLHarmonyFileInputElement extends HTMLElement {
     static get observedAttributes(): string[];
 }
 
-export declare class HTMLHarmonyItem extends HTMLElement {
+export declare class HTMLHarmonyItemElement extends HTMLElement {
     #private;
     constructor();
     getHeader(): HTMLSlotElement;

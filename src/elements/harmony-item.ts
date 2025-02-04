@@ -2,7 +2,7 @@ import { createElement } from '../harmony-html';
 import itemCSS from '../css/harmony-item.css';
 import { shadowRootStyle } from '../harmony-css';
 
-export class HTMLHarmonyItem extends HTMLElement {
+export class HTMLHarmonyItemElement extends HTMLElement {
 	#shadowRoot: ShadowRoot;
 	#htmlHeader: HTMLSlotElement;
 	#htmlContent: HTMLSlotElement;
@@ -52,7 +52,7 @@ export class HTMLHarmonyItem extends HTMLElement {
 let definedHarmonyItem = false;
 export function defineHarmonyItem() {
 	if (window.customElements && !definedHarmonyItem) {
-		customElements.define('harmony-item', HTMLHarmonyItem);
+		customElements.define('harmony-item', HTMLHarmonyItemElement);
 		definedHarmonyItem = true;
 	}
 }

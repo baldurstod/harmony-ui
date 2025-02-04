@@ -3,14 +3,14 @@ import { toBool } from '../utils/attributes';
 import accordionCSS from '../css/harmony-accordion.css';
 import { shadowRootStyle } from '../harmony-css';
 import { injectGlobalCss } from '../utils/globalcss';
-import { defineHarmonyItem, HTMLHarmonyItem } from './harmony-item';
+import { defineHarmonyItem, HTMLHarmonyItemElement } from './harmony-item';
 
 export class HTMLHarmonyAccordionElement extends HTMLElement {
 	#doOnce = true;
 	#multiple = false;
 	#disabled = false;
-	#items = new Set<HTMLHarmonyItem>();
-	#selected = new Set<HTMLHarmonyItem>();
+	#items = new Set<HTMLHarmonyItemElement>();
+	#selected = new Set<HTMLHarmonyItemElement>();
 	#shadowRoot: ShadowRoot;
 	//#htmlSlots = new Set<HTMLSlotElement>();
 
@@ -35,10 +35,10 @@ export class HTMLHarmonyAccordionElement extends HTMLElement {
 		for (const child of children) {
 			list.push(child);
 		}
-		list.forEach(element => this.addItem(element as HTMLHarmonyItem));
+		list.forEach(element => this.addItem(element as HTMLHarmonyItemElement));
 	}
 
-	addItem(item: HTMLHarmonyItem) {
+	addItem(item: HTMLHarmonyItemElement) {
 		if (this.#items.has(item)) {
 			return;
 		}
@@ -69,7 +69,7 @@ export class HTMLHarmonyAccordionElement extends HTMLElement {
 		}
 	}
 
-	#toggle(htmlItem: HTMLHarmonyItem, collapse = true) {
+	#toggle(htmlItem: HTMLHarmonyItemElement, collapse = true) {
 		//let content = this.#items.get(header);
 		/*
 		if (collapse && !this.#multiple) {
@@ -86,7 +86,7 @@ export class HTMLHarmonyAccordionElement extends HTMLElement {
 		}
 	}
 
-	#display(htmlItem: HTMLHarmonyItem, display: boolean) {
+	#display(htmlItem: HTMLHarmonyItemElement, display: boolean) {
 		if (display) {
 			this.#selected.add(htmlItem);
 			//htmlHeader.classList.add('selected');
@@ -146,7 +146,7 @@ export class HTMLHarmonyAccordionElement extends HTMLElement {
 		}
 	}
 
-	#dispatchSelect(selected: boolean, htmlItem: HTMLHarmonyItem) {
+	#dispatchSelect(selected: boolean, htmlItem: HTMLHarmonyItemElement) {
 		const htmlHeader = htmlItem.getHeader();
 		const htmlContent = htmlItem.getContent();
 		this.dispatchEvent(new CustomEvent(selected ? 'select' : 'unselect', {
@@ -165,7 +165,7 @@ export class HTMLHarmonyAccordionElement extends HTMLElement {
 				const addedNodes = mutation.addedNodes;
 				for (const addedNode of addedNodes) {
 					if (addedNode.parentNode == this) {
-						this.addItem(addedNode as HTMLHarmonyItem);
+						this.addItem(addedNode as HTMLHarmonyItemElement);
 					}
 				}
 			}
