@@ -182,7 +182,16 @@ export class HTMLHarmonyMenuElement extends HTMLElement {
 				if (item.opened) {
 					this.#openSubMenu(htmlSubMenu);
 				}
-				htmlItem.addEventListener('click', event => { this.#openSubMenu(htmlSubMenu); event.stopPropagation(); });
+				htmlItem.addEventListener('click', event => {
+					this.#openSubMenu(htmlSubMenu);
+					if (item.cmd) {
+						this.dispatchEvent(new CustomEvent(item.cmd));
+					}
+					if (item.f) {
+						item.f(userData);
+					}
+					event.stopPropagation();
+				});
 				if (subItems == 0) {
 					hide(htmlItem);
 				}
