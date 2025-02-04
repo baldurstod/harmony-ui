@@ -1,62 +1,65 @@
 :host {
-	position: absolute;
 	font-size: 1.5em;
 	cursor: not-allowed;
 	background-color: green;
-	background-color: var(--theme-context-menu-bg-color);
+	background-color: var(--theme-menu-bg-color);
 	overflow: auto;
 	z-index: 100000;
 }
 
-.harmony-context-menu-item {
-	background-color: green;
-	cursor: pointer;
-	background-color: var(--theme-context-menu-item-bg-color);
+:host-context(.contextual) {
+	position: absolute;
 }
 
-.harmony-context-menu-item.disabled {
+.harmony-menu-item {
+	background-color: green;
+	cursor: pointer;
+	background-color: var(--theme-menu-item-bg-color);
+}
+
+.harmony-menu-item.disabled {
 	pointer-events: none;
 }
 
-.harmony-context-menu-item.selected {
+.harmony-menu-item.selected {
 	background-color: blue;
-	background-color: var(--theme-context-menu-item-selected-bg-color);
+	background-color: var(--theme-menu-item-selected-bg-color);
 }
 
 
-.harmony-context-menu-item.separator {
+.harmony-menu-item.separator {
 	height: 5px;
 	background-color: black;
 }
 
-.harmony-context-menu-item>.harmony-context-menu-item-title:hover {
-	background-color: var(--theme-context-menu-item-hover-bg-color);
+.harmony-menu-item>.harmony-menu-item-title:hover {
+	background-color: var(--theme-menu-item-hover-bg-color);
 }
 
-.harmony-context-menu-item.selected>.harmony-context-menu-item-title::after {
+.harmony-menu-item.selected>.harmony-menu-item-title::after {
 	content: "✔";
 	right: 0px;
 	position: absolute;
 }
 
-.harmony-context-menu-item>.harmony-context-menu-item-title::after {
+.harmony-menu-item>.harmony-menu-item-title::after {
 	transition: all 0.2s ease 0s;
 	width: 32px;
 	height: 32px;
 }
 
-.harmony-context-menu-item.closed>.harmony-context-menu-item-title,
-.harmony-context-menu-item.opened>.harmony-context-menu-item-title {
+.harmony-menu-item.closed>.harmony-menu-item-title,
+.harmony-menu-item.opened>.harmony-menu-item-title {
 	padding-right: 32px;
 }
 
-.harmony-context-menu-item.closed>.harmony-context-menu-item-title::after {
+.harmony-menu-item.closed>.harmony-menu-item-title::after {
 	content: "➤";
 	right: 0px;
 	position: absolute;
 }
 
-.harmony-context-menu-item.opened>.harmony-context-menu-item-title::after {
+.harmony-menu-item.opened>.harmony-menu-item-title::after {
 	content: "➤";
 	right: 0px;
 	position: absolute;
@@ -64,16 +67,16 @@
 	transform: rotate(90deg);
 }
 
-.harmony-context-menu-item .submenu {
-	background-color: var(--theme-context-menu-submenu-bg-color);
+.harmony-menu-item .submenu {
+	background-color: var(--theme-menu-submenu-bg-color);
 	padding-left: 10px;
 	margin-left: 2px;
 	display: none;
 	overflow: hidden;
 	position: relative;
-	background-color: var(--theme-context-menu-submenu-fg-color);
+	background-color: var(--theme-menu-submenu-fg-color);
 }
 
-.harmony-context-menu-item.opened>.submenu {
+.harmony-menu-item.opened>.submenu {
 	display: block;
 }

@@ -16,8 +16,6 @@ export declare function defineHarmonyAccordion(): void;
 
 export declare function defineHarmonyColorPicker(): void;
 
-export declare function defineHarmonyContextMenu(): void;
-
 export declare function defineHarmonyCopy(): void;
 
 export declare function defineHarmonyFileInput(): void;
@@ -25,6 +23,8 @@ export declare function defineHarmonyFileInput(): void;
 export declare function defineHarmonyItem(): void;
 
 export declare function defineHarmonyLabelProperty(): void;
+
+export declare function defineHarmonyMenu(): void;
 
 export declare function defineHarmonyPalette(): void;
 
@@ -56,18 +56,18 @@ export declare function documentStyle(cssText: string): Promise<void>;
 
 export declare function documentStyleSync(cssText: string): void;
 
-export declare type HarmonyContextMenuItem = {
+export declare type HarmonyMenuItem = {
     i18n?: string;
     name?: string;
     selected?: boolean;
     disabled?: boolean;
-    submenu?: HarmonyContextMenuItems;
+    submenu?: HarmonyMenuItems;
     cmd?: string;
     f?: (arg0: any) => void;
 };
 
-export declare type HarmonyContextMenuItems = Array<HarmonyContextMenuItem> | {
-    [key: string]: HarmonyContextMenuItem | null;
+export declare type HarmonyMenuItems = Array<HarmonyMenuItem> | {
+    [key: string]: HarmonyMenuItem | null;
 };
 
 export declare type HarmonySlideshowOptions = {
@@ -145,15 +145,6 @@ export declare class HTMLHarmonyColorPickerElement extends HTMLElement {
     setHex(hex: string): void;
 }
 
-export declare class HTMLHarmonyContextMenuElement extends HTMLElement {
-    #private;
-    constructor();
-    show(items: HarmonyContextMenuItems, clientX: number, clientY: number, userData?: any): void;
-    close(): void;
-    connectedCallback(): void;
-    addItem(item: HarmonyContextMenuItem | null, userData: any): HTMLElement;
-}
-
 export declare class HTMLHarmonyCopyElement extends HTMLElement {
     #private;
     constructor();
@@ -197,6 +188,16 @@ export declare class HTMLHarmonyLabelPropertyElement extends HTMLElement {
     set label(label: string);
     set property(property: string);
     connectedCallback(): void;
+}
+
+export declare class HTMLHarmonyMenuElement extends HTMLElement {
+    #private;
+    constructor();
+    show(items: HarmonyMenuItems, userData?: any): void;
+    showContextual(items: HarmonyMenuItems, clientX: number, clientY: number, userData?: any): void;
+    close(): void;
+    connectedCallback(): void;
+    addItem(item: HarmonyMenuItem | null, userData: any): HTMLElement;
 }
 
 export declare class HTMLHarmonyPaletteElement extends HTMLElement {
