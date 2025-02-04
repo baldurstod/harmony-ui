@@ -1811,6 +1811,9 @@ class HTMLHarmonyMenuElement extends HTMLElement {
                 htmlItem.append(htmlSubMenu);
                 //htmlSubMenu.style.display = 'none';
                 htmlItem.classList.add('closed');
+                if (item.opened) {
+                    this.#openSubMenu(htmlSubMenu);
+                }
                 htmlItem.addEventListener('click', event => { this.#openSubMenu(htmlSubMenu); event.stopPropagation(); });
                 if (subItems == 0) {
                     hide(htmlItem);

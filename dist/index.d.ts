@@ -59,6 +59,7 @@ export declare function documentStyleSync(cssText: string): void;
 export declare type HarmonyMenuItem = {
     i18n?: string;
     name?: string;
+    opened?: boolean;
     selected?: boolean;
     disabled?: boolean;
     submenu?: HarmonyMenuItems;
