@@ -3268,8 +3268,8 @@ class HTMLHarmonySliderElement extends HTMLHarmonyElement {
         let step;
         switch (name) {
             case 'label':
-                updateElement(this.#htmlLabel, { i18n: newValue, });
                 this.#htmlLabel.innerHTML = newValue;
+                updateElement(this.#htmlLabel, { i18n: newValue, });
                 show(this.#htmlLabel);
                 break;
             case 'min':
