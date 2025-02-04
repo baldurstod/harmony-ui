@@ -8,6 +8,7 @@ export * from './elements/harmony-color-picker';
 export * from './elements/harmony-context-menu';
 export * from './elements/harmony-copy';
 export * from './elements/harmony-file-input';
+export * from './elements/harmony-item';
 export * from './elements/harmony-label-property';
 export * from './elements/harmony-palette';
 export * from './elements/harmony-panel';

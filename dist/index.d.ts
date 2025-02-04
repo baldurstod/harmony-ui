@@ -22,6 +22,8 @@ export declare function defineHarmonyCopy(): void;
 
 export declare function defineHarmonyFileInput(): void;
 
+export declare function defineHarmonyItem(): void;
+
 export declare function defineHarmonyLabelProperty(): void;
 
 export declare function defineHarmonyPalette(): void;
@@ -179,7 +181,7 @@ export declare class HTMLHarmonyFileInputElement extends HTMLElement {
     static get observedAttributes(): string[];
 }
 
-declare class HTMLHarmonyItem extends HTMLElement {
+export declare class HTMLHarmonyItem extends HTMLElement {
     #private;
     constructor();
     getHeader(): HTMLSlotElement;

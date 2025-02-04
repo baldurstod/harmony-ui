@@ -3937,13 +3937,13 @@ class HTMLHarmonyToggleButtonElement extends HTMLElement {
     }
     attributeChangedCallback(name, oldValue, newValue) {
         if (name == 'state') {
-            this.setState(toBool(newValue));
+            this.state = toBool(newValue);
         }
     }
-    getState() {
+    get state() {
         return this.#state;
     }
-    setState(state) {
+    set state(state) {
         state = state ? true : false;
         if (this.#state != state) {
             this.#state = state;
@@ -3969,7 +3969,7 @@ class HTMLHarmonyToggleButtonElement extends HTMLElement {
         }
     }
     #click() {
-        this.setState(!this.#state);
+        this.state = !this.#state;
     }
     #initObserver() {
         const config = { childList: true, subtree: true };
@@ -4001,4 +4001,4 @@ function defineToggleButton() {
     }
 }
 
-export { AddI18nElement, HTMLHarmony2dManipulatorElement, HTMLHarmonyAccordionElement, HTMLHarmonyColorPickerElement, HTMLHarmonyContextMenuElement, HTMLHarmonyCopyElement, HTMLHarmonyFileInputElement, HTMLHarmonyLabelPropertyElement, HTMLHarmonyPaletteElement, HTMLHarmonyPanelElement, HTMLHarmonyRadioElement, HTMLHarmonySelectElement, HTMLHarmonySliderElement, HTMLHarmonySlideshowElement, HTMLHarmonySplitterElement, HTMLHarmonySwitchElement, HTMLHarmonyTabElement, HTMLHarmonyTabGroupElement, HTMLHarmonyToggleButtonElement, HTMLHarmonyTooltipElement, I18n, I18nElements, I18nEvents, ManipulatorCorner, ManipulatorDirection, ManipulatorSide, cloneEvent, createElement, createElementNS, createShadowRoot, defineHarmony2dManipulator, defineHarmonyAccordion, defineHarmonyColorPicker, defineHarmonyContextMenu, defineHarmonyCopy, defineHarmonyFileInput, defineHarmonyLabelProperty, defineHarmonyPalette, defineHarmonyPanel, defineHarmonyRadio, defineHarmonySelect, defineHarmonySlider, defineHarmonySlideshow, defineHarmonySplitter, defineHarmonySwitch, defineHarmonyTab, defineHarmonyTabGroup, defineHarmonyTooltip, defineToggleButton, display, documentStyle, documentStyleSync, hide, isVisible, shadowRootStyle, shadowRootStyleSync, show, styleInject, toggle, updateElement, visible };
+export { AddI18nElement, HTMLHarmony2dManipulatorElement, HTMLHarmonyAccordionElement, HTMLHarmonyColorPickerElement, HTMLHarmonyContextMenuElement, HTMLHarmonyCopyElement, HTMLHarmonyFileInputElement, HTMLHarmonyItem, HTMLHarmonyLabelPropertyElement, HTMLHarmonyPaletteElement, HTMLHarmonyPanelElement, HTMLHarmonyRadioElement, HTMLHarmonySelectElement, HTMLHarmonySliderElement, HTMLHarmonySlideshowElement, HTMLHarmonySplitterElement, HTMLHarmonySwitchElement, HTMLHarmonyTabElement, HTMLHarmonyTabGroupElement, HTMLHarmonyToggleButtonElement, HTMLHarmonyTooltipElement, I18n, I18nElements, I18nEvents, ManipulatorCorner, ManipulatorDirection, ManipulatorSide, cloneEvent, createElement, createElementNS, createShadowRoot, defineHarmony2dManipulator, defineHarmonyAccordion, defineHarmonyColorPicker, defineHarmonyContextMenu, defineHarmonyCopy, defineHarmonyFileInput, defineHarmonyItem, defineHarmonyLabelProperty, defineHarmonyPalette, defineHarmonyPanel, defineHarmonyRadio, defineHarmonySelect, defineHarmonySlider, defineHarmonySlideshow, defineHarmonySplitter, defineHarmonySwitch, defineHarmonyTab, defineHarmonyTabGroup, defineHarmonyTooltip, defineToggleButton, display, documentStyle, documentStyleSync, hide, isVisible, shadowRootStyle, shadowRootStyleSync, show, styleInject, toggle, updateElement, visible };
