@@ -32,10 +32,9 @@ export class HTMLHarmonyContextMenuElement extends HTMLElement {
 		});
 	}
 
-	show(items: HarmonyContextMenuItems, clientX: number, clientY: number, userData: any) {
+	show(items: HarmonyContextMenuItems, clientX: number, clientY: number, userData?: any) {
 		document.body.append(this);
 		this.#setItems(items, userData);
-		this.style.position = 'absolute';
 		this.style.left = clientX + 'px';
 		this.style.top = clientY + 'px';
 		this.#checkSize();

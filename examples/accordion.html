@@ -47,6 +47,38 @@
 			</harmony-item>
 		</harmony-accordion>
 	</div>
+	<div>
+		<div>Nested</div>
+		<harmony-accordion multiple="0" id="accordion3">
+			<harmony-item>
+				<div slot="header">Item 1</div>
+				<div slot="content">Content 1</div>
+			</harmony-item>
+			<harmony-item>
+				<div slot="header">Item 2</div>
+				<harmony-accordion multiple="0" id="accordion3" slot="content">
+					<harmony-item>
+						<div slot="header">Nested item 1</div>
+						<div slot="content">Nested content 1</div>
+					</harmony-item>
+					<harmony-item>
+						<div slot="header">Nested item 2</div>
+						<harmony-accordion multiple="0" id="accordion3" slot="content">
+							<harmony-item>
+								<div slot="header">Nested item 1</div>
+								<div slot="content">Nested content 1</div>
+							</harmony-item>
+							<harmony-item>
+								<div slot="header">Nested item 2</div>
+								<div slot="content">Nested content 2</div>
+							</harmony-item>
+						</harmony-accordion>
+					</harmony-item>
+				</harmony-accordion>
+			</harmony-item>
+		</harmony-accordion>
+	</div>
+
 	<div id="dynamic1">
 		<div>Dynamically created no multiple</div>
 	</div>

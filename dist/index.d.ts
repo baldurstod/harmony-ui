@@ -148,7 +148,7 @@ export declare class HTMLHarmonyColorPickerElement extends HTMLElement {
 export declare class HTMLHarmonyContextMenuElement extends HTMLElement {
     #private;
     constructor();
-    show(items: HarmonyContextMenuItems, clientX: number, clientY: number, userData: any): void;
+    show(items: HarmonyContextMenuItems, clientX: number, clientY: number, userData?: any): void;
     close(): void;
     connectedCallback(): void;
     addItem(item: HarmonyContextMenuItem | null, userData: any): HTMLElement;

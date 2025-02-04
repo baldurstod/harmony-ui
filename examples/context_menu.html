@@ -10,15 +10,14 @@
 
 <body>
 	<harmony-context-menu id="menu"></harmony-context-menu>
+	<harmony-context-menu id="menu2" class="nested"></harmony-context-menu>
 </body>
 <script type="module">
 	import { defineHarmonyContextMenu } from '../dist/harmony-ui.browser.js';
 	defineHarmonyContextMenu();
 
 
-	const menu = document.getElementById('menu');
-
-	menu.show([
+	document.getElementById('menu').show([
 		{ name: 'test' },
 		{ name: 'submenu1', submenu: [] },
 		{
@@ -31,7 +30,22 @@
 
 			]
 		},
-	], 50, 50, null);
+	], 50, 50);
+
+	document.getElementById('menu2').show([
+		{ name: 'test' },
+		{ name: 'submenu1', submenu: [] },
+		{
+			name: 'submenu2', submenu: [
+
+				{ name: 'subitem1' },
+				{ name: 'subitem2' },
+				{ name: 'subitem3' },
+				{ name: 'subitem4' },
+
+			]
+		},
+	], 50, 50);
 </script>
 
 </html>
