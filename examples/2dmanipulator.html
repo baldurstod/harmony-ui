@@ -6,9 +6,16 @@
 	<title>Test 2d manipulator</title>
 </head>
 
-<body>
-	<harmony-2d-manipulator id="manipulator">
-	</harmony-2d-manipulator>
+<body style="display:flex;flex-direction: column;">
+	<div style="position:relative;">
+		<harmony-2d-manipulator id="manipulator">
+		</harmony-2d-manipulator>
+	</div>
+	<div style="position:relative;transform:scale(0.5);">
+		<span>div with transform</span>
+		<harmony-2d-manipulator id="manipulator">
+		</harmony-2d-manipulator>
+	</div>
 </body>
 <script type="module">
 	import { createElement, defineHarmony2dManipulator } from '../dist/harmony-ui.browser.js';

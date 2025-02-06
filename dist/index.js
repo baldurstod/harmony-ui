@@ -561,6 +561,7 @@ class HTMLHarmony2dManipulatorElement extends HTMLElement {
     #pp_x = 0;
     #pp_y = 0;
     #dragging = false;
+    #transformScale = 1;
     constructor() {
         super();
         this.#shadowRoot = this.attachShadow({ mode: 'closed' });
@@ -867,8 +868,8 @@ class HTMLHarmony2dManipulatorElement extends HTMLElement {
     }
     #deltaMove(event, top, left) {
         const delta = this.#getDelta(event);
-        const deltaX = this.convertToUnit(delta.x, 'width');
-        const deltaY = this.convertToUnit(delta.y, 'height');
+        const deltaX = this.convertToUnit(delta.x, 'width') * this.#transformScale;
+        const deltaY = this.convertToUnit(delta.y, 'height') * this.#transformScale;
         if (top) {
             this.#top = this.#startTop + deltaY;
         }
@@ -896,6 +897,8 @@ class HTMLHarmony2dManipulatorElement extends HTMLElement {
             delta.x = v.x * d;
             delta.y = v.y * d;
         }
+        delta.x *= this.#transformScale;
+        delta.y *= this.#transformScale;
         const qp_x = this.#qp0_x + delta.x;
         const qp_y = this.#qp0_y + delta.y;
         const cp_x = event.altKey ? this.#c0_x : (qp_x + this.#pp_x) * 0.5;
@@ -1021,7 +1024,15 @@ class HTMLHarmony2dManipulatorElement extends HTMLElement {
     #initStartPositions(event) {
         this.#startPageX = event.pageX;
         this.#startPageY = event.pageY;
-        //await this.initParentSize();
+        const rect = this.#htmlQuad.getBoundingClientRect();
+        const norm = Math.sqrt(this.#width * this.#width + this.#height * this.#height);
+        const width = norm * Math.max(Math.abs(Math.cos(this.#rotation - Math.PI * 0.25)), Math.abs(Math.sin(this.#rotation - Math.PI * 0.25)));
+        if (rect.width != 0) {
+            this.#transformScale = width / rect.width;
+        }
+        else {
+            this.#transformScale = 1;
+        }
         this.#initStartPositionsMove();
         this.#initStartPositionsRotation();
         this.#initStartPositionsResize();

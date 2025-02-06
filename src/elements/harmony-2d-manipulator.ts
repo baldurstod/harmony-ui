@@ -105,6 +105,7 @@ export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 	#pp_y: number = 0;
 
 	#dragging = false;
+	#transformScale = 1;
 
 	constructor() {
 		super();
@@ -462,8 +463,8 @@ export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 	#deltaMove(event: MouseEvent, top: boolean, left: boolean) {
 		const delta: { x: number; y: number } = this.#getDelta(event);
 
-		const deltaX: number = this.convertToUnit(delta.x, 'width');
-		const deltaY: number = this.convertToUnit(delta.y, 'height');
+		const deltaX: number = this.convertToUnit(delta.x, 'width') * this.#transformScale;
+		const deltaY: number = this.convertToUnit(delta.y, 'height') * this.#transformScale;
 
 		if (top) {
 			this.#top = this.#startTop + deltaY;
@@ -497,6 +498,9 @@ export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 			delta.x = v.x * d;
 			delta.y = v.y * d;
 		}
+
+		delta.x *= this.#transformScale;
+		delta.y *= this.#transformScale;
 
 		const qp_x: number = this.#qp0_x + delta.x;
 		const qp_y: number = this.#qp0_y + delta.y;
@@ -654,7 +658,14 @@ export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 		this.#startPageX = event.pageX;
 		this.#startPageY = event.pageY;
 
-		//await this.initParentSize();
+		const rect = this.#htmlQuad.getBoundingClientRect();
+		const norm = Math.sqrt(this.#width * this.#width + this.#height * this.#height);
+		const width = norm * Math.max(Math.abs(Math.cos(this.#rotation - Math.PI * 0.25,)), Math.abs(Math.sin(this.#rotation - Math.PI * 0.25,)));
+		if (rect.width != 0) {
+			this.#transformScale = width / rect.width;
+		} else {
+			this.#transformScale = 1;
+		}
 
 		this.#initStartPositionsMove();
 		this.#initStartPositionsRotation();
