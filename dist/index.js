@@ -1025,7 +1025,7 @@ class HTMLHarmony2dManipulatorElement extends HTMLElement {
         this.#startPageX = event.pageX;
         this.#startPageY = event.pageY;
         const rect = this.#htmlQuad.getBoundingClientRect();
-        const norm = Math.sqrt(this.#width * this.#width + this.#height * this.#height);
+        const norm = Math.sqrt(this.#htmlQuad.offsetWidth * this.#htmlQuad.offsetWidth + this.#htmlQuad.offsetHeight * this.#htmlQuad.offsetHeight);
         const width = norm * Math.max(Math.abs(Math.cos(this.#rotation - Math.PI * 0.25)), Math.abs(Math.sin(this.#rotation - Math.PI * 0.25)));
         if (rect.width != 0) {
             this.#transformScale = width / rect.width;
