@@ -32,6 +32,17 @@ function getDirection(s: string): ManipulatorDirection {
 	}
 }
 
+export type ManipulatorUpdatedEventData = {
+	position: { x: number, y: number },
+	width: number,
+	height: number,
+	rotation: number,
+	topLeft: number,
+	topRight: number,
+	bottomLeft: number,
+	bottomRight: number,
+};
+
 const CORNERS = [[-1, -1], [1, -1], [-1, 1], [1, 1]];
 const SCALE_CORNERS = [[-1, -1], [1, -1], [-1, 1], [1, 1]];
 const SIDES = [[0.5, 0], [0.5, 1], [0, 0.5], [1, 0.5]];
