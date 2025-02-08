@@ -786,7 +786,7 @@ class HTMLHarmony2dManipulatorElement extends HTMLElement {
     }
     getCorner(i) {
         if (i < 0 || i >= 4) {
-            return null;
+            return { x: 0, y: 0 };
         }
         const c = CORNERS[i];
         const centerX = this.#left + this.#width * 0.5;

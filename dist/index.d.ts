@@ -87,26 +87,11 @@ export declare class HTMLHarmony2dManipulatorElement extends HTMLElement {
     #private;
     constructor();
     setTopLeft(x: number, y: number): void;
-    getTopLeft(): {
-        x: number;
-        y: number;
-    } | null;
-    getTopRight(): {
-        x: number;
-        y: number;
-    } | null;
-    getBottomLeft(): {
-        x: number;
-        y: number;
-    } | null;
-    getBottomRight(): {
-        x: number;
-        y: number;
-    } | null;
-    getCorner(i: ManipulatorCorner): {
-        x: number;
-        y: number;
-    } | null;
+    getTopLeft(): ManipulatorUpdatedEventDataVec2;
+    getTopRight(): ManipulatorUpdatedEventDataVec2;
+    getBottomLeft(): ManipulatorUpdatedEventDataVec2;
+    getBottomRight(): ManipulatorUpdatedEventDataVec2;
+    getCorner(i: ManipulatorCorner): ManipulatorUpdatedEventDataVec2;
     set(values: {
         rotation?: number;
         left?: number;
@@ -485,17 +470,19 @@ export declare enum ManipulatorSide {
 }
 
 export declare type ManipulatorUpdatedEventData = {
-    position: {
-        x: number;
-        y: number;
-    };
+    position: ManipulatorUpdatedEventDataVec2;
     width: number;
     height: number;
     rotation: number;
-    topLeft: number;
-    topRight: number;
-    bottomLeft: number;
-    bottomRight: number;
+    topLeft: ManipulatorUpdatedEventDataVec2;
+    topRight: ManipulatorUpdatedEventDataVec2;
+    bottomLeft: ManipulatorUpdatedEventDataVec2;
+    bottomRight: ManipulatorUpdatedEventDataVec2;
+};
+
+export declare type ManipulatorUpdatedEventDataVec2 = {
+    x: number;
+    y: number;
 };
 
 export declare type RadioChangedEventData = {

@@ -32,15 +32,17 @@ function getDirection(s: string): ManipulatorDirection {
 	}
 }
 
+export type ManipulatorUpdatedEventDataVec2 = { x: number, y: number };
+
 export type ManipulatorUpdatedEventData = {
-	position: { x: number, y: number },
+	position: ManipulatorUpdatedEventDataVec2,
 	width: number,
 	height: number,
 	rotation: number,
-	topLeft: number,
-	topRight: number,
-	bottomLeft: number,
-	bottomRight: number,
+	topLeft: ManipulatorUpdatedEventDataVec2,
+	topRight: ManipulatorUpdatedEventDataVec2,
+	bottomLeft: ManipulatorUpdatedEventDataVec2,
+	bottomRight: ManipulatorUpdatedEventDataVec2,
 };
 
 const CORNERS = [[-1, -1], [1, -1], [-1, 1], [1, 1]];
@@ -346,7 +348,7 @@ export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 	}
 
 	#dispatchEvent(name: string) {
-		this.dispatchEvent(new CustomEvent(name, {
+		this.dispatchEvent(new CustomEvent<ManipulatorUpdatedEventData>(name, {
 			detail: {
 				position: { x: this.#left, y: this.#top },
 				width: this.#width,
@@ -376,9 +378,9 @@ export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 		return this.getCorner(ManipulatorCorner.BottomRight);
 	}
 
-	getCorner(i: ManipulatorCorner) {
+	getCorner(i: ManipulatorCorner): ManipulatorUpdatedEventDataVec2 {
 		if (i < 0 || i >= 4) {
-			return null;
+			return { x: 0, y: 0 };
 		}
 		const c = CORNERS[i];
 		const centerX = this.#left + this.#width * 0.5;
