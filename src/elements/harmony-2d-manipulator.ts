@@ -32,6 +32,14 @@ function getDirection(s: string): ManipulatorDirection {
 	}
 }
 
+function hasX(d: ManipulatorDirection): boolean {
+	return d == ManipulatorDirection.All || d == ManipulatorDirection.X;
+}
+
+function hasY(d: ManipulatorDirection): boolean {
+	return d == ManipulatorDirection.All || d == ManipulatorDirection.Y;
+}
+
 export type ManipulatorUpdatedEventDataVec2 = { x: number, y: number };
 
 export type ManipulatorUpdatedEventData = {
@@ -78,6 +86,7 @@ export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 	#htmlQuad: HTMLElement;
 	#translationMode: ManipulatorDirection = ManipulatorDirection.All;
 	#canRotate = true;
+	#resizeMode: ManipulatorDirection = ManipulatorDirection.All;
 	#scale: ManipulatorDirection = ManipulatorDirection.All;
 	#skew: ManipulatorDirection = ManipulatorDirection.All;
 	#htmlScaleCorners: Array<HTMLElement> = [];
@@ -176,7 +185,7 @@ export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 
 		for (let i = 0; i < 4; i++) {
 			const htmlCorner = createElement('div', {
-				class: 'side',
+				class: `side ${i < 2 ? 'y' : 'x'}`,
 				parent: this.#htmlQuad,
 				events: {
 					mousedown: (event: MouseEvent) => {
@@ -413,6 +422,11 @@ export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 		this.#refresh();
 	}
 
+	setResizeMode(m: ManipulatorDirection) {
+		this.#resizeMode = m;
+		this.#refresh();
+	}
+
 	connectedCallback() {
 		this.#refresh();
 	}
@@ -420,6 +434,8 @@ export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 	#refresh() {
 		this.style.setProperty('--translate', this.#translationMode);
 		this.style.setProperty('--rotate', this.#canRotate ? '1' : '0');
+		this.style.setProperty('--resize-x', hasX(this.#resizeMode) ? '1' : '0');
+		this.style.setProperty('--resize-y', hasY(this.#resizeMode) ? '1' : '0');
 		this.style.setProperty('--scale', this.#scale);
 		this.style.setProperty('--skew', this.#skew);
 
@@ -459,6 +475,9 @@ export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 			case 'rotate':
 				this.#canRotate = toBool(newValue);
 				break;
+			case 'resize':
+				this.#resizeMode = getDirection(newValue);
+				break;
 			case 'scale':
 				this.#scale = getDirection(newValue);
 				break;
@@ -470,7 +489,7 @@ export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 	}
 
 	static get observedAttributes() {
-		return ['translate', 'rotate', 'scale', 'skew'];
+		return ['translate', 'rotate', 'resize', 'scale', 'skew'];
 	}
 
 	#deltaMove(event: MouseEvent, top: boolean, left: boolean) {

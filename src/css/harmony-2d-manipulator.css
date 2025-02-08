@@ -53,6 +53,14 @@
 	cursor: grab;
 }
 
+.side.x {
+	scale: var(--resize-x);
+}
+
+.side.y {
+	scale: var(--resize-y);
+}
+
 .corner.grabbing {
 	cursor: grabbing;
 }

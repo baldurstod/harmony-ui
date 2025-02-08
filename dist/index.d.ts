@@ -99,6 +99,7 @@ export declare class HTMLHarmony2dManipulatorElement extends HTMLElement {
         width?: number;
         height?: number;
     }): void;
+    setResizeMode(m: ManipulatorDirection): void;
     connectedCallback(): void;
     attributeChangedCallback(name: string, oldValue: string, newValue: string): void;
     static get observedAttributes(): string[];

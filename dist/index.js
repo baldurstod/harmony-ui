@@ -459,7 +459,7 @@ function styleInject(css) {
     document.head.append(createElement('style', { textContent: css }));
 }
 
-var manipulator2dCSS = ":host {\n\t--harmony-2d-manipulator-shadow-radius: var(--harmony-2d-manipulator-radius, 0.5rem);\n\t--harmony-2d-manipulator-shadow-bg-color: var(--harmony-2d-manipulator-bg-color, red);\n\t--harmony-2d-manipulator-shadow-border: var(--harmony-2d-manipulator-border, none);\n\t--harmony-2d-manipulator-shadow-handle-bg-color: var(--harmony-2d-manipulator-handle-bg-color, chartreuse);\n\n\twidth: 10rem;\n\theight: 10rem;\n\tdisplay: block;\n\tuser-select: none;\n\tpointer-events: all;\n}\n\n:host-context(.grabbing) {\n\tcursor: grabbing;\n}\n\n.manipulator {\n\tposition: absolute;\n\tbackground-color: var(--harmony-2d-manipulator-shadow-bg-color);\n\tborder: var(--harmony-2d-manipulator-shadow-border);\n\tcursor: move;\n\tpointer-events: all;\n}\n\n.rotator {\n\tposition: absolute;\n\twidth: var(--harmony-2d-manipulator-shadow-radius);\n\theight: var(--harmony-2d-manipulator-shadow-radius);\n\tbackground-color: var(--harmony-2d-manipulator-shadow-handle-bg-color);\n\tborder-radius: calc(var(--harmony-2d-manipulator-shadow-radius) * 0.5);\n\ttransform: translate(-50%, -50%);\n\tcursor: grab;\n}\n\n.corner {\n\tposition: absolute;\n\twidth: var(--harmony-2d-manipulator-shadow-radius);\n\theight: var(--harmony-2d-manipulator-shadow-radius);\n\tbackground-color: var(--harmony-2d-manipulator-shadow-handle-bg-color);\n\tborder-radius: calc(var(--harmony-2d-manipulator-shadow-radius) * 0.5);\n\ttransform: translate(-50%, -50%);\n\tcursor: grab;\n}\n\n.side {\n\tposition: absolute;\n\twidth: var(--harmony-2d-manipulator-shadow-radius);\n\theight: var(--harmony-2d-manipulator-shadow-radius);\n\tbackground-color: var(--harmony-2d-manipulator-shadow-handle-bg-color);\n\tborder-radius: calc(var(--harmony-2d-manipulator-shadow-radius) * 0.5);\n\ttransform: translate(-50%, -50%);\n\tcursor: grab;\n}\n\n.corner.grabbing {\n\tcursor: grabbing;\n}\n";
+var manipulator2dCSS = ":host {\n\t--harmony-2d-manipulator-shadow-radius: var(--harmony-2d-manipulator-radius, 0.5rem);\n\t--harmony-2d-manipulator-shadow-bg-color: var(--harmony-2d-manipulator-bg-color, red);\n\t--harmony-2d-manipulator-shadow-border: var(--harmony-2d-manipulator-border, none);\n\t--harmony-2d-manipulator-shadow-handle-bg-color: var(--harmony-2d-manipulator-handle-bg-color, chartreuse);\n\n\twidth: 10rem;\n\theight: 10rem;\n\tdisplay: block;\n\tuser-select: none;\n\tpointer-events: all;\n}\n\n:host-context(.grabbing) {\n\tcursor: grabbing;\n}\n\n.manipulator {\n\tposition: absolute;\n\tbackground-color: var(--harmony-2d-manipulator-shadow-bg-color);\n\tborder: var(--harmony-2d-manipulator-shadow-border);\n\tcursor: move;\n\tpointer-events: all;\n}\n\n.rotator {\n\tposition: absolute;\n\twidth: var(--harmony-2d-manipulator-shadow-radius);\n\theight: var(--harmony-2d-manipulator-shadow-radius);\n\tbackground-color: var(--harmony-2d-manipulator-shadow-handle-bg-color);\n\tborder-radius: calc(var(--harmony-2d-manipulator-shadow-radius) * 0.5);\n\ttransform: translate(-50%, -50%);\n\tcursor: grab;\n}\n\n.corner {\n\tposition: absolute;\n\twidth: var(--harmony-2d-manipulator-shadow-radius);\n\theight: var(--harmony-2d-manipulator-shadow-radius);\n\tbackground-color: var(--harmony-2d-manipulator-shadow-handle-bg-color);\n\tborder-radius: calc(var(--harmony-2d-manipulator-shadow-radius) * 0.5);\n\ttransform: translate(-50%, -50%);\n\tcursor: grab;\n}\n\n.side {\n\tposition: absolute;\n\twidth: var(--harmony-2d-manipulator-shadow-radius);\n\theight: var(--harmony-2d-manipulator-shadow-radius);\n\tbackground-color: var(--harmony-2d-manipulator-shadow-handle-bg-color);\n\tborder-radius: calc(var(--harmony-2d-manipulator-shadow-radius) * 0.5);\n\ttransform: translate(-50%, -50%);\n\tcursor: grab;\n}\n\n.side.x {\n\tscale: var(--resize-x);\n}\n\n.side.y {\n\tscale: var(--resize-y);\n}\n\n.corner.grabbing {\n\tcursor: grabbing;\n}\n";
 
 function toBool(s) {
     return s === '1' || s === 'true';
@@ -496,6 +496,12 @@ function getDirection(s) {
             return ManipulatorDirection.All;
     }
 }
+function hasX(d) {
+    return d == ManipulatorDirection.All || d == ManipulatorDirection.X;
+}
+function hasY(d) {
+    return d == ManipulatorDirection.All || d == ManipulatorDirection.Y;
+}
 const CORNERS = [[-1, -1], [1, -1], [-1, 1], [1, 1]];
 const SCALE_CORNERS = [[-1, -1], [1, -1], [-1, 1], [1, 1]];
 const SIDES = [[0.5, 0], [0.5, 1], [0, 0.5], [1, 0.5]];
@@ -525,6 +531,7 @@ class HTMLHarmony2dManipulatorElement extends HTMLElement {
     #htmlQuad;
     #translationMode = ManipulatorDirection.All;
     #canRotate = true;
+    #resizeMode = ManipulatorDirection.All;
     #scale = ManipulatorDirection.All;
     #skew = ManipulatorDirection.All;
     #htmlScaleCorners = [];
@@ -615,7 +622,7 @@ class HTMLHarmony2dManipulatorElement extends HTMLElement {
         }
         for (let i = 0; i < 4; i++) {
             const htmlCorner = createElement('div', {
-                class: 'side',
+                class: `side ${i < 2 ? 'y' : 'x'}`,
                 parent: this.#htmlQuad,
                 events: {
                     mousedown: (event) => {
@@ -816,12 +823,18 @@ class HTMLHarmony2dManipulatorElement extends HTMLElement {
         }
         this.#refresh();
     }
+    setResizeMode(m) {
+        this.#resizeMode = m;
+        this.#refresh();
+    }
     connectedCallback() {
         this.#refresh();
     }
     #refresh() {
         this.style.setProperty('--translate', this.#translationMode);
         this.style.setProperty('--rotate', this.#canRotate ? '1' : '0');
+        this.style.setProperty('--resize-x', hasX(this.#resizeMode) ? '1' : '0');
+        this.style.setProperty('--resize-y', hasY(this.#resizeMode) ? '1' : '0');
         this.style.setProperty('--scale', this.#scale);
         this.style.setProperty('--skew', this.#skew);
         this.#htmlQuad.style.rotate = `${this.#rotation}rad`;
@@ -854,6 +867,9 @@ class HTMLHarmony2dManipulatorElement extends HTMLElement {
             case 'rotate':
                 this.#canRotate = toBool(newValue);
                 break;
+            case 'resize':
+                this.#resizeMode = getDirection(newValue);
+                break;
             case 'scale':
                 this.#scale = getDirection(newValue);
                 break;
@@ -864,7 +880,7 @@ class HTMLHarmony2dManipulatorElement extends HTMLElement {
         this.#refresh();
     }
     static get observedAttributes() {
-        return ['translate', 'rotate', 'scale', 'skew'];
+        return ['translate', 'rotate', 'resize', 'scale', 'skew'];
     }
     #deltaMove(event, top, left) {
         const delta = this.#getDelta(event);
