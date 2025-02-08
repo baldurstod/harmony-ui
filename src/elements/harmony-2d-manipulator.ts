@@ -28,7 +28,16 @@ function getDirection(s: string): ManipulatorDirection {
 			return ManipulatorDirection.None;
 		case 'all':
 		default:
-			return ManipulatorDirection.All
+			return ManipulatorDirection.All;
+	}
+}
+
+function getResizeOrigin(s: string): ManipulatorResizeOrigin {
+	switch (s) {
+		case 'center':
+			return ManipulatorResizeOrigin.Center;
+		default:
+			return ManipulatorResizeOrigin.OppositeCorner;
 	}
 }
 
@@ -79,6 +88,11 @@ export enum ManipulatorSide {
 	Right = 3,
 }
 
+export enum ManipulatorResizeOrigin {
+	OppositeCorner = 0,
+	Center = 1,
+}
+
 type v2 = { x: number, y: number };
 
 export class HTMLHarmony2dManipulatorElement extends HTMLElement {
@@ -110,24 +124,21 @@ export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 	#startPageY: number = 0;
 	#minWidth = 0;
 	#minHeight = 0;
-
 	#startWidth: number = 0;
 	#startHeight: number = 0;
 	#startTop: number = 0;
 	#startLeft: number = 0;
-
 	#centerX: number = 0;
 	#centerY: number = 0;
-
 	#c0_x: number = 0;
 	#c0_y: number = 0;
 	#qp0_x: number = 0;
 	#qp0_y: number = 0;
 	#pp_x: number = 0;
 	#pp_y: number = 0;
-
 	#dragging = false;
 	#transformScale = 1;
+	#resizeOrigin = ManipulatorResizeOrigin.OppositeCorner;
 
 	constructor() {
 		super();
@@ -427,6 +438,11 @@ export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 		this.#refresh();
 	}
 
+	setResizeOrigin(o: ManipulatorResizeOrigin) {
+		this.#resizeOrigin = o;
+		this.#refresh();
+	}
+
 	connectedCallback() {
 		this.#refresh();
 	}
@@ -478,6 +494,9 @@ export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 			case 'resize':
 				this.#resizeMode = getDirection(newValue);
 				break;
+			case 'resize-origin':
+				this.#resizeOrigin = getResizeOrigin(newValue);
+				break;
 			case 'scale':
 				this.#scale = getDirection(newValue);
 				break;
@@ -489,7 +508,7 @@ export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 	}
 
 	static get observedAttributes() {
-		return ['translate', 'rotate', 'resize', 'scale', 'skew'];
+		return ['translate', 'rotate', 'resize', 'scale', 'resize-origin', 'skew'];
 	}
 
 	#deltaMove(event: MouseEvent, top: boolean, left: boolean) {
@@ -537,8 +556,17 @@ export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 		const qp_x: number = this.#qp0_x + delta.x;
 		const qp_y: number = this.#qp0_y + delta.y;
 
-		const cp_x: number = event.altKey ? this.#c0_x : (qp_x + this.#pp_x) * 0.5;
-		const cp_y: number = event.altKey ? this.#c0_y : (qp_y + this.#pp_y) * 0.5;
+		let resizeOrigin = this.#resizeOrigin;
+		if (event.altKey) {
+			if (resizeOrigin == ManipulatorResizeOrigin.Center) {
+				resizeOrigin = ManipulatorResizeOrigin.OppositeCorner;
+			} else {
+				resizeOrigin = ManipulatorResizeOrigin.Center;
+			}
+		}
+
+		const cp_x: number = resizeOrigin == ManipulatorResizeOrigin.Center ? this.#c0_x : (qp_x + this.#pp_x) * 0.5;
+		const cp_y: number = resizeOrigin == ManipulatorResizeOrigin.Center ? this.#c0_y : (qp_y + this.#pp_y) * 0.5;
 
 		const mtheta: number = -this.#rotation;
 		const cos_mt: number = Math.cos(mtheta);
@@ -591,7 +619,7 @@ export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 		let l: number = matrix.c * q_x + matrix.a * p_x;
 		let t: number = matrix.d * q_y + matrix.b * p_y;
 
-		if (event.altKey) {
+		if (resizeOrigin == ManipulatorResizeOrigin.Center) {
 			const deltaWidth = w - this.#startWidth;
 			const deltaHeight = h - this.#startHeight;
 

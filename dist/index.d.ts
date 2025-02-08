@@ -100,6 +100,7 @@ export declare class HTMLHarmony2dManipulatorElement extends HTMLElement {
         height?: number;
     }): void;
     setResizeMode(m: ManipulatorDirection): void;
+    setResizeOrigin(o: ManipulatorResizeOrigin): void;
     connectedCallback(): void;
     attributeChangedCallback(name: string, oldValue: string, newValue: string): void;
     static get observedAttributes(): string[];
@@ -460,6 +461,11 @@ export declare enum ManipulatorDirection {
     X = "x",
     Y = "y",
     None = "none"
+}
+
+export declare enum ManipulatorResizeOrigin {
+    OppositeCorner = 0,
+    Center = 1
 }
 
 export declare enum ManipulatorSide {

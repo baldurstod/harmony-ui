@@ -496,6 +496,14 @@ function getDirection(s) {
             return ManipulatorDirection.All;
     }
 }
+function getResizeOrigin(s) {
+    switch (s) {
+        case 'center':
+            return ManipulatorResizeOrigin.Center;
+        default:
+            return ManipulatorResizeOrigin.OppositeCorner;
+    }
+}
 function hasX(d) {
     return d == ManipulatorDirection.All || d == ManipulatorDirection.X;
 }
@@ -526,6 +534,11 @@ var ManipulatorSide;
     ManipulatorSide[ManipulatorSide["Left"] = 2] = "Left";
     ManipulatorSide[ManipulatorSide["Right"] = 3] = "Right";
 })(ManipulatorSide || (ManipulatorSide = {}));
+var ManipulatorResizeOrigin;
+(function (ManipulatorResizeOrigin) {
+    ManipulatorResizeOrigin[ManipulatorResizeOrigin["OppositeCorner"] = 0] = "OppositeCorner";
+    ManipulatorResizeOrigin[ManipulatorResizeOrigin["Center"] = 1] = "Center";
+})(ManipulatorResizeOrigin || (ManipulatorResizeOrigin = {}));
 class HTMLHarmony2dManipulatorElement extends HTMLElement {
     #shadowRoot;
     #htmlQuad;
@@ -569,6 +582,7 @@ class HTMLHarmony2dManipulatorElement extends HTMLElement {
     #pp_y = 0;
     #dragging = false;
     #transformScale = 1;
+    #resizeOrigin = ManipulatorResizeOrigin.OppositeCorner;
     constructor() {
         super();
         this.#shadowRoot = this.attachShadow({ mode: 'closed' });
@@ -827,6 +841,10 @@ class HTMLHarmony2dManipulatorElement extends HTMLElement {
         this.#resizeMode = m;
         this.#refresh();
     }
+    setResizeOrigin(o) {
+        this.#resizeOrigin = o;
+        this.#refresh();
+    }
     connectedCallback() {
         this.#refresh();
     }
@@ -870,6 +888,9 @@ class HTMLHarmony2dManipulatorElement extends HTMLElement {
             case 'resize':
                 this.#resizeMode = getDirection(newValue);
                 break;
+            case 'resize-origin':
+                this.#resizeOrigin = getResizeOrigin(newValue);
+                break;
             case 'scale':
                 this.#scale = getDirection(newValue);
                 break;
@@ -880,7 +901,7 @@ class HTMLHarmony2dManipulatorElement extends HTMLElement {
         this.#refresh();
     }
     static get observedAttributes() {
-        return ['translate', 'rotate', 'resize', 'scale', 'skew'];
+        return ['translate', 'rotate', 'resize', 'scale', 'resize-origin', 'skew'];
     }
     #deltaMove(event, top, left) {
         const delta = this.#getDelta(event);
@@ -917,8 +938,17 @@ class HTMLHarmony2dManipulatorElement extends HTMLElement {
         delta.y *= this.#transformScale;
         const qp_x = this.#qp0_x + delta.x;
         const qp_y = this.#qp0_y + delta.y;
-        const cp_x = event.altKey ? this.#c0_x : (qp_x + this.#pp_x) * 0.5;
-        const cp_y = event.altKey ? this.#c0_y : (qp_y + this.#pp_y) * 0.5;
+        let resizeOrigin = this.#resizeOrigin;
+        if (event.altKey) {
+            if (resizeOrigin == ManipulatorResizeOrigin.Center) {
+                resizeOrigin = ManipulatorResizeOrigin.OppositeCorner;
+            }
+            else {
+                resizeOrigin = ManipulatorResizeOrigin.Center;
+            }
+        }
+        const cp_x = resizeOrigin == ManipulatorResizeOrigin.Center ? this.#c0_x : (qp_x + this.#pp_x) * 0.5;
+        const cp_y = resizeOrigin == ManipulatorResizeOrigin.Center ? this.#c0_y : (qp_y + this.#pp_y) * 0.5;
         const mtheta = -this.#rotation;
         const cos_mt = Math.cos(mtheta);
         const sin_mt = Math.sin(mtheta);
@@ -956,7 +986,7 @@ class HTMLHarmony2dManipulatorElement extends HTMLElement {
         }
         let l = matrix.c * q_x + matrix.a * p_x;
         let t = matrix.d * q_y + matrix.b * p_y;
-        if (event.altKey) {
+        if (resizeOrigin == ManipulatorResizeOrigin.Center) {
             const deltaWidth = w - this.#startWidth;
             const deltaHeight = h - this.#startHeight;
             switch (this.#dragSide) {
@@ -3911,4 +3941,4 @@ function defineToggleButton() {
     }
 }
 
-export { AddI18nElement, HTMLHarmony2dManipulatorElement, HTMLHarmonyAccordionElement, HTMLHarmonyColorPickerElement, HTMLHarmonyCopyElement, HTMLHarmonyFileInputElement, HTMLHarmonyItemElement, HTMLHarmonyLabelPropertyElement, HTMLHarmonyMenuElement, HTMLHarmonyPaletteElement, HTMLHarmonyPanelElement, HTMLHarmonyRadioElement, HTMLHarmonySelectElement, HTMLHarmonySliderElement, HTMLHarmonySlideshowElement, HTMLHarmonySplitterElement, HTMLHarmonySwitchElement, HTMLHarmonyTabElement, HTMLHarmonyTabGroupElement, HTMLHarmonyToggleButtonElement, HTMLHarmonyTooltipElement, I18n, I18nElements, I18nEvents, ManipulatorCorner, ManipulatorDirection, ManipulatorSide, cloneEvent, createElement, createElementNS, createShadowRoot, defineHarmony2dManipulator, defineHarmonyAccordion, defineHarmonyColorPicker, defineHarmonyCopy, defineHarmonyFileInput, defineHarmonyItem, defineHarmonyLabelProperty, defineHarmonyMenu, defineHarmonyPalette, defineHarmonyPanel, defineHarmonyRadio, defineHarmonySelect, defineHarmonySlider, defineHarmonySlideshow, defineHarmonySplitter, defineHarmonySwitch, defineHarmonyTab, defineHarmonyTabGroup, defineHarmonyTooltip, defineToggleButton, display, documentStyle, documentStyleSync, hide, isVisible, shadowRootStyle, shadowRootStyleSync, show, styleInject, toggle, updateElement, visible };
+export { AddI18nElement, HTMLHarmony2dManipulatorElement, HTMLHarmonyAccordionElement, HTMLHarmonyColorPickerElement, HTMLHarmonyCopyElement, HTMLHarmonyFileInputElement, HTMLHarmonyItemElement, HTMLHarmonyLabelPropertyElement, HTMLHarmonyMenuElement, HTMLHarmonyPaletteElement, HTMLHarmonyPanelElement, HTMLHarmonyRadioElement, HTMLHarmonySelectElement, HTMLHarmonySliderElement, HTMLHarmonySlideshowElement, HTMLHarmonySplitterElement, HTMLHarmonySwitchElement, HTMLHarmonyTabElement, HTMLHarmonyTabGroupElement, HTMLHarmonyToggleButtonElement, HTMLHarmonyTooltipElement, I18n, I18nElements, I18nEvents, ManipulatorCorner, ManipulatorDirection, ManipulatorResizeOrigin, ManipulatorSide, cloneEvent, createElement, createElementNS, createShadowRoot, defineHarmony2dManipulator, defineHarmonyAccordion, defineHarmonyColorPicker, defineHarmonyCopy, defineHarmonyFileInput, defineHarmonyItem, defineHarmonyLabelProperty, defineHarmonyMenu, defineHarmonyPalette, defineHarmonyPanel, defineHarmonyRadio, defineHarmonySelect, defineHarmonySlider, defineHarmonySlideshow, defineHarmonySplitter, defineHarmonySwitch, defineHarmonyTab, defineHarmonyTabGroup, defineHarmonyTooltip, defineToggleButton, display, documentStyle, documentStyleSync, hide, isVisible, shadowRootStyle, shadowRootStyleSync, show, styleInject, toggle, updateElement, visible };
