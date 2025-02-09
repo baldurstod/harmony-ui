@@ -511,7 +511,6 @@ function hasY(d) {
     return d == ManipulatorDirection.All || d == ManipulatorDirection.Y;
 }
 const CORNERS = [[-1, -1], [1, -1], [-1, 1], [1, 1]];
-const SCALE_CORNERS = [[-1, -1], [1, -1], [-1, 1], [1, 1]];
 const SIDES = [[0.5, 0], [0.5, 1], [0, 0.5], [1, 0.5]];
 const SCALE_SIDES = [[0, 1], [0, 1], [1, 0], [1, 0]];
 const SNAP_POSITION = 20; // Pixels
@@ -572,8 +571,8 @@ class HTMLHarmony2dManipulatorElement extends HTMLElement {
     #startHeight = 0;
     #startTop = 0;
     #startLeft = 0;
-    #centerX = 0;
-    #centerY = 0;
+    #startCenter = { x: 0, y: 0 };
+    #startCorners = [];
     #c0_x = 0;
     #c0_y = 0;
     #qp0_x = 0;
@@ -754,7 +753,7 @@ class HTMLHarmony2dManipulatorElement extends HTMLElement {
         if (this.#dragRotator) {
             const currentX = event.clientX;
             const currentY = event.clientY;
-            this.#rotation = -Math.atan2(currentX - this.#centerX, currentY - this.#centerY) + Math.PI;
+            this.#rotation = -Math.atan2(currentX - this.#startCenter.x, currentY - this.#startCenter.y) + Math.PI;
             if (event.ctrlKey) {
                 this.#snapRotation();
             }
@@ -921,18 +920,16 @@ class HTMLHarmony2dManipulatorElement extends HTMLElement {
         }
         const delta = this.#getDelta(event);
         if (!event.shiftKey && this.#dragCorner > ManipulatorCorner.None) {
-            const c = SCALE_CORNERS[this.#dragCorner];
-            let h = 1, w = 1;
-            if (this.#width > this.#height) {
-                h = this.#height / this.#width;
-            }
-            else {
-                w = this.#width / this.#height;
-            }
-            const v = { x: c[0] * Math.cos(this.#rotation) - c[1] * Math.sin(this.#rotation), y: c[0] * Math.sin(this.#rotation) + c[1] * Math.cos(this.#rotation) };
-            const d = dot(delta, v) * 0.5;
-            delta.x = v.x * d * w;
-            delta.y = v.y * d * h;
+            const tl = this.#startCorners[ManipulatorCorner.TopLeft];
+            const br = this.#startCorners[ManipulatorCorner.BottomRight];
+            const startCenter = { x: (tl.x + br.x) * 0.5, y: (tl.y + br.y) * 0.5 };
+            const v = { x: this.#startCorners[this.#dragCorner].x - startCenter.x, y: this.#startCorners[this.#dragCorner].y - startCenter.y };
+            const norm = Math.sqrt(v.x * v.x + v.y * v.y);
+            v.x /= norm;
+            v.y /= norm;
+            const d = dot(delta, v);
+            delta.x = v.x * d;
+            delta.y = v.y * d;
         }
         if (this.#dragSide > ManipulatorSide.None) {
             const c = SCALE_SIDES[this.#dragSide];
@@ -1089,6 +1086,7 @@ class HTMLHarmony2dManipulatorElement extends HTMLElement {
         this.#initStartPositionsMove();
         this.#initStartPositionsRotation();
         this.#initStartPositionsResize();
+        this.#initStartCorners();
     }
     #initStartPositionsMove() {
         this.#startWidth = this.#width;
@@ -1098,8 +1096,8 @@ class HTMLHarmony2dManipulatorElement extends HTMLElement {
     }
     #initStartPositionsRotation() {
         const rect = this.#htmlQuad.getBoundingClientRect();
-        this.#centerX = rect.left + rect.width * 0.5;
-        this.#centerY = rect.top + rect.height * 0.5;
+        this.#startCenter.x = rect.left + rect.width * 0.5;
+        this.#startCenter.y = rect.top + rect.height * 0.5;
     }
     #initStartPositionsResize() {
         const theta = this.#rotation;
@@ -1120,6 +1118,11 @@ class HTMLHarmony2dManipulatorElement extends HTMLElement {
         this.#qp0_y = q0_x * sin_t + q0_y * cos_t - this.#c0_x * sin_t - this.#c0_y * cos_t + this.#c0_y;
         this.#pp_x = p0_x * cos_t - p0_y * sin_t - this.#c0_x * cos_t + this.#c0_y * sin_t + this.#c0_x;
         this.#pp_y = p0_x * sin_t + p0_y * cos_t - this.#c0_x * sin_t - this.#c0_y * cos_t + this.#c0_y;
+    }
+    #initStartCorners() {
+        for (let i = 0; i < 4; i++) {
+            this.#startCorners[i] = this.getCorner(i);
+        }
     }
     #rotateInput(event) {
         const result = prompt('rotation', String(this.#rotation * RAD_TO_DEG));

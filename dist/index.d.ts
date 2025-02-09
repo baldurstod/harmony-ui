@@ -87,11 +87,11 @@ export declare class HTMLHarmony2dManipulatorElement extends HTMLElement {
     #private;
     constructor();
     setTopLeft(x: number, y: number): void;
-    getTopLeft(): ManipulatorUpdatedEventDataVec2;
-    getTopRight(): ManipulatorUpdatedEventDataVec2;
-    getBottomLeft(): ManipulatorUpdatedEventDataVec2;
-    getBottomRight(): ManipulatorUpdatedEventDataVec2;
-    getCorner(i: ManipulatorCorner): ManipulatorUpdatedEventDataVec2;
+    getTopLeft(): v2;
+    getTopRight(): v2;
+    getBottomLeft(): v2;
+    getBottomRight(): v2;
+    getCorner(i: ManipulatorCorner): v2;
     set(values: {
         rotation?: number;
         left?: number;
@@ -477,19 +477,14 @@ export declare enum ManipulatorSide {
 }
 
 export declare type ManipulatorUpdatedEventData = {
-    position: ManipulatorUpdatedEventDataVec2;
+    position: v2;
     width: number;
     height: number;
     rotation: number;
-    topLeft: ManipulatorUpdatedEventDataVec2;
-    topRight: ManipulatorUpdatedEventDataVec2;
-    bottomLeft: ManipulatorUpdatedEventDataVec2;
-    bottomRight: ManipulatorUpdatedEventDataVec2;
-};
-
-export declare type ManipulatorUpdatedEventDataVec2 = {
-    x: number;
-    y: number;
+    topLeft: v2;
+    topRight: v2;
+    bottomLeft: v2;
+    bottomRight: v2;
 };
 
 export declare type RadioChangedEventData = {
@@ -508,6 +503,11 @@ export declare function styleInject(css: string): void;
 export declare function toggle(htmlElement: HTMLElement | ShadowRoot | undefined | null): void;
 
 export declare function updateElement(element: HTMLElement | undefined, options: any): HTMLElement | undefined;
+
+declare type v2 = {
+    x: number;
+    y: number;
+};
 
 export declare const visible: typeof isVisible;
 

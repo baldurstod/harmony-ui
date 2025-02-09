@@ -49,17 +49,15 @@ function hasY(d: ManipulatorDirection): boolean {
 	return d == ManipulatorDirection.All || d == ManipulatorDirection.Y;
 }
 
-export type ManipulatorUpdatedEventDataVec2 = { x: number, y: number };
-
 export type ManipulatorUpdatedEventData = {
-	position: ManipulatorUpdatedEventDataVec2,
+	position: v2,
 	width: number,
 	height: number,
 	rotation: number,
-	topLeft: ManipulatorUpdatedEventDataVec2,
-	topRight: ManipulatorUpdatedEventDataVec2,
-	bottomLeft: ManipulatorUpdatedEventDataVec2,
-	bottomRight: ManipulatorUpdatedEventDataVec2,
+	topLeft: v2,
+	topRight: v2,
+	bottomLeft: v2,
+	bottomRight: v2,
 };
 
 const CORNERS = [[-1, -1], [1, -1], [-1, 1], [1, 1]];
@@ -128,8 +126,8 @@ export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 	#startHeight: number = 0;
 	#startTop: number = 0;
 	#startLeft: number = 0;
-	#centerX: number = 0;
-	#centerY: number = 0;
+	#startCenter: v2 = { x: 0, y: 0 };
+	#startCorners: Array<v2> = [];
 	#c0_x: number = 0;
 	#c0_y: number = 0;
 	#qp0_x: number = 0;
@@ -337,7 +335,7 @@ export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 			const currentX: number = event.clientX;
 			const currentY: number = event.clientY;
 
-			this.#rotation = -Math.atan2(currentX - this.#centerX, currentY - this.#centerY) + Math.PI;
+			this.#rotation = -Math.atan2(currentX - this.#startCenter.x, currentY - this.#startCenter.y) + Math.PI;
 			if (event.ctrlKey) {
 				this.#snapRotation();
 			}
@@ -398,7 +396,7 @@ export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 		return this.getCorner(ManipulatorCorner.BottomRight);
 	}
 
-	getCorner(i: ManipulatorCorner): ManipulatorUpdatedEventDataVec2 {
+	getCorner(i: ManipulatorCorner): v2 {
 		if (i < 0 || i >= 4) {
 			return { x: 0, y: 0 };
 		}
@@ -535,18 +533,18 @@ export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 		const delta: { x: number, y: number } = this.#getDelta(event);
 
 		if (!event.shiftKey && this.#dragCorner > ManipulatorCorner.None) {
-			const c = SCALE_CORNERS[this.#dragCorner];
-			let h = 1, w = 1;
-			if (this.#width > this.#height) {
-				h = this.#height / this.#width;
-			} else {
-				w = this.#width / this.#height;
-			}
+			const tl = this.#startCorners[ManipulatorCorner.TopLeft];
+			const br = this.#startCorners[ManipulatorCorner.BottomRight];
+			const startCenter: v2 = { x: (tl.x + br.x) * 0.5, y: (tl.y + br.y) * 0.5 };
 
-			const v = { x: c[0] * Math.cos(this.#rotation) - c[1] * Math.sin(this.#rotation), y: c[0] * Math.sin(this.#rotation) + c[1] * Math.cos(this.#rotation) }
-			const d = dot(delta, v) * 0.5;
-			delta.x = v.x * d * w;
-			delta.y = v.y * d * h;
+			const v: v2 = { x: this.#startCorners[this.#dragCorner].x - startCenter.x, y: this.#startCorners[this.#dragCorner].y - startCenter.y };
+			const norm = Math.sqrt(v.x * v.x + v.y * v.y);
+			v.x /= norm;
+			v.y /= norm;
+
+			const d = dot(delta, v);
+			delta.x = v.x * d;
+			delta.y = v.y * d;
 		}
 
 		if (this.#dragSide > ManipulatorSide.None) {
@@ -737,6 +735,7 @@ export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 		this.#initStartPositionsMove();
 		this.#initStartPositionsRotation();
 		this.#initStartPositionsResize();
+		this.#initStartCorners();
 	}
 
 	#initStartPositionsMove() {
@@ -748,8 +747,8 @@ export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 
 	#initStartPositionsRotation() {
 		const rect: DOMRect = this.#htmlQuad.getBoundingClientRect();
-		this.#centerX = rect.left + rect.width * 0.5;
-		this.#centerY = rect.top + rect.height * 0.5;
+		this.#startCenter.x = rect.left + rect.width * 0.5;
+		this.#startCenter.y = rect.top + rect.height * 0.5;
 	}
 
 	#initStartPositionsResize() {
@@ -778,6 +777,12 @@ export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 
 		this.#pp_x = p0_x * cos_t - p0_y * sin_t - this.#c0_x * cos_t + this.#c0_y * sin_t + this.#c0_x;
 		this.#pp_y = p0_x * sin_t + p0_y * cos_t - this.#c0_x * sin_t - this.#c0_y * cos_t + this.#c0_y;
+	}
+
+	#initStartCorners() {
+		for (let i = 0; i < 4; i++) {
+			this.#startCorners[i] = this.getCorner(i);
+		}
 	}
 
 	#rotateInput(event: MouseEvent) {
