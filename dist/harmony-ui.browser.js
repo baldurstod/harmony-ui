@@ -507,6 +507,12 @@ function hasX(d) {
 function hasY(d) {
     return d == ManipulatorDirection.All || d == ManipulatorDirection.Y;
 }
+var ManipulatorUpdatedEventType;
+(function (ManipulatorUpdatedEventType) {
+    ManipulatorUpdatedEventType["Position"] = "position";
+    ManipulatorUpdatedEventType["Size"] = "size";
+    ManipulatorUpdatedEventType["Rotation"] = "rotation";
+})(ManipulatorUpdatedEventType || (ManipulatorUpdatedEventType = {}));
 const CORNERS = [[-1, -1], [1, -1], [-1, 1], [1, 1]];
 const SIDES = [[0.5, 0], [0.5, 1], [0, 0.5], [1, 0.5]];
 const SCALE_SIDES = [[0, 1], [0, 1], [1, 0], [1, 0]];
@@ -656,8 +662,20 @@ class HTMLHarmony2dManipulatorElement extends HTMLElement {
     }
     #stopDrag(event) {
         if (this.#dragging) {
+            let type = ManipulatorUpdatedEventType.Position;
+            switch (true) {
+                case this.#dragThis:
+                    type = ManipulatorUpdatedEventType.Position;
+                    break;
+                case this.#dragRotator:
+                    type = ManipulatorUpdatedEventType.Rotation;
+                case this.#dragCorner >= 0:
+                case this.#dragSide >= 0:
+                    type = ManipulatorUpdatedEventType.Size;
+                    break;
+            }
             this.#dragging = false;
-            this.#dispatchEvent('updateend');
+            this.#dispatchEvent('updateend', type);
         }
         this.#stopTranslate(event);
         this.#stopDragRotator(event);
@@ -754,7 +772,7 @@ class HTMLHarmony2dManipulatorElement extends HTMLElement {
             if (event.ctrlKey) {
                 this.#snapRotation();
             }
-            this.#update();
+            this.#update(ManipulatorUpdatedEventType.Rotation);
             this.#refresh();
         }
     }
@@ -764,7 +782,7 @@ class HTMLHarmony2dManipulatorElement extends HTMLElement {
     #snapRotation() {
         this.#rotation = Math.round(this.#rotation * RAD_TO_DEG / SNAP_ROTATION) * SNAP_ROTATION * DEG_TO_RAD;
     }
-    #update() {
+    #update(type) {
         if (this.#previousHeight == this.#height && this.#previousLeft == this.#left && this.#previousTop == this.#top && this.#previousWidth == this.#width && this.#previousRotation == this.#rotation) {
             return;
         }
@@ -773,11 +791,12 @@ class HTMLHarmony2dManipulatorElement extends HTMLElement {
         this.#previousTop = this.#top;
         this.#previousLeft = this.#left;
         this.#previousRotation = this.#rotation;
-        this.#dispatchEvent('change');
+        this.#dispatchEvent('change', type);
     }
-    #dispatchEvent(name) {
+    #dispatchEvent(name, type) {
         this.dispatchEvent(new CustomEvent(name, {
             detail: {
+                type: type,
                 position: { x: this.#left, y: this.#top },
                 width: this.#width,
                 height: this.#height,
@@ -909,7 +928,7 @@ class HTMLHarmony2dManipulatorElement extends HTMLElement {
         if (left) {
             this.#left = this.#startLeft + deltaX;
         }
-        this.#update();
+        this.#update(ManipulatorUpdatedEventType.Position);
     }
     #deltaResize(event) {
         function dot(a, b) {
@@ -1027,7 +1046,7 @@ class HTMLHarmony2dManipulatorElement extends HTMLElement {
         this.#width = this.convertToUnit(w, 'width');
         this.#top = this.convertToUnit(t, 'height');
         this.#height = this.convertToUnit(h, 'height');
-        this.#update();
+        this.#update(ManipulatorUpdatedEventType.Size);
     }
     #getDelta(event) {
         let currentX = event.pageX;
@@ -1126,9 +1145,9 @@ class HTMLHarmony2dManipulatorElement extends HTMLElement {
         const result = prompt('rotation', String(this.#rotation * RAD_TO_DEG));
         if (result) {
             this.#rotation = Number(result) * DEG_TO_RAD;
-            this.#update();
+            this.#update(ManipulatorUpdatedEventType.Rotation);
             this.#refresh();
-            this.#dispatchEvent('updateend');
+            this.#dispatchEvent('updateend', ManipulatorUpdatedEventType.Rotation);
         }
     }
     #translateInput(event) {
@@ -1138,9 +1157,9 @@ class HTMLHarmony2dManipulatorElement extends HTMLElement {
             if (a.length >= 2) {
                 this.#left = Number(a[0]) - this.#width * 0.5;
                 this.#top = Number(a[1]) - this.#height * 0.5;
-                this.#update();
+                this.#update(ManipulatorUpdatedEventType.Position);
                 this.#refresh();
-                this.#dispatchEvent('updateend');
+                this.#dispatchEvent('updateend', ManipulatorUpdatedEventType.Position);
             }
         }
     }
@@ -4088,4 +4107,4 @@ function defineToggleButton() {
     }
 }
 
-export { AddI18nElement, HTMLHarmony2dManipulatorElement, HTMLHarmonyAccordionElement, HTMLHarmonyColorPickerElement, HTMLHarmonyCopyElement, HTMLHarmonyFileInputElement, HTMLHarmonyItemElement, HTMLHarmonyLabelPropertyElement, HTMLHarmonyMenuElement, HTMLHarmonyPaletteElement, HTMLHarmonyPanelElement, HTMLHarmonyRadioElement, HTMLHarmonySelectElement, HTMLHarmonySliderElement, HTMLHarmonySlideshowElement, HTMLHarmonySplitterElement, HTMLHarmonySwitchElement, HTMLHarmonyTabElement, HTMLHarmonyTabGroupElement, HTMLHarmonyToggleButtonElement, HTMLHarmonyTooltipElement, I18n, I18nElements, I18nEvents, ManipulatorCorner, ManipulatorDirection, ManipulatorResizeOrigin, ManipulatorSide, cloneEvent, createElement, createElementNS, createShadowRoot, defineHarmony2dManipulator, defineHarmonyAccordion, defineHarmonyColorPicker, defineHarmonyCopy, defineHarmonyFileInput, defineHarmonyItem, defineHarmonyLabelProperty, defineHarmonyMenu, defineHarmonyPalette, defineHarmonyPanel, defineHarmonyRadio, defineHarmonySelect, defineHarmonySlider, defineHarmonySlideshow, defineHarmonySplitter, defineHarmonySwitch, defineHarmonyTab, defineHarmonyTabGroup, defineHarmonyTooltip, defineToggleButton, display, documentStyle, documentStyleSync, hide, isVisible, shadowRootStyle, shadowRootStyleSync, show, styleInject, toggle, updateElement, visible };
+export { AddI18nElement, HTMLHarmony2dManipulatorElement, HTMLHarmonyAccordionElement, HTMLHarmonyColorPickerElement, HTMLHarmonyCopyElement, HTMLHarmonyFileInputElement, HTMLHarmonyItemElement, HTMLHarmonyLabelPropertyElement, HTMLHarmonyMenuElement, HTMLHarmonyPaletteElement, HTMLHarmonyPanelElement, HTMLHarmonyRadioElement, HTMLHarmonySelectElement, HTMLHarmonySliderElement, HTMLHarmonySlideshowElement, HTMLHarmonySplitterElement, HTMLHarmonySwitchElement, HTMLHarmonyTabElement, HTMLHarmonyTabGroupElement, HTMLHarmonyToggleButtonElement, HTMLHarmonyTooltipElement, I18n, I18nElements, I18nEvents, ManipulatorCorner, ManipulatorDirection, ManipulatorResizeOrigin, ManipulatorSide, ManipulatorUpdatedEventType, cloneEvent, createElement, createElementNS, createShadowRoot, defineHarmony2dManipulator, defineHarmonyAccordion, defineHarmonyColorPicker, defineHarmonyCopy, defineHarmonyFileInput, defineHarmonyItem, defineHarmonyLabelProperty, defineHarmonyMenu, defineHarmonyPalette, defineHarmonyPanel, defineHarmonyRadio, defineHarmonySelect, defineHarmonySlider, defineHarmonySlideshow, defineHarmonySplitter, defineHarmonySwitch, defineHarmonyTab, defineHarmonyTabGroup, defineHarmonyTooltip, defineToggleButton, display, documentStyle, documentStyleSync, hide, isVisible, shadowRootStyle, shadowRootStyleSync, show, styleInject, toggle, updateElement, visible };

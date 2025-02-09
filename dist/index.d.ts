@@ -477,6 +477,7 @@ export declare enum ManipulatorSide {
 }
 
 export declare type ManipulatorUpdatedEventData = {
+    type: ManipulatorUpdatedEventType;
     position: v2;
     width: number;
     height: number;
@@ -486,6 +487,12 @@ export declare type ManipulatorUpdatedEventData = {
     bottomLeft: v2;
     bottomRight: v2;
 };
+
+export declare enum ManipulatorUpdatedEventType {
+    Position = "position",
+    Size = "size",
+    Rotation = "rotation"
+}
 
 export declare type RadioChangedEventData = {
     value: string;
