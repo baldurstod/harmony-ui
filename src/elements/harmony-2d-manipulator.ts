@@ -108,7 +108,7 @@ export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 	#htmlRotator?: HTMLElement;
 	#top: number = 0;
 	#left: number = 0;
-	#width: number = 50;
+	#width: number = 200;
 	#height: number = 50;
 	#previousTop: number = -1;
 	#previousLeft: number = -1;
@@ -536,10 +536,17 @@ export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 
 		if (!event.shiftKey && this.#dragCorner > ManipulatorCorner.None) {
 			const c = SCALE_CORNERS[this.#dragCorner];
+			let h = 1, w = 1;
+			if (this.#width > this.#height) {
+				h = this.#height / this.#width;
+			} else {
+				w = this.#width / this.#height;
+			}
+
 			const v = { x: c[0] * Math.cos(this.#rotation) - c[1] * Math.sin(this.#rotation), y: c[0] * Math.sin(this.#rotation) + c[1] * Math.cos(this.#rotation) }
 			const d = dot(delta, v) * 0.5;
-			delta.x = v.x * d;
-			delta.y = v.y * d;
+			delta.x = v.x * d * w;
+			delta.y = v.y * d * h;
 		}
 
 		if (this.#dragSide > ManipulatorSide.None) {
