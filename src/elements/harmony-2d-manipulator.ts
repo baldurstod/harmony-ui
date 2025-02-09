@@ -113,7 +113,7 @@ export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 	#htmlRotator?: HTMLElement;
 	#top: number = 0;
 	#left: number = 0;
-	#width: number = 200;
+	#width: number = 50;
 	#height: number = 50;
 	#previousTop: number = -1;
 	#previousLeft: number = -1;
@@ -745,9 +745,8 @@ export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 		this.#startPageY = event.pageY;
 
 		const rect = this.#htmlQuad.getBoundingClientRect();
-		const norm = Math.sqrt(this.#htmlQuad.offsetWidth * this.#htmlQuad.offsetWidth + this.#htmlQuad.offsetHeight * this.#htmlQuad.offsetHeight);
-		const theta = Math.atan2(this.#htmlQuad.offsetHeight, this.#htmlQuad.offsetWidth);
-		const width = norm * Math.max(Math.abs(Math.cos(this.#rotation - theta)), Math.abs(Math.sin(this.#rotation - theta)));
+		const width = Math.abs(this.#htmlQuad.offsetWidth * Math.cos(this.#rotation)) + Math.abs(this.#htmlQuad.offsetHeight * Math.sin(this.#rotation));
+
 		if (rect.width != 0) {
 			this.#transformScale = width / rect.width;
 		} else {
