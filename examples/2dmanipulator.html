@@ -5,6 +5,11 @@
 	<meta charset="utf-8">
 	<title>Test 2d manipulator</title>
 	<link href="./assets/css/examples.css" rel="stylesheet">
+	<style>
+		body>div {
+			flex: 1;
+		}
+	</style>
 </head>
 
 <body style="display:flex;flex-direction: column;">
@@ -25,6 +30,18 @@
 	<div style="position:relative;">
 		<span>resize from center</span>
 		<harmony-2d-manipulator id="manipulator" resize="all" resize-origin="center">
+		</harmony-2d-manipulator>
+	</div>
+	<div style="position:relative;">
+		<span>handle colors 1</span>
+		<harmony-2d-manipulator
+			style="--handle-bg-color:purple;">
+		</harmony-2d-manipulator>
+	</div>
+	<div style="position:relative;">
+		<span>handle colors 2</span>
+		<harmony-2d-manipulator
+			style="--harmony-2d-manipulator-rotate-bg-color:rgb(231, 43, 175);--harmony-2d-manipulator-side-bg-color:white;--harmony-2d-manipulator-corner-bg-color:blue">
 		</harmony-2d-manipulator>
 	</div>
 </body>
