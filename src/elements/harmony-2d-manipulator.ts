@@ -132,6 +132,7 @@ export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 	#startTop: number = 0;
 	#startLeft: number = 0;
 	#startCenter: v2 = { x: 0, y: 0 };
+	#startRotationCenter: v2 = { x: 0, y: 0 };
 	#startCorners: Array<v2> = [];
 	#c0_x: number = 0;
 	#c0_y: number = 0;
@@ -353,7 +354,7 @@ export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 			const currentX: number = event.clientX;
 			const currentY: number = event.clientY;
 
-			this.#rotation = -Math.atan2(currentX - this.#startCenter.x, currentY - this.#startCenter.y) + Math.PI;
+			this.#rotation = -Math.atan2(currentX - this.#startRotationCenter.x, currentY - this.#startRotationCenter.y) + Math.PI;
 			if (event.ctrlKey) {
 				this.#snapRotation();
 			}
@@ -780,8 +781,8 @@ export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 
 	#initStartPositionsRotation() {
 		const rect: DOMRect = this.#htmlQuad.getBoundingClientRect();
-		this.#startCenter.x = rect.left + rect.width * 0.5;
-		this.#startCenter.y = rect.top + rect.height * 0.5;
+		this.#startRotationCenter.x = rect.left + rect.width * 0.5;
+		this.#startRotationCenter.y = rect.top + rect.height * 0.5;
 	}
 
 	#initStartPositionsResize() {
@@ -811,6 +812,10 @@ export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 		this.#pp_x = p0_x * cos_t - p0_y * sin_t - this.#c0_x * cos_t + this.#c0_y * sin_t + this.#c0_x;
 		this.#pp_y = p0_x * sin_t + p0_y * cos_t - this.#c0_x * sin_t - this.#c0_y * cos_t + this.#c0_y;
 		console.error(this.#pp_x, this.#pp_y, this.#qp0_x, this.#qp0_y)
+
+
+		this.#startCenter.x = this.#center.x;
+		this.#startCenter.y = this.#center.y;
 	}
 
 	#initStartCorners() {
