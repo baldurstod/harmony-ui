@@ -671,6 +671,7 @@ class HTMLHarmony2dManipulatorElement extends HTMLElement {
                     break;
                 case this.#dragRotator:
                     type = ManipulatorUpdatedEventType.Rotation;
+                    break;
                 case this.#dragCorner >= 0:
                 case this.#dragSide >= 0:
                     type = ManipulatorUpdatedEventType.Size;
