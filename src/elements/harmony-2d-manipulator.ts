@@ -665,33 +665,35 @@ export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 					deltaCenterY = dy;
 					break;
 			}
-
-			if (this.#dragCorner > ManipulatorCorner.None) {
-				w += deltaWidth;
-				h += deltaHeight;
-			}
-
-			switch (this.#dragCorner) {
-				case ManipulatorCorner.TopLeft:
-					deltaCenterX = -deltaWidth * 0.5;
-					deltaCenterY = -deltaHeight * 0.5;
-					break;
-				case ManipulatorCorner.TopRight:
-					deltaCenterX = deltaWidth * 0.5;
-					deltaCenterY = -deltaHeight * 0.5;
-					break;
-				case ManipulatorCorner.BottomLeft:
-					deltaCenterX = -deltaWidth * 0.5;
-					deltaCenterY = deltaHeight * 0.5;
-					break;
-				case ManipulatorCorner.BottomRight:
-					deltaCenterX = deltaWidth * 0.5;
-					deltaCenterY = deltaHeight * 0.5;
-					break;
-			}
-
 			this.#center.x = this.#startCenter.x + deltaCenterX;
 			this.#center.y = this.#startCenter.y + deltaCenterY;
+
+			let oppositeCorner: ManipulatorCorner = ManipulatorCorner.None;
+			switch (this.#dragCorner) {
+				case ManipulatorCorner.TopLeft:
+					oppositeCorner = ManipulatorCorner.BottomRight;
+					break;
+				case ManipulatorCorner.TopRight:
+					oppositeCorner = ManipulatorCorner.BottomLeft;
+					break;
+				case ManipulatorCorner.BottomLeft:
+					oppositeCorner = ManipulatorCorner.TopRight;
+					break;
+				case ManipulatorCorner.BottomRight:
+					oppositeCorner = ManipulatorCorner.TopLeft;
+					break;
+			}
+
+			if (oppositeCorner != ManipulatorCorner.None) {
+				const startCorner = this.#startCorners[oppositeCorner];
+
+				const c = CORNERS[this.#dragCorner];
+				const x = c[0] * (this.#startWidth + deltaWidth) * 0.5;
+				const y = c[1] * (this.#startHeight + deltaHeight) * 0.5;
+
+				this.#center.x = startCorner.x + x * Math.cos(this.#rotation) - y * Math.sin(this.#rotation);
+				this.#center.y = startCorner.y + x * Math.sin(this.#rotation) + y * Math.cos(this.#rotation);
+			}
 		} else {
 			deltaWidth = 2 * deltaWidth;
 			deltaHeight = 2 * deltaHeight;
