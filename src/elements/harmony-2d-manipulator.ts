@@ -111,12 +111,10 @@ export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 	#htmlScaleCorners: Array<HTMLElement> = [];
 	#htmlResizeSides: Array<HTMLElement> = [];
 	#htmlRotator?: HTMLElement;
-	#top: number = 0;
-	#left: number = 0;
+	#center: v2 = { x: 25, y: 25 };
 	#width: number = 50;
 	#height: number = 50;
-	#previousTop: number = -1;
-	#previousLeft: number = -1;
+	#previousCenter: v2 = { x: -1, y: -1 };
 	#previousWidth: number = -1;
 	#previousHeight: number = -1;
 	#rotation: number = 0;
@@ -373,14 +371,14 @@ export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 	}
 
 	#update(type: ManipulatorUpdatedEventType) {
-		if (this.#previousHeight == this.#height && this.#previousLeft == this.#left && this.#previousTop == this.#top && this.#previousWidth == this.#width && this.#previousRotation == this.#rotation) {
+		if (this.#previousHeight == this.#height && this.#previousCenter.x == this.#center.x && this.#previousCenter.y == this.#center.y && this.#previousWidth == this.#width && this.#previousRotation == this.#rotation) {
 			return;
 		}
 
 		this.#previousHeight = this.#height;
 		this.#previousWidth = this.#width;
-		this.#previousTop = this.#top;
-		this.#previousLeft = this.#left;
+		this.#previousCenter.x = this.#center.x;
+		this.#previousCenter.y = this.#center.y;
 		this.#previousRotation = this.#rotation;
 		this.#dispatchEvent('change', type);
 	}
@@ -389,7 +387,7 @@ export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 		this.dispatchEvent(new CustomEvent<ManipulatorUpdatedEventData>(name, {
 			detail: {
 				type: type,
-				position: { x: this.#left, y: this.#top },
+				position: { x: this.#center.x, y: this.#center.y },
 				width: this.#width,
 				height: this.#height,
 				rotation: this.#rotation,
@@ -422,14 +420,12 @@ export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 			return { x: 0, y: 0 };
 		}
 		const c = CORNERS[i];
-		const centerX = this.#left + this.#width * 0.5;
-		const centerY = this.#top + this.#height * 0.5;
 		const x = c[0] * this.#width * 0.5;
 		const y = c[1] * this.#height * 0.5;
 
 		return {
-			x: x * Math.cos(this.#rotation) - y * Math.sin(this.#rotation) + centerX,
-			y: x * Math.sin(this.#rotation) + y * Math.cos(this.#rotation) + centerY,
+			x: x * Math.cos(this.#rotation) - y * Math.sin(this.#rotation) + this.#center.x,
+			y: x * Math.sin(this.#rotation) + y * Math.cos(this.#rotation) + this.#center.y,
 		};
 	}
 
@@ -438,10 +434,10 @@ export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 			this.#rotation = values.rotation;
 		}
 		if (values.left !== undefined) {
-			this.#left = values.left;
+			this.#center.x = values.left;
 		}
 		if (values.top !== undefined) {
-			this.#top = values.top;
+			this.#center.y = values.top;
 		}
 		if (values.width !== undefined) {
 			this.#width = values.width;
@@ -476,8 +472,8 @@ export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 
 		this.#htmlQuad.style.rotate = `${this.#rotation}rad`;
 
-		this.#htmlQuad.style.left = `${this.#left}px`;
-		this.#htmlQuad.style.top = `${this.#top}px`;
+		this.#htmlQuad.style.left = `${this.#center.x - this.#width * 0.5}px`;
+		this.#htmlQuad.style.top = `${this.#center.y - this.#height * 0.5}px`;
 		this.#htmlQuad.style.width = `${this.#width}px`;
 		this.#htmlQuad.style.height = `${this.#height}px`;
 
@@ -537,11 +533,11 @@ export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 		const deltaY: number = this.convertToUnit(delta.y, 'height') * this.#transformScale;
 
 		if (top) {
-			this.#top = this.#startTop + deltaY;
+			this.#center.y = this.#startTop + deltaY;
 		}
 
 		if (left) {
-			this.#left = this.#startLeft + deltaX;
+			this.#center.x = this.#startLeft + deltaX;
 		}
 		this.#update(ManipulatorUpdatedEventType.Position);
 	}
@@ -642,27 +638,31 @@ export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 			h = htmp;
 		}
 
-		let l: number = matrix.c * q_x + matrix.a * p_x;
-		let t: number = matrix.d * q_y + matrix.b * p_y;
+		let deltaCenterX = 0;
+		let deltaCenterY = 0;
+		let deltaWidth = w - this.#startWidth;
+		let deltaHeight = h - this.#startHeight;
 
-		if (resizeOrigin == ManipulatorResizeOrigin.Center) {
-			const deltaWidth = w - this.#startWidth;
-			const deltaHeight = h - this.#startHeight;
+		const dx = (deltaWidth * Math.cos(this.#rotation) + deltaHeight * Math.sin(this.#rotation)) * 0.5;
+		const dy = (deltaHeight * Math.cos(this.#rotation) + deltaWidth * Math.sin(this.#rotation)) * 0.5;
 
+		if (resizeOrigin != ManipulatorResizeOrigin.Center) {
 			switch (this.#dragSide) {
 				case ManipulatorSide.Left:
-					w += deltaWidth;
+					deltaCenterX = -dx;
+					deltaCenterY = -dy;
 					break;
 				case ManipulatorSide.Right:
-					w += deltaWidth;
-					l -= deltaWidth;
+					deltaCenterX = dx;
+					deltaCenterY = dy;
 					break;
 				case ManipulatorSide.Top:
-					h += deltaHeight;
+					deltaCenterX = dx;
+					deltaCenterY = -dy;
 					break;
 				case ManipulatorSide.Bottom:
-					h += deltaHeight;
-					t -= deltaHeight;
+					deltaCenterX = -dx;
+					deltaCenterY = dy;
 					break;
 			}
 
@@ -672,24 +672,34 @@ export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 			}
 
 			switch (this.#dragCorner) {
+				case ManipulatorCorner.TopLeft:
+					deltaCenterX = -deltaWidth * 0.5;
+					deltaCenterY = -deltaHeight * 0.5;
+					break;
 				case ManipulatorCorner.TopRight:
-					l -= deltaWidth;
+					deltaCenterX = deltaWidth * 0.5;
+					deltaCenterY = -deltaHeight * 0.5;
 					break;
 				case ManipulatorCorner.BottomLeft:
-					t -= deltaHeight;
+					deltaCenterX = -deltaWidth * 0.5;
+					deltaCenterY = deltaHeight * 0.5;
 					break;
 				case ManipulatorCorner.BottomRight:
-					l -= deltaWidth;
-					t -= deltaHeight;
+					deltaCenterX = deltaWidth * 0.5;
+					deltaCenterY = deltaHeight * 0.5;
 					break;
 			}
+
+			this.#center.x = this.#startCenter.x + deltaCenterX;
+			this.#center.y = this.#startCenter.y + deltaCenterY;
+		} else {
+			deltaWidth = 2 * deltaWidth;
+			deltaHeight = 2 * deltaHeight;
 		}
 
-		this.#left = this.convertToUnit(l, 'width');
-		this.#width = this.convertToUnit(w, 'width');
-
-		this.#top = this.convertToUnit(t, 'height');
-		this.#height = this.convertToUnit(h, 'height');
+		this.#width = this.#startWidth + deltaWidth;
+		this.#height = this.#startHeight + deltaHeight;
+		//console.error(this.#height);
 
 		this.#update(ManipulatorUpdatedEventType.Size);
 	}
@@ -762,8 +772,8 @@ export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 	#initStartPositionsMove() {
 		this.#startWidth = this.#width;
 		this.#startHeight = this.#height;
-		this.#startTop = this.#top;
-		this.#startLeft = this.#left;
+		this.#startLeft = this.#center.x;
+		this.#startTop = this.#center.y;
 	}
 
 	#initStartPositionsRotation() {
@@ -777,15 +787,15 @@ export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 		const cos_t: number = Math.cos(theta);
 		const sin_t: number = Math.sin(theta);
 
-		const l: number = this.#left;
-		const t: number = this.#top;
+		const l: number = this.#center.x// - this.#width * 0.5;
+		const t: number = this.#center.y//- this.#height * 0.5;
 		const w: number = this.#width;
 		const h: number = this.#height;
 
 		const matrix: ResizeMatrix = this.#resizeMatrix();
 
-		this.#c0_x = l + w * 0.5;
-		this.#c0_y = t + h * 0.5;
+		this.#c0_x = this.#center.x;
+		this.#c0_y = this.#center.y;
 
 		const q0_x: number = l + matrix.a * w;
 		const q0_y: number = t + matrix.b * h;
@@ -798,6 +808,7 @@ export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 
 		this.#pp_x = p0_x * cos_t - p0_y * sin_t - this.#c0_x * cos_t + this.#c0_y * sin_t + this.#c0_x;
 		this.#pp_y = p0_x * sin_t + p0_y * cos_t - this.#c0_x * sin_t - this.#c0_y * cos_t + this.#c0_y;
+		console.error(this.#pp_x, this.#pp_y, this.#qp0_x, this.#qp0_y)
 	}
 
 	#initStartCorners() {
@@ -817,12 +828,12 @@ export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 	}
 
 	#translateInput(event: MouseEvent) {
-		const result = prompt('center', `${this.#left + this.#width * 0.5} ${this.#top + this.#height * 0.5}`);
+		const result = prompt('center', `${this.#center.x} ${this.#center.y}`);
 		if (result) {
 			const a = result.split(' ');
 			if (a.length >= 2) {
-				this.#left = Number(a[0]) - this.#width * 0.5;
-				this.#top = Number(a[1]) - this.#height * 0.5;
+				this.#center.x = Number(a[0]);
+				this.#center.y = Number(a[1]);
 				this.#update(ManipulatorUpdatedEventType.Position);
 				this.#refresh();
 				this.#dispatchEvent('updateend', ManipulatorUpdatedEventType.Position);
