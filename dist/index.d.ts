@@ -46,9 +46,9 @@ export declare function defineHarmonyTab(): void;
 
 export declare function defineHarmonyTabGroup(): void;
 
-export declare function defineHarmonyTooltip(): void;
+export declare function defineHarmonyToggleButton(): void;
 
-export declare function defineToggleButton(): void;
+export declare function defineHarmonyTooltip(): void;
 
 export declare function display(htmlElement: HTMLElement | ShadowRoot | Array<HTMLElement | ShadowRoot> | undefined | null, visible: boolean): void;
 
