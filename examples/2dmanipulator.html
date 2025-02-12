@@ -34,8 +34,7 @@
 	</div>
 	<div style="position:relative;">
 		<span>handle colors 1</span>
-		<harmony-2d-manipulator
-			style="--handle-bg-color:purple;">
+		<harmony-2d-manipulator style="--handle-bg-color:purple;">
 		</harmony-2d-manipulator>
 	</div>
 	<div style="position:relative;">
@@ -44,11 +43,48 @@
 			style="--harmony-2d-manipulator-rotate-bg-color:rgb(231, 43, 175);--harmony-2d-manipulator-side-bg-color:white;--harmony-2d-manipulator-corner-bg-color:blue">
 		</harmony-2d-manipulator>
 	</div>
+	<div style="position:relative;">
+		<span>disable handles</span>
+		<div>
+			<harmony-toggle-button state="1"
+				onchange="document.getElementById('alterable').setMode({translation:event.target.state ? 'all':'none'})">
+				<span slot="on">translation</span>
+				<span slot="off">no translation</span>
+			</harmony-toggle-button>
+			<harmony-toggle-button state="1"
+				onchange="document.getElementById('alterable').setMode({rotation:event.target.state})">
+				<span slot="on">rotation</span>
+				<span slot="off">no rotation</span>
+			</harmony-toggle-button>
+			<harmony-toggle-button state="1"
+				onchange="document.getElementById('alterable').setMode({resize:event.target.state ? 'all':'none'})">
+				<span slot="on">resize</span>
+				<span slot="off">no resize</span>
+			</harmony-toggle-button>
+			<harmony-toggle-button state="1"
+				onchange="document.getElementById('alterable').setMode({resize:event.target.state ? 'all':'x'})">
+				<span slot="on">resize x</span>
+				<span slot="off">no resize x</span>
+			</harmony-toggle-button>
+			<harmony-toggle-button state="1"
+				onchange="document.getElementById('alterable').setMode({resize:event.target.state ? 'all':'y'})">
+				<span slot="on">resize y</span>
+				<span slot="off">no resize y</span>
+			</harmony-toggle-button>
+			<harmony-toggle-button state="1"
+				onchange="document.getElementById('alterable').setMode({scale:event.target.state ? 'all':'none'})">
+				<span slot="on">scale</span>
+				<span slot="off">no scale</span>
+			</harmony-toggle-button>
+		</div>
+		<harmony-2d-manipulator id="alterable"></harmony-2d-manipulator>
+	</div>
 </body>
 <script type="module">
-	import { createElement, defineHarmony2dManipulator } from '../dist/harmony-ui.browser.js';
+	import { createElement, defineHarmony2dManipulator, defineHarmonyToggleButton } from '../dist/harmony-ui.browser.js';
 	const manipulator = document.getElementById('manipulator');
 	defineHarmony2dManipulator();
+	defineHarmonyToggleButton();
 
 	manipulator.addEventListener('change', (event) => {
 		const detail = event.detail;

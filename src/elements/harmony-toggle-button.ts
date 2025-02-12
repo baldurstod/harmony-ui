@@ -101,7 +101,7 @@ export class HTMLHarmonyToggleButtonElement extends HTMLElement {
 }
 
 let definedToggleButton = false;
-export function defineToggleButton() {
+export function defineHarmonyToggleButton() {
 	if (window.customElements && !definedToggleButton) {
 		customElements.define('harmony-toggle-button', HTMLHarmonyToggleButtonElement);
 		definedToggleButton = true;

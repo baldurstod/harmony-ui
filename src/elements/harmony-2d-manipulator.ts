@@ -329,7 +329,7 @@ export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 			return;
 		}
 
-		this.#deltaMove(event, true, true);
+		this.#deltaMove(event);
 		this.#refresh();
 
 		/*
@@ -351,7 +351,7 @@ export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 	}
 
 	#rotate(event: MouseEvent) {
-		if (this.#dragRotator) {
+		if (this.#dragRotator && this.#canRotate) {
 			const currentX: number = event.clientX;
 			const currentY: number = event.clientY;
 
@@ -450,13 +450,22 @@ export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 		this.#refresh();
 	}
 
-	setResizeMode(m: ManipulatorDirection) {
-		this.#resizeMode = m;
-		this.#refresh();
-	}
-
-	setResizeOrigin(o: ManipulatorResizeOrigin) {
-		this.#resizeOrigin = o;
+	setMode(values: { rotation?: boolean, translation?: ManipulatorDirection, resize?: ManipulatorDirection, resizeOrigin?: ManipulatorResizeOrigin, scale?: ManipulatorDirection }): void {
+		if (values.rotation !== undefined) {
+			this.#canRotate = values.rotation;
+		}
+		if (values.translation !== undefined) {
+			this.#translationMode = values.translation;
+		}
+		if (values.resize !== undefined) {
+			this.#resizeMode = values.resize;
+		}
+		if (values.resizeOrigin !== undefined) {
+			this.#resizeOrigin = values.resizeOrigin;
+		}
+		if (values.scale !== undefined) {
+			this.#scale = values.scale;
+		}
 		this.#refresh();
 	}
 
@@ -469,7 +478,7 @@ export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 		this.style.setProperty('--rotate', this.#canRotate ? '1' : '0');
 		this.style.setProperty('--resize-x', hasX(this.#resizeMode) ? '1' : '0');
 		this.style.setProperty('--resize-y', hasY(this.#resizeMode) ? '1' : '0');
-		this.style.setProperty('--scale', this.#scale);
+		this.style.setProperty('--scale', this.#scale == ManipulatorDirection.All ? '1' : '0');
 		this.style.setProperty('--skew', this.#skew);
 
 		this.#htmlQuad.style.rotate = `${this.#rotation}rad`;
@@ -528,7 +537,10 @@ export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 		return ['translate', 'rotate', 'resize', 'scale', 'resize-origin', 'skew'];
 	}
 
-	#deltaMove(event: MouseEvent, top: boolean, left: boolean) {
+	#deltaMove(event: MouseEvent) {
+		const left: boolean = this.#translationMode == ManipulatorDirection.All || this.#translationMode == ManipulatorDirection.X;
+		const top: boolean = this.#translationMode == ManipulatorDirection.All || this.#translationMode == ManipulatorDirection.Y;
+
 		const delta: { x: number; y: number } = this.#getDelta(event);
 
 		const deltaX: number = this.convertToUnit(delta.x, 'width') * this.#transformScale;
@@ -548,6 +560,16 @@ export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 		function dot(a: v2, b: v2) {
 			return a.x * b.x + a.y * b.y;
 		}
+
+		if (!(
+			(this.#dragCorner > ManipulatorCorner.None && this.#scale == ManipulatorDirection.All) ||
+			(this.#dragSide > ManipulatorSide.None && this.#resizeMode == ManipulatorDirection.All) ||
+			((this.#dragSide == ManipulatorSide.Left || this.#dragSide == ManipulatorSide.Right) && this.#resizeMode == ManipulatorDirection.X) ||
+			((this.#dragSide == ManipulatorSide.Top || this.#dragSide == ManipulatorSide.Bottom) && this.#resizeMode == ManipulatorDirection.Y)
+		)) {
+			return;
+		}
+
 
 		const delta: { x: number, y: number } = this.#getDelta(event);
 
@@ -703,7 +725,6 @@ export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 
 		this.#width = this.#startWidth + deltaWidth;
 		this.#height = this.#startHeight + deltaHeight;
-		//console.error(this.#height);
 
 		this.#update(ManipulatorUpdatedEventType.Size);
 	}
@@ -812,8 +833,6 @@ export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 
 		this.#pp_x = p0_x * cos_t - p0_y * sin_t - this.#c0_x * cos_t + this.#c0_y * sin_t + this.#c0_x;
 		this.#pp_y = p0_x * sin_t + p0_y * cos_t - this.#c0_x * sin_t - this.#c0_y * cos_t + this.#c0_y;
-		console.error(this.#pp_x, this.#pp_y, this.#qp0_x, this.#qp0_y)
-
 
 		this.#startCenter.x = this.#center.x;
 		this.#startCenter.y = this.#center.y;
