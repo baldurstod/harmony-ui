@@ -4,37 +4,36 @@ import { I18n } from '../harmony-i18n';
 import switchCSS from '../css/harmony-switch.css';
 import { toBool } from '../utils/attributes';
 import { injectGlobalCss } from '../utils/globalcss';
+import { HTMLHarmonyElement } from './harmony-element';
 
-export class HTMLHarmonySwitchElement extends HTMLElement {
+export class HTMLHarmonySwitchElement extends HTMLHarmonyElement {
+	#shadowRoot?: ShadowRoot;
 	#doOnce = true;
 	#disabled = false;
-	#htmlLabel: HTMLElement;
-	#htmlSwitchOuter: HTMLElement;
-	#htmlSwitchInner: HTMLElement;
+	#htmlLabel?: HTMLElement;
+	#htmlSwitchOuter?: HTMLElement;
+	#htmlSwitchInner?: HTMLElement;
 	#state? = false;
 	#ternary = false;
-	#shadowRoot;
-	constructor() {
-		super();
+
+	protected createElement() {
 		this.#shadowRoot = this.attachShadow({ mode: 'closed' });
 		shadowRootStyle(this.#shadowRoot, switchCSS);
-		this.#htmlLabel = createElement('div', { class: 'harmony-switch-label' }) as HTMLElement;
+		I18n.observeElement(this.#shadowRoot);
+
+		this.#htmlLabel = createElement('div', {
+			parent: this.#shadowRoot,
+			class: 'harmony-switch-label',
+		}) as HTMLElement;
+
 		this.#htmlSwitchOuter = createElement('span', {
+			parent: this.#shadowRoot,
 			class: 'harmony-switch-outer',
 			child: this.#htmlSwitchInner = createElement('span', { class: 'harmony-switch-inner' }) as HTMLElement,
 		}) as HTMLElement;
 
 		this.addEventListener('click', () => this.toggle());
-	}
-
-	connectedCallback() {
-		if (this.#doOnce) {
-			I18n.observeElement(this.#shadowRoot);
-			this.#shadowRoot.append(this.#htmlLabel, this.#htmlSwitchOuter);
-			this.#htmlSwitchOuter.append(this.#htmlSwitchInner);
-			this.#refresh();
-			this.#doOnce = false;
-		}
+		this.#refresh();
 	}
 
 	set disabled(disabled) {
@@ -93,25 +92,30 @@ export class HTMLHarmonySwitchElement extends HTMLElement {
 	}
 
 	#refresh() {
-		this.#htmlSwitchOuter.classList.remove('on');
-		this.#htmlSwitchOuter.classList.remove('off');
-		this.#htmlSwitchOuter.classList[this.#ternary ? 'add' : 'remove']('ternary');
+		this.#htmlSwitchOuter?.classList.remove('on', 'off', 'ternary');
+		if (this.#ternary) {
+			this.#htmlSwitchOuter?.classList.add('ternary');
+		}
 		if (this.#state === undefined) {
 			return;
 		}
-		this.#htmlSwitchOuter.classList.add(this.#state ? 'on' : 'off');
+		this.#htmlSwitchOuter?.classList.add(this.#state ? 'on' : 'off');
 	}
 
 	attributeChangedCallback(name: string, oldValue: string, newValue: string) {
 		switch (name) {
 			case 'data-label':
-				this.#htmlLabel.innerHTML = newValue;
-				this.#htmlLabel.classList.remove('i18n');
+				if (this.#htmlLabel) {
+					this.#htmlLabel.innerHTML = newValue;
+				}
+				this.#htmlLabel?.classList.remove('i18n');
 				break;
 			case 'data-i18n':
-				this.#htmlLabel.setAttribute('data-i18n', newValue);
-				this.#htmlLabel.innerHTML = newValue;
-				this.#htmlLabel.classList.add('i18n');
+				this.#htmlLabel?.setAttribute('data-i18n', newValue);
+				if (this.#htmlLabel) {
+					this.#htmlLabel.innerHTML = newValue;
+				}
+				this.#htmlLabel?.classList.add('i18n');
 				break;
 			case 'disabled':
 				this.disabled = toBool(newValue);
