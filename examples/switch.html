@@ -4,12 +4,22 @@
 <head>
 	<title>Test switch</title>
 	<link rel="stylesheet" type="text/css" href="./assets/css/examples.css" />
+	<style>
+		harmony-switch>img {
+			filter: invert(1);
+		}
+	</style>
 </head>
 
 <body>
 	<harmony-switch data-i18n="#test" id='switch' style="width:200px">
 	</harmony-switch>
 	<harmony-switch data-i18n="#test2" id='switch2' style="width:200px" ternary="1">
+	</harmony-switch>
+	<harmony-switch data-i18n="#test2" id='switch2' style="width:200px">
+		<img slot="prepend" src="../node_modules/harmony-svg/src/svg/lock_open_right.svg">
+		<img slot="append" src="../node_modules/harmony-svg/src/svg/lock.svg">
+
 	</harmony-switch>
 </body>
 <script type="module">

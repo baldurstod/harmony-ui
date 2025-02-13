@@ -3277,7 +3277,6 @@ class HTMLHarmonyElement extends HTMLElement {
 }
 
 class HTMLHarmonySliderElement extends HTMLHarmonyElement {
-    #initialized = false;
     #shadowRoot;
     #htmlLabel;
     #htmlSlider;
@@ -3589,34 +3588,46 @@ function defineHarmonySplitter() {
 
 var switchCSS = ":host {\n\t--harmony-switch-shadow-width: var(--harmony-switch-width, 4rem);\n\t--harmony-switch-shadow-height: var(--harmony-switch-height, 2rem);\n\t--harmony-switch-shadow-on-background-color: var(--harmony-switch-on-background-color, #1072eb);\n\t--harmony-switch-shadow-on-background-color-hover: var(--harmony-switch-on-background-color-hover, #1040c1);\n\t--harmony-switch-shadow-slider-width: var(--harmony-switch-slider-width, 1.4rem);\n\t--harmony-switch-shadow-slider-height: var(--harmony-switch-slider-height, 1.4rem);\n\t--harmony-switch-shadow-slider-margin: var(--harmony-switch-slider-margin, 0.3rem);\n\t--harmony-switch-shadow-slider-border-width: var(--harmony-switch-slider-border-width, 0rem);\n\n\tdisplay: inline-flex;\n\tuser-select: none;\n\tcursor: pointer;\n\tjustify-content: space-between;\n}\n\n.harmony-switch-label {\n\tmargin: auto 0;\n\tfont-weight: bold;\n}\n\n.harmony-switch-outer {\n\tdisplay: flex;\n\theight: var(--harmony-switch-shadow-height);\n\tborder-radius: calc(var(--harmony-switch-shadow-height) * 0.5);\n\talign-items: center;\n\tmargin-left: 0.25rem;\n\ttransition: background-color 0.25s linear;\n\twidth: var(--harmony-switch-shadow-width);\n}\n\n.harmony-switch-outer {\n\tbackground-color: var(--harmony-ui-input-background-primary);\n}\n\n.harmony-switch-outer:hover {\n\tbackground-color: var(--harmony-ui-input-background-secondary);\n}\n\n.harmony-switch-outer.on {\n\tbackground-color: var(--harmony-ui-accent-primary);\n}\n\n.harmony-switch-outer.on:hover {\n\tbackground-color: var(--harmony-ui-accent-secondary);\n}\n\n.harmony-switch-inner {\n\tdisplay: inline-block;\n\theight: var(--harmony-switch-shadow-slider-height);\n\twidth: var(--harmony-switch-shadow-slider-width);\n\tborder-radius: calc(var(--harmony-switch-shadow-slider-height) * 0.5);\n\ttransition: all 0.25s;\n\tposition: relative;\n\tleft: var(--harmony-switch-shadow-slider-margin);\n\tborder: var(--harmony-switch-shadow-slider-border-width) solid;\n\tbox-sizing: border-box;\n\tborder-color: var(--harmony-ui-input-border-primary);\n\tbackground-color: var(--harmony-ui-input-background-tertiary);\n}\n\n.harmony-switch-outer.ternary .harmony-switch-inner {\n\tleft: calc(50% - var(--harmony-switch-shadow-slider-width) * 0.5);\n}\n\n.harmony-switch-outer.off .harmony-switch-inner {\n\tleft: var(--harmony-switch-shadow-slider-margin);\n}\n\n.harmony-switch-outer.on .harmony-switch-inner {\n\tleft: calc(100% - var(--harmony-switch-shadow-slider-width) - var(--harmony-switch-shadow-slider-margin));\n}\n\n.harmony-switch-outer.ternary.off {\n\tbackground-color: red;\n}\n\n.harmony-switch-outer.ternary.off:hover {\n\tbackground-color: red;\n}\n\n.harmony-switch-outer.ternary.on {\n\tbackground-color: green;\n}\n\n.harmony-switch-outer.ternary.on:hover {\n\tbackground-color: green;\n}\n";
 
-class HTMLHarmonySwitchElement extends HTMLElement {
-    #doOnce = true;
+class HTMLHarmonySwitchElement extends HTMLHarmonyElement {
+    #shadowRoot;
     #disabled = false;
     #htmlLabel;
     #htmlSwitchOuter;
-    #htmlSwitchInner;
     #state = false;
     #ternary = false;
-    #shadowRoot;
-    constructor() {
-        super();
+    createElement() {
         this.#shadowRoot = this.attachShadow({ mode: 'closed' });
         shadowRootStyle(this.#shadowRoot, switchCSS);
-        this.#htmlLabel = createElement('div', { class: 'harmony-switch-label' });
-        this.#htmlSwitchOuter = createElement('span', {
-            class: 'harmony-switch-outer',
-            child: this.#htmlSwitchInner = createElement('span', { class: 'harmony-switch-inner' }),
+        I18n.observeElement(this.#shadowRoot);
+        this.#htmlLabel = createElement('div', {
+            parent: this.#shadowRoot,
+            class: 'harmony-switch-label',
         });
-        this.addEventListener('click', () => this.toggle());
-    }
-    connectedCallback() {
-        if (this.#doOnce) {
-            I18n.observeElement(this.#shadowRoot);
-            this.#shadowRoot.append(this.#htmlLabel, this.#htmlSwitchOuter);
-            this.#htmlSwitchOuter.append(this.#htmlSwitchInner);
-            this.#refresh();
-            this.#doOnce = false;
-        }
+        createElement('slot', {
+            parent: this.#shadowRoot,
+            name: 'prepend',
+            $click: () => this.state = false,
+        });
+        createElement('img', {
+            parent: this.#shadowRoot,
+            $click: () => this.state = false,
+        });
+        this.#htmlSwitchOuter = createElement('span', {
+            parent: this.#shadowRoot,
+            class: 'harmony-switch-outer',
+            child: createElement('span', { class: 'harmony-switch-inner' }),
+            $click: () => this.toggle(),
+        });
+        createElement('img', {
+            parent: this.#shadowRoot,
+            $click: () => this.state = true,
+        });
+        createElement('slot', {
+            parent: this.#shadowRoot,
+            name: 'append',
+            $click: () => this.state = true,
+        });
+        this.#refresh();
     }
     set disabled(disabled) {
         this.#disabled = disabled ? true : false;
@@ -3669,24 +3680,29 @@ class HTMLHarmonySwitchElement extends HTMLElement {
         this.#refresh();
     }
     #refresh() {
-        this.#htmlSwitchOuter.classList.remove('on');
-        this.#htmlSwitchOuter.classList.remove('off');
-        this.#htmlSwitchOuter.classList[this.#ternary ? 'add' : 'remove']('ternary');
+        this.#htmlSwitchOuter?.classList.remove('on', 'off', 'ternary');
+        if (this.#ternary) {
+            this.#htmlSwitchOuter?.classList.add('ternary');
+        }
         if (this.#state === undefined) {
             return;
         }
-        this.#htmlSwitchOuter.classList.add(this.#state ? 'on' : 'off');
+        this.#htmlSwitchOuter?.classList.add(this.#state ? 'on' : 'off');
     }
-    attributeChangedCallback(name, oldValue, newValue) {
+    onAttributeChanged(name, oldValue, newValue) {
         switch (name) {
             case 'data-label':
-                this.#htmlLabel.innerHTML = newValue;
-                this.#htmlLabel.classList.remove('i18n');
+                if (this.#htmlLabel) {
+                    this.#htmlLabel.innerHTML = newValue;
+                }
+                this.#htmlLabel?.classList.remove('i18n');
                 break;
             case 'data-i18n':
-                this.#htmlLabel.setAttribute('data-i18n', newValue);
-                this.#htmlLabel.innerHTML = newValue;
-                this.#htmlLabel.classList.add('i18n');
+                this.#htmlLabel?.setAttribute('data-i18n', newValue);
+                if (this.#htmlLabel) {
+                    this.#htmlLabel.innerHTML = newValue;
+                }
+                this.#htmlLabel?.classList.add('i18n');
                 break;
             case 'disabled':
                 this.disabled = toBool(newValue);

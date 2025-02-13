@@ -8,11 +8,9 @@ import { HTMLHarmonyElement } from './harmony-element';
 
 export class HTMLHarmonySwitchElement extends HTMLHarmonyElement {
 	#shadowRoot?: ShadowRoot;
-	#doOnce = true;
 	#disabled = false;
 	#htmlLabel?: HTMLElement;
 	#htmlSwitchOuter?: HTMLElement;
-	#htmlSwitchInner?: HTMLElement;
 	#state? = false;
 	#ternary = false;
 
@@ -24,15 +22,37 @@ export class HTMLHarmonySwitchElement extends HTMLHarmonyElement {
 		this.#htmlLabel = createElement('div', {
 			parent: this.#shadowRoot,
 			class: 'harmony-switch-label',
-		}) as HTMLElement;
+		});
+
+		createElement('slot', {
+			parent: this.#shadowRoot,
+			name: 'prepend',
+			$click: () => this.state = false,
+		}) as HTMLSlotElement;
+
+		createElement('img', {
+			parent: this.#shadowRoot,
+			$click: () => this.state = false,
+		}) as HTMLImageElement;
 
 		this.#htmlSwitchOuter = createElement('span', {
 			parent: this.#shadowRoot,
 			class: 'harmony-switch-outer',
-			child: this.#htmlSwitchInner = createElement('span', { class: 'harmony-switch-inner' }) as HTMLElement,
+			child: createElement('span', { class: 'harmony-switch-inner' }) as HTMLElement,
+			$click: () => this.toggle(),
 		}) as HTMLElement;
 
-		this.addEventListener('click', () => this.toggle());
+		createElement('img', {
+			parent: this.#shadowRoot,
+			$click: () => this.state = true,
+		}) as HTMLImageElement;
+
+		createElement('slot', {
+			parent: this.#shadowRoot,
+			name: 'append',
+			$click: () => this.state = true,
+		}) as HTMLSlotElement;
+
 		this.#refresh();
 	}
 
@@ -102,7 +122,7 @@ export class HTMLHarmonySwitchElement extends HTMLHarmonyElement {
 		this.#htmlSwitchOuter?.classList.add(this.#state ? 'on' : 'off');
 	}
 
-	attributeChangedCallback(name: string, oldValue: string, newValue: string) {
+	protected onAttributeChanged(name: string, oldValue: string, newValue: string) {
 		switch (name) {
 			case 'data-label':
 				if (this.#htmlLabel) {

@@ -150,7 +150,7 @@ declare class HTMLHarmonyElement extends HTMLElement {
     protected createElement(): void;
     connectedCallback(): void;
     attributeChangedCallback(name: string, oldValue: string | null, newValue: string | null): void;
-    onAttributeChanged(name: string, oldValue: string | null, newValue: string | null): void;
+    protected onAttributeChanged(name: string, oldValue: string | null, newValue: string | null): void;
     static get observedAttributes(): string[];
 }
 
@@ -276,11 +276,11 @@ export declare class HTMLHarmonySelectElement extends HTMLElement {
 
 export declare class HTMLHarmonySliderElement extends HTMLHarmonyElement {
     #private;
-    createElement(): void;
+    protected createElement(): void;
     get value(): number | number[];
     isRange(): boolean;
     setValue(value: number | Array<number>): void;
-    onAttributeChanged(name: string, oldValue: string | null, newValue: string | null): void;
+    protected onAttributeChanged(name: string, oldValue: string | null, newValue: string | null): void;
     static get observedAttributes(): string[];
 }
 
@@ -315,10 +315,9 @@ export declare class HTMLHarmonySplitterElement extends HTMLElement {
     static get observedAttributes(): string[];
 }
 
-export declare class HTMLHarmonySwitchElement extends HTMLElement {
+export declare class HTMLHarmonySwitchElement extends HTMLHarmonyElement {
     #private;
-    constructor();
-    connectedCallback(): void;
+    protected createElement(): void;
     set disabled(disabled: boolean);
     get disabled(): boolean;
     set state(state: boolean | undefined);
@@ -328,7 +327,7 @@ export declare class HTMLHarmonySwitchElement extends HTMLElement {
     set ternary(ternary: boolean);
     get ternary(): boolean;
     toggle(): void;
-    attributeChangedCallback(name: string, oldValue: string, newValue: string): void;
+    protected onAttributeChanged(name: string, oldValue: string, newValue: string): void;
     static get observedAttributes(): string[];
 }
 
