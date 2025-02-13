@@ -6,7 +6,6 @@ import { injectGlobalCss } from '../utils/globalcss';
 import { HTMLHarmonyElement } from './harmony-element';
 
 export class HTMLHarmonySliderElement extends HTMLHarmonyElement {
-	#initialized = false;
 	#shadowRoot?: ShadowRoot;
 	#htmlLabel?: HTMLLabelElement;
 	#htmlSlider?: HTMLInputElement;
@@ -20,7 +19,7 @@ export class HTMLHarmonySliderElement extends HTMLHarmonyElement {
 	#value: Array<number> = [50, 50];
 	#isRange = false;
 
-	createElement() {
+	protected createElement() {
 		this.#shadowRoot = this.attachShadow({ mode: 'closed' });
 		shadowRootStyle(this.#shadowRoot, sliderCSS);
 		I18n.observeElement(this.#shadowRoot);
@@ -128,7 +127,7 @@ export class HTMLHarmonySliderElement extends HTMLHarmonyElement {
 		}
 	}
 
-	onAttributeChanged(name: string, oldValue: string | null, newValue: string | null) {
+	protected onAttributeChanged(name: string, oldValue: string | null, newValue: string | null) {
 		let step: number | undefined;
 		switch (name) {
 			case 'label':

@@ -23,7 +23,7 @@ export class HTMLHarmonyElement extends HTMLElement {
 		this.onAttributeChanged(name, oldValue, newValue);
 	}
 
-	onAttributeChanged(name: string, oldValue: string | null, newValue: string | null) {
+	protected onAttributeChanged(name: string, oldValue: string | null, newValue: string | null) {
 
 	}
 
