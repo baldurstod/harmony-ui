@@ -21,7 +21,7 @@ export class HTMLHarmonySwitchElement extends HTMLHarmonyElement {
 
 		this.#htmlLabel = createElement('div', {
 			parent: this.#shadowRoot,
-			class: 'harmony-switch-label',
+			class: 'label',
 		});
 
 		createElement('slot', {
@@ -30,22 +30,12 @@ export class HTMLHarmonySwitchElement extends HTMLHarmonyElement {
 			$click: () => this.state = false,
 		}) as HTMLSlotElement;
 
-		createElement('img', {
-			parent: this.#shadowRoot,
-			$click: () => this.state = false,
-		}) as HTMLImageElement;
-
 		this.#htmlSwitchOuter = createElement('span', {
 			parent: this.#shadowRoot,
 			class: 'harmony-switch-outer',
 			child: createElement('span', { class: 'harmony-switch-inner' }) as HTMLElement,
 			$click: () => this.toggle(),
 		}) as HTMLElement;
-
-		createElement('img', {
-			parent: this.#shadowRoot,
-			$click: () => this.state = true,
-		}) as HTMLImageElement;
 
 		createElement('slot', {
 			parent: this.#shadowRoot,

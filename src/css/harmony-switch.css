@@ -7,6 +7,9 @@
 	--harmony-switch-shadow-slider-height: var(--harmony-switch-slider-height, 1.4rem);
 	--harmony-switch-shadow-slider-margin: var(--harmony-switch-slider-margin, 0.3rem);
 	--harmony-switch-shadow-slider-border-width: var(--harmony-switch-slider-border-width, 0rem);
+	--slot-width: var(--harmony-switch-slot-width, auto);
+	--prepend-width: var(--harmony-switch-prepend-width, var(--slot-width));
+	--append-width: var(--harmony-switch-append-width, var(--slot-width));
 
 	display: inline-flex;
 	user-select: none;
@@ -14,9 +17,26 @@
 	justify-content: space-between;
 }
 
-.harmony-switch-label {
+:host>* {
+	flex-grow: 0;
+}
+
+.label {
 	margin: auto 0;
 	font-weight: bold;
+	flex: 1;
+}
+
+slot{
+	display: inline-block;
+}
+
+slot[name="prepend"] {
+	width: var(--prepend-width);
+}
+
+slot[name="append"] {
+	width: var(--append-width);
 }
 
 .harmony-switch-outer {
