@@ -3938,7 +3938,10 @@ class HTMLHarmonyToggleButtonElement extends HTMLElement {
         });
         I18n.observeElement(this.#shadowRoot);
         shadowRootStyle(this.#shadowRoot, toggleButtonCSS);
-        this.addEventListener('click', () => this.#click());
+        this.addEventListener('click', (event) => {
+            this.#click();
+            event.stopPropagation();
+        });
         this.#initObserver();
     }
     connectedCallback() {
