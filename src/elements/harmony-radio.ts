@@ -18,6 +18,7 @@ export class HTMLHarmonyRadioElement extends HTMLElement {
 	#slots = new Set<HTMLSlotElement>();
 	#selected = new Set();
 	#shadowRoot;
+	#lastSelected?: HTMLElement;
 
 	constructor() {
 		super();
@@ -67,16 +68,27 @@ export class HTMLHarmonyRadioElement extends HTMLElement {
 
 		const htmlButton = this.#buttons.get(value);
 		if (htmlButton) {
-			if (select && !this.#multiple) {
-				for (const child of this.children) {
-					if (child.hasAttribute('selected')) {
-						child.removeAttribute('selected');
-						this.dispatchEvent(new CustomEvent<RadioChangedEventData>('change', { detail: { value: (child as HTMLButtonElement).value, state: false } }));
-						child.dispatchEvent(new CustomEvent<RadioChangedEventData>('change', { detail: { value: (child as HTMLButtonElement).value, state: false } }));
+			if (select) {
+				if (!this.#multiple) {
+					for (const child of this.children) {
+						if (child.hasAttribute('selected')) {
+							child.removeAttribute('selected');
+							this.dispatchEvent(new CustomEvent<RadioChangedEventData>('change', { detail: { value: (child as HTMLButtonElement).value, state: false } }));
+							child.dispatchEvent(new CustomEvent<RadioChangedEventData>('change', { detail: { value: (child as HTMLButtonElement).value, state: false } }));
+						}
 					}
 				}
+				htmlButton.setAttribute('selected', '');
+
+				if (this.#lastSelected) {
+					this.#lastSelected.classList.remove('last-selected');
+				}
+
+				this.#lastSelected = htmlButton;
+				this.#lastSelected.classList.add('last-selected');
+			} else {
+				htmlButton.removeAttribute('selected');
 			}
-			select ? htmlButton.setAttribute('selected', '') : htmlButton.removeAttribute('selected');
 			this.dispatchEvent(new CustomEvent<RadioChangedEventData>('change', { detail: { value: htmlButton.value, state: select } }));
 			htmlButton.dispatchEvent(new CustomEvent<RadioChangedEventData>('change', { detail: { value: htmlButton.value, state: select } }));
 		}

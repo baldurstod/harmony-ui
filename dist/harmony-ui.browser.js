@@ -2807,6 +2807,7 @@ class HTMLHarmonyRadioElement extends HTMLElement {
     #slots = new Set();
     #selected = new Set();
     #shadowRoot;
+    #lastSelected;
     constructor() {
         super();
         this.#shadowRoot = this.attachShadow({ mode: 'closed', slotAssignment: "manual" });
@@ -2848,16 +2849,26 @@ class HTMLHarmonyRadioElement extends HTMLElement {
         this.#selected[select ? 'add' : 'delete'](value);
         const htmlButton = this.#buttons.get(value);
         if (htmlButton) {
-            if (select && !this.#multiple) {
-                for (const child of this.children) {
-                    if (child.hasAttribute('selected')) {
-                        child.removeAttribute('selected');
-                        this.dispatchEvent(new CustomEvent('change', { detail: { value: child.value, state: false } }));
-                        child.dispatchEvent(new CustomEvent('change', { detail: { value: child.value, state: false } }));
+            if (select) {
+                if (!this.#multiple) {
+                    for (const child of this.children) {
+                        if (child.hasAttribute('selected')) {
+                            child.removeAttribute('selected');
+                            this.dispatchEvent(new CustomEvent('change', { detail: { value: child.value, state: false } }));
+                            child.dispatchEvent(new CustomEvent('change', { detail: { value: child.value, state: false } }));
+                        }
                     }
                 }
+                htmlButton.setAttribute('selected', '');
+                if (this.#lastSelected) {
+                    this.#lastSelected.classList.remove('last-selected');
+                }
+                this.#lastSelected = htmlButton;
+                this.#lastSelected.classList.add('last-selected');
             }
-            select ? htmlButton.setAttribute('selected', '') : htmlButton.removeAttribute('selected');
+            else {
+                htmlButton.removeAttribute('selected');
+            }
             this.dispatchEvent(new CustomEvent('change', { detail: { value: htmlButton.value, state: select } }));
             htmlButton.dispatchEvent(new CustomEvent('change', { detail: { value: htmlButton.value, state: select } }));
         }
