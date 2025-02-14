@@ -14,7 +14,7 @@
 	margin-right: 0.25rem;
 }
 
-button {
+::slotted(button) {
 	padding: var(--harmony-radio-shadow-button-padding);
 	color: var(--harmony-ui-text-primary);
 	flex: var(--harmony-radio-shadow-button-flex);
@@ -30,23 +30,23 @@ button {
 	overflow: hidden;
 }
 
-button:hover {
+::slotted(button:hover) {
 	background-color: var(--harmony-ui-input-background-secondary);
 }
 
-button[selected] {
+::slotted(button[selected]) {
 	background-color: var(--harmony-ui-accent-primary);
 }
 
-button[selected]:hover {
+::slotted(button[selected]:hover) {
 	background-color: var(--harmony-ui-accent-secondary);
 }
 
-button:first-of-type {
+::slotted(button:first-of-type) {
 	border-radius: var(--harmony-radio-shadow-button-border-radius) 0 0 var(--harmony-radio-shadow-button-border-radius);
 }
 
-button:last-child {
+::slotted(button:last-child) {
 	border-right-style: solid;
 	border-radius: 0 var(--harmony-radio-shadow-button-border-radius) var(--harmony-radio-shadow-button-border-radius) 0;
 }

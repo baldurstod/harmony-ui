@@ -2659,23 +2659,23 @@ function defineHarmonyPanel() {
     }
 }
 
-var radioCSS = ":host {\n\t--harmony-radio-shadow-button-border-radius: var(--harmony-radio-button-border-radius, 0.5rem);\n\t--harmony-radio-shadow-button-padding: var(--harmony-radio-button-padding, 0.5rem);\n\t--harmony-radio-shadow-button-font-size: var(--harmony-radio-button-font-size, 1rem);\n\t--harmony-radio-shadow-button-flex: var(--harmony-radio-button-flex, auto);\n\tdisplay: inline-flex;\n\toverflow: hidden;\n\tuser-select: none;\n}\n\n.label {\n\tmargin: auto 0;\n\tfont-weight: bold;\n\tmargin-right: 0.25rem;\n}\n\nbutton {\n\tpadding: var(--harmony-radio-shadow-button-padding);\n\tcolor: var(--harmony-ui-text-primary);\n\tflex: var(--harmony-radio-shadow-button-flex);\n\tcursor: pointer;\n\tappearance: none;\n\tborder-style: solid;\n\tborder-width: 0.0625rem;\n\tborder-color: var(--harmony-ui-border-primary);\n\tborder-right-style: none;\n\tbackground-color: var(--harmony-ui-input-background-primary);\n\ttransition: background-color 0.2s linear;\n\tfont-size: var(--harmony-radio-shadow-button-font-size);\n\toverflow: hidden;\n}\n\nbutton:hover {\n\tbackground-color: var(--harmony-ui-input-background-secondary);\n}\n\nbutton[selected] {\n\tbackground-color: var(--harmony-ui-accent-primary);\n}\n\nbutton[selected]:hover {\n\tbackground-color: var(--harmony-ui-accent-secondary);\n}\n\nbutton:first-of-type {\n\tborder-radius: var(--harmony-radio-shadow-button-border-radius) 0 0 var(--harmony-radio-shadow-button-border-radius);\n}\n\nbutton:last-child {\n\tborder-right-style: solid;\n\tborder-radius: 0 var(--harmony-radio-shadow-button-border-radius) var(--harmony-radio-shadow-button-border-radius) 0;\n}\n";
+var radioCSS = ":host {\n\t--harmony-radio-shadow-button-border-radius: var(--harmony-radio-button-border-radius, 0.5rem);\n\t--harmony-radio-shadow-button-padding: var(--harmony-radio-button-padding, 0.5rem);\n\t--harmony-radio-shadow-button-font-size: var(--harmony-radio-button-font-size, 1rem);\n\t--harmony-radio-shadow-button-flex: var(--harmony-radio-button-flex, auto);\n\tdisplay: inline-flex;\n\toverflow: hidden;\n\tuser-select: none;\n}\n\n.label {\n\tmargin: auto 0;\n\tfont-weight: bold;\n\tmargin-right: 0.25rem;\n}\n\n::slotted(button) {\n\tpadding: var(--harmony-radio-shadow-button-padding);\n\tcolor: var(--harmony-ui-text-primary);\n\tflex: var(--harmony-radio-shadow-button-flex);\n\tcursor: pointer;\n\tappearance: none;\n\tborder-style: solid;\n\tborder-width: 0.0625rem;\n\tborder-color: var(--harmony-ui-border-primary);\n\tborder-right-style: none;\n\tbackground-color: var(--harmony-ui-input-background-primary);\n\ttransition: background-color 0.2s linear;\n\tfont-size: var(--harmony-radio-shadow-button-font-size);\n\toverflow: hidden;\n}\n\n::slotted(button:hover) {\n\tbackground-color: var(--harmony-ui-input-background-secondary);\n}\n\n::slotted(button[selected]) {\n\tbackground-color: var(--harmony-ui-accent-primary);\n}\n\n::slotted(button[selected]:hover) {\n\tbackground-color: var(--harmony-ui-accent-secondary);\n}\n\n::slotted(button:first-of-type) {\n\tborder-radius: var(--harmony-radio-shadow-button-border-radius) 0 0 var(--harmony-radio-shadow-button-border-radius);\n}\n\n::slotted(button:last-child) {\n\tborder-right-style: solid;\n\tborder-radius: 0 var(--harmony-radio-shadow-button-border-radius) var(--harmony-radio-shadow-button-border-radius) 0;\n}\n";
 
 class HTMLHarmonyRadioElement extends HTMLElement {
     #doOnce = true;
     #disabled = false;
     #multiple = false;
     #htmlLabel;
-    #state = false;
     #buttons = new Map();
     #buttons2 = new Set();
+    #slots = new Set();
     #selected = new Set();
     #shadowRoot;
     constructor() {
         super();
-        this.#shadowRoot = this.attachShadow({ mode: 'closed' });
+        this.#shadowRoot = this.attachShadow({ mode: 'closed', slotAssignment: "manual" });
         this.#htmlLabel = createElement('div', { class: 'label' });
-        this.#initObserver();
+        this.#initMutationObserver();
     }
     connectedCallback() {
         if (this.#doOnce) {
@@ -2688,8 +2688,8 @@ class HTMLHarmonyRadioElement extends HTMLElement {
         }
     }
     #processChilds() {
-        while (this.children.length) {
-            this.#initButton(this.children[0]);
+        for (const child of this.children) {
+            this.#initButton(child);
         }
     }
     #initButton(htmlButton) {
@@ -2697,18 +2697,15 @@ class HTMLHarmonyRadioElement extends HTMLElement {
         if (!this.#buttons2.has(htmlButton)) {
             htmlButton.addEventListener('click', () => this.select(htmlButton.value, !this.#multiple || !htmlButton.hasAttribute('selected')));
             this.#buttons2.add(htmlButton);
+            const htmlSlot = createElement('slot', {
+                parent: this.#shadowRoot,
+            });
+            this.#slots.add(htmlSlot);
+            htmlSlot.assign(htmlButton);
+            I18n.updateElement(htmlButton);
         }
         if (this.#selected.has(htmlButton.value) || htmlButton.hasAttribute('selected')) {
             this.select(htmlButton.value, true);
-        }
-        this.#shadowRoot.append(htmlButton);
-        I18n.updateElement(htmlButton);
-    }
-    append(...params) {
-        for (const param of params) {
-            this.#initButton(param);
-            //this.#shadowRoot.append(param);
-            //I18n.updateElement(param);
         }
     }
     select(value, select) {
@@ -2716,7 +2713,7 @@ class HTMLHarmonyRadioElement extends HTMLElement {
         const htmlButton = this.#buttons.get(value);
         if (htmlButton) {
             if (select && !this.#multiple) {
-                for (const child of this.#shadowRoot.children) {
+                for (const child of this.children) {
                     if (child.hasAttribute('selected')) {
                         child.removeAttribute('selected');
                         this.dispatchEvent(new CustomEvent('change', { detail: { value: child.value, state: false } }));
@@ -2744,11 +2741,15 @@ class HTMLHarmonyRadioElement extends HTMLElement {
         for (const button of this.#buttons2) {
             button.remove();
         }
+        for (const slot of this.#slots) {
+            slot.remove();
+        }
         this.#buttons.clear();
         this.#buttons2.clear();
         this.#selected.clear();
+        this.#slots.clear();
     }
-    #initObserver() {
+    #initMutationObserver() {
         const config = { childList: true, subtree: true };
         const mutationCallback = (mutationsList, observer) => {
             for (const mutation of mutationsList) {

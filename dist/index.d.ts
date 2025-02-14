@@ -246,7 +246,6 @@ export declare class HTMLHarmonyRadioElement extends HTMLElement {
     #private;
     constructor();
     connectedCallback(): void;
-    append(...params: Array<any>): void;
     select(value: string, select: boolean): void;
     isSelected(value: string): string | false;
     set disabled(disabled: boolean);
