@@ -116,7 +116,6 @@ export declare class HTMLHarmonyAccordionElement extends HTMLElement {
     #private;
     constructor();
     connectedCallback(): void;
-    addItem(item: HTMLHarmonyItemElement): void;
     createItem(header: HTMLElement, content: HTMLElement): HTMLElement;
     clear(): void;
     expand(id: string): void;

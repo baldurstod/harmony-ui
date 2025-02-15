@@ -29,16 +29,12 @@ export class HTMLHarmonyAccordionElement extends HTMLElement {
 	}
 
 	#processChilds() {
-		//This is a 2 steps process cause we may change DOM
-		const children = this.children;
-		const list = [];
-		for (const child of children) {
-			list.push(child);
+		for (const child of this.children) {
+			this.#addItem(child as HTMLHarmonyItemElement)
 		}
-		list.forEach(element => this.addItem(element as HTMLHarmonyItemElement));
 	}
 
-	addItem(item: HTMLHarmonyItemElement) {
+	#addItem(item: HTMLHarmonyItemElement) {
 		if (this.#items.has(item)) {
 			return;
 		}
@@ -165,7 +161,7 @@ export class HTMLHarmonyAccordionElement extends HTMLElement {
 				const addedNodes = mutation.addedNodes;
 				for (const addedNode of addedNodes) {
 					if (addedNode.parentNode == this) {
-						this.addItem(addedNode as HTMLHarmonyItemElement);
+						this.#addItem(addedNode as HTMLHarmonyItemElement);
 					}
 				}
 			}

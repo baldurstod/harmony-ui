@@ -1276,15 +1276,11 @@ class HTMLHarmonyAccordionElement extends HTMLElement {
         }
     }
     #processChilds() {
-        //This is a 2 steps process cause we may change DOM
-        const children = this.children;
-        const list = [];
-        for (const child of children) {
-            list.push(child);
+        for (const child of this.children) {
+            this.#addItem(child);
         }
-        list.forEach(element => this.addItem(element));
     }
-    addItem(item) {
+    #addItem(item) {
         if (this.#items.has(item)) {
             return;
         }
@@ -1398,7 +1394,7 @@ class HTMLHarmonyAccordionElement extends HTMLElement {
                 const addedNodes = mutation.addedNodes;
                 for (const addedNode of addedNodes) {
                     if (addedNode.parentNode == this) {
-                        this.addItem(addedNode);
+                        this.#addItem(addedNode);
                     }
                 }
             }
