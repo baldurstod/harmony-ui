@@ -94,7 +94,7 @@ export class I18n {
 	static setOptions(options: { translations: Array<I18nTranslation> }) {
 		if (options.translations) {
 			for (const translation of options.translations) {
-				this.addTranslation(translation);
+				this.#addTranslation(translation);
 			}
 			this.#eventTarget.dispatchEvent(new CustomEvent(I18nEvents.TranslationsUpdated));
 			this.#eventTarget.dispatchEvent(new CustomEvent(I18nEvents.Any));
@@ -103,6 +103,13 @@ export class I18n {
 	}
 
 	static addTranslation(translation: I18nTranslation) {
+		this.#addTranslation(translation);
+		if (translation.lang == this.#lang) {
+			this.i18n();
+		}
+	}
+
+	static #addTranslation(translation: I18nTranslation) {
 		this.#translations.set(translation.lang, translation);
 	}
 
