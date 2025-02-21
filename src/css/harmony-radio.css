@@ -1,8 +1,5 @@
 :host {
 	--harmony-radio-shadow-button-border-radius: var(--harmony-radio-button-border-radius, 0.5rem);
-	--harmony-radio-shadow-button-padding: var(--harmony-radio-button-padding, 0.5rem);
-	--harmony-radio-shadow-button-font-size: var(--harmony-radio-button-font-size, 1rem);
-	--harmony-radio-shadow-button-flex: var(--harmony-radio-button-flex, auto);
 	display: inline-flex;
 	overflow: hidden;
 	user-select: none;
@@ -15,9 +12,9 @@
 }
 
 ::slotted(button) {
-	padding: var(--harmony-radio-shadow-button-padding);
+	padding: var(0.5rem);
 	color: var(--harmony-ui-text-primary);
-	flex: var(--harmony-radio-shadow-button-flex);
+	flex: auto;
 	cursor: pointer;
 	appearance: none;
 	border-style: solid;
@@ -26,7 +23,7 @@
 	border-right-style: none;
 	background-color: var(--harmony-ui-input-background-primary);
 	transition: background-color 0.2s linear;
-	font-size: var(--harmony-radio-shadow-button-font-size);
+	font-size: 1rem;
 	overflow: hidden;
 }
 

@@ -84,7 +84,7 @@ class I18n {
     static setOptions(options) {
         if (options.translations) {
             for (const translation of options.translations) {
-                this.addTranslation(translation);
+                this.#addTranslation(translation);
             }
             this.#eventTarget.dispatchEvent(new CustomEvent(I18nEvents.TranslationsUpdated));
             this.#eventTarget.dispatchEvent(new CustomEvent(I18nEvents.Any));
@@ -92,6 +92,12 @@ class I18n {
         this.i18n();
     }
     static addTranslation(translation) {
+        this.#addTranslation(translation);
+        if (translation.lang == this.#lang) {
+            this.i18n();
+        }
+    }
+    static #addTranslation(translation) {
         this.#translations.set(translation.lang, translation);
     }
     static #initObserver() {
@@ -2655,7 +2661,7 @@ function defineHarmonyPanel() {
     }
 }
 
-var radioCSS = ":host {\n\t--harmony-radio-shadow-button-border-radius: var(--harmony-radio-button-border-radius, 0.5rem);\n\t--harmony-radio-shadow-button-padding: var(--harmony-radio-button-padding, 0.5rem);\n\t--harmony-radio-shadow-button-font-size: var(--harmony-radio-button-font-size, 1rem);\n\t--harmony-radio-shadow-button-flex: var(--harmony-radio-button-flex, auto);\n\tdisplay: inline-flex;\n\toverflow: hidden;\n\tuser-select: none;\n}\n\n.label {\n\tmargin: auto 0;\n\tfont-weight: bold;\n\tmargin-right: 0.25rem;\n}\n\n::slotted(button) {\n\tpadding: var(--harmony-radio-shadow-button-padding);\n\tcolor: var(--harmony-ui-text-primary);\n\tflex: var(--harmony-radio-shadow-button-flex);\n\tcursor: pointer;\n\tappearance: none;\n\tborder-style: solid;\n\tborder-width: 0.0625rem;\n\tborder-color: var(--harmony-ui-border-primary);\n\tborder-right-style: none;\n\tbackground-color: var(--harmony-ui-input-background-primary);\n\ttransition: background-color 0.2s linear;\n\tfont-size: var(--harmony-radio-shadow-button-font-size);\n\toverflow: hidden;\n}\n\n::slotted(button:hover) {\n\tbackground-color: var(--harmony-ui-input-background-secondary);\n}\n\n::slotted(button[selected]) {\n\tbackground-color: var(--harmony-ui-accent-primary);\n}\n\n::slotted(button[selected]:hover) {\n\tbackground-color: var(--harmony-ui-accent-secondary);\n}\n\n::slotted(button:first-of-type) {\n\tborder-radius: var(--harmony-radio-shadow-button-border-radius) 0 0 var(--harmony-radio-shadow-button-border-radius);\n}\n\n::slotted(button:last-child) {\n\tborder-right-style: solid;\n\tborder-radius: 0 var(--harmony-radio-shadow-button-border-radius) var(--harmony-radio-shadow-button-border-radius) 0;\n}\n";
+var radioCSS = ":host {\n\t--harmony-radio-shadow-button-border-radius: var(--harmony-radio-button-border-radius, 0.5rem);\n\tdisplay: inline-flex;\n\toverflow: hidden;\n\tuser-select: none;\n}\n\n.label {\n\tmargin: auto 0;\n\tfont-weight: bold;\n\tmargin-right: 0.25rem;\n}\n\n::slotted(button) {\n\tpadding: var(0.5rem);\n\tcolor: var(--harmony-ui-text-primary);\n\tflex: auto;\n\tcursor: pointer;\n\tappearance: none;\n\tborder-style: solid;\n\tborder-width: 0.0625rem;\n\tborder-color: var(--harmony-ui-border-primary);\n\tborder-right-style: none;\n\tbackground-color: var(--harmony-ui-input-background-primary);\n\ttransition: background-color 0.2s linear;\n\tfont-size: 1rem;\n\toverflow: hidden;\n}\n\n::slotted(button:hover) {\n\tbackground-color: var(--harmony-ui-input-background-secondary);\n}\n\n::slotted(button[selected]) {\n\tbackground-color: var(--harmony-ui-accent-primary);\n}\n\n::slotted(button[selected]:hover) {\n\tbackground-color: var(--harmony-ui-accent-secondary);\n}\n\n::slotted(button:first-of-type) {\n\tborder-radius: var(--harmony-radio-shadow-button-border-radius) 0 0 var(--harmony-radio-shadow-button-border-radius);\n}\n\n::slotted(button:last-child) {\n\tborder-right-style: solid;\n\tborder-radius: 0 var(--harmony-radio-shadow-button-border-radius) var(--harmony-radio-shadow-button-border-radius) 0;\n}\n";
 
 class HTMLHarmonyRadioElement extends HTMLElement {
     #doOnce = true;
