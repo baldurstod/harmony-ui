@@ -39,6 +39,10 @@ function AddI18nElement(element, descriptor) {
     }
     const existing = I18nElements.get(element);
     if (existing) {
+        if (descriptor === null) {
+            I18nElements.delete(element);
+            return;
+        }
         for (const target of targets) {
             const desc = descriptor[target];
             if (desc === null) {
@@ -58,7 +62,9 @@ function AddI18nElement(element, descriptor) {
         }
     }
     else {
-        I18nElements.set(element, descriptor);
+        if (descriptor) {
+            I18nElements.set(element, descriptor);
+        }
     }
 }
 class I18n {

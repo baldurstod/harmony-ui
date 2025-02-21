@@ -1,6 +1,6 @@
 import { Color } from 'harmony-utils';
 
-export declare function AddI18nElement(element: Element, descriptor: string | I18nDescriptor): void;
+export declare function AddI18nElement(element: Element, descriptor: string | I18nDescriptor | null): void;
 
 export declare function cloneEvent(event: Event): Event;
 

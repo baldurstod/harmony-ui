@@ -37,13 +37,18 @@ type Target = {
 
 export const I18nElements = new Map<Element, I18nDescriptor>();
 
-export function AddI18nElement(element: Element, descriptor: string | I18nDescriptor) {
+export function AddI18nElement(element: Element, descriptor: string | I18nDescriptor | null) {
 	if (typeof descriptor == 'string') {
 		descriptor = { innerText: descriptor };
 	}
 
 	const existing = I18nElements.get(element);
 	if (existing) {
+		if (descriptor === null) {
+			I18nElements.delete(element);
+			return;
+		}
+
 		for (const target of targets) {
 			const desc = descriptor[target];
 			if (desc === null) {
@@ -64,7 +69,9 @@ export function AddI18nElement(element: Element, descriptor: string | I18nDescri
 		}
 
 	} else {
-		I18nElements.set(element, descriptor);
+		if (descriptor) {
+			I18nElements.set(element, descriptor);
+		}
 	}
 
 }
