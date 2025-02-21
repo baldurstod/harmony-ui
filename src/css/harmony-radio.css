@@ -12,7 +12,7 @@
 }
 
 ::slotted(button) {
-	padding: var(0.5rem);
+	padding: 0.5rem;
 	color: var(--harmony-ui-text-primary);
 	flex: auto;
 	cursor: pointer;
