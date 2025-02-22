@@ -63,7 +63,7 @@ export class HTMLHarmonyRadioElement extends HTMLElement {
 		}
 	}
 
-	select(value: string, select: boolean) {
+	select(value: string, select: boolean = true) {
 		this.#selected[select ? 'add' : 'delete'](value);
 
 		const htmlButton = this.#buttons.get(value);

@@ -2717,7 +2717,7 @@ class HTMLHarmonyRadioElement extends HTMLElement {
             this.select(htmlButton.value, true);
         }
     }
-    select(value, select) {
+    select(value, select = true) {
         this.#selected[select ? 'add' : 'delete'](value);
         const htmlButton = this.#buttons.get(value);
         if (htmlButton) {
