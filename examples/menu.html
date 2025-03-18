@@ -21,9 +21,9 @@
 		{ name: 'test' },
 		{ name: 'submenu1', submenu: [] },
 		{
-			name: 'submenu2', submenu: [
+			name: 'submenu2', f: () => console.info('click submenu2'), submenu: [
 
-				{ name: 'subitem1' },
+				{ name: 'subitem1',  f: () => console.info('click subitem1') },
 				{ name: 'subitem2' },
 				{ name: 'subitem3' },
 				{ name: 'subitem4' },

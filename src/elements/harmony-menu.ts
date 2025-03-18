@@ -196,13 +196,14 @@ export class HTMLHarmonyMenuElement extends HTMLElement {
 					hide(htmlItem);
 				}
 			} else {
-				htmlItem.addEventListener('click', () => {
+				htmlItem.addEventListener('click', (event: Event) => {
 					if (item.cmd) {
 						this.dispatchEvent(new CustomEvent(item.cmd));
 					}
 					if (item.f) {
 						item.f(userData);
 					}
+					event.stopPropagation();
 				}
 				);
 				htmlItem.addEventListener('click', () => this.close());

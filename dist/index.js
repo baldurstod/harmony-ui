@@ -1825,13 +1825,14 @@ class HTMLHarmonyMenuElement extends HTMLElement {
                 }
             }
             else {
-                htmlItem.addEventListener('click', () => {
+                htmlItem.addEventListener('click', (event) => {
                     if (item.cmd) {
                         this.dispatchEvent(new CustomEvent(item.cmd));
                     }
                     if (item.f) {
                         item.f(userData);
                     }
+                    event.stopPropagation();
                 });
                 htmlItem.addEventListener('click', () => this.close());
             }
