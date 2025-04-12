@@ -125,8 +125,8 @@ export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 	#dragRotator = false;
 	#startPageX: number = 0;
 	#startPageY: number = 0;
-	#minWidth = 0;
-	#minHeight = 0;
+	#minWidth = -Infinity;
+	#minHeight = -Infinity;
 	#startWidth: number = 0;
 	#startHeight: number = 0;
 	#startTop: number = 0;
@@ -483,29 +483,32 @@ export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 
 		this.#htmlQuad.style.rotate = `${this.#rotation}rad`;
 
-		this.#htmlQuad.style.left = `${this.#center.x - this.#width * 0.5}px`;
-		this.#htmlQuad.style.top = `${this.#center.y - this.#height * 0.5}px`;
-		this.#htmlQuad.style.width = `${this.#width}px`;
-		this.#htmlQuad.style.height = `${this.#height}px`;
+		const width = Math.abs(this.#width);
+		const height = Math.abs(this.#height);
+
+		this.#htmlQuad.style.left = `${this.#center.x - width * 0.5}px`;
+		this.#htmlQuad.style.top = `${this.#center.y - height * 0.5}px`;
+		this.#htmlQuad.style.width = `${width}px`;
+		this.#htmlQuad.style.height = `${height}px`;
 
 
 		for (let i = 0; i < 4; i++) {
 			const c = CORNERS[i];
 			const htmlCorner = this.#htmlScaleCorners[i];
-			htmlCorner.style.left = `${(c[0] == -1 ? 0 : 1) * this.#width}px`;
-			htmlCorner.style.top = `${(c[1] == -1 ? 0 : 1) * this.#height}px`;
+			htmlCorner.style.left = `${(c[0] == -1 ? 0 : 1) * width}px`;
+			htmlCorner.style.top = `${(c[1] == -1 ? 0 : 1) * height}px`;
 		}
 
 		for (let i = 0; i < 4; i++) {
 			const s = SIDES[i];
 			const htmlSide = this.#htmlResizeSides[i];
-			htmlSide.style.left = `${s[0] * this.#width}px`;
-			htmlSide.style.top = `${s[1] * this.#height}px`;
+			htmlSide.style.left = `${s[0] * width}px`;
+			htmlSide.style.top = `${s[1] * height}px`;
 		}
 
 		if (this.#htmlRotator) {
-			this.#htmlRotator.style.left = `${0.5 * this.#width}px`;
-			this.#htmlRotator.style.top = `${-0.2 * this.#height}px`;
+			this.#htmlRotator.style.left = `${0.5 * width}px`;
+			this.#htmlRotator.style.top = `${-0.2 * height}px`;
 		}
 	}
 
@@ -529,12 +532,18 @@ export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 			case 'skew':
 				this.#skew = getDirection(newValue);
 				break;
+			case 'width':
+				this.#width = Number(newValue);
+				break;
+			case 'height':
+				this.#height = Number(newValue);
+				break;
 		}
 		this.#refresh();
 	}
 
 	static get observedAttributes() {
-		return ['translate', 'rotate', 'resize', 'scale', 'resize-origin', 'skew'];
+		return ['translate', 'rotate', 'resize', 'scale', 'resize-origin', 'skew', 'width', 'height'];
 	}
 
 	#deltaMove(event: MouseEvent) {
@@ -569,7 +578,6 @@ export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 		)) {
 			return;
 		}
-
 
 		const delta: { x: number, y: number } = this.#getDelta(event);
 
@@ -664,8 +672,11 @@ export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 
 		let deltaCenterX = 0;
 		let deltaCenterY = 0;
-		let deltaWidth = w - this.#startWidth;
+		let deltaWidth = (w - this.#startWidth);
 		let deltaHeight = h - this.#startHeight;
+
+		//console.info("deltaWidth", deltaWidth, "startWidth", this.#startWidth, "w", w);
+		//console.info("deltaHeight", deltaHeight, "startHeight", this.#startHeight, "w", w);
 
 		const dx = (deltaWidth * Math.cos(this.#rotation) + deltaHeight * Math.sin(this.#rotation)) * 0.5;
 		const dy = (deltaHeight * Math.cos(this.#rotation) + deltaWidth * Math.sin(this.#rotation)) * 0.5;
@@ -691,6 +702,7 @@ export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 			}
 			this.#center.x = this.#startCenter.x + deltaCenterX;
 			this.#center.y = this.#startCenter.y + deltaCenterY;
+			//console.info("deltaCenterX", deltaCenterX);
 
 			let oppositeCorner: ManipulatorCorner = ManipulatorCorner.None;
 			switch (this.#dragCorner) {
@@ -723,8 +735,9 @@ export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 			deltaHeight = 2 * deltaHeight;
 		}
 
-		this.#width = this.#startWidth + deltaWidth;
-		this.#height = this.#startHeight + deltaHeight;
+		//console.info("deltaWidth", deltaWidth);
+		this.#width = this.#startWidth + deltaWidth * (this.#startWidth < 0 ? -1 : 1);
+		this.#height = this.#startHeight + deltaHeight * (this.#startHeight < 0 ? -1 : 1);
 
 		this.#update(ManipulatorUpdatedEventType.Size);
 	}
