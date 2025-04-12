@@ -880,6 +880,12 @@ class HTMLHarmony2dManipulatorElement extends HTMLElement {
         }
         this.#refresh();
     }
+    setMinWidth(minWidth) {
+        this.#minWidth = minWidth;
+    }
+    setMinHeight(minHeight) {
+        this.#minHeight = minHeight;
+    }
     connectedCallback() {
         this.#refresh();
     }
@@ -891,25 +897,27 @@ class HTMLHarmony2dManipulatorElement extends HTMLElement {
         this.style.setProperty('--scale', this.#scale == ManipulatorDirection.All ? '1' : '0');
         this.style.setProperty('--skew', this.#skew);
         this.#htmlQuad.style.rotate = `${this.#rotation}rad`;
-        this.#htmlQuad.style.left = `${this.#center.x - this.#width * 0.5}px`;
-        this.#htmlQuad.style.top = `${this.#center.y - this.#height * 0.5}px`;
-        this.#htmlQuad.style.width = `${this.#width}px`;
-        this.#htmlQuad.style.height = `${this.#height}px`;
+        const width = Math.abs(this.#width);
+        const height = Math.abs(this.#height);
+        this.#htmlQuad.style.left = `${this.#center.x - width * 0.5}px`;
+        this.#htmlQuad.style.top = `${this.#center.y - height * 0.5}px`;
+        this.#htmlQuad.style.width = `${width}px`;
+        this.#htmlQuad.style.height = `${height}px`;
         for (let i = 0; i < 4; i++) {
             const c = CORNERS[i];
             const htmlCorner = this.#htmlScaleCorners[i];
-            htmlCorner.style.left = `${(c[0] == -1 ? 0 : 1) * this.#width}px`;
-            htmlCorner.style.top = `${(c[1] == -1 ? 0 : 1) * this.#height}px`;
+            htmlCorner.style.left = `${(c[0] == -1 ? 0 : 1) * width}px`;
+            htmlCorner.style.top = `${(c[1] == -1 ? 0 : 1) * height}px`;
         }
         for (let i = 0; i < 4; i++) {
             const s = SIDES[i];
             const htmlSide = this.#htmlResizeSides[i];
-            htmlSide.style.left = `${s[0] * this.#width}px`;
-            htmlSide.style.top = `${s[1] * this.#height}px`;
+            htmlSide.style.left = `${s[0] * width}px`;
+            htmlSide.style.top = `${s[1] * height}px`;
         }
         if (this.#htmlRotator) {
-            this.#htmlRotator.style.left = `${0.5 * this.#width}px`;
-            this.#htmlRotator.style.top = `${-0.2 * this.#height}px`;
+            this.#htmlRotator.style.left = `${0.5 * width}px`;
+            this.#htmlRotator.style.top = `${-0.2 * height}px`;
         }
     }
     attributeChangedCallback(name, oldValue, newValue) {
@@ -932,11 +940,23 @@ class HTMLHarmony2dManipulatorElement extends HTMLElement {
             case 'skew':
                 this.#skew = getDirection(newValue);
                 break;
+            case 'width':
+                this.#width = Number(newValue);
+                break;
+            case 'height':
+                this.#height = Number(newValue);
+                break;
+            case 'min-width':
+                this.#minWidth = Number(newValue);
+                break;
+            case 'min-height':
+                this.#minHeight = Number(newValue);
+                break;
         }
         this.#refresh();
     }
     static get observedAttributes() {
-        return ['translate', 'rotate', 'resize', 'scale', 'resize-origin', 'skew'];
+        return ['translate', 'rotate', 'resize', 'scale', 'resize-origin', 'skew', 'width', 'height', 'min-width', 'min-height'];
     }
     #deltaMove(event) {
         const left = this.#translationMode == ManipulatorDirection.All || this.#translationMode == ManipulatorDirection.X;
@@ -969,8 +989,8 @@ class HTMLHarmony2dManipulatorElement extends HTMLElement {
             const startCenter = { x: (tl.x + br.x) * 0.5, y: (tl.y + br.y) * 0.5 };
             const v = { x: this.#startCorners[this.#dragCorner].x - startCenter.x, y: this.#startCorners[this.#dragCorner].y - startCenter.y };
             const norm = Math.sqrt(v.x * v.x + v.y * v.y);
-            v.x /= norm;
-            v.y /= norm;
+            v.x = v.x / norm * (this.#startWidth < 0 ? -1 : 1);
+            v.y = v.y / norm * (this.#startHeight < 0 ? -1 : 1);
             const d = dot(delta, v);
             delta.x = v.x * d;
             delta.y = v.y * d;
@@ -1034,7 +1054,7 @@ class HTMLHarmony2dManipulatorElement extends HTMLElement {
         }
         let deltaCenterX = 0;
         let deltaCenterY = 0;
-        let deltaWidth = w - this.#startWidth;
+        let deltaWidth = (w - this.#startWidth);
         let deltaHeight = h - this.#startHeight;
         const dx = (deltaWidth * Math.cos(this.#rotation) + deltaHeight * Math.sin(this.#rotation)) * 0.5;
         const dy = (deltaHeight * Math.cos(this.#rotation) + deltaWidth * Math.sin(this.#rotation)) * 0.5;
@@ -1087,8 +1107,9 @@ class HTMLHarmony2dManipulatorElement extends HTMLElement {
             deltaWidth = 2 * deltaWidth;
             deltaHeight = 2 * deltaHeight;
         }
-        this.#width = this.#startWidth + deltaWidth;
-        this.#height = this.#startHeight + deltaHeight;
+        //console.info("deltaWidth", deltaWidth);
+        this.#width = this.#startWidth + deltaWidth * (this.#startWidth < 0 ? -1 : 1);
+        this.#height = this.#startHeight + deltaHeight * (this.#startHeight < 0 ? -1 : 1);
         this.#update(ManipulatorUpdatedEventType.Size);
     }
     #getDelta(event) {

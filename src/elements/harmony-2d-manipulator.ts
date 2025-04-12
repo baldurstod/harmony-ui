@@ -125,8 +125,8 @@ export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 	#dragRotator = false;
 	#startPageX: number = 0;
 	#startPageY: number = 0;
-	#minWidth = -Infinity;
-	#minHeight = -Infinity;
+	#minWidth = 0;
+	#minHeight = 0;
 	#startWidth: number = 0;
 	#startHeight: number = 0;
 	#startTop: number = 0;
@@ -469,6 +469,14 @@ export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 		this.#refresh();
 	}
 
+	setMinWidth(minWidth: number) {
+		this.#minWidth = minWidth;
+	}
+
+	setMinHeight(minHeight: number) {
+		this.#minHeight = minHeight;
+	}
+
 	connectedCallback() {
 		this.#refresh();
 	}
@@ -538,12 +546,18 @@ export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 			case 'height':
 				this.#height = Number(newValue);
 				break;
+			case 'min-width':
+				this.#minWidth = Number(newValue);
+				break;
+			case 'min-height':
+				this.#minHeight = Number(newValue);
+				break;
 		}
 		this.#refresh();
 	}
 
 	static get observedAttributes() {
-		return ['translate', 'rotate', 'resize', 'scale', 'resize-origin', 'skew', 'width', 'height'];
+		return ['translate', 'rotate', 'resize', 'scale', 'resize-origin', 'skew', 'width', 'height', 'min-width', 'min-height'];
 	}
 
 	#deltaMove(event: MouseEvent) {

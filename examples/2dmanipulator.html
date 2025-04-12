@@ -24,7 +24,7 @@
 	</div>
 	<div style="position:relative;">
 		<span>non resizable</span>
-		<harmony-2d-manipulator id="manipulator" resize="all">
+		<harmony-2d-manipulator id="manipulator" resize="none">
 		</harmony-2d-manipulator>
 	</div>
 	<div style="position:relative;">
@@ -78,6 +78,16 @@
 			</harmony-toggle-button>
 		</div>
 		<harmony-2d-manipulator id="alterable"></harmony-2d-manipulator>
+	</div>
+	<div style="position:relative;">
+		<span>negative width</span>
+		<harmony-2d-manipulator id="manipulator" width="-50" min-width="-Infinity" min-height="-Infinity">
+		</harmony-2d-manipulator>
+	</div>
+	<div style="position:relative;">
+		<span>negative height</span>
+		<harmony-2d-manipulator id="manipulator" height="-50" min-width="-Infinity" min-height="-Infinity">
+		</harmony-2d-manipulator>
 	</div>
 </body>
 <script type="module">

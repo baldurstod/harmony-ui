@@ -106,6 +106,8 @@ export declare class HTMLHarmony2dManipulatorElement extends HTMLElement {
         resizeOrigin?: ManipulatorResizeOrigin;
         scale?: ManipulatorDirection;
     }): void;
+    setMinWidth(minWidth: number): void;
+    setMinHeight(minHeight: number): void;
     connectedCallback(): void;
     attributeChangedCallback(name: string, oldValue: string, newValue: string): void;
     static get observedAttributes(): string[];
