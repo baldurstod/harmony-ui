@@ -588,8 +588,8 @@ export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 
 			const v: v2 = { x: this.#startCorners[this.#dragCorner].x - startCenter.x, y: this.#startCorners[this.#dragCorner].y - startCenter.y };
 			const norm = Math.sqrt(v.x * v.x + v.y * v.y);
-			v.x /= norm;
-			v.y /= norm;
+			v.x = v.x / norm * (this.#startWidth < 0 ? -1 : 1);
+			v.y = v.y / norm * (this.#startHeight < 0 ? -1 : 1);
 
 			const d = dot(delta, v);
 			delta.x = v.x * d;
@@ -675,9 +675,6 @@ export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 		let deltaWidth = (w - this.#startWidth);
 		let deltaHeight = h - this.#startHeight;
 
-		//console.info("deltaWidth", deltaWidth, "startWidth", this.#startWidth, "w", w);
-		//console.info("deltaHeight", deltaHeight, "startHeight", this.#startHeight, "w", w);
-
 		const dx = (deltaWidth * Math.cos(this.#rotation) + deltaHeight * Math.sin(this.#rotation)) * 0.5;
 		const dy = (deltaHeight * Math.cos(this.#rotation) + deltaWidth * Math.sin(this.#rotation)) * 0.5;
 
@@ -702,7 +699,6 @@ export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 			}
 			this.#center.x = this.#startCenter.x + deltaCenterX;
 			this.#center.y = this.#startCenter.y + deltaCenterY;
-			//console.info("deltaCenterX", deltaCenterX);
 
 			let oppositeCorner: ManipulatorCorner = ManipulatorCorner.None;
 			switch (this.#dragCorner) {
