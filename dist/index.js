@@ -397,6 +397,9 @@ function createElementOptions(element, options, shadowRoot) {
                 case 'style':
                     element.style.cssText = optionValue;
                     break;
+                case 'checked':
+                    element.checked = optionValue;
+                    break;
                 case 'elementCreated':
                     break;
                 default:
