@@ -189,6 +189,7 @@ export declare class HTMLHarmonyMenuElement extends HTMLElement {
     constructor();
     show(items: HarmonyMenuItems, userData?: any): void;
     showContextual(items: HarmonyMenuItems, clientX: number, clientY: number, userData?: any): void;
+    setContextual(contextual: boolean): void;
     close(): void;
     connectedCallback(): void;
     addItem(item: HarmonyMenuItem | null, userData: any): HTMLElement;

@@ -34,18 +34,27 @@ export class HTMLHarmonyMenuElement extends HTMLElement {
 		});
 	}
 
-	show(items: HarmonyMenuItems, userData?: any) {
+	#show(items: HarmonyMenuItems, userData?: any) {
 		this.#setItems(items, userData);
 		this.#checkSize();
+	}
+
+	show(items: HarmonyMenuItems, userData?: any) {
+		this.#show(items, userData);
+		this.setContextual(false);
 	}
 
 	showContextual(items: HarmonyMenuItems, clientX: number, clientY: number, userData?: any) {
 		document.body.append(this);
 		this.style.left = clientX + 'px';
 		this.style.top = clientY + 'px';
-		this.classList.add('contextual');
-		this.#contextual = true;
-		this.show(items, userData);
+		this.setContextual(true);
+		this.#show(items, userData);
+	}
+
+	setContextual(contextual: boolean) {
+		this.style.position = contextual ? 'absolute' : '';
+		this.#contextual = contextual;
 	}
 
 	#checkSize() {

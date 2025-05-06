@@ -7,10 +7,6 @@
 	z-index: 100000;
 }
 
-:host-context(.contextual) {
-	position: absolute;
-}
-
 .harmony-menu-item {
 	background-color: green;
 	cursor: pointer;
