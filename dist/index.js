@@ -370,10 +370,10 @@ function createElementOptions(element, options, shadowRoot) {
                     }
                     break;
                 case 'innerHTML':
-                    element.innerHTML = optionValue;
+                    element.innerHTML = optionValue ?? '';
                     break;
                 case 'innerText':
-                    element.innerText = optionValue;
+                    element.innerText = optionValue ?? '';
                     break;
                 case 'attributes':
                     for (const attributeName in optionValue) {

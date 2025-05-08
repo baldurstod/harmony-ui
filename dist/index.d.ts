@@ -4,11 +4,40 @@ export declare function AddI18nElement(element: Element, descriptor: string | I1
 
 export declare function cloneEvent(event: Event): Event;
 
-export declare function createElement(tagName: string, options?: any): HTMLElement;
+export declare function createElement(tagName: string, options?: CreateElementOptions): HTMLElement;
 
-export declare function createElementNS(namespaceURI: string, tagName: string, options: any): HTMLElement;
+export declare function createElementNS(namespaceURI: string, tagName: string, options: CreateElementOptions): HTMLElement;
 
-export declare function createShadowRoot(tagName: string, options?: any, mode?: 'open' | 'closed'): ShadowRoot;
+export declare type CreateElementOptions = {
+    id?: string;
+    class?: string;
+    i18n?: string | I18nDescriptor | null;
+    parent?: HTMLElement | ShadowRoot;
+    child?: HTMLElement;
+    childs?: Array<HTMLElement>;
+    events?: {
+        [key: string]: any;
+    };
+    properties?: {
+        [key: string]: any;
+    };
+    hidden?: boolean;
+    innerHTML?: string | null;
+    innerText?: string | null;
+    attributes?: {
+        [key: string]: string;
+    };
+    slot?: string;
+    htmlFor?: string;
+    adoptStyle?: string;
+    adoptStyles?: Array<string>;
+    style?: string;
+    checked?: boolean;
+    elementCreated?: (element: HTMLElement, root?: ShadowRoot) => {};
+    [key: string]: any;
+};
+
+export declare function createShadowRoot(tagName: string, options?: CreateElementOptions, mode?: 'open' | 'closed'): ShadowRoot;
 
 export declare function defineHarmony2dManipulator(): void;
 
@@ -514,7 +543,7 @@ export declare function styleInject(css: string): void;
 
 export declare function toggle(htmlElement: HTMLElement | ShadowRoot | undefined | null): void;
 
-export declare function updateElement(element: HTMLElement | undefined, options: any): HTMLElement | undefined;
+export declare function updateElement(element: HTMLElement | undefined, options: CreateElementOptions): HTMLElement | undefined;
 
 declare type v2 = {
     x: number;

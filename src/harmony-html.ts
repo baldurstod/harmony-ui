@@ -1,27 +1,50 @@
-import { AddI18nElement } from './harmony-i18n';
+import { AddI18nElement, I18nDescriptor } from './harmony-i18n';
 import { ET } from './utils/create';
 
-export function createElement(tagName: string, options?: any) {
+export type CreateElementOptions = {
+	id?: string,
+	class?: string,
+	i18n?: string | I18nDescriptor | null,
+	parent?: HTMLElement | ShadowRoot,
+	child?: HTMLElement,
+	childs?: Array<HTMLElement>,
+	events?: { [key: string]: any/*TODO: improve type*/, },
+	properties?: { [key: string]: any, },
+	hidden?: boolean,
+	innerHTML?: string | null,
+	innerText?: string | null,
+	attributes?: { [key: string]: string, },
+	slot?: string,
+	htmlFor?: string,
+	adoptStyle?: string,
+	adoptStyles?: Array<string>,
+	style?: string,
+	checked?: boolean,
+	elementCreated?: (element: HTMLElement, root?: ShadowRoot) => {},
+	[key: string]: any,
+}
+
+export function createElement(tagName: string, options?: CreateElementOptions) {
 	const element = document.createElement(tagName);
 	createElementOptions(element, options);
 	ET.dispatchEvent(new CustomEvent('created', { detail: element }));
 	return element;
 }
 
-export function createElementNS(namespaceURI: string, tagName: string, options: any) {
+export function createElementNS(namespaceURI: string, tagName: string, options: CreateElementOptions) {
 	const element = (document.createElementNS(namespaceURI, tagName) as HTMLElement);
 	createElementOptions(element, options);
 	return element;
 }
 
-export function createShadowRoot(tagName: string, options?: any, mode: 'open' | 'closed' = 'closed') {
+export function createShadowRoot(tagName: string, options?: CreateElementOptions, mode: 'open' | 'closed' = 'closed') {
 	const element = document.createElement(tagName);
 	const shadowRoot = element.attachShadow({ mode: mode });
 	createElementOptions(element, options, shadowRoot);
 	return shadowRoot;
 }
 
-export function updateElement(element: HTMLElement | undefined, options: any) {
+export function updateElement(element: HTMLElement | undefined, options: CreateElementOptions) {
 	if (!element) {
 		return;
 	}
@@ -42,7 +65,7 @@ function append(element: HTMLElement | ShadowRoot, child: HTMLElement) {
 	}
 }
 
-function createElementOptions(element: HTMLElement, options: any, shadowRoot?: ShadowRoot) {
+function createElementOptions(element: HTMLElement, options?: CreateElementOptions, shadowRoot?: ShadowRoot) {
 	if (options) {
 		for (const optionName in options) {
 			const optionValue = options[optionName];
@@ -97,10 +120,10 @@ function createElementOptions(element: HTMLElement, options: any, shadowRoot?: S
 					}
 					break;
 				case 'innerHTML':
-					element.innerHTML = optionValue;
+					element.innerHTML = optionValue ?? '';
 					break;
 				case 'innerText':
-					element.innerText = optionValue;
+					element.innerText = optionValue ?? '';
 					break;
 				case 'attributes':
 					for (const attributeName in optionValue) {
@@ -111,7 +134,7 @@ function createElementOptions(element: HTMLElement, options: any, shadowRoot?: S
 					element.slot = optionValue;
 					break;
 				case 'htmlFor':
-					(element as any).htmlFor = optionValue;
+					(element as HTMLLabelElement).htmlFor = optionValue;
 					break;
 				case 'adoptStyle':
 					adoptStyleSheet(shadowRoot ?? element, optionValue);
