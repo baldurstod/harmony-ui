@@ -13,8 +13,8 @@ export declare type CreateElementOptions = {
     class?: string;
     i18n?: string | I18nDescriptor | null;
     parent?: HTMLElement | ShadowRoot;
-    child?: HTMLElement;
-    childs?: Array<HTMLElement>;
+    child?: HTMLElement | ShadowRoot;
+    childs?: Array<HTMLElement | ShadowRoot>;
     events?: {
         [key: string]: any;
     };
@@ -25,7 +25,7 @@ export declare type CreateElementOptions = {
     innerHTML?: string | null;
     innerText?: string | null;
     attributes?: {
-        [key: string]: string;
+        [key: string]: any;
     };
     slot?: string;
     htmlFor?: string;
@@ -33,7 +33,7 @@ export declare type CreateElementOptions = {
     adoptStyles?: Array<string>;
     style?: string;
     checked?: boolean;
-    elementCreated?: (element: HTMLElement, root?: ShadowRoot) => {};
+    elementCreated?: (element: HTMLElement, root?: ShadowRoot) => void;
     [key: string]: any;
 };
 
