@@ -43,6 +43,8 @@ export declare function defineHarmony2dManipulator(): void;
 
 export declare function defineHarmonyAccordion(): void;
 
+export declare function defineHarmonyCircularProgress(): void;
+
 export declare function defineHarmonyColorPicker(): void;
 
 export declare function defineHarmonyCopy(): void;
@@ -156,6 +158,14 @@ export declare class HTMLHarmonyAccordionElement extends HTMLElement {
     set disabled(disabled: boolean);
     get disabled(): boolean;
     attributeChangedCallback(name: string, oldValue: string, newValue: string): void;
+    static get observedAttributes(): string[];
+}
+
+export declare class HTMLHarmonyCircularProgressElement extends HTMLHarmonyElement {
+    #private;
+    protected createElement(): void;
+    setProgress(progress: number): void;
+    protected onAttributeChanged(name: string, oldValue: string, newValue: string): void;
     static get observedAttributes(): string[];
 }
 

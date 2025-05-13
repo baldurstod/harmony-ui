@@ -12,6 +12,7 @@ export * from './elements/harmony-item';
 export * from './elements/harmony-label-property';
 export * from './elements/harmony-palette';
 export * from './elements/harmony-panel';
+export * from './elements/harmony-circular-progress';
 export * from './elements/harmony-radio';
 export * from './elements/harmony-slideshow';
 export * from './elements/harmony-select';

@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>Test circular progress</title>
+	<link rel="stylesheet" type="text/css" href="./assets/css/examples.css" />
+	<script >
+		function setProgress(progress) {
+			document.getElementById('progress1').setProgress(progress);
+		}
+	</script>
+</head>
+
+<body>
+	<input type="range" , min="0" max="100" step="1" oninput="setProgress(event.target.value * 0.01);">
+	<harmony-circular-progress id='progress1' style="width:200px;height:200px;">
+	</harmony-circular-progress>
+	<script type="module">
+		import { defineHarmonyCircularProgress } from '../dist/harmony-ui.browser.js';
+		defineHarmonyCircularProgress();
+	</script>
+</body>
+
+</html>

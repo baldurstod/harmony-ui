@@ -1,0 +1,18 @@
+:host {
+	--track-color: var(--harmony-circular-progress-track-color, #CCC);
+	--progress-color: var(--harmony-circular-progress-progress-color, #F00);
+	display: inline-flex;
+}
+
+.track {
+	color: var(--track-color);
+	opacity: 30%;
+	stroke-width: 10%;
+}
+
+.progress {
+	color: var(--progress-color);
+	stroke-dasharray: calc(var(--progress) * pi * 100% * 0.8) calc((1 - var(--progress)) * pi * 100% * 0.8);
+	stroke-width: 10%;
+	stroke-dashoffset: calc(pi * 100% * 0.8 * 0.25);
+}
