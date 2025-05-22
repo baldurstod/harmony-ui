@@ -13,8 +13,8 @@ export declare type CreateElementOptions = {
     class?: string;
     i18n?: string | I18nDescriptor | null;
     parent?: HTMLElement | ShadowRoot;
-    child?: HTMLElement | ShadowRoot;
-    childs?: Array<HTMLElement | ShadowRoot>;
+    child?: HTMLElement | ShadowRoot | string;
+    childs?: Array<HTMLElement | ShadowRoot | string>;
     events?: {
         [key: string]: any;
     };
