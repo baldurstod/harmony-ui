@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>Test tree</title>
+	<link rel="stylesheet" type="text/css" href="./assets/css/examples.css" />
+	<style>
+		html {
+			width: 100%;
+			height: 100%;
+		}
+
+		body {
+			margin: 0;
+			width: 100%;
+			height: 100%;
+			background-color: black;
+		}
+	</style>
+</head>
+
+<body>
+	<harmony-tree id='tree' style="width:200px"></harmony-tree>
+</body>
+<script type="module">
+	import { defineHarmonyTree } from '../dist/harmony-ui.browser.js';
+	defineHarmonyTree();
+	const tree = document.getElementById('tree');
+
+	const root = {
+		name: '',
+		childs: []
+	};
+
+	function createChild(id, depth) {
+		const subitem = {
+			name: `child ${id}`,
+			childs: []
+		};
+		createChilds(subitem, Math.floor(Math.random() * 5), depth);
+		return subitem;
+	}
+
+	function createChilds(parent, count, depth) {
+		if (depth > 5) {
+			return;
+		}
+		for (let i = 0; i < count; i++) {
+			parent.childs.push(createChild(i, depth + 1));
+		}
+	}
+
+	createChilds(root, 5, 0);
+	tree.setRoot(root);
+	/*
+	tree.setRoot(
+		{
+			name: '',
+			childs: [
+				{
+					name: 'child1',
+					childs: [
+						{
+							name: 'child1 sub child1',
+						},
+						{
+							name: 'child1 sub child2',
+						},
+						{
+							name: 'child1 sub child3',
+						},
+						{
+							name: 'child1 sub child4',
+						},
+					]
+				},
+				{
+					name: 'child2',
+				},
+				{
+					name: 'child3',
+				},
+				{
+					name: 'child4',
+				},
+			]
+		}
+	);
+	*/
+</script>
+
+</html>

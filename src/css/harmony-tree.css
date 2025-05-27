@@ -1,0 +1,27 @@
+:host {
+	--child-margin: var(--harmony-tree-child-margin, 1rem);
+	--header-bg-color: var(--harmony-tree-header-bg-color, var(--main-bg-color-dark, black));
+}
+
+.item {
+	width: 100%;
+}
+
+.header {
+	width: 100%;
+	height: 1rem;
+	background-color: var(--header-bg-color);
+	cursor: pointer;
+}
+
+.childs {
+	margin-left: var(--child-margin);
+}
+
+.root>.header {
+	display: none;
+}
+
+.root>.childs {
+	margin-left: unset;
+}

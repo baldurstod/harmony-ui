@@ -81,6 +81,8 @@ export declare function defineHarmonyToggleButton(): void;
 
 export declare function defineHarmonyTooltip(): void;
 
+export declare function defineHarmonyTree(): void;
+
 export declare function display(htmlElement: HTMLElement | ShadowRoot | Array<HTMLElement | ShadowRoot> | undefined | null, visible: boolean): void;
 
 export declare function documentStyle(cssText: string): Promise<void>;
@@ -425,6 +427,14 @@ export declare class HTMLHarmonyTooltipElement extends HTMLElement {
     static get observedAttributes(): string[];
 }
 
+export declare class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
+    #private;
+    protected createElement(): void;
+    setRoot(root?: TreeElement): void;
+    protected onAttributeChanged(name: string, oldValue: string, newValue: string): void;
+    static get observedAttributes(): string[];
+}
+
 export declare class I18n {
     #private;
     static start(): void;
@@ -552,6 +562,14 @@ export declare function show(htmlElement: HTMLElement | ShadowRoot | Array<HTMLE
 export declare function styleInject(css: string): void;
 
 export declare function toggle(htmlElement: HTMLElement | ShadowRoot | undefined | null): void;
+
+export declare type TreeElement = {
+    isRoot?: boolean;
+    name: string;
+    icon?: string;
+    type?: string;
+    childs?: Array<TreeElement>;
+};
 
 export declare function updateElement(element: HTMLElement | undefined, options: CreateElementOptions): HTMLElement | undefined;
 

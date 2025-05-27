@@ -4300,4 +4300,102 @@ function defineHarmonyToggleButton() {
     }
 }
 
-export { AddI18nElement, HTMLHarmony2dManipulatorElement, HTMLHarmonyAccordionElement, HTMLHarmonyCircularProgressElement, HTMLHarmonyColorPickerElement, HTMLHarmonyCopyElement, HTMLHarmonyFileInputElement, HTMLHarmonyItemElement, HTMLHarmonyLabelPropertyElement, HTMLHarmonyMenuElement, HTMLHarmonyPaletteElement, HTMLHarmonyPanelElement, HTMLHarmonyRadioElement, HTMLHarmonySelectElement, HTMLHarmonySliderElement, HTMLHarmonySlideshowElement, HTMLHarmonySplitterElement, HTMLHarmonySwitchElement, HTMLHarmonyTabElement, HTMLHarmonyTabGroupElement, HTMLHarmonyToggleButtonElement, HTMLHarmonyTooltipElement, I18n, I18nElements, I18nEvents, ManipulatorCorner, ManipulatorDirection, ManipulatorResizeOrigin, ManipulatorSide, ManipulatorUpdatedEventType, cloneEvent, createElement, createElementNS, createShadowRoot, defineHarmony2dManipulator, defineHarmonyAccordion, defineHarmonyCircularProgress, defineHarmonyColorPicker, defineHarmonyCopy, defineHarmonyFileInput, defineHarmonyItem, defineHarmonyLabelProperty, defineHarmonyMenu, defineHarmonyPalette, defineHarmonyPanel, defineHarmonyRadio, defineHarmonySelect, defineHarmonySlider, defineHarmonySlideshow, defineHarmonySplitter, defineHarmonySwitch, defineHarmonyTab, defineHarmonyTabGroup, defineHarmonyToggleButton, defineHarmonyTooltip, display, documentStyle, documentStyleSync, hide, isVisible, shadowRootStyle, shadowRootStyleSync, show, styleInject, toggle, updateElement, visible };
+var treeCSS = ":host {\n\t--child-margin: var(--harmony-tree-child-margin, 1rem);\n\t--header-bg-color: var(--harmony-tree-header-bg-color, var(--main-bg-color-dark, black));\n}\n\n.item {\n\twidth: 100%;\n}\n\n.header {\n\twidth: 100%;\n\theight: 1rem;\n\tbackground-color: var(--header-bg-color);\n\tcursor: pointer;\n}\n\n.childs {\n\tmargin-left: var(--child-margin);\n}\n\n.root>.header {\n\tdisplay: none;\n}\n\n.root>.childs {\n\tmargin-left: unset;\n}\n";
+
+function createItem(item, parent, createExpanded) {
+    let childs;
+    const element = createElement('div', {
+        class: 'item',
+        parent: parent,
+        childs: [
+            createElement('div', {
+                class: 'header',
+                innerText: item.name,
+                $click: () => expandItem(item, childs),
+            }),
+            childs = createElement('div', {
+                class: 'childs',
+            }),
+        ]
+    });
+    if (item.isRoot && item.name == '') {
+        element.classList.add('root');
+    }
+    if (createExpanded) {
+        expandItem(item, childs);
+    }
+    return element;
+}
+const isInitialized = new Set();
+const isExpanded = new Map();
+function expandItem(item, parent) {
+    if (isExpanded.get(item)) {
+        hide(parent);
+        isExpanded.set(item, false);
+        return;
+    }
+    else {
+        show(parent);
+    }
+    isExpanded.set(item, true);
+    if (!item.childs) {
+        return;
+    }
+    if (!isInitialized.has(item)) {
+        for (const child of item.childs) {
+            createItem(child, parent, false);
+        }
+        isInitialized.add(item);
+    }
+}
+class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
+    #shadowRoot;
+    #root;
+    createElement() {
+        this.#shadowRoot = this.attachShadow({ mode: 'closed' });
+        shadowRootStyle(this.#shadowRoot, treeCSS);
+        I18n.observeElement(this.#shadowRoot);
+        this.#refresh();
+    }
+    #refresh() {
+        if (!this.#shadowRoot) {
+            return;
+        }
+        this.#shadowRoot.replaceChildren();
+        if (!this.#root) {
+            return;
+        }
+        createItem(this.#root, this.#shadowRoot, true);
+    }
+    setRoot(root) {
+        this.#root = root;
+        if (this.#root) {
+            this.#root.isRoot = true;
+        }
+        this.#refresh();
+    }
+    onAttributeChanged(name, oldValue, newValue) {
+        switch (name) {
+            case 'data-root':
+                const root = JSON.parse(newValue);
+                this.setRoot(root);
+                break;
+        }
+    }
+    static get observedAttributes() {
+        return ['data-root'];
+    }
+}
+let definedTree = false;
+function defineHarmonyTree() {
+    if (window.customElements && !definedTree) {
+        customElements.define('harmony-tree', class extends HTMLHarmonyTreeElement {
+        });
+        customElements.define('h-tree', class extends HTMLHarmonyTreeElement {
+        });
+        definedTree = true;
+        injectGlobalCss();
+    }
+}
+
+export { AddI18nElement, HTMLHarmony2dManipulatorElement, HTMLHarmonyAccordionElement, HTMLHarmonyCircularProgressElement, HTMLHarmonyColorPickerElement, HTMLHarmonyCopyElement, HTMLHarmonyFileInputElement, HTMLHarmonyItemElement, HTMLHarmonyLabelPropertyElement, HTMLHarmonyMenuElement, HTMLHarmonyPaletteElement, HTMLHarmonyPanelElement, HTMLHarmonyRadioElement, HTMLHarmonySelectElement, HTMLHarmonySliderElement, HTMLHarmonySlideshowElement, HTMLHarmonySplitterElement, HTMLHarmonySwitchElement, HTMLHarmonyTabElement, HTMLHarmonyTabGroupElement, HTMLHarmonyToggleButtonElement, HTMLHarmonyTooltipElement, HTMLHarmonyTreeElement, I18n, I18nElements, I18nEvents, ManipulatorCorner, ManipulatorDirection, ManipulatorResizeOrigin, ManipulatorSide, ManipulatorUpdatedEventType, cloneEvent, createElement, createElementNS, createShadowRoot, defineHarmony2dManipulator, defineHarmonyAccordion, defineHarmonyCircularProgress, defineHarmonyColorPicker, defineHarmonyCopy, defineHarmonyFileInput, defineHarmonyItem, defineHarmonyLabelProperty, defineHarmonyMenu, defineHarmonyPalette, defineHarmonyPanel, defineHarmonyRadio, defineHarmonySelect, defineHarmonySlider, defineHarmonySlideshow, defineHarmonySplitter, defineHarmonySwitch, defineHarmonyTab, defineHarmonyTabGroup, defineHarmonyToggleButton, defineHarmonyTooltip, defineHarmonyTree, display, documentStyle, documentStyleSync, hide, isVisible, shadowRootStyle, shadowRootStyleSync, show, styleInject, toggle, updateElement, visible };

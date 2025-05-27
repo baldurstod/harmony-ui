@@ -23,3 +23,4 @@ export * from './elements/harmony-tab';
 export * from './elements/harmony-tab-group';
 export * from './elements/harmony-toggle-button';
 export * from './elements/harmony-tooltip';
+export * from './elements/harmony-tree';
