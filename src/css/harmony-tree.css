@@ -1,6 +1,7 @@
 :host {
 	--child-margin: var(--harmony-tree-child-margin, 1rem);
 	--header-bg-color: var(--harmony-tree-header-bg-color, var(--main-bg-color-dark, black));
+	color: var(--main-text-color-dark2, white);
 }
 
 .item {
