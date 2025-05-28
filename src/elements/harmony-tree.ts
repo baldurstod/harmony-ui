@@ -13,14 +13,16 @@ export class TreeElement {
 	type?: string;
 	parent?: TreeElement;
 	childs?: Array<TreeElement>;
+	userData?: any;
 
-	constructor(name: string, options: { isRoot?: boolean, icon?: string, type?: string, parent?: TreeElement, childs?: Array<TreeElement>, } = {}) {
+	constructor(name: string, options: { isRoot?: boolean, icon?: string, type?: string, parent?: TreeElement, childs?: Array<TreeElement>, userData?: any } = {}) {
 		this.name = name;
 		this.isRoot = options.isRoot;
 		this.icon = options.icon;
 		this.type = options.type;
 		this.parent = options.parent;
 		this.childs = options.childs;
+		this.userData = options.userData;
 	}
 
 	getPath(separator: string = ''): string {

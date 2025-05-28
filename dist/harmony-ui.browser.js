@@ -4309,6 +4309,7 @@ class TreeElement {
     type;
     parent;
     childs;
+    userData;
     constructor(name, options = {}) {
         this.name = name;
         this.isRoot = options.isRoot;
@@ -4316,6 +4317,7 @@ class TreeElement {
         this.type = options.type;
         this.parent = options.parent;
         this.childs = options.childs;
+        this.userData = options.userData;
     }
     getPath(separator = '') {
         let path = '';

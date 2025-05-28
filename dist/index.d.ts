@@ -575,12 +575,14 @@ export declare class TreeElement {
     type?: string;
     parent?: TreeElement;
     childs?: Array<TreeElement>;
+    userData?: any;
     constructor(name: string, options?: {
         isRoot?: boolean;
         icon?: string;
         type?: string;
         parent?: TreeElement;
         childs?: Array<TreeElement>;
+        userData?: any;
     });
     getPath(separator?: string): string;
 }
