@@ -34,8 +34,6 @@
 
 .harmony-menu-item.selected>.harmony-menu-item-title::after {
 	content: "✔";
-	right: 0px;
-	position: absolute;
 }
 
 .harmony-menu-item>.harmony-menu-item-title::after {
@@ -51,15 +49,10 @@
 
 .harmony-menu-item.closed>.harmony-menu-item-title::after {
 	content: "➤";
-	right: 0px;
-	position: absolute;
 }
 
 .harmony-menu-item.opened>.harmony-menu-item-title::after {
 	content: "➤";
-	right: 0px;
-	position: absolute;
-	/*writing-mode: vertical-rl; */
 	transform: rotate(90deg);
 }
 
