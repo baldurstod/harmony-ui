@@ -563,13 +563,27 @@ export declare function styleInject(css: string): void;
 
 export declare function toggle(htmlElement: HTMLElement | ShadowRoot | undefined | null): void;
 
-export declare type TreeElement = {
-    isRoot?: boolean;
+export declare type TreeContextMenuEventData = {
+    item?: TreeElement;
+    buildContextMenu: (menu: HarmonyMenuItems) => void;
+};
+
+export declare class TreeElement {
     name: string;
+    isRoot?: boolean;
     icon?: string;
     type?: string;
+    parent?: TreeElement;
     childs?: Array<TreeElement>;
-};
+    constructor(name: string, options?: {
+        isRoot?: boolean;
+        icon?: string;
+        type?: string;
+        parent?: TreeElement;
+        childs?: Array<TreeElement>;
+    });
+    getPath(separator?: string): string;
+}
 
 export declare function updateElement(element: HTMLElement | undefined, options: CreateElementOptions): HTMLElement | undefined;
 

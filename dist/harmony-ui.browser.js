@@ -1813,7 +1813,7 @@ function defineHarmonyColorPicker() {
     }
 }
 
-var menuCSS = ":host {\n\tfont-size: 1.5em;\n\tcursor: not-allowed;\n\tbackground-color: green;\n\tbackground-color: var(--theme-menu-bg-color);\n\toverflow: auto;\n\tz-index: 100000;\n}\n\n.harmony-menu-item {\n\tbackground-color: green;\n\tcursor: pointer;\n\tbackground-color: var(--theme-menu-item-bg-color);\n}\n\n.harmony-menu-item.disabled {\n\tpointer-events: none;\n}\n\n.harmony-menu-item.selected {\n\tbackground-color: blue;\n\tbackground-color: var(--theme-menu-item-selected-bg-color);\n}\n\n\n.harmony-menu-item.separator {\n\theight: 5px;\n\tbackground-color: black;\n}\n\n.harmony-menu-item>.harmony-menu-item-title:hover {\n\tbackground-color: var(--theme-menu-item-hover-bg-color);\n}\n\n.harmony-menu-item.selected>.harmony-menu-item-title::after {\n\tcontent: \"✔\";\n\tright: 0px;\n\tposition: absolute;\n}\n\n.harmony-menu-item>.harmony-menu-item-title::after {\n\ttransition: all 0.2s ease 0s;\n\twidth: 32px;\n\theight: 32px;\n}\n\n.harmony-menu-item.closed>.harmony-menu-item-title,\n.harmony-menu-item.opened>.harmony-menu-item-title {\n\tpadding-right: 32px;\n}\n\n.harmony-menu-item.closed>.harmony-menu-item-title::after {\n\tcontent: \"➤\";\n\tright: 0px;\n\tposition: absolute;\n}\n\n.harmony-menu-item.opened>.harmony-menu-item-title::after {\n\tcontent: \"➤\";\n\tright: 0px;\n\tposition: absolute;\n\t/*writing-mode: vertical-rl; */\n\ttransform: rotate(90deg);\n}\n\n.harmony-menu-item .submenu {\n\tbackground-color: var(--theme-menu-submenu-bg-color);\n\tpadding-left: 10px;\n\tmargin-left: 2px;\n\tdisplay: none;\n\toverflow: hidden;\n\tposition: relative;\n\tbackground-color: var(--theme-menu-submenu-fg-color);\n}\n\n.harmony-menu-item.opened>.submenu {\n\tdisplay: block;\n}\n";
+var menuCSS = ":host {\n\tfont-size: 1.5em;\n\tcursor: not-allowed;\n\tbackground-color: green;\n\tbackground-color: var(--theme-menu-bg-color);\n\toverflow: auto;\n\tz-index: 100000;\n}\n\n.harmony-menu-item {\n\tbackground-color: green;\n\tcursor: pointer;\n\tbackground-color: var(--theme-menu-item-bg-color);\n}\n\n.harmony-menu-item.disabled {\n\tpointer-events: none;\n}\n\n.harmony-menu-item.selected {\n\tbackground-color: blue;\n\tbackground-color: var(--theme-menu-item-selected-bg-color);\n}\n\n\n.harmony-menu-item.separator {\n\theight: 5px;\n\tbackground-color: black;\n}\n\n.harmony-menu-item>.harmony-menu-item-title:hover {\n\tbackground-color: var(--theme-menu-item-hover-bg-color);\n}\n\n.harmony-menu-item.selected>.harmony-menu-item-title::after {\n\tcontent: \"✔\";\n}\n\n.harmony-menu-item>.harmony-menu-item-title::after {\n\ttransition: all 0.2s ease 0s;\n\twidth: 32px;\n\theight: 32px;\n}\n\n.harmony-menu-item.closed>.harmony-menu-item-title,\n.harmony-menu-item.opened>.harmony-menu-item-title {\n\tpadding-right: 32px;\n}\n\n.harmony-menu-item.closed>.harmony-menu-item-title::after {\n\tcontent: \"➤\";\n}\n\n.harmony-menu-item.opened>.harmony-menu-item-title::after {\n\tcontent: \"➤\";\n\ttransform: rotate(90deg);\n}\n\n.harmony-menu-item .submenu {\n\tbackground-color: var(--theme-menu-submenu-bg-color);\n\tpadding-left: 10px;\n\tmargin-left: 2px;\n\tdisplay: none;\n\toverflow: hidden;\n\tposition: relative;\n\tbackground-color: var(--theme-menu-submenu-fg-color);\n}\n\n.harmony-menu-item.opened>.submenu {\n\tdisplay: block;\n}\n";
 
 class HTMLHarmonyMenuElement extends HTMLElement {
     #doOnce = true;
@@ -4302,55 +4302,36 @@ function defineHarmonyToggleButton() {
 
 var treeCSS = ":host {\n\t--child-margin: var(--harmony-tree-child-margin, 1rem);\n\t--header-bg-color: var(--harmony-tree-header-bg-color, var(--main-bg-color-dark, black));\n\tcolor: var(--main-text-color-dark2, white);\n}\n\n.item {\n\twidth: 100%;\n}\n\n.header {\n\twidth: 100%;\n\theight: 1rem;\n\tbackground-color: var(--header-bg-color);\n\tcursor: pointer;\n}\n\n.childs {\n\tmargin-left: var(--child-margin);\n}\n\n.root>.header {\n\tdisplay: none;\n}\n\n.root>.childs {\n\tmargin-left: unset;\n}\n";
 
-function createItem(item, parent, createExpanded) {
-    let childs;
-    const element = createElement('div', {
-        class: 'item',
-        parent: parent,
-        childs: [
-            createElement('div', {
-                class: 'header',
-                innerText: item.name,
-                $click: () => expandItem(item, childs),
-            }),
-            childs = createElement('div', {
-                class: 'childs',
-            }),
-        ]
-    });
-    if (item.isRoot && item.name == '') {
-        element.classList.add('root');
+class TreeElement {
+    name;
+    isRoot;
+    icon;
+    type;
+    parent;
+    childs;
+    constructor(name, options = {}) {
+        this.name = name;
+        this.isRoot = options.isRoot;
+        this.icon = options.icon;
+        this.type = options.type;
+        this.parent = options.parent;
+        this.childs = options.childs;
     }
-    if (createExpanded) {
-        expandItem(item, childs);
+    getPath(separator = '') {
+        let path = '';
+        if (this.parent) {
+            path = this.parent.getPath(separator) + separator;
+        }
+        path += this.name;
+        return path;
     }
-    return element;
 }
 const isInitialized = new Set();
 const isExpanded = new Map();
-function expandItem(item, parent) {
-    if (isExpanded.get(item)) {
-        hide(parent);
-        isExpanded.set(item, false);
-        return;
-    }
-    else {
-        show(parent);
-    }
-    isExpanded.set(item, true);
-    if (!item.childs) {
-        return;
-    }
-    if (!isInitialized.has(item)) {
-        for (const child of item.childs) {
-            createItem(child, parent, false);
-        }
-        isInitialized.add(item);
-    }
-}
 class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
     #shadowRoot;
     #root;
+    #htmlContextMenu;
     createElement() {
         this.#shadowRoot = this.attachShadow({ mode: 'closed' });
         shadowRootStyle(this.#shadowRoot, treeCSS);
@@ -4365,7 +4346,7 @@ class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
         if (!this.#root) {
             return;
         }
-        createItem(this.#root, this.#shadowRoot, true);
+        this.#createItem(this.#root, this.#shadowRoot, true);
     }
     setRoot(root) {
         this.#root = root;
@@ -4373,6 +4354,70 @@ class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
             this.#root.isRoot = true;
         }
         this.#refresh();
+    }
+    #buildContextMenu(contextMenu, x, y) {
+        if (!this.#htmlContextMenu) {
+            defineHarmonyMenu();
+            this.#htmlContextMenu = createElement('harmony-menu');
+        }
+        this.#htmlContextMenu.showContextual(contextMenu, x, y);
+    }
+    #contextMenuHandler(event, item) {
+        if (!event.shiftKey) {
+            this.dispatchEvent(new CustomEvent('contextmenu', {
+                detail: {
+                    item: item,
+                    buildContextMenu: (menu) => this.#buildContextMenu(menu, event.clientX, event.clientY),
+                },
+            }));
+            event.preventDefault();
+            event.stopPropagation();
+        }
+    }
+    #createItem(item, parent, createExpanded) {
+        let childs;
+        const element = createElement('div', {
+            class: 'item',
+            parent: parent,
+            childs: [
+                createElement('div', {
+                    class: 'header',
+                    innerText: item.name,
+                    $click: () => this.#expandItem(item, childs),
+                    $contextmenu: (event) => this.#contextMenuHandler(event, item),
+                }),
+                childs = createElement('div', {
+                    class: 'childs',
+                }),
+            ]
+        });
+        if (item.isRoot && item.name == '') {
+            element.classList.add('root');
+        }
+        if (createExpanded) {
+            this.#expandItem(item, childs);
+        }
+        return element;
+    }
+    #expandItem(item, parent) {
+        if (isExpanded.get(item)) {
+            hide(parent);
+            isExpanded.set(item, false);
+            return;
+        }
+        else {
+            show(parent);
+        }
+        isExpanded.set(item, true);
+        if (!item.childs) {
+            return;
+        }
+        if (!isInitialized.has(item)) {
+            for (const child of item.childs) {
+                this.#createItem(child, parent, false);
+            }
+            isInitialized.add(item);
+        }
     }
     onAttributeChanged(name, oldValue, newValue) {
         switch (name) {
@@ -4398,4 +4443,4 @@ function defineHarmonyTree() {
     }
 }
 
-export { AddI18nElement, HTMLHarmony2dManipulatorElement, HTMLHarmonyAccordionElement, HTMLHarmonyCircularProgressElement, HTMLHarmonyColorPickerElement, HTMLHarmonyCopyElement, HTMLHarmonyFileInputElement, HTMLHarmonyItemElement, HTMLHarmonyLabelPropertyElement, HTMLHarmonyMenuElement, HTMLHarmonyPaletteElement, HTMLHarmonyPanelElement, HTMLHarmonyRadioElement, HTMLHarmonySelectElement, HTMLHarmonySliderElement, HTMLHarmonySlideshowElement, HTMLHarmonySplitterElement, HTMLHarmonySwitchElement, HTMLHarmonyTabElement, HTMLHarmonyTabGroupElement, HTMLHarmonyToggleButtonElement, HTMLHarmonyTooltipElement, HTMLHarmonyTreeElement, I18n, I18nElements, I18nEvents, ManipulatorCorner, ManipulatorDirection, ManipulatorResizeOrigin, ManipulatorSide, ManipulatorUpdatedEventType, cloneEvent, createElement, createElementNS, createShadowRoot, defineHarmony2dManipulator, defineHarmonyAccordion, defineHarmonyCircularProgress, defineHarmonyColorPicker, defineHarmonyCopy, defineHarmonyFileInput, defineHarmonyItem, defineHarmonyLabelProperty, defineHarmonyMenu, defineHarmonyPalette, defineHarmonyPanel, defineHarmonyRadio, defineHarmonySelect, defineHarmonySlider, defineHarmonySlideshow, defineHarmonySplitter, defineHarmonySwitch, defineHarmonyTab, defineHarmonyTabGroup, defineHarmonyToggleButton, defineHarmonyTooltip, defineHarmonyTree, display, documentStyle, documentStyleSync, hide, isVisible, shadowRootStyle, shadowRootStyleSync, show, styleInject, toggle, updateElement, visible };
+export { AddI18nElement, HTMLHarmony2dManipulatorElement, HTMLHarmonyAccordionElement, HTMLHarmonyCircularProgressElement, HTMLHarmonyColorPickerElement, HTMLHarmonyCopyElement, HTMLHarmonyFileInputElement, HTMLHarmonyItemElement, HTMLHarmonyLabelPropertyElement, HTMLHarmonyMenuElement, HTMLHarmonyPaletteElement, HTMLHarmonyPanelElement, HTMLHarmonyRadioElement, HTMLHarmonySelectElement, HTMLHarmonySliderElement, HTMLHarmonySlideshowElement, HTMLHarmonySplitterElement, HTMLHarmonySwitchElement, HTMLHarmonyTabElement, HTMLHarmonyTabGroupElement, HTMLHarmonyToggleButtonElement, HTMLHarmonyTooltipElement, HTMLHarmonyTreeElement, I18n, I18nElements, I18nEvents, ManipulatorCorner, ManipulatorDirection, ManipulatorResizeOrigin, ManipulatorSide, ManipulatorUpdatedEventType, TreeElement, cloneEvent, createElement, createElementNS, createShadowRoot, defineHarmony2dManipulator, defineHarmonyAccordion, defineHarmonyCircularProgress, defineHarmonyColorPicker, defineHarmonyCopy, defineHarmonyFileInput, defineHarmonyItem, defineHarmonyLabelProperty, defineHarmonyMenu, defineHarmonyPalette, defineHarmonyPanel, defineHarmonyRadio, defineHarmonySelect, defineHarmonySlider, defineHarmonySlideshow, defineHarmonySplitter, defineHarmonySwitch, defineHarmonyTab, defineHarmonyTabGroup, defineHarmonyToggleButton, defineHarmonyTooltip, defineHarmonyTree, display, documentStyle, documentStyleSync, hide, isVisible, shadowRootStyle, shadowRootStyleSync, show, styleInject, toggle, updateElement, visible };

@@ -23,20 +23,15 @@
 	<harmony-tree id='tree' style="width:200px"></harmony-tree>
 </body>
 <script type="module">
-	import { defineHarmonyTree } from '../dist/harmony-ui.browser.js';
+	import { defineHarmonyTree, TreeElement } from '../dist/harmony-ui.browser.js';
 	defineHarmonyTree();
 	const tree = document.getElementById('tree');
 
-	const root = {
-		name: '',
-		childs: []
-	};
+	const root = new TreeElement('', { childs: [] });
 
-	function createChild(id, depth) {
-		const subitem = {
-			name: `child ${id}`,
-			childs: []
-		};
+	function createChild(id, depth, parent) {
+		const subitem = new TreeElement(`child ${id}`, { parent: parent, childs: [] });
+
 		createChilds(subitem, Math.floor(Math.random() * 5), depth);
 		return subitem;
 	}
@@ -46,12 +41,21 @@
 			return;
 		}
 		for (let i = 0; i < count; i++) {
-			parent.childs.push(createChild(i, depth + 1));
+			parent.childs.push(createChild(i, depth + 1, parent));
 		}
 	}
 
 	createChilds(root, 5, 0);
 	tree.setRoot(root);
+	tree.addEventListener('contextmenu', (event) => {
+		console.info(event, event.detail.item);
+		event.detail.buildContextMenu(
+			{
+				visibility: { i18n: '#path', f: () => console.info(event.detail.item.getPath('/')) },
+			}
+		)
+	});
+
 	/*
 	tree.setRoot(
 		{
