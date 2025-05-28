@@ -1,8 +1,9 @@
 :host {
 	font-size: 1.5em;
 	cursor: not-allowed;
+	color: var(--harmony-ui-text-primary);
 	background-color: green;
-	background-color: var(--theme-menu-bg-color);
+	background-color: var(--harmony-ui-menu-bg-color);
 	overflow: auto;
 	z-index: 100000;
 }
@@ -10,7 +11,7 @@
 .harmony-menu-item {
 	background-color: green;
 	cursor: pointer;
-	background-color: var(--theme-menu-item-bg-color);
+	background-color: var(--harmony-ui-menu-item-bg-color);
 }
 
 .harmony-menu-item.disabled {
@@ -19,7 +20,7 @@
 
 .harmony-menu-item.selected {
 	background-color: blue;
-	background-color: var(--theme-menu-item-selected-bg-color);
+	background-color: var(--harmony-ui-menu-item-selected-bg-color);
 }
 
 
@@ -29,7 +30,7 @@
 }
 
 .harmony-menu-item>.harmony-menu-item-title:hover {
-	background-color: var(--theme-menu-item-hover-bg-color);
+	background-color: var(--harmony-ui-menu-item-hover-bg-color);
 }
 
 .harmony-menu-item.selected>.harmony-menu-item-title::after {
@@ -57,13 +58,13 @@
 }
 
 .harmony-menu-item .submenu {
-	background-color: var(--theme-menu-submenu-bg-color);
+	background-color: var(--harmony-ui-menu-submenu-bg-color);
 	padding-left: 10px;
 	margin-left: 2px;
 	display: none;
 	overflow: hidden;
 	position: relative;
-	background-color: var(--theme-menu-submenu-fg-color);
+	background-color: var(--harmony-ui-menu-submenu-fg-color);
 }
 
 .harmony-menu-item.opened>.submenu {

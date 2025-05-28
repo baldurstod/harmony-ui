@@ -51,7 +51,7 @@
 		console.info(event, event.detail.item);
 		event.detail.buildContextMenu(
 			{
-				visibility: { i18n: '#path', f: () => console.info(event.detail.item.getPath('/')) },
+				path: { i18n: '#path', f: () => console.info(event.detail.item.getPath('/')) },
 			}
 		)
 	});
