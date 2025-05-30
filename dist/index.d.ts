@@ -569,12 +569,13 @@ export declare type TreeContextMenuEventData = {
 };
 
 export declare class TreeElement {
+    #private;
     name: string;
     isRoot?: boolean;
     icon?: string;
     type?: string;
     parent?: TreeElement;
-    childs?: Array<TreeElement>;
+    childs: Array<TreeElement>;
     userData?: any;
     constructor(name: string, options?: {
         isRoot?: boolean;

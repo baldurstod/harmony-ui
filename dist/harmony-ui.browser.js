@@ -4316,8 +4316,16 @@ class TreeElement {
         this.icon = options.icon;
         this.type = options.type;
         this.parent = options.parent;
-        this.childs = options.childs;
+        this.childs = options.childs ?? [];
         this.userData = options.userData;
+        this.#sortByName();
+    }
+    #sortByName() {
+        this.childs[Symbol.iterator] = function* () {
+            yield* [...this.values()].sort((a, b) => {
+                return a.name.toLowerCase() < b.name.toLowerCase() ? -1 : 1;
+            });
+        };
     }
     getPath(separator = '') {
         let path = '';
@@ -4328,12 +4336,12 @@ class TreeElement {
         return path;
     }
 }
-const isInitialized = new Set();
-const isExpanded = new Map();
 class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
     #shadowRoot;
     #root;
     #htmlContextMenu;
+    #isInitialized = new Set();
+    #isExpanded = new Map();
     createElement() {
         this.#shadowRoot = this.attachShadow({ mode: 'closed' });
         shadowRootStyle(this.#shadowRoot, treeCSS);
@@ -4402,23 +4410,23 @@ class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
         return element;
     }
     #expandItem(item, parent) {
-        if (isExpanded.get(item)) {
+        if (this.#isExpanded.get(item)) {
             hide(parent);
-            isExpanded.set(item, false);
+            this.#isExpanded.set(item, false);
             return;
         }
         else {
             show(parent);
         }
-        isExpanded.set(item, true);
+        this.#isExpanded.set(item, true);
         if (!item.childs) {
             return;
         }
-        if (!isInitialized.has(item)) {
+        if (!this.#isInitialized.has(item)) {
             for (const child of item.childs) {
                 this.#createItem(child, parent, false);
             }
-            isInitialized.add(item);
+            this.#isInitialized.add(item);
         }
     }
     onAttributeChanged(name, oldValue, newValue) {

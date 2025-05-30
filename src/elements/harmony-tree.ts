@@ -5,6 +5,7 @@ import treeCSS from '../css/harmony-tree.css';
 import { injectGlobalCss } from '../utils/globalcss';
 import { HTMLHarmonyElement } from './harmony-element';
 import { defineHarmonyMenu, HarmonyMenuItems, HTMLHarmonyMenuElement } from './harmony-menu';
+import { toBool } from '../utils/attributes';
 
 export class TreeElement {
 	name: string;
@@ -12,7 +13,7 @@ export class TreeElement {
 	icon?: string;
 	type?: string;
 	parent?: TreeElement;
-	childs?: Array<TreeElement>;
+	childs: Array<TreeElement>;
 	userData?: any;
 
 	constructor(name: string, options: { isRoot?: boolean, icon?: string, type?: string, parent?: TreeElement, childs?: Array<TreeElement>, userData?: any } = {}) {
@@ -21,8 +22,21 @@ export class TreeElement {
 		this.icon = options.icon;
 		this.type = options.type;
 		this.parent = options.parent;
-		this.childs = options.childs;
+		this.childs = options.childs ?? [];
 		this.userData = options.userData;
+
+		this.#sortByName();
+	}
+
+	#sortByName() {
+		let that = this;
+		this.childs[Symbol.iterator] = function* (): ArrayIterator<TreeElement> {
+			yield* [...this.values()].sort(
+				(a, b) => {
+					return a.name.toLowerCase() < b.name.toLowerCase() ? -1 : 1;
+				}
+			);
+		}
 	}
 
 	getPath(separator: string = ''): string {
@@ -37,9 +51,6 @@ export class TreeElement {
 	}
 }
 
-const isInitialized = new Set<TreeElement>();
-const isExpanded = new Map<TreeElement, boolean>();
-
 export type TreeContextMenuEventData = {
 	item?: TreeElement,
 	buildContextMenu: (menu: HarmonyMenuItems) => void,
@@ -49,6 +60,8 @@ export class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
 	#shadowRoot?: ShadowRoot;
 	#root?: TreeElement;
 	#htmlContextMenu?: HTMLHarmonyMenuElement;
+	#isInitialized = new Set<TreeElement>();
+	#isExpanded = new Map<TreeElement, boolean>();
 
 	protected createElement() {
 		this.#shadowRoot = this.attachShadow({ mode: 'closed' });
@@ -103,7 +116,6 @@ export class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
 
 	#createItem(item: TreeElement, parent: HTMLElement | ShadowRoot, createExpanded: boolean): HTMLElement {
 		let childs: HTMLElement;
-		let expanded = false;
 		const element = createElement('div', {
 			class: 'item',
 			parent: parent,
@@ -126,32 +138,31 @@ export class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
 
 		if (createExpanded) {
 			this.#expandItem(item, childs);
-			expanded = true;
 		}
 
 		return element;
 	}
 
 	#expandItem(item: TreeElement, parent: HTMLElement): void {
-		if (isExpanded.get(item)) {
+		if (this.#isExpanded.get(item)) {
 			hide(parent);
-			isExpanded.set(item, false);
+			this.#isExpanded.set(item, false);
 			return;
 		} else {
 			show(parent);
 		}
 
-		isExpanded.set(item, true);
+		this.#isExpanded.set(item, true);
 
 		if (!item.childs) {
 			return;
 		}
 
-		if (!isInitialized.has(item)) {
+		if (!this.#isInitialized.has(item)) {
 			for (const child of item.childs) {
 				this.#createItem(child, parent, false);
 			}
-			isInitialized.add(item);
+			this.#isInitialized.add(item);
 		}
 	}
 
