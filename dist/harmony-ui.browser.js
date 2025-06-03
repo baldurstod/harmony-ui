@@ -4308,7 +4308,7 @@ class TreeElement {
     icon;
     type;
     parent;
-    childs;
+    childs = new Set;
     userData;
     constructor(name, options = {}) {
         this.name = name;
@@ -4316,9 +4316,19 @@ class TreeElement {
         this.icon = options.icon;
         this.type = options.type;
         this.parent = options.parent;
-        this.childs = options.childs ?? [];
         this.userData = options.userData;
+        if (options.parent) {
+            options.parent.addChild(this);
+        }
+        if (options.childs) {
+            for (const child of options.childs) {
+                this.addChild(child);
+            }
+        }
         this.#sortByName();
+    }
+    addChild(child) {
+        this.childs.add(child);
     }
     #sortByName() {
         this.childs[Symbol.iterator] = function* () {
@@ -4334,6 +4344,25 @@ class TreeElement {
         }
         path += this.name;
         return path;
+    }
+    static createFromPathList(paths, pathSeparator = '/') {
+        const root = new TreeElement('');
+        const top = {};
+        for (const path of paths) {
+            const segments = path.split(pathSeparator);
+            let current = top;
+            let parent = root;
+            for (const s of segments) {
+                if (s == '') {
+                    continue;
+                }
+                if (current[s] == undefined) {
+                    current[s] = new TreeElement(s, { parent: parent });
+                }
+                parent = current[s];
+            }
+        }
+        return root;
     }
 }
 class HTMLHarmonyTreeElement extends HTMLHarmonyElement {

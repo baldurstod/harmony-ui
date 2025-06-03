@@ -20,12 +20,14 @@
 </head>
 
 <body>
-	<harmony-tree id='tree' style="width:200px"></harmony-tree>
+	<harmony-tree id='tree1' style="width:200px"></harmony-tree>
+	<harmony-tree id='tree2' style="width:200px"></harmony-tree>
 </body>
 <script type="module">
 	import { defineHarmonyTree, TreeElement } from '../dist/harmony-ui.browser.js';
 	defineHarmonyTree();
-	const tree = document.getElementById('tree');
+	const tree1 = document.getElementById('tree1');
+	const tree2 = document.getElementById('tree2');
 
 	const root = new TreeElement('', { childs: [] });
 
@@ -41,13 +43,13 @@
 			return;
 		}
 		for (let i = count - 1; i >= 0; i--) {
-			parent.childs.push(createChild(i, depth + 1, parent));
+			parent.childs.add(createChild(i, depth + 1, parent));
 		}
 	}
 
 	createChilds(root, 5, 0);
-	tree.setRoot(root);
-	tree.addEventListener('contextmenu', (event) => {
+	tree1.setRoot(root);
+	tree1.addEventListener('contextmenu', (event) => {
 		console.info(event, event.detail.item);
 		event.detail.buildContextMenu(
 			{
@@ -55,6 +57,44 @@
 			}
 		)
 	});
+
+
+	tree2.setRoot(TreeElement.createFromPathList([
+            "cs2/game/core/pak01",
+            "cs2/game/core/shaders_vulkan",
+            "cs2/game/csgo/pak01",
+            "cs2/game/csgo/shaders_vulkan",
+            "cs2/game/csgo_community_addons/cs_agency/cs_agency",
+            "cs2/game/csgo_community_addons/de_brewery/de_brewery",
+            "cs2/game/csgo_community_addons/de_dogtown/de_dogtown",
+            "cs2/game/csgo_community_addons/de_grail/de_grail",
+            "cs2/game/csgo_community_addons/de_jura/de_jura",
+            "cs2/game/csgo_core/pak01",
+            "cs2/game/csgo_core/shaders_vulkan",
+            "cs2/game/csgo_imported/pak01",
+            "cs2/game/csgo_lv/pak01",
+            "deadlock/citadel/pak01",
+            "deadlock/citadel/shaders_pc",
+            "deadlock/citadel/shaders_vulkan",
+            "deadlock/core/pak01",
+            "deadlock/core/shaders_pc",
+            "deadlock/core/shaders_vulkan",
+            "dota2/core/pak01",
+            "dota2/core/shaders_pcgl",
+            "dota2/core/shaders_vulkan",
+            "dota2/dota/pak01",
+            "dota2/dota/shaders_pcgl",
+            "dota2/dota/shaders_vulkan",
+            "tf2/hl2/hl2_misc",
+            "tf2/hl2/hl2_sound_misc",
+            "tf2/hl2/hl2_sound_vo_english",
+            "tf2/hl2/hl2_textures",
+            "tf2/platform/platform_misc",
+            "tf2/tf/tf2_misc",
+            "tf2/tf/tf2_sound_misc",
+            "tf2/tf/tf2_sound_vo_english",
+            "tf2/tf/tf2_textures"
+	]));
 
 	/*
 	tree.setRoot(

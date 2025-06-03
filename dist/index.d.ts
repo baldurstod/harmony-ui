@@ -575,7 +575,7 @@ export declare class TreeElement {
     icon?: string;
     type?: string;
     parent?: TreeElement;
-    childs: Array<TreeElement>;
+    childs: Set<TreeElement>;
     userData?: any;
     constructor(name: string, options?: {
         isRoot?: boolean;
@@ -585,7 +585,9 @@ export declare class TreeElement {
         childs?: Array<TreeElement>;
         userData?: any;
     });
+    addChild(child: TreeElement): void;
     getPath(separator?: string): string;
+    static createFromPathList(paths: Array<string>, pathSeparator?: string): TreeElement;
 }
 
 export declare function updateElement(element: HTMLElement | undefined, options: CreateElementOptions): HTMLElement | undefined;

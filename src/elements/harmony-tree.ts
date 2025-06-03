@@ -13,7 +13,7 @@ export class TreeElement {
 	icon?: string;
 	type?: string;
 	parent?: TreeElement;
-	childs: Array<TreeElement>;
+	childs = new Set<TreeElement>;
 	userData?: any;
 
 	constructor(name: string, options: { isRoot?: boolean, icon?: string, type?: string, parent?: TreeElement, childs?: Array<TreeElement>, userData?: any } = {}) {
@@ -22,10 +22,23 @@ export class TreeElement {
 		this.icon = options.icon;
 		this.type = options.type;
 		this.parent = options.parent;
-		this.childs = options.childs ?? [];
 		this.userData = options.userData;
 
+		if (options.parent) {
+			options.parent.addChild(this);
+		}
+
+		if (options.childs) {
+			for (const child of options.childs) {
+				this.addChild(child);
+			}
+		}
+
 		this.#sortByName();
+	}
+
+	addChild(child: TreeElement) {
+		this.childs.add(child);
 	}
 
 	#sortByName() {
@@ -48,6 +61,31 @@ export class TreeElement {
 		path += this.name;
 
 		return path;
+	}
+
+	static createFromPathList(paths: Array<string>, pathSeparator = '/'): TreeElement {
+		const root = new TreeElement('');
+
+		const top: { [key: string]: any } = {};
+		for (const path of paths) {
+			const segments = path.split(pathSeparator);
+
+			let current = top;
+			let parent = root;
+			for (const s of segments) {
+				if (s == '') {
+					continue;
+				}
+
+				if (current[s] == undefined) {
+					current[s] = new TreeElement(s, { parent: parent });
+				}
+
+				parent = current[s]
+			}
+		}
+
+		return root;
 	}
 }
 
