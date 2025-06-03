@@ -92,7 +92,8 @@ export class TreeElement {
 					current[s] = new TreeElement(s, { parent: parent });
 				}
 
-				parent = current[s]
+				parent = current[s];
+				current = current[s];
 			}
 		}
 

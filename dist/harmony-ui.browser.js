@@ -4369,6 +4369,7 @@ class TreeElement {
                     current[s] = new TreeElement(s, { parent: parent });
                 }
                 parent = current[s];
+                current = current[s];
             }
         }
         return root;
