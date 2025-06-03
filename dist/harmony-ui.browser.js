@@ -4361,12 +4361,17 @@ class TreeElement {
             const segments = path.split(pathSeparator);
             let current = top;
             let parent = root;
-            for (const s of segments) {
+            for (let i = 0, l = segments.length; i < l; i++) {
+                const s = segments[i];
                 if (s == '') {
                     continue;
                 }
+                let type = 'directory';
+                if (i == l - 1) {
+                    type = 'file';
+                }
                 if (current[s] == undefined) {
-                    current[s] = new TreeElement(s, { parent: parent });
+                    current[s] = new TreeElement(s, { parent: parent, type: type });
                 }
                 parent = current[s];
                 current = current[s];
@@ -4446,6 +4451,9 @@ class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
         });
         if (item.isRoot && item.name == '') {
             element.classList.add('root');
+        }
+        if (item.type) {
+            element.classList.add(`type-${item.type}`);
         }
         if (createExpanded) {
             this.#expandItem(item, childs);
