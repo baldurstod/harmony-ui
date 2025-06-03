@@ -63,7 +63,18 @@ export class TreeElement {
 		return path;
 	}
 
-	static createFromPathList(paths: Array<string>, pathSeparator = '/'): TreeElement {
+	getLevel(): number {
+		if (this.parent) {
+			return 1 + this.parent.getLevel();
+		}
+
+		return 0;
+	}
+
+	static createFromPathList(paths?: Array<string>, pathSeparator = '/'): TreeElement | null {
+		if (!paths) {
+			return null;
+		}
 		const root = new TreeElement('');
 
 		const top: { [key: string]: any } = {};
@@ -96,7 +107,7 @@ export type TreeContextMenuEventData = {
 
 export class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
 	#shadowRoot?: ShadowRoot;
-	#root?: TreeElement;
+	#root?: TreeElement | null;
 	#htmlContextMenu?: HTMLHarmonyMenuElement;
 	#isInitialized = new Set<TreeElement>();
 	#isExpanded = new Map<TreeElement, boolean>();
@@ -107,6 +118,11 @@ export class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
 		I18n.observeElement(this.#shadowRoot);
 
 		this.#refresh();
+	}
+
+	adoptStyle(css: string) {
+		this.initElement();
+		shadowRootStyle(this.#shadowRoot!, css);
 	}
 
 	#refresh() {
@@ -121,7 +137,7 @@ export class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
 		this.#createItem(this.#root, this.#shadowRoot, true);
 	}
 
-	setRoot(root?: TreeElement) {
+	setRoot(root?: TreeElement | null) {
 		this.#root = root;
 		if (this.#root) {
 			this.#root.isRoot = true;
@@ -155,7 +171,7 @@ export class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
 	#createItem(item: TreeElement, parent: HTMLElement | ShadowRoot, createExpanded: boolean): HTMLElement {
 		let childs: HTMLElement;
 		const element = createElement('div', {
-			class: 'item',
+			class: `item level${item.getLevel()}`,
 			parent: parent,
 			childs: [
 				createElement('div', {

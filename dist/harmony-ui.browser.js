@@ -4345,7 +4345,16 @@ class TreeElement {
         path += this.name;
         return path;
     }
+    getLevel() {
+        if (this.parent) {
+            return 1 + this.parent.getLevel();
+        }
+        return 0;
+    }
     static createFromPathList(paths, pathSeparator = '/') {
+        if (!paths) {
+            return null;
+        }
         const root = new TreeElement('');
         const top = {};
         for (const path of paths) {
@@ -4376,6 +4385,10 @@ class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
         shadowRootStyle(this.#shadowRoot, treeCSS);
         I18n.observeElement(this.#shadowRoot);
         this.#refresh();
+    }
+    adoptStyle(css) {
+        this.initElement();
+        shadowRootStyle(this.#shadowRoot, css);
     }
     #refresh() {
         if (!this.#shadowRoot) {
@@ -4416,7 +4429,7 @@ class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
     #createItem(item, parent, createExpanded) {
         let childs;
         const element = createElement('div', {
-            class: 'item',
+            class: `item level${item.getLevel()}`,
             parent: parent,
             childs: [
                 createElement('div', {

@@ -430,7 +430,8 @@ export declare class HTMLHarmonyTooltipElement extends HTMLElement {
 export declare class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
     #private;
     protected createElement(): void;
-    setRoot(root?: TreeElement): void;
+    adoptStyle(css: string): void;
+    setRoot(root?: TreeElement | null): void;
     protected onAttributeChanged(name: string, oldValue: string, newValue: string): void;
     static get observedAttributes(): string[];
 }
@@ -587,7 +588,8 @@ export declare class TreeElement {
     });
     addChild(child: TreeElement): void;
     getPath(separator?: string): string;
-    static createFromPathList(paths: Array<string>, pathSeparator?: string): TreeElement;
+    getLevel(): number;
+    static createFromPathList(paths?: Array<string>, pathSeparator?: string): TreeElement | null;
 }
 
 export declare function updateElement(element: HTMLElement | undefined, options: CreateElementOptions): HTMLElement | undefined;
