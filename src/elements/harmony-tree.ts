@@ -5,7 +5,8 @@ import treeCSS from '../css/harmony-tree.css';
 import { injectGlobalCss } from '../utils/globalcss';
 import { HTMLHarmonyElement } from './harmony-element';
 import { defineHarmonyMenu, HarmonyMenuItems, HTMLHarmonyMenuElement } from './harmony-menu';
-import { toBool } from '../utils/attributes';
+
+export type ItemClickEventData = { item: TreeElement };
 
 export class TreeElement {
 	name: string;
@@ -184,7 +185,10 @@ export class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
 				createElement('div', {
 					class: 'header',
 					innerText: item.name,
-					$click: () => this.#expandItem(item, childs),
+					$click: () => {
+						this.#expandItem(item, childs);
+						this.dispatchEvent(new CustomEvent<ItemClickEventData>('itemclick', { detail: { item: item } }));
+					},
 					$contextmenu: (event: MouseEvent) => this.#contextMenuHandler(event, item),
 				}),
 				childs = createElement('div', {

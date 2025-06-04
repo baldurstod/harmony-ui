@@ -4441,7 +4441,10 @@ class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
                 createElement('div', {
                     class: 'header',
                     innerText: item.name,
-                    $click: () => this.#expandItem(item, childs),
+                    $click: () => {
+                        this.#expandItem(item, childs);
+                        this.dispatchEvent(new CustomEvent('itemclick', { detail: { item: item } }));
+                    },
                     $contextmenu: (event) => this.#contextMenuHandler(event, item),
                 }),
                 childs = createElement('div', {

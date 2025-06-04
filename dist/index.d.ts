@@ -496,6 +496,10 @@ export declare type I18nValue = string | number | boolean | null | undefined;
 
 export declare function isVisible(htmlElement: HTMLElement): boolean;
 
+export declare type ItemClickEventData = {
+    item: TreeElement;
+};
+
 export declare type LangChangedEvent = {
     detail: {
         oldLang: string;
