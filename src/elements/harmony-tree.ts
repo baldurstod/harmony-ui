@@ -73,12 +73,22 @@ export class TreeElement {
 	}
 
 	static createFromPathList(paths?: Array<string>, pathSeparator = '/'): TreeElement | null {
+		class element {
+			tree: TreeElement;
+			childs = new Map<string, element>()
+
+			constructor(tree: TreeElement) {
+				this.tree = tree;
+			}
+		}
+
 		if (!paths) {
 			return null;
 		}
 		const root = new TreeElement('');
 
-		const top: { [key: string]: any } = {};
+		const top = new element(root);
+
 		for (const path of paths) {
 			const segments = path.split(pathSeparator);
 
@@ -95,12 +105,12 @@ export class TreeElement {
 					type = 'file';
 				}
 
-				if (current[s] == undefined) {
-					current[s] = new TreeElement(s, { parent: parent, type: type });
+				if (!current.childs.has(s) ) {
+					current.childs.set(s, new element(new TreeElement(s, { parent: parent, type: type })));
 				}
 
-				parent = current[s];
-				current = current[s];
+				parent = current.childs.get(s)!.tree;
+				current = current.childs.get(s)!;
 			}
 		}
 

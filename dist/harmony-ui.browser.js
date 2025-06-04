@@ -4352,11 +4352,18 @@ class TreeElement {
         return 0;
     }
     static createFromPathList(paths, pathSeparator = '/') {
+        class element {
+            tree;
+            childs = new Map();
+            constructor(tree) {
+                this.tree = tree;
+            }
+        }
         if (!paths) {
             return null;
         }
         const root = new TreeElement('');
-        const top = {};
+        const top = new element(root);
         for (const path of paths) {
             const segments = path.split(pathSeparator);
             let current = top;
@@ -4370,11 +4377,11 @@ class TreeElement {
                 if (i == l - 1) {
                     type = 'file';
                 }
-                if (current[s] == undefined) {
-                    current[s] = new TreeElement(s, { parent: parent, type: type });
+                if (!current.childs.has(s)) {
+                    current.childs.set(s, new element(new TreeElement(s, { parent: parent, type: type })));
                 }
-                parent = current[s];
-                current = current[s];
+                parent = current.childs.get(s).tree;
+                current = current.childs.get(s);
             }
         }
         return root;
