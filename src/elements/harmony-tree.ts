@@ -56,7 +56,10 @@ export class TreeElement {
 	getPath(separator: string = '/'): string {
 		let path = '';
 		if (this.parent) {
-			path = this.parent.getPath(separator) + separator;
+			const parentPath = this.parent.getPath(separator);
+			if (parentPath) {
+				path = parentPath + separator;
+			}
 		}
 
 		path += this.name;
