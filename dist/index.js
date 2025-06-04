@@ -4198,7 +4198,7 @@ class TreeElement {
             });
         };
     }
-    getPath(separator = '') {
+    getPath(separator = '/') {
         let path = '';
         if (this.parent) {
             path = this.parent.getPath(separator) + separator;
