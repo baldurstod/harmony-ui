@@ -4212,7 +4212,7 @@ class TreeElement {
         }
         return 0;
     }
-    static createFromPathList(paths, pathSeparator = '/') {
+    static createFromPathList(paths, options = {}) {
         class element {
             tree;
             childs = new Map();
@@ -4223,10 +4223,10 @@ class TreeElement {
         if (!paths) {
             return null;
         }
-        const root = new TreeElement('');
+        const root = new TreeElement('', { userData: options.userData });
         const top = new element(root);
         for (const path of paths) {
-            const segments = path.split(pathSeparator);
+            const segments = path.split(options.pathSeparator ?? '/');
             let current = top;
             let parent = root;
             for (let i = 0, l = segments.length; i < l; i++) {
@@ -4239,7 +4239,7 @@ class TreeElement {
                     type = 'file';
                 }
                 if (!current.childs.has(s)) {
-                    current.childs.set(s, new element(new TreeElement(s, { parent: parent, type: type })));
+                    current.childs.set(s, new element(new TreeElement(s, { parent: parent, type: type, userData: options.userData })));
                 }
                 parent = current.childs.get(s).tree;
                 current = current.childs.get(s);

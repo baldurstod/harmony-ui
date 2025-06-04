@@ -593,7 +593,10 @@ export declare class TreeElement {
     addChild(child: TreeElement): void;
     getPath(separator?: string): string;
     getLevel(): number;
-    static createFromPathList(paths?: Array<string>, pathSeparator?: string): TreeElement | null;
+    static createFromPathList(paths?: Array<string>, options?: {
+        pathSeparator?: string;
+        userData?: any;
+    }): TreeElement | null;
 }
 
 export declare function updateElement(element: HTMLElement | undefined, options: CreateElementOptions): HTMLElement | undefined;
