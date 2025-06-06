@@ -382,7 +382,7 @@ export declare class HTMLHarmonyTabElement extends HTMLElement {
     set disabled(disabled: boolean);
     get disabled(): boolean;
     activate(): void;
-    close(): void;
+    close(): boolean;
     /**
      * @deprecated use setActive() instead
      */
@@ -393,6 +393,7 @@ export declare class HTMLHarmonyTabElement extends HTMLElement {
      */
     get active(): boolean;
     isActive(): boolean;
+    isClosed(): boolean;
     static get observedAttributes(): string[];
 }
 

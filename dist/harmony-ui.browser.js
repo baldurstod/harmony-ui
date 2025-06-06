@@ -4025,6 +4025,7 @@ class HTMLHarmonyTabElement extends HTMLElement {
     #htmlTitle;
     #htmlClose;
     #group;
+    #closed = false;
     constructor() {
         super();
         this.#header = createElement('div', {
@@ -4081,10 +4082,14 @@ class HTMLHarmonyTabElement extends HTMLElement {
         this.setActive(true);
     }
     close() {
+        if (this.#closed) {
+            return false;
+        }
         if (!this.dispatchEvent(new CustomEvent('close', { cancelable: true, detail: { tab: this } }))) {
-            return;
+            return false;
         }
         this.#group?.closeTab(this);
+        return true;
     }
     /**
      * @deprecated use setActive() instead
@@ -4123,6 +4128,9 @@ class HTMLHarmonyTabElement extends HTMLElement {
     }
     isActive() {
         return this.#active;
+    }
+    isClosed() {
+        return this.#closed;
     }
     #click() {
         if (!this.dispatchEvent(new CustomEvent('click', { cancelable: true, detail: { tab: this } }))) {

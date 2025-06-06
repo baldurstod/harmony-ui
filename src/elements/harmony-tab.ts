@@ -18,6 +18,7 @@ export class HTMLHarmonyTabElement extends HTMLElement {
 	#htmlTitle: HTMLElement;
 	#htmlClose: HTMLElement;
 	#group?: HTMLHarmonyTabGroupElement;
+	#closed = false;
 
 	constructor() {
 		super();
@@ -81,11 +82,15 @@ export class HTMLHarmonyTabElement extends HTMLElement {
 		this.setActive(true);
 	}
 
-	close() {
+	close(): boolean {
+		if (this.#closed) {
+			return false;
+		}
 		if (!this.dispatchEvent(new CustomEvent<TabEventData>('close', { cancelable: true, detail: { tab: this } }))) {
-			return;
+			return false;
 		}
 		this.#group?.closeTab(this);
+		return true;
 	}
 
 	/**
@@ -127,6 +132,10 @@ export class HTMLHarmonyTabElement extends HTMLElement {
 
 	isActive() {
 		return this.#active;
+	}
+
+	isClosed() {
+		return this.#closed;
 	}
 
 	#click() {
