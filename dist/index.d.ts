@@ -382,6 +382,7 @@ export declare class HTMLHarmonyTabElement extends HTMLElement {
     set disabled(disabled: boolean);
     get disabled(): boolean;
     activate(): void;
+    close(): void;
     /**
      * @deprecated use setActive() instead
      */
@@ -406,6 +407,7 @@ export declare class HTMLHarmonyTabGroupElement extends HTMLElement {
      */
     set active(tab: HTMLHarmonyTabElement);
     activateTab(tab: HTMLHarmonyTabElement): void;
+    closeTab(tab: HTMLHarmonyTabElement): void;
     clear(): void;
 }
 
@@ -565,6 +567,10 @@ export declare function shadowRootStyleSync(shadowRoot: Document | ShadowRoot, c
 export declare function show(htmlElement: HTMLElement | ShadowRoot | Array<HTMLElement | ShadowRoot> | undefined | null): void;
 
 export declare function styleInject(css: string): void;
+
+export declare type TabEventData = {
+    tab: HTMLHarmonyTabElement;
+};
 
 export declare function toggle(htmlElement: HTMLElement | ShadowRoot | undefined | null): void;
 

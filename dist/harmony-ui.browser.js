@@ -2058,6 +2058,8 @@ var fileInputCSS = "label {\n\tcursor: pointer;\n\theight: 100%;\n\tdisplay: fle
 
 const checkOutlineSVG = '<svg xmlns="http://www.w3.org/2000/svg"  height="24" viewBox="0 -960 960 960" width="24" fill="currentColor"><path d="m 381,-240 424,-424 -57,-56 -368,367 -169,-170 -57,57 z m 0,113 -339,-339 169,-170 170,170 366,-367 172,168 z"/><path fill="#ffffff" d="m 381,-240 424,-424 -57,-56 -368,367 -169,-170 -57,57 z m 366,-593 c -498,-84.66667 -249,-42.33333 0,0 z"/></svg>';
 
+const closeSVG = '<svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24" fill="currentColor"><path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/></svg>';
+
 const folderOpenSVG = '<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor"><path d="M160-160q-33 0-56.5-23.5T80-240v-480q0-33 23.5-56.5T160-800h240l80 80h320q33 0 56.5 23.5T880-640H447l-80-80H160v480l96-320h684L837-217q-8 26-29.5 41.5T760-160H160Zm84-80h516l72-240H316l-72 240Zm0 0 72-240-72 240Zm-84-400v-80 80Z"/></svg>';
 
 const infoSVG = '<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor"><path d="M440-280h80v-240h-80v240Zm40-320q17 0 28.5-11.5T520-640q0-17-11.5-28.5T480-680q-17 0-28.5 11.5T440-640q0 17 11.5 28.5T480-600Zm0 520q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-320Z"/></svg>';
@@ -4020,16 +4022,25 @@ class HTMLHarmonyTabElement extends HTMLElement {
     #disabled = false;
     #active = false;
     #header;
+    #htmlTitle;
+    #htmlClose;
     #group;
     constructor() {
         super();
         this.#header = createElement('div', {
             class: 'harmony-tab-label',
-            ...(this.getAttribute('data-i18n')) && { i18n: this.getAttribute('data-i18n') },
-            ...(this.getAttribute('data-text')) && { innerText: this.getAttribute('data-text') },
-            events: {
-                click: (event) => this.#click(),
-            },
+            childs: [
+                this.#htmlTitle = createElement('span', {
+                    ...(this.getAttribute('data-i18n')) && { i18n: this.getAttribute('data-i18n') },
+                    ...(this.getAttribute('data-text')) && { innerText: this.getAttribute('data-text') },
+                }),
+                this.#htmlClose = createElement('span', {
+                    innerHTML: closeSVG,
+                    hidden: !toBool(this.getAttribute('data-closable') ?? ''),
+                    $click: (event) => { event.stopPropagation(); this.close(); },
+                }),
+            ],
+            $click: () => this.#click(),
         });
     }
     get htmlHeader() {
@@ -4045,15 +4056,17 @@ class HTMLHarmonyTabElement extends HTMLElement {
     attributeChangedCallback(name, oldValue, newValue) {
         switch (name) {
             case 'data-i18n':
-                this.#header.setAttribute('data-i18n', newValue);
-                this.#header.innerText = newValue;
-                this.#header.classList.add('i18n');
+                this.#htmlTitle.setAttribute('data-i18n', newValue);
+                this.#htmlTitle.innerText = newValue;
+                this.#htmlTitle.classList.add('i18n');
                 break;
             case 'data-text':
-                this.#header.innerText = newValue;
+                this.#htmlTitle.innerText = newValue;
                 break;
             case 'disabled':
                 this.disabled = toBool(newValue);
+            case 'data-closable':
+                display(this.#htmlClose, toBool(newValue));
                 break;
         }
     }
@@ -4067,6 +4080,12 @@ class HTMLHarmonyTabElement extends HTMLElement {
     activate() {
         this.setActive(true);
     }
+    close() {
+        if (!this.dispatchEvent(new CustomEvent('close', { cancelable: true, detail: { tab: this } }))) {
+            return;
+        }
+        this.#group?.closeTab(this);
+    }
     /**
      * @deprecated use setActive() instead
      */
@@ -4078,10 +4097,10 @@ class HTMLHarmonyTabElement extends HTMLElement {
         if (this.#active != active) {
             this.#active = active;
             if (active) {
-                this.dispatchEvent(new CustomEvent('activated'));
+                this.dispatchEvent(new CustomEvent('activated', { detail: { tab: this } }));
             }
             else {
-                this.dispatchEvent(new CustomEvent('deactivated'));
+                this.dispatchEvent(new CustomEvent('deactivated', { detail: { tab: this } }));
             }
         }
         display(this, active);
@@ -4106,7 +4125,7 @@ class HTMLHarmonyTabElement extends HTMLElement {
         return this.#active;
     }
     #click() {
-        if (!this.dispatchEvent(new CustomEvent('click', { cancelable: true }))) {
+        if (!this.dispatchEvent(new CustomEvent('click', { cancelable: true, detail: { tab: this } }))) {
             return;
         }
         if (!this.#disabled) {
@@ -4114,7 +4133,7 @@ class HTMLHarmonyTabElement extends HTMLElement {
         }
     }
     static get observedAttributes() {
-        return ['data-i18n', 'data-text', 'disabled'];
+        return ['data-i18n', 'data-text', 'disabled', 'data-closable'];
     }
 }
 let definedTab = false;
@@ -4167,6 +4186,8 @@ class HTMLHarmonyTabGroupElement extends HTMLElement {
         this.#refresh();
     }
     #refresh() {
+        this.#header.replaceChildren();
+        this.#content.replaceChildren();
         for (const tab of this.#tabs) {
             this.#header.append(tab.htmlHeader);
             this.#content.append(tab);
@@ -4188,6 +4209,13 @@ class HTMLHarmonyTabGroupElement extends HTMLElement {
             this.#activeTab = tab;
             this.#refresh();
         }
+    }
+    closeTab(tab) {
+        this.#tabs.delete(tab);
+        if (this.#activeTab == tab) {
+            this.#activeTab = this.#tabs.values().next().value;
+        }
+        this.#refresh();
     }
     clear() {
         this.#tabs.clear();

@@ -1,5 +1,5 @@
 import { Color } from 'harmony-utils';
-import { folderOpenSVG, infoSVG, checkOutlineSVG } from 'harmony-svg';
+import { folderOpenSVG, infoSVG, checkOutlineSVG, closeSVG } from 'harmony-svg';
 
 function cloneEvent(event) {
     return new event.constructor(event.type, event);
@@ -3881,16 +3881,25 @@ class HTMLHarmonyTabElement extends HTMLElement {
     #disabled = false;
     #active = false;
     #header;
+    #htmlTitle;
+    #htmlClose;
     #group;
     constructor() {
         super();
         this.#header = createElement('div', {
             class: 'harmony-tab-label',
-            ...(this.getAttribute('data-i18n')) && { i18n: this.getAttribute('data-i18n') },
-            ...(this.getAttribute('data-text')) && { innerText: this.getAttribute('data-text') },
-            events: {
-                click: (event) => this.#click(),
-            },
+            childs: [
+                this.#htmlTitle = createElement('span', {
+                    ...(this.getAttribute('data-i18n')) && { i18n: this.getAttribute('data-i18n') },
+                    ...(this.getAttribute('data-text')) && { innerText: this.getAttribute('data-text') },
+                }),
+                this.#htmlClose = createElement('span', {
+                    innerHTML: closeSVG,
+                    hidden: !toBool(this.getAttribute('data-closable') ?? ''),
+                    $click: (event) => { event.stopPropagation(); this.close(); },
+                }),
+            ],
+            $click: () => this.#click(),
         });
     }
     get htmlHeader() {
@@ -3906,15 +3915,17 @@ class HTMLHarmonyTabElement extends HTMLElement {
     attributeChangedCallback(name, oldValue, newValue) {
         switch (name) {
             case 'data-i18n':
-                this.#header.setAttribute('data-i18n', newValue);
-                this.#header.innerText = newValue;
-                this.#header.classList.add('i18n');
+                this.#htmlTitle.setAttribute('data-i18n', newValue);
+                this.#htmlTitle.innerText = newValue;
+                this.#htmlTitle.classList.add('i18n');
                 break;
             case 'data-text':
-                this.#header.innerText = newValue;
+                this.#htmlTitle.innerText = newValue;
                 break;
             case 'disabled':
                 this.disabled = toBool(newValue);
+            case 'data-closable':
+                display(this.#htmlClose, toBool(newValue));
                 break;
         }
     }
@@ -3928,6 +3939,12 @@ class HTMLHarmonyTabElement extends HTMLElement {
     activate() {
         this.setActive(true);
     }
+    close() {
+        if (!this.dispatchEvent(new CustomEvent('close', { cancelable: true, detail: { tab: this } }))) {
+            return;
+        }
+        this.#group?.closeTab(this);
+    }
     /**
      * @deprecated use setActive() instead
      */
@@ -3939,10 +3956,10 @@ class HTMLHarmonyTabElement extends HTMLElement {
         if (this.#active != active) {
             this.#active = active;
             if (active) {
-                this.dispatchEvent(new CustomEvent('activated'));
+                this.dispatchEvent(new CustomEvent('activated', { detail: { tab: this } }));
             }
             else {
-                this.dispatchEvent(new CustomEvent('deactivated'));
+                this.dispatchEvent(new CustomEvent('deactivated', { detail: { tab: this } }));
             }
         }
         display(this, active);
@@ -3967,7 +3984,7 @@ class HTMLHarmonyTabElement extends HTMLElement {
         return this.#active;
     }
     #click() {
-        if (!this.dispatchEvent(new CustomEvent('click', { cancelable: true }))) {
+        if (!this.dispatchEvent(new CustomEvent('click', { cancelable: true, detail: { tab: this } }))) {
             return;
         }
         if (!this.#disabled) {
@@ -3975,7 +3992,7 @@ class HTMLHarmonyTabElement extends HTMLElement {
         }
     }
     static get observedAttributes() {
-        return ['data-i18n', 'data-text', 'disabled'];
+        return ['data-i18n', 'data-text', 'disabled', 'data-closable'];
     }
 }
 let definedTab = false;
@@ -4028,6 +4045,8 @@ class HTMLHarmonyTabGroupElement extends HTMLElement {
         this.#refresh();
     }
     #refresh() {
+        this.#header.replaceChildren();
+        this.#content.replaceChildren();
         for (const tab of this.#tabs) {
             this.#header.append(tab.htmlHeader);
             this.#content.append(tab);
@@ -4049,6 +4068,13 @@ class HTMLHarmonyTabGroupElement extends HTMLElement {
             this.#activeTab = tab;
             this.#refresh();
         }
+    }
+    closeTab(tab) {
+        this.#tabs.delete(tab);
+        if (this.#activeTab == tab) {
+            this.#activeTab = this.#tabs.values().next().value;
+        }
+        this.#refresh();
     }
     clear() {
         this.#tabs.clear();

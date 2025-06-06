@@ -13,6 +13,7 @@ export class HTMLHarmonyTabGroupElement extends HTMLElement {
 	#content;
 	#activeTab?: HTMLHarmonyTabElement;
 	#shadowRoot: ShadowRoot;
+
 	constructor() {
 		super();
 		this.#shadowRoot = this.attachShadow({ mode: 'closed' });
@@ -47,6 +48,8 @@ export class HTMLHarmonyTabGroupElement extends HTMLElement {
 	}
 
 	#refresh() {
+		this.#header.replaceChildren();
+		this.#content.replaceChildren();
 		for (const tab of this.#tabs) {
 			this.#header.append(tab.htmlHeader);
 			this.#content.append(tab);
@@ -71,6 +74,14 @@ export class HTMLHarmonyTabGroupElement extends HTMLElement {
 			this.#activeTab = tab;
 			this.#refresh();
 		}
+	}
+
+	closeTab(tab: HTMLHarmonyTabElement) {
+		this.#tabs.delete(tab);
+		if (this.#activeTab == tab) {
+			this.#activeTab = this.#tabs.values().next().value;
+		}
+		this.#refresh();
 	}
 
 	clear() {

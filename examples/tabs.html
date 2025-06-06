@@ -55,6 +55,25 @@
 				}),
 			],
 		});
+
+		const group3 = createElement('harmony-tab-group', {
+			parent: document.body,
+			childs: [
+				createElement('harmony-tab', {
+					'data-text': 1,
+					innerText: 'Content 1',
+					'data-closable': true,
+					$close: (event) => console.info(event),
+				}),
+				createElement('harmony-tab', {
+					'data-text': 2,
+					innerText: 'Content 2',
+					'data-closable': true,
+					$close: (event) => event.preventDefault(),
+				}),
+				createElement('harmony-tab', { 'data-i18n': '#i18n_tab', innerText: 'Content i18n' }),
+			],
+		});
 	</script>
 </body>
 
