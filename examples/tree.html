@@ -24,7 +24,7 @@
 	<harmony-tree id='tree2' style="width:200px"></harmony-tree>
 </body>
 <script type="module">
-	import { createElement, defineHarmonyTree, TreeElement } from '../dist/harmony-ui.browser.js';
+	import { createElement, defineHarmonyTree, TreeElement, HarmonySVG } from '../dist/browser.js';
 	defineHarmonyTree();
 	const tree1 = document.getElementById('tree1');
 	const tree2 = document.getElementById('tree2');
@@ -96,8 +96,9 @@
 		"tf2/tf/tf2_textures"
 	]);
 
+	tree2.addAction('download', HarmonySVG.downloadSVG);
 	/*
-	tree2.setAction('test', createElement('button', {
+	'test', createElement('button', {
 		onclick:"console.info('test')",
 		$click: () => console.info('click'),
 	}));
@@ -105,9 +106,10 @@
 
 	for (let item of root2.walk({ type: 'file' })) {
 		console.info(item);
-		//item.addAction('test');
+		item.addAction('download');
 	}
 
+	tree2.addEventListener('itemaction', (event) => console.info(event, event.detail.action, event.detail.item.getPath()));
 
 	tree2.setRoot(root2);
 

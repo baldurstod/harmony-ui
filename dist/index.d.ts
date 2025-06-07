@@ -435,6 +435,7 @@ export declare class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
     protected createElement(): void;
     adoptStyle(css: string): void;
     setRoot(root?: TreeElement | null): void;
+    addAction(name: string, img: HTMLElement | string): void;
     protected onAttributeChanged(name: string, oldValue: string, newValue: string): void;
     static get observedAttributes(): string[];
 }
@@ -498,6 +499,11 @@ export declare type I18nTranslation = {
 export declare type I18nValue = string | number | boolean | null | undefined;
 
 export declare function isVisible(htmlElement: HTMLElement): boolean;
+
+export declare type ItemActionEventData = {
+    item: TreeElement;
+    action: string;
+};
 
 export declare type ItemClickEventData = {
     item: TreeElement;
@@ -575,6 +581,12 @@ export declare type TabEventData = {
 
 export declare function toggle(htmlElement: HTMLElement | ShadowRoot | undefined | null): void;
 
+export declare type TreeAction = {
+    name: string;
+    element?: HTMLElement;
+    innerHTML?: string;
+};
+
 export declare type TreeContextMenuEventData = {
     item?: TreeElement;
     buildContextMenu: (menu: HarmonyMenuItems) => void;
@@ -588,6 +600,7 @@ export declare class TreeElement {
     type: string;
     parent?: TreeElement;
     childs: Set<TreeElement>;
+    actions: Set<string>;
     userData?: any;
     constructor(name: string, options?: {
         isRoot?: boolean;
@@ -600,6 +613,8 @@ export declare class TreeElement {
     addChild(child: TreeElement): void;
     getPath(separator?: string): string;
     getLevel(): number;
+    addAction(action: string): void;
+    removeAction(action: string): void;
     static createFromPathList(paths?: Array<string>, options?: {
         pathSeparator?: string;
         userData?: any;

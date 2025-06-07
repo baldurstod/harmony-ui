@@ -4586,14 +4586,6 @@ function defineHarmonyToggleButton() {
 
 var treeCSS = ":host {\n\t--child-margin: var(--harmony-tree-child-margin, 1rem);\n\t--header-bg-color: var(--harmony-tree-header-bg-color, var(--main-bg-color-dark, black));\n\tcolor: var(--main-text-color-dark2, white);\n}\n\n.item {\n\twidth: 100%;\n}\n\n.header {\n\twidth: 100%;\n\theight: 1rem;\n\tbackground-color: var(--header-bg-color);\n\tcursor: pointer;\n\tdisplay: flex;\n\tgap: 0.2rem;\n\talign-items: center;\n}\n\n.childs {\n\tmargin-left: var(--child-margin);\n}\n\n.root>.header {\n\tdisplay: none;\n}\n\n.root>.childs {\n\tmargin-left: unset;\n}\n\n.actions{\n\tdisplay: flex;\n}\n";
 
-class TreeAction {
-    name;
-    img;
-    constructor(name, img) {
-        this.name = name;
-        this.img = img;
-    }
-}
 class TreeElement {
     name;
     isRoot;
@@ -4841,16 +4833,26 @@ class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
             this.#isInitialized.add(item);
         }
     }
-    addAction(action) {
-        this.#actions.set(action.name, action);
+    addAction(name, img) {
+        const action = {
+            name: name,
+        };
+        if (typeof img == 'string') {
+            action.innerHTML = img;
+        }
+        else {
+            action.element = img;
+        }
+        this.#actions.set(name, action);
     }
     #refreshActions(item) {
         const htmlActions = this.#itemActions.get(item);
         for (const actionName of item.actions) {
             const action = this.#actions.get(actionName);
             if (action) {
-                createElement('button', {
-                    child: action.img,
+                createElement('div', {
+                    child: action.element,
+                    innerHTML: action.innerHTML,
                     parent: htmlActions,
                     $click: (event) => this.#actionHandler(event, item, actionName),
                 });
@@ -4891,4 +4893,4 @@ function defineHarmonyTree() {
     }
 }
 
-export { AddI18nElement, HTMLHarmony2dManipulatorElement, HTMLHarmonyAccordionElement, HTMLHarmonyCircularProgressElement, HTMLHarmonyColorPickerElement, HTMLHarmonyCopyElement, HTMLHarmonyFileInputElement, HTMLHarmonyItemElement, HTMLHarmonyLabelPropertyElement, HTMLHarmonyMenuElement, HTMLHarmonyPaletteElement, HTMLHarmonyPanelElement, HTMLHarmonyRadioElement, HTMLHarmonySelectElement, HTMLHarmonySliderElement, HTMLHarmonySlideshowElement, HTMLHarmonySplitterElement, HTMLHarmonySwitchElement, HTMLHarmonyTabElement, HTMLHarmonyTabGroupElement, HTMLHarmonyToggleButtonElement, HTMLHarmonyTooltipElement, HTMLHarmonyTreeElement, index as HarmonySVG, I18n, I18nElements, I18nEvents, ManipulatorCorner, ManipulatorDirection, ManipulatorResizeOrigin, ManipulatorSide, ManipulatorUpdatedEventType, TreeAction, TreeElement, cloneEvent, createElement, createElementNS, createShadowRoot, defineHarmony2dManipulator, defineHarmonyAccordion, defineHarmonyCircularProgress, defineHarmonyColorPicker, defineHarmonyCopy, defineHarmonyFileInput, defineHarmonyItem, defineHarmonyLabelProperty, defineHarmonyMenu, defineHarmonyPalette, defineHarmonyPanel, defineHarmonyRadio, defineHarmonySelect, defineHarmonySlider, defineHarmonySlideshow, defineHarmonySplitter, defineHarmonySwitch, defineHarmonyTab, defineHarmonyTabGroup, defineHarmonyToggleButton, defineHarmonyTooltip, defineHarmonyTree, display, documentStyle, documentStyleSync, hide, isVisible, shadowRootStyle, shadowRootStyleSync, show, styleInject, toggle, updateElement, visible };
+export { AddI18nElement, HTMLHarmony2dManipulatorElement, HTMLHarmonyAccordionElement, HTMLHarmonyCircularProgressElement, HTMLHarmonyColorPickerElement, HTMLHarmonyCopyElement, HTMLHarmonyFileInputElement, HTMLHarmonyItemElement, HTMLHarmonyLabelPropertyElement, HTMLHarmonyMenuElement, HTMLHarmonyPaletteElement, HTMLHarmonyPanelElement, HTMLHarmonyRadioElement, HTMLHarmonySelectElement, HTMLHarmonySliderElement, HTMLHarmonySlideshowElement, HTMLHarmonySplitterElement, HTMLHarmonySwitchElement, HTMLHarmonyTabElement, HTMLHarmonyTabGroupElement, HTMLHarmonyToggleButtonElement, HTMLHarmonyTooltipElement, HTMLHarmonyTreeElement, index as HarmonySVG, I18n, I18nElements, I18nEvents, ManipulatorCorner, ManipulatorDirection, ManipulatorResizeOrigin, ManipulatorSide, ManipulatorUpdatedEventType, TreeElement, cloneEvent, createElement, createElementNS, createShadowRoot, defineHarmony2dManipulator, defineHarmonyAccordion, defineHarmonyCircularProgress, defineHarmonyColorPicker, defineHarmonyCopy, defineHarmonyFileInput, defineHarmonyItem, defineHarmonyLabelProperty, defineHarmonyMenu, defineHarmonyPalette, defineHarmonyPanel, defineHarmonyRadio, defineHarmonySelect, defineHarmonySlider, defineHarmonySlideshow, defineHarmonySplitter, defineHarmonySwitch, defineHarmonyTab, defineHarmonyTabGroup, defineHarmonyToggleButton, defineHarmonyTooltip, defineHarmonyTree, display, documentStyle, documentStyleSync, hide, isVisible, shadowRootStyle, shadowRootStyleSync, show, styleInject, toggle, updateElement, visible };
