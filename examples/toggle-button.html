@@ -19,9 +19,9 @@
 	</harmony-toggle-button>
 </body>
 <script type="module">
-	import { createElement, defineToggleButton, I18n } from '../dist/harmony-ui.browser.js';
+	import { createElement, defineHarmonyToggleButton, I18n } from '../dist/browser.js';
 	I18n.start();
-	defineToggleButton();
+	defineHarmonyToggleButton();
 	document.getElementById('toggle').addEventListener('change', (event) => console.log(event.target.checked));
 </script>
 

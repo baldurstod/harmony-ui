@@ -27,8 +27,8 @@
 		</harmony-palette>
 	</div>
 	<script type="module">
-		import { definePalette } from '../dist/harmony-ui.browser.js';
-		definePalette();
+		import { defineHarmonyPalette } from '../dist/browser.js';
+		defineHarmonyPalette();
 		function setTimeoutPromise(delay, signal) {
 			return new Promise((resolve, reject) => setTimeout(resolve, delay));
 		}

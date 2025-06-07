@@ -35,9 +35,9 @@ export default [
 		],
 	},
 	{
-		input: './src/index.ts',
+		input: './src/browser.ts',
 		output: {
-			file: './dist/harmony-ui.browser.js',
+			file: './dist/browser.js',
 			format: 'esm'
 		},
 		plugins: [

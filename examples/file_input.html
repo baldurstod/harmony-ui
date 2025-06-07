@@ -13,8 +13,8 @@
 		data-tooltip-i18n="test help"></harmony-file-input>
 </body>
 <script type="module">
-	import { createElement, defineFileInput } from '../dist/harmony-ui.browser.js';
-	defineFileInput();
+	import { createElement, defineHarmonyFileInput } from '../dist/browser.js';
+	defineHarmonyFileInput();
 	const input = document.getElementById('input');
 
 	input.addEventListener('change', (event) => {

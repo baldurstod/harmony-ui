@@ -31,7 +31,8 @@
 		</harmony-splitter-->
 </body>
 <script type="module">
-	import { createElement, defineSplitter } from '../dist/harmony-ui.browser.js';
+	import { createElement, defineHarmonySplitter } from '../dist/browser.js';
+	defineHarmonySplitter();
 	createElement('harmony-splitter', {
 		parent: document.body,
 		attributes: {
