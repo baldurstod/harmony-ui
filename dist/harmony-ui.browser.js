@@ -4336,7 +4336,7 @@ function defineHarmonyToggleButton() {
     }
 }
 
-var treeCSS = ":host {\n\t--child-margin: var(--harmony-tree-child-margin, 1rem);\n\t--header-bg-color: var(--harmony-tree-header-bg-color, var(--main-bg-color-dark, black));\n\tcolor: var(--main-text-color-dark2, white);\n}\n\n.item {\n\twidth: 100%;\n}\n\n.header {\n\twidth: 100%;\n\theight: 1rem;\n\tbackground-color: var(--header-bg-color);\n\tcursor: pointer;\n}\n\n.childs {\n\tmargin-left: var(--child-margin);\n}\n\n.root>.header {\n\tdisplay: none;\n}\n\n.root>.childs {\n\tmargin-left: unset;\n}\n";
+var treeCSS = ":host {\n\t--child-margin: var(--harmony-tree-child-margin, 1rem);\n\t--header-bg-color: var(--harmony-tree-header-bg-color, var(--main-bg-color-dark, black));\n\tcolor: var(--main-text-color-dark2, white);\n}\n\n.item {\n\twidth: 100%;\n}\n\n.header {\n\twidth: 100%;\n\theight: 1rem;\n\tbackground-color: var(--header-bg-color);\n\tcursor: pointer;\n\tdisplay: flex;\n\tgap: 0.2rem;\n\talign-items: center;\n}\n\n.childs {\n\tmargin-left: var(--child-margin);\n}\n\n.root>.header {\n\tdisplay: none;\n}\n\n.root>.childs {\n\tmargin-left: unset;\n}\n\n.actions{\n\tdisplay: flex;\n}\n";
 
 class TreeElement {
     name;
@@ -4350,7 +4350,7 @@ class TreeElement {
         this.name = name;
         this.isRoot = options.isRoot;
         this.icon = options.icon;
-        this.type = options.type;
+        this.type = options.type ?? '';
         this.parent = options.parent;
         this.userData = options.userData;
         if (options.parent) {
@@ -4401,7 +4401,7 @@ class TreeElement {
         if (!paths) {
             return null;
         }
-        const root = new TreeElement('', { userData: options.userData });
+        const root = new TreeElement('', { userData: options.userData, type: 'root' });
         const top = new element(root);
         for (const path of paths) {
             const segments = path.split(options.pathSeparator ?? '/');
@@ -4424,6 +4424,42 @@ class TreeElement {
             }
         }
         return root;
+    }
+    #matchFilter(filter) {
+        if (filter.types) {
+            let match = false;
+            for (const tf of filter.types) {
+                if (tf === this.type) {
+                    match = true;
+                    break;
+                }
+            }
+            if (!match) {
+                return false;
+            }
+        }
+        if (filter.type !== undefined) {
+            if (filter.type !== this.type) {
+                return false;
+            }
+        }
+        return true;
+    }
+    *walk(filter = {}) {
+        let stack = [this];
+        let current;
+        do {
+            current = stack.pop();
+            if (!current) {
+                break;
+            }
+            if (current.#matchFilter(filter)) {
+                yield current;
+            }
+            for (let child of current.childs) {
+                stack.push(child);
+            }
+        } while (current);
     }
 }
 class HTMLHarmonyTreeElement extends HTMLHarmonyElement {

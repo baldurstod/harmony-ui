@@ -8,11 +8,17 @@ import { defineHarmonyMenu, HarmonyMenuItems, HTMLHarmonyMenuElement } from './h
 
 export type ItemClickEventData = { item: TreeElement };
 
+export type TreeElementFilter = {
+	name?: string;
+	type?: string;
+	types?: Array<string>;
+}
+
 export class TreeElement {
 	name: string;
 	isRoot?: boolean;
 	icon?: string;
-	type?: string;
+	type: string;
 	parent?: TreeElement;
 	childs = new Set<TreeElement>;
 	userData?: any;
@@ -21,7 +27,7 @@ export class TreeElement {
 		this.name = name;
 		this.isRoot = options.isRoot;
 		this.icon = options.icon;
-		this.type = options.type;
+		this.type = options.type ?? '';
 		this.parent = options.parent;
 		this.userData = options.userData;
 
@@ -88,7 +94,7 @@ export class TreeElement {
 		if (!paths) {
 			return null;
 		}
-		const root = new TreeElement('', { userData: options.userData });
+		const root = new TreeElement('', { userData: options.userData, type: 'root' });
 
 		const top = new element(root);
 
@@ -118,6 +124,50 @@ export class TreeElement {
 		}
 
 		return root;
+	}
+
+	#matchFilter(filter: TreeElementFilter): boolean {
+		if (filter.types) {
+			let match = false;
+			for (const tf of filter.types) {
+				if (tf === this.type) {
+					match = true;
+					break;
+				}
+			}
+
+			if (!match) {
+				return false;
+			}
+		}
+
+		if (filter.type !== undefined) {
+			if (filter.type !== this.type) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	*walk(filter: TreeElementFilter = {}) {
+		let stack: Array<TreeElement> = [this];
+		let current: TreeElement | undefined;
+
+		do {
+			current = stack.pop();
+			if (!current) {
+				break;
+			}
+
+			if (current.#matchFilter(filter)) {
+				yield current;
+			}
+
+			for (let child of current.childs) {
+				stack.push(child);
+			}
+		} while (current)
 	}
 }
 

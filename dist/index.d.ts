@@ -585,7 +585,7 @@ export declare class TreeElement {
     name: string;
     isRoot?: boolean;
     icon?: string;
-    type?: string;
+    type: string;
     parent?: TreeElement;
     childs: Set<TreeElement>;
     userData?: any;
@@ -604,7 +604,14 @@ export declare class TreeElement {
         pathSeparator?: string;
         userData?: any;
     }): TreeElement | null;
+    walk(filter?: TreeElementFilter): Generator<TreeElement, void, unknown>;
 }
+
+export declare type TreeElementFilter = {
+    name?: string;
+    type?: string;
+    types?: Array<string>;
+};
 
 export declare function updateElement(element: HTMLElement | undefined, options: CreateElementOptions): HTMLElement | undefined;
 
