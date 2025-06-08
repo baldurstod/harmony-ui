@@ -93,6 +93,12 @@ export class TreeItem {
 		this.actions.add(action);
 	}
 
+	addActions(actions: Array<string>) {
+		for (const action of actions) {
+			this.actions.add(action);
+		}
+	}
+
 	removeAction(action: string) {
 		this.actions.delete(action);
 	}

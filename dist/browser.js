@@ -4642,6 +4642,11 @@ class TreeItem {
     addAction(action) {
         this.actions.add(action);
     }
+    addActions(actions) {
+        for (const action of actions) {
+            this.actions.add(action);
+        }
+    }
     removeAction(action) {
         this.actions.delete(action);
     }
