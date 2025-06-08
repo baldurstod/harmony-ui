@@ -434,7 +434,7 @@ export declare class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
     #private;
     protected createElement(): void;
     adoptStyle(css: string): void;
-    setRoot(root?: TreeElement | null): void;
+    setRoot(root?: TreeItem | null): void;
     addAction(name: string, img: HTMLElement | string): void;
     protected onAttributeChanged(name: string, oldValue: string, newValue: string): void;
     static get observedAttributes(): string[];
@@ -501,12 +501,12 @@ export declare type I18nValue = string | number | boolean | null | undefined;
 export declare function isVisible(htmlElement: HTMLElement): boolean;
 
 export declare type ItemActionEventData = {
-    item: TreeElement;
+    item: TreeItem;
     action: string;
 };
 
 export declare type ItemClickEventData = {
-    item: TreeElement;
+    item: TreeItem;
 };
 
 export declare type LangChangedEvent = {
@@ -588,29 +588,29 @@ export declare type TreeAction = {
 };
 
 export declare type TreeContextMenuEventData = {
-    item?: TreeElement;
+    item?: TreeItem;
     buildContextMenu: (menu: HarmonyMenuItems) => void;
 };
 
-export declare class TreeElement {
+export declare class TreeItem {
     #private;
     name: string;
     isRoot?: boolean;
     icon?: string;
     type: string;
-    parent?: TreeElement;
-    childs: Set<TreeElement>;
+    parent?: TreeItem;
+    childs: Set<TreeItem>;
     actions: Set<string>;
     userData?: any;
     constructor(name: string, options?: {
         isRoot?: boolean;
         icon?: string;
         type?: string;
-        parent?: TreeElement;
-        childs?: Array<TreeElement>;
+        parent?: TreeItem;
+        childs?: Array<TreeItem>;
         userData?: any;
     });
-    addChild(child: TreeElement): void;
+    addChild(child: TreeItem): void;
     getPath(separator?: string): string;
     getLevel(): number;
     addAction(action: string): void;
@@ -618,11 +618,11 @@ export declare class TreeElement {
     static createFromPathList(paths?: Array<string>, options?: {
         pathSeparator?: string;
         userData?: any;
-    }): TreeElement | null;
-    walk(filter?: TreeElementFilter): Generator<TreeElement, void, unknown>;
+    }): TreeItem | null;
+    walk(filter?: TreeItemFilter): Generator<TreeItem, void, unknown>;
 }
 
-export declare type TreeElementFilter = {
+export declare type TreeItemFilter = {
     name?: string;
     type?: string;
     types?: Array<string>;

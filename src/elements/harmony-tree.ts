@@ -6,8 +6,8 @@ import { injectGlobalCss } from '../utils/globalcss';
 import { HTMLHarmonyElement } from './harmony-element';
 import { defineHarmonyMenu, HarmonyMenuItems, HTMLHarmonyMenuElement } from './harmony-menu';
 
-export type ItemClickEventData = { item: TreeElement };
-export type ItemActionEventData = { item: TreeElement, action: string };
+export type ItemClickEventData = { item: TreeItem };
+export type ItemActionEventData = { item: TreeItem, action: string };
 
 export type TreeAction = {
 	name: string;
@@ -15,23 +15,23 @@ export type TreeAction = {
 	innerHTML?: string;
 }
 
-export type TreeElementFilter = {
+export type TreeItemFilter = {
 	name?: string;
 	type?: string;
 	types?: Array<string>;
 }
 
-export class TreeElement {
+export class TreeItem {
 	name: string;
 	isRoot?: boolean;
 	icon?: string;
 	type: string;
-	parent?: TreeElement;
-	childs = new Set<TreeElement>;
+	parent?: TreeItem;
+	childs = new Set<TreeItem>;
 	actions = new Set<string>();
 	userData?: any;
 
-	constructor(name: string, options: { isRoot?: boolean, icon?: string, type?: string, parent?: TreeElement, childs?: Array<TreeElement>, userData?: any } = {}) {
+	constructor(name: string, options: { isRoot?: boolean, icon?: string, type?: string, parent?: TreeItem, childs?: Array<TreeItem>, userData?: any } = {}) {
 		this.name = name;
 		this.isRoot = options.isRoot;
 		this.icon = options.icon;
@@ -52,13 +52,13 @@ export class TreeElement {
 		this.#sortByName();
 	}
 
-	addChild(child: TreeElement) {
+	addChild(child: TreeItem) {
 		this.childs.add(child);
 	}
 
 	#sortByName() {
 		let that = this;
-		this.childs[Symbol.iterator] = function* (): ArrayIterator<TreeElement> {
+		this.childs[Symbol.iterator] = function* (): ArrayIterator<TreeItem> {
 			yield* [...this.values()].sort(
 				(a, b) => {
 					return a.name.toLowerCase() < b.name.toLowerCase() ? -1 : 1;
@@ -97,12 +97,12 @@ export class TreeElement {
 		this.actions.delete(action);
 	}
 
-	static createFromPathList(paths?: Array<string>, options: { pathSeparator?: string, userData?: any } = {}): TreeElement | null {
+	static createFromPathList(paths?: Array<string>, options: { pathSeparator?: string, userData?: any } = {}): TreeItem | null {
 		class element {
-			tree: TreeElement;
+			tree: TreeItem;
 			childs = new Map<string, element>()
 
-			constructor(tree: TreeElement) {
+			constructor(tree: TreeItem) {
 				this.tree = tree;
 			}
 		}
@@ -110,7 +110,7 @@ export class TreeElement {
 		if (!paths) {
 			return null;
 		}
-		const root = new TreeElement('', { userData: options.userData, type: 'root' });
+		const root = new TreeItem('', { userData: options.userData, type: 'root' });
 
 		const top = new element(root);
 
@@ -131,7 +131,7 @@ export class TreeElement {
 				}
 
 				if (!current.childs.has(s)) {
-					current.childs.set(s, new element(new TreeElement(s, { parent: parent, type: type, userData: options.userData })));
+					current.childs.set(s, new element(new TreeItem(s, { parent: parent, type: type, userData: options.userData })));
 				}
 
 				parent = current.childs.get(s)!.tree;
@@ -142,7 +142,7 @@ export class TreeElement {
 		return root;
 	}
 
-	#matchFilter(filter: TreeElementFilter): boolean {
+	#matchFilter(filter: TreeItemFilter): boolean {
 		if (filter.types) {
 			let match = false;
 			for (const tf of filter.types) {
@@ -166,9 +166,9 @@ export class TreeElement {
 		return true;
 	}
 
-	*walk(filter: TreeElementFilter = {}) {
-		let stack: Array<TreeElement> = [this];
-		let current: TreeElement | undefined;
+	*walk(filter: TreeItemFilter = {}) {
+		let stack: Array<TreeItem> = [this];
+		let current: TreeItem | undefined;
 
 		do {
 			current = stack.pop();
@@ -188,18 +188,18 @@ export class TreeElement {
 }
 
 export type TreeContextMenuEventData = {
-	item?: TreeElement,
+	item?: TreeItem,
 	buildContextMenu: (menu: HarmonyMenuItems) => void,
 };
 
 export class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
 	#shadowRoot?: ShadowRoot;
-	#root?: TreeElement | null;
+	#root?: TreeItem | null;
 	#htmlContextMenu?: HTMLHarmonyMenuElement;
-	#isInitialized = new Set<TreeElement>();
-	#isExpanded = new Map<TreeElement, boolean>();
+	#isInitialized = new Set<TreeItem>();
+	#isExpanded = new Map<TreeItem, boolean>();
 	#actions = new Map<string, TreeAction>();
-	#itemActions = new Map<TreeElement, HTMLElement>();
+	#itemActions = new Map<TreeItem, HTMLElement>();
 
 	protected createElement() {
 		this.#shadowRoot = this.attachShadow({ mode: 'closed' });
@@ -226,7 +226,7 @@ export class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
 		this.#createItem(this.#root, this.#shadowRoot, true);
 	}
 
-	setRoot(root?: TreeElement | null) {
+	setRoot(root?: TreeItem | null) {
 		this.#root = root;
 		if (this.#root) {
 			this.#root.isRoot = true;
@@ -244,7 +244,7 @@ export class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
 		this.#htmlContextMenu.showContextual(contextMenu, x, y);
 	}
 
-	#contextMenuHandler(event: MouseEvent, item: TreeElement) {
+	#contextMenuHandler(event: MouseEvent, item: TreeItem) {
 		if (!event.shiftKey) {
 			this.dispatchEvent(new CustomEvent<TreeContextMenuEventData>('contextmenu', {
 				detail: {
@@ -257,7 +257,7 @@ export class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
 		}
 	}
 
-	#createItem(item: TreeElement, parent: HTMLElement | ShadowRoot, createExpanded: boolean): HTMLElement {
+	#createItem(item: TreeItem, parent: HTMLElement | ShadowRoot, createExpanded: boolean): HTMLElement {
 		let childs: HTMLElement;
 		let actions: HTMLElement;
 
@@ -306,7 +306,7 @@ export class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
 		return element;
 	}
 
-	#expandItem(item: TreeElement, parent: HTMLElement): void {
+	#expandItem(item: TreeItem, parent: HTMLElement): void {
 		if (this.#isExpanded.get(item)) {
 			hide(parent);
 			this.#isExpanded.set(item, false);
@@ -343,7 +343,7 @@ export class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
 		this.#actions.set(name, action);
 	}
 
-	#refreshActions(item: TreeElement) {
+	#refreshActions(item: TreeItem) {
 		const htmlActions = this.#itemActions.get(item)!;
 		for (const actionName of item.actions) {
 			const action = this.#actions.get(actionName);
@@ -358,7 +358,7 @@ export class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
 		}
 	}
 
-	#actionHandler(event: MouseEvent, item: TreeElement, action: string) {
+	#actionHandler(event: MouseEvent, item: TreeItem, action: string) {
 		this.dispatchEvent(new CustomEvent<ItemActionEventData>('itemaction', {
 			detail: {
 				item: item,
