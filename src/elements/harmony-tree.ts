@@ -206,6 +206,7 @@ export class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
 	#isExpanded = new Map<TreeItem, boolean>();
 	#actions = new Map<string, TreeAction>();
 	#itemActions = new Map<TreeItem, HTMLElement>();
+	#itemChilds = new Map<TreeItem, HTMLElement>();
 
 	protected createElement() {
 		this.#shadowRoot = this.attachShadow({ mode: 'closed' });
@@ -283,7 +284,15 @@ export class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
 						}),
 					],
 					$click: () => {
-						this.#expandItem(item, childs);
+
+
+						if (this.#isExpanded.get(item)) {
+							this.collapseItem(item);
+						} else {
+							this.expandItem(item);
+						}
+
+
 						this.dispatchEvent(new CustomEvent<ItemClickEventData>('itemclick', { detail: { item: item } }));
 					},
 					$contextmenu: (event: MouseEvent) => this.#contextMenuHandler(event, item),
@@ -294,6 +303,8 @@ export class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
 			]
 		});
 
+		this.#itemChilds.set(item, childs);
+
 		if (item.isRoot && item.name == '') {
 			element.classList.add('root');
 		}
@@ -303,7 +314,7 @@ export class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
 		}
 
 		if (createExpanded) {
-			this.#expandItem(item, childs);
+			this.expandItem(item);
 		}
 
 		this.#itemActions.set(item, actions);
@@ -312,27 +323,37 @@ export class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
 		return element;
 	}
 
-	#expandItem(item: TreeItem, parent: HTMLElement): void {
-		if (this.#isExpanded.get(item)) {
-			hide(parent);
-			this.#isExpanded.set(item, false);
+	expandItem(item: TreeItem): void {
+		if (item.parent) {
+			this.expandItem(item.parent);
+		}
+
+		const childs = this.#itemChilds.get(item);
+
+		if (!childs || this.#isExpanded.get(item) === true) {
 			return;
-		} else {
-			show(parent);
 		}
 
 		this.#isExpanded.set(item, true);
-
-		if (!item.childs) {
-			return;
-		}
+		show(childs);
 
 		if (!this.#isInitialized.has(item)) {
 			for (const child of item.childs) {
-				this.#createItem(child, parent, false);
+				this.#createItem(child, childs, false);
 			}
 			this.#isInitialized.add(item);
 		}
+	}
+
+	collapseItem(item: TreeItem): void {
+		const childs = this.#itemChilds.get(item);
+
+		if (!childs) {
+			return;
+		}
+
+		this.#isExpanded.set(item, false);
+		hide(childs);
 	}
 
 	addAction(name: string, img: HTMLElement | string) {
@@ -374,7 +395,6 @@ export class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
 		event.preventDefault();
 		event.stopPropagation();
 	}
-
 
 	protected onAttributeChanged(name: string, oldValue: string, newValue: string) {
 		switch (name) {

@@ -58,60 +58,61 @@
 		)
 	});
 
-
 	const root2 = TreeItem.createFromPathList([
-		"cs2/game/core/pak01",
-		"cs2/game/core/shaders_vulkan",
-		"cs2/game/csgo/pak01",
-		"cs2/game/csgo/shaders_vulkan",
-		"cs2/game/csgo_community_addons/cs_agency/cs_agency",
-		"cs2/game/csgo_community_addons/de_brewery/de_brewery",
-		"cs2/game/csgo_community_addons/de_dogtown/de_dogtown",
-		"cs2/game/csgo_community_addons/de_grail/de_grail",
-		"cs2/game/csgo_community_addons/de_jura/de_jura",
-		"cs2/game/csgo_core/pak01",
-		"cs2/game/csgo_core/shaders_vulkan",
-		"cs2/game/csgo_imported/pak01",
-		"cs2/game/csgo_lv/pak01",
-		"deadlock/citadel/pak01",
-		"deadlock/citadel/shaders_pc",
-		"deadlock/citadel/shaders_vulkan",
-		"deadlock/core/pak01",
-		"deadlock/core/shaders_pc",
-		"deadlock/core/shaders_vulkan",
-		"dota2/core/pak01",
-		"dota2/core/shaders_pcgl",
-		"dota2/core/shaders_vulkan",
-		"dota2/dota/pak01",
-		"dota2/dota/shaders_pcgl",
-		"dota2/dota/shaders_vulkan",
-		"tf2/hl2/hl2_misc",
-		"tf2/hl2/hl2_sound_misc",
-		"tf2/hl2/hl2_sound_vo_english",
-		"tf2/hl2/hl2_textures",
-		"tf2/platform/platform_misc",
-		"tf2/tf/tf2_misc",
-		"tf2/tf/tf2_sound_misc",
-		"tf2/tf/tf2_sound_vo_english",
-		"tf2/tf/tf2_textures"
+		'cs2/game/core/pak01',
+		'cs2/game/core/shaders_vulkan',
+		'cs2/game/csgo/pak01',
+		'cs2/game/csgo/shaders_vulkan',
+		'cs2/game/csgo_community_addons/cs_agency/cs_agency',
+		'cs2/game/csgo_community_addons/de_brewery/de_brewery',
+		'cs2/game/csgo_community_addons/de_dogtown/de_dogtown',
+		'cs2/game/csgo_community_addons/de_grail/de_grail',
+		'cs2/game/csgo_community_addons/de_jura/de_jura',
+		'cs2/game/csgo_core/pak01',
+		'cs2/game/csgo_core/shaders_vulkan',
+		'cs2/game/csgo_imported/pak01',
+		'cs2/game/csgo_lv/pak01',
+		'deadlock/citadel/pak01',
+		'deadlock/citadel/shaders_pc',
+		'deadlock/citadel/shaders_vulkan',
+		'deadlock/core/pak01',
+		'deadlock/core/shaders_pc',
+		'deadlock/core/shaders_vulkan',
+		'dota2/core/pak01',
+		'dota2/core/shaders_pcgl',
+		'dota2/core/shaders_vulkan',
+		'dota2/dota/pak01',
+		'dota2/dota/shaders_pcgl',
+		'dota2/dota/shaders_vulkan',
+		'tf2/hl2/hl2_misc',
+		'tf2/hl2/hl2_sound_misc',
+		'tf2/hl2/hl2_sound_vo_english',
+		'tf2/hl2/hl2_textures',
+		'tf2/platform/platform_misc',
+		'tf2/tf/tf2_misc',
+		'tf2/tf/tf2_sound_misc',
+		'tf2/tf/tf2_sound_vo_english',
+		'tf2/tf/tf2_textures'
 	]);
 
 	tree2.addAction('download', HarmonySVG.downloadSVG);
-	/*
-	'test', createElement('button', {
-		onclick:"console.info('test')",
-		$click: () => console.info('click'),
-	}));
-	*/
 
+	let highlight;
 	for (let item of root2.walk({ type: 'file' })) {
 		console.info(item);
 		item.addAction('download');
+
+		if (item.getPath() == 'dota2/dota/shaders_vulkan') {
+			highlight = item;
+		}
 	}
 
 	tree2.addEventListener('itemaction', (event) => console.info(event, event.detail.action, event.detail.item.getPath()));
 
 	tree2.setRoot(root2);
+
+
+	tree2.expandItem(highlight);
 
 	/*
 	tree.setRoot(

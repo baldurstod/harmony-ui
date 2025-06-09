@@ -4341,6 +4341,7 @@ class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
     #isExpanded = new Map();
     #actions = new Map();
     #itemActions = new Map();
+    #itemChilds = new Map();
     createElement() {
         this.#shadowRoot = this.attachShadow({ mode: 'closed' });
         shadowRootStyle(this.#shadowRoot, treeCSS);
@@ -4406,7 +4407,12 @@ class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
                         }),
                     ],
                     $click: () => {
-                        this.#expandItem(item, childs);
+                        if (this.#isExpanded.get(item)) {
+                            this.collapseItem(item);
+                        }
+                        else {
+                            this.expandItem(item);
+                        }
                         this.dispatchEvent(new CustomEvent('itemclick', { detail: { item: item } }));
                     },
                     $contextmenu: (event) => this.#contextMenuHandler(event, item),
@@ -4416,6 +4422,7 @@ class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
                 }),
             ]
         });
+        this.#itemChilds.set(item, childs);
         if (item.isRoot && item.name == '') {
             element.classList.add('root');
         }
@@ -4423,31 +4430,36 @@ class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
             element.classList.add(`type-${item.type}`);
         }
         if (createExpanded) {
-            this.#expandItem(item, childs);
+            this.expandItem(item);
         }
         this.#itemActions.set(item, actions);
         this.#refreshActions(item);
         return element;
     }
-    #expandItem(item, parent) {
-        if (this.#isExpanded.get(item)) {
-            hide(parent);
-            this.#isExpanded.set(item, false);
-            return;
+    expandItem(item) {
+        if (item.parent) {
+            this.expandItem(item.parent);
         }
-        else {
-            show(parent);
+        const childs = this.#itemChilds.get(item);
+        if (!childs || this.#isExpanded.get(item) === true) {
+            return;
         }
         this.#isExpanded.set(item, true);
-        if (!item.childs) {
-            return;
-        }
+        show(childs);
         if (!this.#isInitialized.has(item)) {
             for (const child of item.childs) {
-                this.#createItem(child, parent, false);
+                this.#createItem(child, childs, false);
             }
             this.#isInitialized.add(item);
         }
+    }
+    collapseItem(item) {
+        const childs = this.#itemChilds.get(item);
+        if (!childs) {
+            return;
+        }
+        this.#isExpanded.set(item, false);
+        hide(childs);
     }
     addAction(name, img) {
         const action = {
