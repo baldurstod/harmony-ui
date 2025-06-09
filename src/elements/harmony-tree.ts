@@ -198,6 +198,13 @@ export type TreeContextMenuEventData = {
 	buildContextMenu: (menu: HarmonyMenuItems) => void,
 };
 
+type TreeItemElement = {
+	element: HTMLElement;
+	header: HTMLElement;
+	actions: HTMLElement;
+	childs: HTMLElement;
+}
+
 export class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
 	#shadowRoot?: ShadowRoot;
 	#root?: TreeItem | null;
@@ -205,8 +212,12 @@ export class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
 	#isInitialized = new Set<TreeItem>();
 	#isExpanded = new Map<TreeItem, boolean>();
 	#actions = new Map<string, TreeAction>();
+	/*
 	#itemActions = new Map<TreeItem, HTMLElement>();
-	#itemChilds = new Map<TreeItem, HTMLElement>();
+	#items = new Map<TreeItem, HTMLElement>();
+	*/
+	#itemElements = new Map<TreeItem, TreeItemElement>();
+	#selectedItem: TreeItem | null = null;
 
 	protected createElement() {
 		this.#shadowRoot = this.attachShadow({ mode: 'closed' });
@@ -266,13 +277,14 @@ export class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
 
 	#createItem(item: TreeItem, parent: HTMLElement | ShadowRoot, createExpanded: boolean): HTMLElement {
 		let childs: HTMLElement;
+		let header: HTMLElement;
 		let actions: HTMLElement;
 
 		const element = createElement('div', {
 			class: `item level${item.getLevel()}`,
 			parent: parent,
 			childs: [
-				createElement('div', {
+				header = createElement('div', {
 					class: 'header',
 					childs: [
 						createElement('div', {
@@ -284,14 +296,11 @@ export class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
 						}),
 					],
 					$click: () => {
-
-
 						if (this.#isExpanded.get(item)) {
 							this.collapseItem(item);
 						} else {
 							this.expandItem(item);
 						}
-
 
 						this.dispatchEvent(new CustomEvent<ItemClickEventData>('itemclick', { detail: { item: item } }));
 					},
@@ -303,7 +312,7 @@ export class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
 			]
 		});
 
-		this.#itemChilds.set(item, childs);
+		this.#itemElements.set(item, { element: element, header: header, childs: childs, actions: actions });
 
 		if (item.isRoot && item.name == '') {
 			element.classList.add('root');
@@ -317,7 +326,6 @@ export class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
 			this.expandItem(item);
 		}
 
-		this.#itemActions.set(item, actions);
 		this.#refreshActions(item);
 
 		return element;
@@ -328,7 +336,7 @@ export class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
 			this.expandItem(item.parent);
 		}
 
-		const childs = this.#itemChilds.get(item);
+		const childs = this.#itemElements.get(item)?.childs;
 
 		if (!childs || this.#isExpanded.get(item) === true) {
 			return;
@@ -346,7 +354,7 @@ export class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
 	}
 
 	collapseItem(item: TreeItem): void {
-		const childs = this.#itemChilds.get(item);
+		const childs = this.#itemElements.get(item)?.childs;
 
 		if (!childs) {
 			return;
@@ -354,6 +362,24 @@ export class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
 
 		this.#isExpanded.set(item, false);
 		hide(childs);
+	}
+
+	selectItem(item: TreeItem | null) {
+		if (item == this.#selectedItem) {
+			return;
+		}
+
+		if (this.#selectedItem) {
+			this.#itemElements.get(this.#selectedItem)?.header?.classList.remove('selected');
+		}
+
+		if (item) {
+			if (item.parent) {
+				this.expandItem(item.parent);
+			}
+			this.#itemElements.get(item)?.header?.classList.add('selected');
+		}
+		this.#selectedItem = item;
 	}
 
 	addAction(name: string, img: HTMLElement | string) {
@@ -371,7 +397,7 @@ export class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
 	}
 
 	#refreshActions(item: TreeItem) {
-		const htmlActions = this.#itemActions.get(item)!;
+		const htmlActions = this.#itemElements.get(item)?.actions;
 		for (const actionName of item.actions) {
 			const action = this.#actions.get(actionName);
 			if (action) {

@@ -4584,7 +4584,7 @@ function defineHarmonyToggleButton() {
     }
 }
 
-var treeCSS = ":host {\n\t--child-margin: var(--harmony-tree-child-margin, 1rem);\n\t--header-bg-color: var(--harmony-tree-header-bg-color, var(--main-bg-color-dark, black));\n\tcolor: var(--main-text-color-dark2, white);\n}\n\n.item {\n\twidth: 100%;\n}\n\n.header {\n\twidth: 100%;\n\theight: 1rem;\n\tbackground-color: var(--header-bg-color);\n\tcursor: pointer;\n\tdisplay: flex;\n\tgap: 0.2rem;\n\talign-items: center;\n}\n\n.childs {\n\tmargin-left: var(--child-margin);\n}\n\n.root>.header {\n\tdisplay: none;\n}\n\n.root>.childs {\n\tmargin-left: unset;\n}\n\n.actions{\n\tdisplay: flex;\n}\n";
+var treeCSS = ":host {\n\t--child-margin: var(--harmony-tree-child-margin, 1rem);\n\t--header-bg-color: var(--harmony-tree-header-bg-color, var(--main-bg-color-dark, black));\n\t--selected-bg-color: var(--harmony-tree-selected-bg-color, var(--accent-primary, rgb(26, 172, 201)));\n\tcolor: var(--main-text-color-dark2, white);\n}\n\n.item {\n\twidth: 100%;\n}\n\n.header {\n\twidth: 100%;\n\theight: 1rem;\n\tbackground-color: var(--header-bg-color);\n\tcursor: pointer;\n\tdisplay: flex;\n\tgap: 0.2rem;\n\talign-items: center;\n}\n\n.childs {\n\tmargin-left: var(--child-margin);\n}\n\n.root>.header {\n\tdisplay: none;\n}\n\n.root>.childs {\n\tmargin-left: unset;\n}\n\n.actions{\n\tdisplay: flex;\n}\n\n.header.selected{\n\tbackground-color: var(--selected-bg-color);\n}\n";
 
 class TreeItem {
     name;
@@ -4729,8 +4729,12 @@ class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
     #isInitialized = new Set();
     #isExpanded = new Map();
     #actions = new Map();
-    #itemActions = new Map();
-    #itemChilds = new Map();
+    /*
+    #itemActions = new Map<TreeItem, HTMLElement>();
+    #items = new Map<TreeItem, HTMLElement>();
+    */
+    #itemElements = new Map();
+    #selectedItem = null;
     createElement() {
         this.#shadowRoot = this.attachShadow({ mode: 'closed' });
         shadowRootStyle(this.#shadowRoot, treeCSS);
@@ -4779,12 +4783,13 @@ class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
     }
     #createItem(item, parent, createExpanded) {
         let childs;
+        let header;
         let actions;
         const element = createElement('div', {
             class: `item level${item.getLevel()}`,
             parent: parent,
             childs: [
-                createElement('div', {
+                header = createElement('div', {
                     class: 'header',
                     childs: [
                         createElement('div', {
@@ -4811,7 +4816,7 @@ class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
                 }),
             ]
         });
-        this.#itemChilds.set(item, childs);
+        this.#itemElements.set(item, { element: element, header: header, childs: childs, actions: actions });
         if (item.isRoot && item.name == '') {
             element.classList.add('root');
         }
@@ -4821,7 +4826,6 @@ class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
         if (createExpanded) {
             this.expandItem(item);
         }
-        this.#itemActions.set(item, actions);
         this.#refreshActions(item);
         return element;
     }
@@ -4829,7 +4833,7 @@ class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
         if (item.parent) {
             this.expandItem(item.parent);
         }
-        const childs = this.#itemChilds.get(item);
+        const childs = this.#itemElements.get(item)?.childs;
         if (!childs || this.#isExpanded.get(item) === true) {
             return;
         }
@@ -4843,12 +4847,27 @@ class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
         }
     }
     collapseItem(item) {
-        const childs = this.#itemChilds.get(item);
+        const childs = this.#itemElements.get(item)?.childs;
         if (!childs) {
             return;
         }
         this.#isExpanded.set(item, false);
         hide(childs);
+    }
+    selectItem(item) {
+        if (item == this.#selectedItem) {
+            return;
+        }
+        if (this.#selectedItem) {
+            this.#itemElements.get(this.#selectedItem)?.header?.classList.remove('selected');
+        }
+        if (item) {
+            if (item.parent) {
+                this.expandItem(item.parent);
+            }
+            this.#itemElements.get(item)?.header?.classList.add('selected');
+        }
+        this.#selectedItem = item;
     }
     addAction(name, img) {
         const action = {
@@ -4863,7 +4882,7 @@ class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
         this.#actions.set(name, action);
     }
     #refreshActions(item) {
-        const htmlActions = this.#itemActions.get(item);
+        const htmlActions = this.#itemElements.get(item)?.actions;
         for (const actionName of item.actions) {
             const action = this.#actions.get(actionName);
             if (action) {

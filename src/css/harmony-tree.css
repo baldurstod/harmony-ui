@@ -1,6 +1,7 @@
 :host {
 	--child-margin: var(--harmony-tree-child-margin, 1rem);
 	--header-bg-color: var(--harmony-tree-header-bg-color, var(--main-bg-color-dark, black));
+	--selected-bg-color: var(--harmony-tree-selected-bg-color, var(--accent-primary, rgb(26, 172, 201)));
 	color: var(--main-text-color-dark2, white);
 }
 
@@ -32,4 +33,8 @@
 
 .actions{
 	display: flex;
+}
+
+.header.selected{
+	background-color: var(--selected-bg-color);
 }
