@@ -103,7 +103,7 @@ export class TreeItem {
 		this.actions.delete(action);
 	}
 
-	static createFromPathList(paths?: Array<string>, options: { pathSeparator?: string, userData?: any } = {}): TreeItem | null {
+	static createFromPathList(paths: Array<string>, options: { pathSeparator?: string, userData?: any } = {}): TreeItem {
 		class element {
 			tree: TreeItem;
 			childs = new Map<string, element>()
@@ -113,9 +113,6 @@ export class TreeItem {
 			}
 		}
 
-		if (!paths) {
-			return null;
-		}
 		const root = new TreeItem('', { userData: options.userData, type: 'root' });
 
 		const top = new element(root);

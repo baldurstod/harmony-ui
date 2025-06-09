@@ -4269,9 +4269,6 @@ class TreeItem {
                 this.tree = tree;
             }
         }
-        if (!paths) {
-            return null;
-        }
         const root = new TreeItem('', { userData: options.userData, type: 'root' });
         const top = new element(root);
         for (const path of paths) {
