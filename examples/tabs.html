@@ -69,7 +69,10 @@
 					'data-text': 2,
 					innerText: 'Content 2',
 					'data-closable': true,
-					$close: (event) => event.preventDefault(),
+					$close: (event) => {
+						event.detail.tab.setAttribute('data-text', 'close denied');
+						event.preventDefault();
+					},
 				}),
 				createElement('harmony-tab', { 'data-i18n': '#i18n_tab', innerText: 'Content i18n' }),
 			],

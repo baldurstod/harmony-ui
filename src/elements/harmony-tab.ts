@@ -23,13 +23,14 @@ export class HTMLHarmonyTabElement extends HTMLElement {
 	constructor() {
 		super();
 		this.#header = createElement('div', {
-			class: 'harmony-tab-label',
+			class: 'label',
 			childs: [
 				this.#htmlTitle = createElement('span', {
 					...(this.getAttribute('data-i18n')) && { i18n: this.getAttribute('data-i18n') },
 					...(this.getAttribute('data-text')) && { innerText: this.getAttribute('data-text') },
 				}),
 				this.#htmlClose = createElement('span', {
+					class: 'close',
 					innerHTML: closeSVG,
 					hidden: !toBool(this.getAttribute('data-closable') ?? ''),
 					$click: (event: Event) => { event.stopPropagation(); this.close() },
