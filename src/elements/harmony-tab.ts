@@ -23,7 +23,7 @@ export class HTMLHarmonyTabElement extends HTMLElement {
 	constructor() {
 		super();
 		this.#header = createElement('div', {
-			class: 'label',
+			class: 'tab',
 			childs: [
 				this.#htmlTitle = createElement('span', {
 					...(this.getAttribute('data-i18n')) && { i18n: this.getAttribute('data-i18n') },

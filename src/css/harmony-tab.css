@@ -8,7 +8,7 @@ harmony-tab::first-letter {
 	text-transform: uppercase;
 }
 
-.label {
+.tab {
 	display: inline-block;
 	background-color: var(--main-bg-color-bright);
 	padding: 10px;
