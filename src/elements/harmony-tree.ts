@@ -1,5 +1,5 @@
 import { shadowRootStyle } from '../harmony-css';
-import { createElement, hide, show } from '../harmony-html';
+import { createElement, display, hide, show } from '../harmony-html';
 import { I18n } from '../harmony-i18n';
 import treeCSS from '../css/harmony-tree.css';
 import { injectGlobalCss } from '../utils/globalcss';
@@ -145,7 +145,17 @@ export class TreeItem {
 		return root;
 	}
 
-	#matchFilter(filter: TreeItemFilter): boolean {
+	#matchFilter(filter?: TreeItemFilter): boolean {
+		if (!filter) {
+			return true;
+		}
+
+		if (filter.name) {
+			if (!this.name.toLowerCase().includes(filter.name.toLowerCase())) {
+				return false;
+			}
+		}
+
 		if (filter.types) {
 			let match = false;
 			for (const tf of filter.types) {
@@ -169,7 +179,7 @@ export class TreeItem {
 		return true;
 	}
 
-	*walk(filter: TreeItemFilter = {}) {
+	*walk(filter?: TreeItemFilter) {
 		let stack: Array<TreeItem> = [this];
 		let current: TreeItem | undefined;
 
@@ -208,6 +218,8 @@ export class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
 	#htmlContextMenu?: HTMLHarmonyMenuElement;
 	#isInitialized = new Set<TreeItem>();
 	#isExpanded = new Map<TreeItem, boolean>();
+	#filter?: TreeItemFilter;
+	#isVisible = new Set<TreeItem>();
 	#actions = new Map<string, TreeAction>();
 	/*
 	#itemActions = new Map<TreeItem, HTMLElement>();
@@ -239,6 +251,13 @@ export class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
 		}
 
 		this.#createItem(this.#root, this.#shadowRoot, true);
+		this.#refreshFilter();
+	}
+
+	#refreshFilter() {
+		for (const [item, itemElement] of this.#itemElements) {
+			display(itemElement.element, !this.#filter || this.#isVisible.has(item));
+		}
 	}
 
 	setRoot(root?: TreeItem | null) {
@@ -273,43 +292,51 @@ export class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
 	}
 
 	#createItem(item: TreeItem, parent: HTMLElement | ShadowRoot, createExpanded: boolean): HTMLElement {
-		let childs: HTMLElement;
-		let header: HTMLElement;
-		let actions: HTMLElement;
+		let element: HTMLElement;
 
-		const element = createElement('div', {
-			class: `item level${item.getLevel()}`,
-			parent: parent,
-			childs: [
-				header = createElement('div', {
-					class: 'header',
-					childs: [
-						createElement('div', {
-							class: 'title',
-							innerText: item.name,
-						}),
-						actions = createElement('div', {
-							class: 'actions',
-						}),
-					],
-					$click: () => {
-						if (this.#isExpanded.get(item)) {
-							this.collapseItem(item);
-						} else {
-							this.expandItem(item);
-						}
+		const itemElement = this.#itemElements.get(item);
 
-						this.dispatchEvent(new CustomEvent<ItemClickEventData>('itemclick', { detail: { item: item } }));
-					},
-					$contextmenu: (event: MouseEvent) => this.#contextMenuHandler(event, item),
-				}),
-				childs = createElement('div', {
-					class: 'childs',
-				}),
-			]
-		});
+		if (itemElement) {
+			element = itemElement.element;
+			parent.append(element);
+		} else {
+			let childs: HTMLElement;
+			let header: HTMLElement;
+			let actions: HTMLElement;
+			element = createElement('div', {
+				class: `item level${item.getLevel()}`,
+				parent: parent,
+				childs: [
+					header = createElement('div', {
+						class: 'header',
+						childs: [
+							createElement('div', {
+								class: 'title',
+								innerText: item.name,
+							}),
+							actions = createElement('div', {
+								class: 'actions',
+							}),
+						],
+						$click: () => {
+							if (this.#isExpanded.get(item)) {
+								this.collapseItem(item);
+							} else {
+								this.expandItem(item);
+								this.#refreshFilter();
+							}
 
-		this.#itemElements.set(item, { element: element, header: header, childs: childs, actions: actions });
+							this.dispatchEvent(new CustomEvent<ItemClickEventData>('itemclick', { detail: { item: item } }));
+						},
+						$contextmenu: (event: MouseEvent) => this.#contextMenuHandler(event, item),
+					}),
+					childs = createElement('div', {
+						class: 'childs',
+					}),
+				]
+			});
+			this.#itemElements.set(item, { element: element, header: header, childs: childs, actions: actions });
+		}
 
 		if (item.isRoot && item.name == '') {
 			element.classList.add('root');
@@ -319,7 +346,7 @@ export class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
 			element.classList.add(`type-${item.type}`);
 		}
 
-		if (createExpanded) {
+		if (createExpanded || this.#isExpanded.get(item)) {
 			this.expandItem(item);
 		}
 
@@ -395,6 +422,8 @@ export class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
 
 	#refreshActions(item: TreeItem) {
 		const htmlActions = this.#itemElements.get(item)?.actions;
+
+		htmlActions?.replaceChildren();
 		for (const actionName of item.actions) {
 			const action = this.#actions.get(actionName);
 			if (action) {
@@ -417,6 +446,26 @@ export class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
 		}));
 		event.preventDefault();
 		event.stopPropagation();
+	}
+
+	setFilter(filter?: TreeItemFilter) {
+		this.#filter = filter;
+
+		this.#isVisible.clear();
+		if (this.#filter && this.#root) {
+			for (const item of this.#root.walk(this.#filter)) {
+				let current: TreeItem | undefined = item;
+
+				do {
+					if (current) {
+						this.#isVisible.add(current);
+					}
+					current = current.parent;
+				} while (current)
+			}
+		}
+
+		this.#refresh();
 	}
 
 	protected onAttributeChanged(name: string, oldValue: string, newValue: string) {

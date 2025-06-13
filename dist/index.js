@@ -4295,6 +4295,14 @@ class TreeItem {
         return root;
     }
     #matchFilter(filter) {
+        if (!filter) {
+            return true;
+        }
+        if (filter.name) {
+            if (!this.name.toLowerCase().includes(filter.name.toLowerCase())) {
+                return false;
+            }
+        }
         if (filter.types) {
             let match = false;
             for (const tf of filter.types) {
@@ -4314,7 +4322,7 @@ class TreeItem {
         }
         return true;
     }
-    *walk(filter = {}) {
+    *walk(filter) {
         let stack = [this];
         let current;
         do {
@@ -4337,6 +4345,8 @@ class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
     #htmlContextMenu;
     #isInitialized = new Set();
     #isExpanded = new Map();
+    #filter;
+    #isVisible = new Set();
     #actions = new Map();
     /*
     #itemActions = new Map<TreeItem, HTMLElement>();
@@ -4363,6 +4373,12 @@ class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
             return;
         }
         this.#createItem(this.#root, this.#shadowRoot, true);
+        this.#refreshFilter();
+    }
+    #refreshFilter() {
+        for (const [item, itemElement] of this.#itemElements) {
+            display(itemElement.element, !this.#filter || this.#isVisible.has(item));
+        }
     }
     setRoot(root) {
         this.#root = root;
@@ -4391,48 +4407,57 @@ class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
         }
     }
     #createItem(item, parent, createExpanded) {
-        let childs;
-        let header;
-        let actions;
-        const element = createElement('div', {
-            class: `item level${item.getLevel()}`,
-            parent: parent,
-            childs: [
-                header = createElement('div', {
-                    class: 'header',
-                    childs: [
-                        createElement('div', {
-                            class: 'title',
-                            innerText: item.name,
-                        }),
-                        actions = createElement('div', {
-                            class: 'actions',
-                        }),
-                    ],
-                    $click: () => {
-                        if (this.#isExpanded.get(item)) {
-                            this.collapseItem(item);
-                        }
-                        else {
-                            this.expandItem(item);
-                        }
-                        this.dispatchEvent(new CustomEvent('itemclick', { detail: { item: item } }));
-                    },
-                    $contextmenu: (event) => this.#contextMenuHandler(event, item),
-                }),
-                childs = createElement('div', {
-                    class: 'childs',
-                }),
-            ]
-        });
-        this.#itemElements.set(item, { element: element, header: header, childs: childs, actions: actions });
+        let element;
+        const itemElement = this.#itemElements.get(item);
+        if (itemElement) {
+            element = itemElement.element;
+            parent.append(element);
+        }
+        else {
+            let childs;
+            let header;
+            let actions;
+            element = createElement('div', {
+                class: `item level${item.getLevel()}`,
+                parent: parent,
+                childs: [
+                    header = createElement('div', {
+                        class: 'header',
+                        childs: [
+                            createElement('div', {
+                                class: 'title',
+                                innerText: item.name,
+                            }),
+                            actions = createElement('div', {
+                                class: 'actions',
+                            }),
+                        ],
+                        $click: () => {
+                            if (this.#isExpanded.get(item)) {
+                                this.collapseItem(item);
+                            }
+                            else {
+                                this.expandItem(item);
+                                this.#refreshFilter();
+                            }
+                            this.dispatchEvent(new CustomEvent('itemclick', { detail: { item: item } }));
+                        },
+                        $contextmenu: (event) => this.#contextMenuHandler(event, item),
+                    }),
+                    childs = createElement('div', {
+                        class: 'childs',
+                    }),
+                ]
+            });
+            this.#itemElements.set(item, { element: element, header: header, childs: childs, actions: actions });
+        }
         if (item.isRoot && item.name == '') {
             element.classList.add('root');
         }
         if (item.type) {
             element.classList.add(`type-${item.type}`);
         }
-        if (createExpanded) {
+        if (createExpanded || this.#isExpanded.get(item)) {
             this.expandItem(item);
         }
         this.#refreshActions(item);
@@ -4492,6 +4517,7 @@ class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
     }
     #refreshActions(item) {
         const htmlActions = this.#itemElements.get(item)?.actions;
+        htmlActions?.replaceChildren();
         for (const actionName of item.actions) {
             const action = this.#actions.get(actionName);
             if (action) {
@@ -4513,6 +4539,22 @@ class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
         }));
         event.preventDefault();
         event.stopPropagation();
+    }
+    setFilter(filter) {
+        this.#filter = filter;
+        this.#isVisible.clear();
+        if (this.#filter && this.#root) {
+            for (const item of this.#root.walk(this.#filter)) {
+                let current = item;
+                do {
+                    if (current) {
+                        this.#isVisible.add(current);
+                    }
+                    current = current.parent;
+                } while (current);
+            }
+        }
+        this.#refresh();
     }
     onAttributeChanged(name, oldValue, newValue) {
         switch (name) {

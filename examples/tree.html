@@ -20,19 +20,29 @@
 </head>
 
 <body>
-	<harmony-tree id='tree1' style="width:200px"></harmony-tree>
-	<harmony-tree id='tree2' style="width:200px"></harmony-tree>
+	<harmony-tree id="tree1" style="width:200px"></harmony-tree>
+	<input id="filter" type="text" style="width:200px"></input>
+	<harmony-tree id="tree2" style="width:200px"></harmony-tree>
 </body>
 <script type="module">
 	import { createElement, defineHarmonyTree, TreeItem, HarmonySVG } from '../dist/browser.js';
 	defineHarmonyTree();
 	const tree1 = document.getElementById('tree1');
 	const tree2 = document.getElementById('tree2');
+	const filter = document.getElementById('filter');
 
 	tree2.addEventListener('itemclick', (event) => {
 		const item = event.detail.item;
 		if (item.type == 'file') {
 			tree2.selectItem(item);
+		}
+	});
+
+	filter.addEventListener('input', (event) => {
+		if (event.target.value == '') {
+			tree2.setFilter();
+		} else {
+			tree2.setFilter({ name: event.target.value });
 		}
 	});
 
