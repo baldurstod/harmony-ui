@@ -154,6 +154,10 @@ export class TreeItem {
 			if (!this.name.toLowerCase().includes(filter.name.toLowerCase())) {
 				return false;
 			}
+
+			if (this.type != 'file') {
+				return false;
+			}
 		}
 
 		if (filter.types) {
