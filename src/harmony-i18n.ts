@@ -80,7 +80,7 @@ export class I18n {
 	static #started = false;
 	static #lang = 'english';
 	static #defaultLang = 'english';
-	static #translations = new Map();
+	static #translations = new Map<string, I18nTranslation>();
 	static #executing = false;
 	static #refreshTimeout: number | null;
 	static #observerConfig = { childList: true, subtree: true, attributeFilter: ['i18n', 'data-i18n-json', 'data-i18n-values'] };

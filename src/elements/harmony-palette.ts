@@ -1,24 +1,31 @@
 import { checkOutlineSVG } from 'harmony-svg';
-import { I18n } from '../harmony-i18n';
+import paletteCSS from '../css/harmony-palette.css';
 import { shadowRootStyle } from '../harmony-css';
 import { createElement } from '../harmony-html';
-import paletteCSS from '../css/harmony-palette.css';
+import { I18n } from '../harmony-i18n';
 import { toBool } from '../utils/attributes';
 import { injectGlobalCss } from '../utils/globalcss';
-import { Color } from 'harmony-utils';
 
 function clampColor(val: number) {
 	return Math.min(Math.max(0, val), 1);
 }
 
+export type PaletteColor = {
+	r: number;
+	g: number;
+	b: number;
+	h: string;
+}
+
 export class HTMLHarmonyPaletteElement extends HTMLElement {
 	#initialized = false;
 	#multiple = false;
-	#colors = new Map<string, Color>();
-	#selected = new Map();
-	#colorElements = new Map();
-	#preSelected = new Set();
+	#colors = new Map<string, PaletteColor>();
+	#selected = new Map<string, HTMLElement>();
+	#colorElements = new Map<string, HTMLElement>();
+	#preSelected = new Set<string>();
 	#shadowRoot;
+
 	constructor() {
 		super();
 		this.#shadowRoot = this.attachShadow({ mode: 'closed' });
@@ -80,9 +87,10 @@ export class HTMLHarmonyPaletteElement extends HTMLElement {
 		this.#preSelected.clear();
 	}
 
-	#selectColor(hex: string, element: HTMLElement, selected = false) {
-		if (this.#selected.has(hex) && selected !== true) {
-			this.#setSelected(this.#selected.get(hex), false);
+	#selectColor(hex: string, element?: HTMLElement, selected = false) {
+		const s = this.#selected.get(hex);
+		if (s && selected !== true) {
+			this.#setSelected(s, false);
 			this.#dispatchSelect(hex, false);
 			this.#selected.delete(hex);
 		} else {
@@ -94,8 +102,10 @@ export class HTMLHarmonyPaletteElement extends HTMLElement {
 				}
 			}
 			this.#dispatchSelect(hex, true);
-			this.#selected.set(hex, element);
-			this.#setSelected(element, true);
+			if (element) {
+				this.#selected.set(hex, element);
+				this.#setSelected(element, true);
+			}
 		}
 	}
 
@@ -139,19 +149,21 @@ export class HTMLHarmonyPaletteElement extends HTMLElement {
 	}
 
 	#addColor(color: string | Array<number>, tooltip?: string) {
-		const c: any = this.#getColorAsRGB(color);
+		const c = this.#getColorAsRGB(color);
 		if (!c) {
 			return;
 		}
 
+		/*
 		c.selected = false;
 		c.tooltip = tooltip;
+		*/
 
 		this.#colors.set(c.h, c);
 		return c;
 	}
 
-	#getColorAsRGB(color: string | Array<number>) {
+	#getColorAsRGB(color: string | Array<number>): PaletteColor {
 		let r = 0, g = 0, b = 0;
 		switch (true) {
 			case typeof color == 'string':

@@ -1,8 +1,8 @@
-import { I18n } from '../harmony-i18n';
-import { createElement, hide, show, display, createShadowRoot } from '../harmony-html';
-import slideshowCSS from '../css/harmony-slideshow.css';
 import slideshowZoomCSS from '../css/harmony-slideshow-zoom.css';
+import slideshowCSS from '../css/harmony-slideshow.css';
 import { shadowRootStyleSync } from '../harmony-css';
+import { createElement, createShadowRoot, hide, show } from '../harmony-html';
+import { I18n } from '../harmony-i18n';
 import { toBool } from '../utils/attributes';
 import { injectGlobalCss } from '../utils/globalcss';
 
@@ -40,7 +40,7 @@ export class HTMLHarmonySlideshowElement extends HTMLElement {
 	#htmlPlayButton: HTMLElement;
 	#htmlThumbnails: HTMLElement;
 	#images: Array<HTMLImageElement> = [];
-	#imgSet = new Set();
+	#imgSet = new Set<HTMLImageElement>();
 	#htmlZoomImage: HTMLImageElement;
 	#resizeObserver = new ResizeObserver(resizeCallback);
 	#autoPlay = false;

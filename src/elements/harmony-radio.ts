@@ -1,10 +1,9 @@
+import radioCSS from '../css/harmony-radio.css';
 import { shadowRootStyle } from '../harmony-css';
 import { createElement, hide, show } from '../harmony-html';
 import { I18n } from '../harmony-i18n';
-import radioCSS from '../css/harmony-radio.css';
 import { toBool } from '../utils/attributes';
 import { injectGlobalCss } from '../utils/globalcss';
-import { HTMLHarmonyItemElement } from './harmony-item';
 
 export type RadioChangedEventData = { value: string, state: boolean };
 
@@ -16,7 +15,7 @@ export class HTMLHarmonyRadioElement extends HTMLElement {
 	#buttons = new Map<string, HTMLButtonElement>();
 	#buttons2 = new Set<HTMLButtonElement>();
 	#slots = new Set<HTMLSlotElement>();
-	#selected = new Set();
+	#selected = new Set<string>();
 	#shadowRoot;
 	#lastSelected?: HTMLElement;
 
