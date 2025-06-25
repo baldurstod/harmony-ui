@@ -90,9 +90,11 @@ export class HTMLHarmonyPaletteElement extends HTMLElement {
 	#selectColor(hex: string, element?: HTMLElement, selected = false) {
 		const s = this.#selected.get(hex);
 		if (s && selected !== true) {
-			this.#setSelected(s, false);
-			this.#dispatchSelect(hex, false);
-			this.#selected.delete(hex);
+			if (this.#multiple) {
+				this.#setSelected(s, false);
+				this.#dispatchSelect(hex, false);
+				this.#selected.delete(hex);
+			}
 		} else {
 			if (!this.#multiple) {
 				for (const [h, e] of this.#selected) {
