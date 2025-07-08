@@ -77,8 +77,10 @@ export class HTMLHarmonyAccordionElement extends HTMLElement {
 		}*/
 		if (this.#selected.has(htmlItem)) {
 			this.#display(htmlItem, false);
+			htmlItem.dispatchEvent(new CustomEvent('collapsed'));
 		} else {
 			this.#display(htmlItem, true);
+			htmlItem.dispatchEvent(new CustomEvent('expanded'));
 		}
 	}
 
