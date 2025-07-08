@@ -242,7 +242,7 @@ export declare class HTMLHarmonyPaletteElement extends HTMLElement {
     connectedCallback(): void;
     adoptStyleSheet(styleSheet: CSSStyleSheet): void;
     clearColors(): void;
-    addColor(color: string | Array<number>, tooltip: string): any;
+    addColor(color: string | Array<number>, tooltip: string): PaletteColor | undefined;
     selectColor(color: string | Array<number>, selected?: boolean): void;
     toggleColor(color: string | Array<number>): void;
     attributeChangedCallback(name: string, oldValue: string, newValue: string): void;
@@ -438,7 +438,7 @@ export declare class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
     expandItem(item: TreeItem): void;
     collapseItem(item: TreeItem): void;
     selectItem(item: TreeItem | null): void;
-    addAction(name: string, img: HTMLElement | string): void;
+    addAction(name: string, img: HTMLElement | string, tooltip?: string): void;
     setFilter(filter?: TreeItemFilter): void;
     protected onAttributeChanged(name: string, oldValue: string, newValue: string): void;
     static get observedAttributes(): string[];
@@ -469,7 +469,7 @@ export declare class I18n {
      * @deprecated use getAuthors() instead
      */
     static get authors(): void;
-    static getAuthors(): any;
+    static getAuthors(): string[];
     static setValue(element: HTMLElement | undefined, name: string, value: I18nValue): void;
 }
 
@@ -566,6 +566,13 @@ export declare enum ManipulatorUpdatedEventType {
     Rotation = "rotation"
 }
 
+export declare type PaletteColor = {
+    r: number;
+    g: number;
+    b: number;
+    h: string;
+};
+
 export declare type RadioChangedEventData = {
     value: string;
     state: boolean;
@@ -589,6 +596,7 @@ export declare type TreeAction = {
     name: string;
     element?: HTMLElement;
     innerHTML?: string;
+    tooltip?: string;
 };
 
 export declare type TreeContextMenuEventData = {
