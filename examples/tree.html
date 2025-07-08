@@ -25,7 +25,8 @@
 	<harmony-tree id="tree2" style="width:200px"></harmony-tree>
 </body>
 <script type="module">
-	import { createElement, defineHarmonyTree, TreeItem, HarmonySVG } from '../dist/browser.js';
+	import { createElement, defineHarmonyTree, TreeItem, HarmonySVG, I18n } from '../dist/browser.js';
+	I18n.start();
 	defineHarmonyTree();
 	const tree1 = document.getElementById('tree1');
 	const tree2 = document.getElementById('tree2');
@@ -112,7 +113,7 @@
 		'tf2/tf/tf2_textures'
 	]);
 
-	tree2.addAction('download', HarmonySVG.downloadSVG);
+	tree2.addAction('download', HarmonySVG.downloadSVG, "download");
 
 	let highlight;
 	for (let item of root2.walk({ type: 'file' })) {

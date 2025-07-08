@@ -1354,9 +1354,11 @@ class HTMLHarmonyAccordionElement extends HTMLElement {
         }*/
         if (this.#selected.has(htmlItem)) {
             this.#display(htmlItem, false);
+            htmlItem.dispatchEvent(new CustomEvent('collapsed'));
         }
         else {
             this.#display(htmlItem, true);
+            htmlItem.dispatchEvent(new CustomEvent('expanded'));
         }
     }
     #display(htmlItem, display) {
@@ -4902,9 +4904,10 @@ class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
         }
         this.#selectedItem = item;
     }
-    addAction(name, img) {
+    addAction(name, img, tooltip) {
         const action = {
             name: name,
+            tooltip: tooltip,
         };
         if (typeof img == 'string') {
             action.innerHTML = img;
@@ -4924,6 +4927,9 @@ class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
                     child: action.element,
                     innerHTML: action.innerHTML,
                     parent: htmlActions,
+                    i18n: {
+                        title: action.tooltip,
+                    },
                     $click: (event) => this.#actionHandler(event, item, actionName),
                 });
             }

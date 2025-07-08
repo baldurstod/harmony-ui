@@ -1,7 +1,7 @@
+import treeCSS from '../css/harmony-tree.css';
 import { shadowRootStyle } from '../harmony-css';
 import { createElement, display, hide, show } from '../harmony-html';
 import { I18n } from '../harmony-i18n';
-import treeCSS from '../css/harmony-tree.css';
 import { injectGlobalCss } from '../utils/globalcss';
 import { HTMLHarmonyElement } from './harmony-element';
 import { defineHarmonyMenu, HarmonyMenuItems, HTMLHarmonyMenuElement } from './harmony-menu';
@@ -13,6 +13,7 @@ export type TreeAction = {
 	name: string;
 	element?: HTMLElement;
 	innerHTML?: string;
+	tooltip?: string;
 }
 
 export type TreeItemFilter = {
@@ -410,9 +411,10 @@ export class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
 		this.#selectedItem = item;
 	}
 
-	addAction(name: string, img: HTMLElement | string) {
+	addAction(name: string, img: HTMLElement | string, tooltip?: string) {
 		const action: TreeAction = {
 			name: name,
+			tooltip: tooltip,
 		}
 
 		if (typeof img == 'string') {
@@ -420,6 +422,7 @@ export class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
 		} else {
 			action.element = img;
 		}
+
 
 		this.#actions.set(name, action);
 	}
@@ -435,6 +438,9 @@ export class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
 					child: action.element,
 					innerHTML: action.innerHTML,
 					parent: htmlActions,
+					i18n: {
+						title: action.tooltip,
+					},
 					$click: (event: MouseEvent) => this.#actionHandler(event, item, actionName),
 				});
 			}
