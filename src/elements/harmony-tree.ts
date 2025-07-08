@@ -355,7 +355,7 @@ export class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
 			this.expandItem(item);
 		}
 
-		this.#refreshActions(item);
+		this.refreshActions(item);
 
 		return element;
 	}
@@ -427,7 +427,7 @@ export class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
 		this.#actions.set(name, action);
 	}
 
-	#refreshActions(item: TreeItem) {
+	refreshActions(item: TreeItem) {
 		const htmlActions = this.#itemElements.get(item)?.actions;
 
 		htmlActions?.replaceChildren();

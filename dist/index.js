@@ -4472,7 +4472,7 @@ class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
         if (createExpanded || this.#isExpanded.get(item)) {
             this.expandItem(item);
         }
-        this.#refreshActions(item);
+        this.refreshActions(item);
         return element;
     }
     expandItem(item) {
@@ -4528,7 +4528,7 @@ class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
         }
         this.#actions.set(name, action);
     }
-    #refreshActions(item) {
+    refreshActions(item) {
         const htmlActions = this.#itemElements.get(item)?.actions;
         htmlActions?.replaceChildren();
         for (const actionName of item.actions) {

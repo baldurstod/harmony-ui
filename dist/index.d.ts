@@ -439,6 +439,7 @@ export declare class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
     collapseItem(item: TreeItem): void;
     selectItem(item: TreeItem | null): void;
     addAction(name: string, img: HTMLElement | string, tooltip?: string): void;
+    refreshActions(item: TreeItem): void;
     setFilter(filter?: TreeItemFilter): void;
     protected onAttributeChanged(name: string, oldValue: string, newValue: string): void;
     static get observedAttributes(): string[];
