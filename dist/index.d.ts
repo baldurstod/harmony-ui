@@ -437,7 +437,7 @@ export declare class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
     setRoot(root?: TreeItem | null): void;
     expandItem(item: TreeItem): void;
     collapseItem(item: TreeItem): void;
-    selectItem(item: TreeItem | null): void;
+    selectItem(item: TreeItem | null, scrollIntoView?: boolean): void;
     addAction(name: string, img: HTMLElement | string, tooltip?: string): void;
     refreshActions(item: TreeItem): void;
     setFilter(filter?: TreeItemFilter): void;

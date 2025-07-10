@@ -4500,7 +4500,7 @@ class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
         this.#isExpanded.set(item, false);
         hide(childs);
     }
-    selectItem(item) {
+    selectItem(item, scrollIntoView = true) {
         if (item == this.#selectedItem) {
             return;
         }
@@ -4511,7 +4511,13 @@ class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
             if (item.parent) {
                 this.expandItem(item.parent);
             }
-            this.#itemElements.get(item)?.header?.classList.add('selected');
+            const itemElement = this.#itemElements.get(item)?.header;
+            itemElement?.classList.add('selected');
+            if (scrollIntoView) {
+                setTimeout(() => {
+                    itemElement?.scrollIntoView();
+                }, 0);
+            }
         }
         this.#selectedItem = item;
     }

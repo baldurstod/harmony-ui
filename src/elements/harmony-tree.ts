@@ -393,7 +393,7 @@ export class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
 		hide(childs);
 	}
 
-	selectItem(item: TreeItem | null) {
+	selectItem(item: TreeItem | null, scrollIntoView = true) {
 		if (item == this.#selectedItem) {
 			return;
 		}
@@ -406,7 +406,13 @@ export class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
 			if (item.parent) {
 				this.expandItem(item.parent);
 			}
-			this.#itemElements.get(item)?.header?.classList.add('selected');
+			const itemElement = this.#itemElements.get(item)?.header;
+			itemElement?.classList.add('selected');
+			if (scrollIntoView) {
+				setTimeout(() => {
+					itemElement?.scrollIntoView();
+				}, 0);
+			}
 		}
 		this.#selectedItem = item;
 	}
