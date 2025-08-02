@@ -85,14 +85,16 @@
 		});
 
 		const group4 = createElement('harmony-tab-group', { parent: document.body });
+		let tab;
 		for (let i = 0; i < 50; i++) {
-			createElement('harmony-tab', {
+			tab = createElement('harmony-tab', {
 				parent: group4,
 				'data-text': i,
 				innerText: 'Content ' + i,
 			});
 		}
 
+		tab.activate();
 	</script>
 </body>
 

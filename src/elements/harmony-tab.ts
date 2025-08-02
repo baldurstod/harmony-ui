@@ -36,7 +36,7 @@ export class HTMLHarmonyTabElement extends HTMLElement {
 				}),
 			],
 			$click: () => this.#click(),
-			$contextmenu: (event: PointerEvent) => this.#contextMenu(event),
+			$contextmenu: (event: PointerEvent) => this.#onContextMenu(event),
 		}) as HTMLElement;
 	}
 
@@ -153,8 +153,12 @@ export class HTMLHarmonyTabElement extends HTMLElement {
 		}
 	}
 
-	#contextMenu(event: PointerEvent) {
+	#onContextMenu(event: PointerEvent) {
 		this.dispatchEvent(new CustomEvent<TabEventData>('contextmenu', { detail: { tab: this, originalEvent: event } }));
+	}
+
+	scrollIntoView() {
+		this.#header.scrollIntoView();
 	}
 
 	static get observedAttributes() {

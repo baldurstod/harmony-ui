@@ -4300,7 +4300,7 @@ class HTMLHarmonyTabElement extends HTMLElement {
                 }),
             ],
             $click: () => this.#click(),
-            $contextmenu: (event) => this.#contextMenu(event),
+            $contextmenu: (event) => this.#onContextMenu(event),
         });
     }
     get htmlHeader() {
@@ -4402,8 +4402,11 @@ class HTMLHarmonyTabElement extends HTMLElement {
             this.activate();
         }
     }
-    #contextMenu(event) {
+    #onContextMenu(event) {
         this.dispatchEvent(new CustomEvent('contextmenu', { detail: { tab: this, originalEvent: event } }));
+    }
+    scrollIntoView() {
+        this.#header.scrollIntoView();
     }
     static get observedAttributes() {
         return ['data-i18n', 'data-text', 'disabled', 'data-closable'];
@@ -4473,6 +4476,9 @@ class HTMLHarmonyTabGroupElement extends HTMLElement {
             }
         }
         this.#activeTab?.setActive(true);
+        setTimeout(() => {
+            this.#activeTab?.scrollIntoView();
+        }, 0);
     }
     /**
      * @deprecated use activateTab() instead

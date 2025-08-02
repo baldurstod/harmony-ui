@@ -64,6 +64,9 @@ export class HTMLHarmonyTabGroupElement extends HTMLElement {
 		}
 
 		this.#activeTab?.setActive(true);
+		setTimeout(() => {
+			this.#activeTab?.scrollIntoView();
+		}, 0);
 	}
 
 	/**

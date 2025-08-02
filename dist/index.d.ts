@@ -395,6 +395,7 @@ export declare class HTMLHarmonyTabElement extends HTMLElement {
     get active(): boolean;
     isActive(): boolean;
     isClosed(): boolean;
+    scrollIntoView(): void;
     static get observedAttributes(): string[];
 }
 
