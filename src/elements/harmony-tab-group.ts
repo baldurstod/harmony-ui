@@ -19,6 +19,7 @@ export class HTMLHarmonyTabGroupElement extends HTMLElement {
 		this.#shadowRoot = this.attachShadow({ mode: 'closed' });
 		this.#header = createElement('div', {
 			class: 'harmony-tab-group-header',
+			$wheel: (event: WheelEvent) => this.#header.scrollLeft += event.deltaY,
 		});
 		this.#content = createElement('div', {
 			class: 'harmony-tab-group-content',

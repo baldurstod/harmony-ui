@@ -5,15 +5,14 @@ harmony-tab-group {
 	display: flex;
 	flex-direction: column;
 	position: relative;
-	/*overflow: hidden;*/
 }
 
 .harmony-tab-group-header {
 	background-color: var(--main-bg-color-bright);
 	display: flex;
-	flex-wrap: wrap;
-	/*overflow: hidden;*/
+	overflow: auto hidden;
 	width: 100%;
+	scrollbar-width: none;
 }
 
 .harmony-tab-group-content {

@@ -4,9 +4,15 @@
 <head>
 	<meta charset="utf-8">
 	<title>Test tabs</title>
+	<style>
+		body{
+			background-color: var(--harmony-ui-background-primary);
+			overflow: hidden;
+		}
+	</style>
 </head>
 
-<body>
+<body class="dark">
 	<harmony-tab-group>
 		<harmony-tab data-text=1>
 			<content>Content 1</content>
@@ -77,6 +83,16 @@
 				createElement('harmony-tab', { 'data-i18n': '#i18n_tab', innerText: 'Content i18n' }),
 			],
 		});
+
+		const group4 = createElement('harmony-tab-group', { parent: document.body });
+		for (let i = 0; i < 50; i++) {
+			createElement('harmony-tab', {
+				parent: group4,
+				'data-text': i,
+				innerText: 'Content ' + i,
+			});
+		}
+
 	</script>
 </body>
 

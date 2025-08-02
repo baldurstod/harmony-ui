@@ -12,10 +12,10 @@ harmony-tab::first-letter {
 	display: inline-block;
 	background-color: var(--main-bg-color-bright);
 	padding: 10px;
-	border: 1px solid black;
+	border: 1px solid var(--harmony-ui-text-primary);
 	border-top: 0px;
 	position: relative;
-	color: var(--main-text-color-dark2);
+	color: var(--harmony-ui-text-primary);
 	cursor: pointer;
 	user-select: none;
 	pointer-events: all;
