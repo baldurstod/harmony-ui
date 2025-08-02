@@ -2,7 +2,6 @@ import { closeSVG } from 'harmony-svg';
 import { createElement, display } from '../harmony-html';
 import { toBool } from '../utils/attributes';
 import { injectGlobalCss } from '../utils/globalcss';
-import { defineHarmonyMenu, HTMLHarmonyMenuElement } from './harmony-menu';
 import { HTMLHarmonyTabGroupElement } from './harmony-tab-group';
 
 export type TabEventData = {
@@ -43,6 +42,10 @@ export class HTMLHarmonyTabElement extends HTMLElement {
 
 	get htmlHeader() {
 		return this.#header;
+	}
+
+	getGroup(): HTMLHarmonyTabGroupElement | undefined {
+		return this.#group;
 	}
 
 	connectedCallback() {

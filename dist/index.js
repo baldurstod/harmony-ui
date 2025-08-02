@@ -3917,6 +3917,9 @@ class HTMLHarmonyTabElement extends HTMLElement {
     get htmlHeader() {
         return this.#header;
     }
+    getGroup() {
+        return this.#group;
+    }
     connectedCallback() {
         const parentElement = this.parentElement;
         if (parentElement && parentElement.tagName == 'HARMONY-TAB-GROUP') {
@@ -4066,6 +4069,9 @@ class HTMLHarmonyTabGroupElement extends HTMLElement {
         }
         this.#refresh();
     }
+    getTabs() {
+        return new Set(this.#tabs);
+    }
     #refresh() {
         this.#header.replaceChildren();
         this.#content.replaceChildren();
@@ -4097,6 +4103,11 @@ class HTMLHarmonyTabGroupElement extends HTMLElement {
             this.#activeTab = this.#tabs.values().next().value;
         }
         this.#refresh();
+    }
+    closeAllTabs() {
+        for (const tab of this.#tabs) {
+            tab.close();
+        }
     }
     clear() {
         this.#tabs.clear();

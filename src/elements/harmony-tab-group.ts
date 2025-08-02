@@ -1,10 +1,10 @@
+import tabGroupCSS from '../css/harmony-tab-group.css';
+import tabCSS from '../css/harmony-tab.css';
 import { shadowRootStyle } from '../harmony-css';
 import { createElement } from '../harmony-html';
 import { I18n } from '../harmony-i18n';
-import tabGroupCSS from '../css/harmony-tab-group.css';
-import tabCSS from '../css/harmony-tab.css';
-import { HTMLHarmonyTabElement } from './harmony-tab';
 import { injectGlobalCss } from '../utils/globalcss';
+import { HTMLHarmonyTabElement } from './harmony-tab';
 
 export class HTMLHarmonyTabGroupElement extends HTMLElement {
 	#doOnce = true;
@@ -47,6 +47,10 @@ export class HTMLHarmonyTabGroupElement extends HTMLElement {
 		this.#refresh();
 	}
 
+	getTabs(): Set<HTMLHarmonyTabElement> {
+		return new Set<HTMLHarmonyTabElement>(this.#tabs);
+	}
+
 	#refresh() {
 		this.#header.replaceChildren();
 		this.#content.replaceChildren();
@@ -82,6 +86,12 @@ export class HTMLHarmonyTabGroupElement extends HTMLElement {
 			this.#activeTab = this.#tabs.values().next().value;
 		}
 		this.#refresh();
+	}
+
+	closeAllTabs(): void {
+		for (const tab of this.#tabs) {
+			tab.close();
+		}
 	}
 
 	clear() {

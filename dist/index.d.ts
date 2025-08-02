@@ -377,6 +377,7 @@ export declare class HTMLHarmonyTabElement extends HTMLElement {
     #private;
     constructor();
     get htmlHeader(): HTMLElement;
+    getGroup(): HTMLHarmonyTabGroupElement | undefined;
     connectedCallback(): void;
     attributeChangedCallback(name: string, oldValue: string, newValue: string): void;
     set disabled(disabled: boolean);
@@ -403,12 +404,14 @@ export declare class HTMLHarmonyTabGroupElement extends HTMLElement {
     connectedCallback(): void;
     adoptStyleSheet(styleSheet: CSSStyleSheet): void;
     addTab(tab: HTMLHarmonyTabElement): void;
+    getTabs(): Set<HTMLHarmonyTabElement>;
     /**
      * @deprecated use activateTab() instead
      */
     set active(tab: HTMLHarmonyTabElement);
     activateTab(tab: HTMLHarmonyTabElement): void;
     closeTab(tab: HTMLHarmonyTabElement): void;
+    closeAllTabs(): void;
     clear(): void;
 }
 
