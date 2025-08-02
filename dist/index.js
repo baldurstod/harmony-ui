@@ -3911,6 +3911,7 @@ class HTMLHarmonyTabElement extends HTMLElement {
                 }),
             ],
             $click: () => this.#click(),
+            $contextmenu: (event) => this.#contextMenu(event),
         });
     }
     get htmlHeader() {
@@ -4008,6 +4009,9 @@ class HTMLHarmonyTabElement extends HTMLElement {
         if (!this.#disabled) {
             this.activate();
         }
+    }
+    #contextMenu(event) {
+        this.dispatchEvent(new CustomEvent('contextmenu', { detail: { tab: this, originalEvent: event } }));
     }
     static get observedAttributes() {
         return ['data-i18n', 'data-text', 'disabled', 'data-closable'];

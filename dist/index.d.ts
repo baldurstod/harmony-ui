@@ -589,6 +589,7 @@ export declare function styleInject(css: string): void;
 
 export declare type TabEventData = {
     tab: HTMLHarmonyTabElement;
+    originalEvent?: Event;
 };
 
 export declare function toggle(htmlElement: HTMLElement | ShadowRoot | undefined | null): void;

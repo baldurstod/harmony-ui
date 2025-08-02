@@ -1,13 +1,13 @@
 import { closeSVG } from 'harmony-svg';
-import { createElement, hide, show, display } from '../harmony-html';
+import { createElement, display } from '../harmony-html';
 import { toBool } from '../utils/attributes';
 import { injectGlobalCss } from '../utils/globalcss';
+import { defineHarmonyMenu, HTMLHarmonyMenuElement } from './harmony-menu';
 import { HTMLHarmonyTabGroupElement } from './harmony-tab-group';
-
-
 
 export type TabEventData = {
 	tab: HTMLHarmonyTabElement;
+	originalEvent?: Event;
 };
 
 
@@ -37,6 +37,7 @@ export class HTMLHarmonyTabElement extends HTMLElement {
 				}),
 			],
 			$click: () => this.#click(),
+			$contextmenu: (event: PointerEvent) => this.#contextMenu(event),
 		}) as HTMLElement;
 	}
 
@@ -147,6 +148,10 @@ export class HTMLHarmonyTabElement extends HTMLElement {
 		if (!this.#disabled) {
 			this.activate();
 		}
+	}
+
+	#contextMenu(event: PointerEvent) {
+		this.dispatchEvent(new CustomEvent<TabEventData>('contextmenu', { detail: { tab: this, originalEvent: event } }));
 	}
 
 	static get observedAttributes() {
