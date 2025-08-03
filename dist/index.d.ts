@@ -634,7 +634,7 @@ export declare class TreeItem {
     addAction(action: string): void;
     addActions(actions: Array<string>): void;
     removeAction(action: string): void;
-    static createFromPathList(paths: Array<string>, options?: {
+    static createFromPathList(paths: Array<string> | Set<string>, options?: {
         pathSeparator?: string;
         userData?: any;
     }): TreeItem;

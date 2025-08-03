@@ -104,7 +104,7 @@ export class TreeItem {
 		this.actions.delete(action);
 	}
 
-	static createFromPathList(paths: Array<string>, options: { pathSeparator?: string, userData?: any } = {}): TreeItem {
+	static createFromPathList(paths: Array<string> | Set<string>, options: { pathSeparator?: string, userData?: any } = {}): TreeItem {
 		class element {
 			tree: TreeItem;
 			childs = new Map<string, element>()
