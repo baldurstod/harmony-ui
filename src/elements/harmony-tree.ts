@@ -104,7 +104,7 @@ export class TreeItem {
 		this.actions.delete(action);
 	}
 
-	static createFromPathList(paths: Array<string> | Set<string>, options: { pathSeparator?: string, userData?: any } = {}): TreeItem {
+	static createFromPathList(paths: Set<string> | Map<string, any>, options: { pathSeparator?: string, userData?: any } = {}): TreeItem {
 		class element {
 			tree: TreeItem;
 			childs = new Map<string, element>()
@@ -118,7 +118,7 @@ export class TreeItem {
 
 		const top = new element(root);
 
-		for (const path of paths) {
+		for (const [path, perElementUserData] of paths.entries()) {
 			const segments = path.split(options.pathSeparator ?? '/');
 
 			let current = top;
@@ -135,7 +135,7 @@ export class TreeItem {
 				}
 
 				if (!current.childs.has(s)) {
-					current.childs.set(s, new element(new TreeItem(s, { parent: parent, type: type, userData: options.userData })));
+					current.childs.set(s, new element(new TreeItem(s, { parent: parent, type: type, userData: perElementUserData != path ? perElementUserData : options.userData })));
 				}
 
 				parent = current.childs.get(s)!.tree;

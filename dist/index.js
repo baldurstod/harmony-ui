@@ -4303,7 +4303,7 @@ class TreeItem {
         }
         const root = new TreeItem('', { userData: options.userData, type: 'root' });
         const top = new element(root);
-        for (const path of paths) {
+        for (const [path, perElementUserData] of paths.entries()) {
             const segments = path.split(options.pathSeparator ?? '/');
             let current = top;
             let parent = root;
@@ -4317,7 +4317,7 @@ class TreeItem {
                     type = 'file';
                 }
                 if (!current.childs.has(s)) {
-                    current.childs.set(s, new element(new TreeItem(s, { parent: parent, type: type, userData: options.userData })));
+                    current.childs.set(s, new element(new TreeItem(s, { parent: parent, type: type, userData: perElementUserData != path ? perElementUserData : options.userData })));
                 }
                 parent = current.childs.get(s).tree;
                 current = current.childs.get(s);
