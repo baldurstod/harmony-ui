@@ -33,6 +33,7 @@ export declare type CreateElementOptions = {
     adoptStyles?: Array<string>;
     style?: string;
     checked?: boolean;
+    disabled?: boolean;
     elementCreated?: (element: HTMLElement, root?: ShadowRoot) => void;
     [key: string]: any;
 };
