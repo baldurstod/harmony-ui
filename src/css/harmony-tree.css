@@ -24,17 +24,17 @@
 }
 
 .root>.header {
-	display: none;
+	display: var(--harmony-tree-display-root, none);
 }
 
 .root>.childs {
 	margin-left: unset;
 }
 
-.actions{
+.actions {
 	display: flex;
 }
 
-.header.selected{
+.header.selected {
 	background-color: var(--selected-bg-color);
 }
