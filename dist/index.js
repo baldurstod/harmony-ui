@@ -4301,7 +4301,7 @@ class TreeItem {
                 this.tree = tree;
             }
         }
-        const root = new TreeItem(options.rootName ?? '', { userData: options.userData, type: 'root' });
+        const root = new TreeItem(options.rootName ?? '', { userData: options.rootUserData ?? options.userData, type: 'root' });
         const top = new element(root);
         for (const [path, perElementUserData] of paths.entries()) {
             const segments = path.split(options.pathSeparator ?? '/');

@@ -104,7 +104,7 @@ export class TreeItem {
 		this.actions.delete(action);
 	}
 
-	static createFromPathList(paths: Set<string> | Map<string, any>, options: { pathSeparator?: string, userData?: any, rootName?: string } = {}): TreeItem {
+	static createFromPathList(paths: Set<string> | Map<string, any>, options: { pathSeparator?: string, rootUserData?: any, userData?: any, rootName?: string } = {}): TreeItem {
 		class element {
 			tree: TreeItem;
 			childs = new Map<string, element>()
@@ -114,7 +114,7 @@ export class TreeItem {
 			}
 		}
 
-		const root = new TreeItem(options.rootName ?? '', { userData: options.userData, type: 'root' });
+		const root = new TreeItem(options.rootName ?? '', { userData: options.rootUserData ?? options.userData, type: 'root' });
 
 		const top = new element(root);
 
