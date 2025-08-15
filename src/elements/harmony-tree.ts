@@ -79,7 +79,7 @@ export class TreeItem {
 
 		path += this.name;
 
-		return path;
+		return path.replace(/(\/)+/g, '/');
 	}
 
 	getLevel(): number {
