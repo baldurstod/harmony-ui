@@ -19,6 +19,10 @@
 	align-items: center;
 }
 
+.title {
+	flex: 1;
+}
+
 .childs {
 	margin-left: var(--child-margin);
 }
@@ -33,6 +37,7 @@
 
 .actions {
 	display: flex;
+	flex: 0;
 }
 
 .header.selected {
