@@ -638,6 +638,7 @@ export declare class TreeItem {
     static createFromPathList(paths: Set<string> | Map<string, any>, options?: {
         pathSeparator?: string;
         userData?: any;
+        rootName?: string;
     }): TreeItem;
     walk(filter?: TreeItemFilter): Generator<TreeItem, void, unknown>;
 }
