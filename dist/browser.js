@@ -4662,8 +4662,7 @@ class TreeItem {
                 path = parentPath + separator;
             }
         }
-        path += this.name;
-        return path.replace(/(\/)+/g, '/');
+        return path + this.name;
     }
     getLevel() {
         if (this.parent) {
