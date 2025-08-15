@@ -1,6 +1,7 @@
 :host {
 	--child-margin: var(--harmony-tree-child-margin, 1rem);
 	--header-bg-color: var(--harmony-tree-header-bg-color, var(--main-bg-color-dark, black));
+	--header-bg-color-hover: var(--harmony-tree-header-bg-color-hover, var(--main-bg-color-bright, #41454d));
 	--selected-bg-color: var(--harmony-tree-selected-bg-color, var(--accent-primary, rgb(26, 172, 201)));
 	color: var(--main-text-color-dark2, white);
 }
@@ -17,6 +18,10 @@
 	display: flex;
 	gap: 0.2rem;
 	align-items: center;
+}
+
+.header:hover{
+	background-color: var(--header-bg-color-hover);
 }
 
 .title {
@@ -38,6 +43,11 @@
 .actions {
 	display: flex;
 	flex: 0;
+	visibility: hidden;
+}
+
+.header:hover>.actions {
+	visibility: visible;
 }
 
 .header.selected {
