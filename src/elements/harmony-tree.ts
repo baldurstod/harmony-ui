@@ -18,25 +18,40 @@ export type TreeAction = {
 
 export type TreeItemFilter = {
 	name?: string;
-	type?: string;
-	types?: Array<string>;
+	kind?: TreeItemKind;
+	kinds?: Array<TreeItemKind>;
+}
+
+export enum TreeItemKind {
+	Root = 'root',
+	Directory = 'directory',
+	File = 'file',
+	Item = 'item',
+}
+
+export type TreeItemOptions = {
+	icon?: string,
+	kind?: TreeItemKind,
+	parent?: TreeItem,
+	childs?: Array<TreeItem>,
+	userData?: any,
 }
 
 export class TreeItem {
 	name: string;
 	isRoot?: boolean;
 	icon?: string;
-	type: string;
+	kind: TreeItemKind;
 	parent?: TreeItem;
 	childs = new Set<TreeItem>;
 	actions = new Set<string>();
 	userData?: any;
 
-	constructor(name: string, options: { isRoot?: boolean, icon?: string, type?: string, parent?: TreeItem, childs?: Array<TreeItem>, userData?: any } = {}) {
+	constructor(name: string, options: TreeItemOptions = {}) {
 		this.name = name;
-		this.isRoot = options.isRoot;
+		//this.isRoot = options.isRoot;
 		this.icon = options.icon;
-		this.type = options.type ?? '';
+		this.kind = options.kind ?? TreeItemKind.File;
 		this.parent = options.parent;
 		this.userData = options.userData;
 
@@ -112,7 +127,7 @@ export class TreeItem {
 			}
 		}
 
-		const root = new TreeItem(options.rootName ?? '', { userData: options.rootUserData ?? options.userData, type: 'root' });
+		const root = new TreeItem(options.rootName ?? '', { userData: options.rootUserData ?? options.userData, kind: TreeItemKind.Root });
 
 		const top = new element(root);
 
@@ -127,13 +142,13 @@ export class TreeItem {
 					continue;
 				}
 
-				let type = 'directory';
+				let kind = TreeItemKind.Directory;
 				if (i == l - 1) {
-					type = 'file';
+					kind = TreeItemKind.File;
 				}
 
 				if (!current.childs.has(s)) {
-					current.childs.set(s, new element(new TreeItem(s, { parent: parent, type: type, userData: perElementUserData != path ? perElementUserData : options.userData })));
+					current.childs.set(s, new element(new TreeItem(s, { parent: parent, kind: kind, userData: perElementUserData != path ? perElementUserData : options.userData })));
 				}
 
 				parent = current.childs.get(s)!.tree;
@@ -154,15 +169,15 @@ export class TreeItem {
 				return false;
 			}
 
-			if (this.type != 'file') {
+			if (this.kind != TreeItemKind.File) {
 				return false;
 			}
 		}
 
-		if (filter.types) {
+		if (filter.kinds) {
 			let match = false;
-			for (const tf of filter.types) {
-				if (tf === this.type) {
+			for (const tf of filter.kinds) {
+				if (tf === this.kind) {
 					match = true;
 					break;
 				}
@@ -173,8 +188,8 @@ export class TreeItem {
 			}
 		}
 
-		if (filter.type !== undefined) {
-			if (filter.type !== this.type) {
+		if (filter.kind !== undefined) {
+			if (filter.kind !== this.kind) {
 				return false;
 			}
 		}
@@ -345,8 +360,8 @@ export class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
 			element.classList.add('root');
 		}
 
-		if (item.type) {
-			element.classList.add(`type-${item.type}`);
+		if (item.kind) {
+			element.classList.add(`type-${item.kind}`);
 		}
 
 		if (createExpanded || this.#isExpanded.get(item)) {
