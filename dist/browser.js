@@ -4618,20 +4618,26 @@ function defineHarmonyToggleButton() {
 
 var treeCSS = ":host {\n\t--child-margin: var(--harmony-tree-child-margin, 1rem);\n\t--header-bg-color: var(--harmony-tree-header-bg-color, var(--main-bg-color-dark, black));\n\t--header-bg-color-hover: var(--harmony-tree-header-bg-color-hover, var(--main-bg-color-bright, #41454d));\n\t--selected-bg-color: var(--harmony-tree-selected-bg-color, var(--accent-primary, rgb(26, 172, 201)));\n\tcolor: var(--main-text-color-dark2, white);\n}\n\n.item {\n\twidth: 100%;\n}\n\n.header {\n\twidth: 100%;\n\theight: 1rem;\n\tbackground-color: var(--header-bg-color);\n\tcursor: pointer;\n\tdisplay: flex;\n\tgap: 0.2rem;\n\talign-items: center;\n}\n\n.header:hover{\n\tbackground-color: var(--header-bg-color-hover);\n}\n\n.title {\n\tflex: 1;\n}\n\n.childs {\n\tmargin-left: var(--child-margin);\n}\n\n.root>.header {\n\tdisplay: var(--harmony-tree-display-root, none);\n}\n\n.root>.childs {\n\tmargin-left: unset;\n}\n\n.actions {\n\tdisplay: flex;\n\tflex: 0;\n\tvisibility: hidden;\n}\n\n.header:hover>.actions {\n\tvisibility: visible;\n}\n\n.header.selected {\n\tbackground-color: var(--selected-bg-color);\n}\n";
 
+var TreeItemKind;
+(function (TreeItemKind) {
+    TreeItemKind["Root"] = "root";
+    TreeItemKind["Directory"] = "directory";
+    TreeItemKind["File"] = "file";
+    TreeItemKind["Item"] = "item";
+})(TreeItemKind || (TreeItemKind = {}));
 class TreeItem {
     name;
-    isRoot;
     icon;
-    type;
+    kind;
     parent;
     childs = new Set;
     actions = new Set();
     userData;
     constructor(name, options = {}) {
         this.name = name;
-        this.isRoot = options.isRoot;
+        //this.isRoot = options.isRoot;
         this.icon = options.icon;
-        this.type = options.type ?? '';
+        this.kind = options.kind ?? TreeItemKind.File;
         this.parent = options.parent;
         this.userData = options.userData;
         if (options.parent) {
@@ -4689,7 +4695,7 @@ class TreeItem {
                 this.tree = tree;
             }
         }
-        const root = new TreeItem(options.rootName ?? '', { userData: options.rootUserData ?? options.userData, type: 'root' });
+        const root = new TreeItem(options.rootName ?? '', { userData: options.rootUserData ?? options.userData, kind: TreeItemKind.Root });
         const top = new element(root);
         for (const [path, perElementUserData] of paths.entries()) {
             const segments = path.split(options.pathSeparator ?? '/');
@@ -4700,12 +4706,12 @@ class TreeItem {
                 if (s == '') {
                     continue;
                 }
-                let type = 'directory';
+                let kind = TreeItemKind.Directory;
                 if (i == l - 1) {
-                    type = 'file';
+                    kind = TreeItemKind.File;
                 }
                 if (!current.childs.has(s)) {
-                    current.childs.set(s, new element(new TreeItem(s, { parent: parent, type: type, userData: perElementUserData != path ? perElementUserData : options.userData })));
+                    current.childs.set(s, new element(new TreeItem(s, { parent: parent, kind: kind, userData: perElementUserData != path ? perElementUserData : options.userData })));
                 }
                 parent = current.childs.get(s).tree;
                 current = current.childs.get(s);
@@ -4721,14 +4727,14 @@ class TreeItem {
             if (!this.name.toLowerCase().includes(filter.name.toLowerCase())) {
                 return false;
             }
-            if (this.type != 'file') {
+            if (this.kind != TreeItemKind.File) {
                 return false;
             }
         }
-        if (filter.types) {
+        if (filter.kinds) {
             let match = false;
-            for (const tf of filter.types) {
-                if (tf === this.type) {
+            for (const tf of filter.kinds) {
+                if (tf === this.kind) {
                     match = true;
                     break;
                 }
@@ -4737,8 +4743,8 @@ class TreeItem {
                 return false;
             }
         }
-        if (filter.type !== undefined) {
-            if (filter.type !== this.type) {
+        if (filter.kind !== undefined) {
+            if (filter.kind !== this.kind) {
                 return false;
             }
         }
@@ -4775,12 +4781,19 @@ class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
     #items = new Map<TreeItem, HTMLElement>();
     */
     #itemElements = new Map();
+    #elementItem = new Map();
     #selectedItem = null;
+    #rootLevel;
+    #sticky = new Set();
+    #dynamicSheet = new CSSStyleSheet();
+    #cssLevel = new Set();
     createElement() {
         this.#shadowRoot = this.attachShadow({ mode: 'closed' });
         shadowRootStyle(this.#shadowRoot, treeCSS);
+        this.#shadowRoot.adoptedStyleSheets.push(this.#dynamicSheet);
         I18n.observeElement(this.#shadowRoot);
         this.#refresh();
+        this.addEventListener('scroll', () => this.#handleScroll());
     }
     adoptStyle(css) {
         this.initElement();
@@ -4804,9 +4817,6 @@ class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
     }
     setRoot(root) {
         this.#root = root;
-        if (this.#root) {
-            this.#root.isRoot = true;
-        }
         this.#refresh();
     }
     #buildContextMenu(contextMenu, x, y) {
@@ -4836,11 +4846,12 @@ class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
             parent.append(element);
         }
         else {
-            let childs;
+            const itemLevel = item.getLevel();
             let header;
             let actions;
+            this.#addCssLevel(itemLevel);
             element = createElement('div', {
-                class: `item level${item.getLevel()}`,
+                class: `item level${itemLevel}`,
                 parent: parent,
                 childs: [
                     header = createElement('div', {
@@ -4866,18 +4877,16 @@ class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
                         },
                         $contextmenu: (event) => this.#contextMenuHandler(event, item),
                     }),
-                    childs = createElement('div', {
-                        class: 'childs',
-                    }),
                 ]
             });
-            this.#itemElements.set(item, { element: element, header: header, childs: childs, actions: actions });
+            this.#itemElements.set(item, { element: element, header: header, actions: actions });
+            this.#elementItem.set(element, item);
         }
-        if (item.isRoot && item.name == '') {
+        if (item.kind == TreeItemKind.Root && item.name == '') {
             element.classList.add('root');
         }
-        if (item.type) {
-            element.classList.add(`type-${item.type}`);
+        if (item.kind) {
+            element.classList.add(`type-${item.kind}`);
         }
         if (createExpanded || this.#isExpanded.get(item)) {
             this.expandItem(item);
@@ -4889,26 +4898,50 @@ class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
         if (item.parent) {
             this.expandItem(item.parent);
         }
-        const childs = this.#itemElements.get(item)?.childs;
-        if (!childs || this.#isExpanded.get(item) === true) {
+        const element = this.#itemElements.get(item)?.element;
+        if (this.#isExpanded.get(item)) {
             return;
         }
         this.#isExpanded.set(item, true);
-        show(childs);
         if (!this.#isInitialized.has(item)) {
+            const childs = [];
             for (const child of item.childs) {
-                this.#createItem(child, childs, false);
+                childs.push(this.#createItem(child, this.#shadowRoot, false));
             }
             this.#isInitialized.add(item);
+            element?.after(...childs);
+        }
+        else {
+            for (const child of item.childs) {
+                this.showItem(child);
+            }
         }
     }
     collapseItem(item) {
-        const childs = this.#itemElements.get(item)?.childs;
-        if (!childs) {
-            return;
-        }
         this.#isExpanded.set(item, false);
-        hide(childs);
+        for (const child of item.childs) {
+            this.hideItem(child);
+        }
+    }
+    showItem(item) {
+        const element = this.#itemElements.get(item);
+        if (element) {
+            show(element.element);
+        }
+        if (this.#isExpanded.get(item)) {
+            for (const child of item.childs) {
+                this.showItem(child);
+            }
+        }
+    }
+    hideItem(item) {
+        const element = this.#itemElements.get(item);
+        if (element) {
+            hide(element.element);
+        }
+        for (const child of item.childs) {
+            this.hideItem(child);
+        }
     }
     selectItem(item, scrollIntoView = true) {
         if (item == this.#selectedItem) {
@@ -4999,6 +5032,55 @@ class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
     static get observedAttributes() {
         return ['data-root'];
     }
+    #handleScroll() {
+        let stickyHeight = 0;
+        for (const sticky of this.#sticky) {
+            const rect = sticky.getBoundingClientRect();
+            stickyHeight += rect.height;
+        }
+        console.info(stickyHeight, this.#sticky);
+        const rect = this.getBoundingClientRect();
+        const elements = this.#shadowRoot.elementsFromPoint(rect.x + 1, rect.y + stickyHeight + 1);
+        if (!elements) {
+            return;
+        }
+        for (const element of elements) {
+            let treeItem = this.#elementItem.get(element);
+            if (!treeItem) {
+                continue;
+            }
+            treeItem = treeItem.parent;
+            if (!treeItem) {
+                continue;
+            }
+            this.#setSticky(treeItem);
+            break;
+        }
+    }
+    #addCssLevel(level) {
+        if (level == 0) {
+            return;
+        }
+        if (!this.#cssLevel.has(level)) {
+            this.#cssLevel.add(level);
+            this.#dynamicSheet.insertRule(`.level${level}{padding-left: ${level}rem}`);
+        }
+    }
+    #setSticky(item) {
+        for (const treeItemElement of this.#sticky) {
+            treeItemElement.style.cssText = '';
+        }
+        this.#sticky.clear();
+        let current = item;
+        while (current) {
+            const treeItemElement = this.#itemElements.get(current);
+            if (treeItemElement) {
+                this.#sticky.add(treeItemElement.element);
+                treeItemElement.element.style.cssText = `position:sticky;top:${current.getLevel()}rem;`;
+            }
+            current = current.parent;
+        }
+    }
 }
 let definedTree = false;
 function defineHarmonyTree() {
@@ -5012,4 +5094,4 @@ function defineHarmonyTree() {
     }
 }
 
-export { AddI18nElement, HTMLHarmony2dManipulatorElement, HTMLHarmonyAccordionElement, HTMLHarmonyCircularProgressElement, HTMLHarmonyColorPickerElement, HTMLHarmonyCopyElement, HTMLHarmonyFileInputElement, HTMLHarmonyItemElement, HTMLHarmonyLabelPropertyElement, HTMLHarmonyMenuElement, HTMLHarmonyPaletteElement, HTMLHarmonyPanelElement, HTMLHarmonyRadioElement, HTMLHarmonySelectElement, HTMLHarmonySliderElement, HTMLHarmonySlideshowElement, HTMLHarmonySplitterElement, HTMLHarmonySwitchElement, HTMLHarmonyTabElement, HTMLHarmonyTabGroupElement, HTMLHarmonyToggleButtonElement, HTMLHarmonyTooltipElement, HTMLHarmonyTreeElement, index as HarmonySVG, I18n, I18nElements, I18nEvents, ManipulatorCorner, ManipulatorDirection, ManipulatorResizeOrigin, ManipulatorSide, ManipulatorUpdatedEventType, TreeItem, cloneEvent, createElement, createElementNS, createShadowRoot, defineHarmony2dManipulator, defineHarmonyAccordion, defineHarmonyCircularProgress, defineHarmonyColorPicker, defineHarmonyCopy, defineHarmonyFileInput, defineHarmonyItem, defineHarmonyLabelProperty, defineHarmonyMenu, defineHarmonyPalette, defineHarmonyPanel, defineHarmonyRadio, defineHarmonySelect, defineHarmonySlider, defineHarmonySlideshow, defineHarmonySplitter, defineHarmonySwitch, defineHarmonyTab, defineHarmonyTabGroup, defineHarmonyToggleButton, defineHarmonyTooltip, defineHarmonyTree, display, documentStyle, documentStyleSync, hide, isVisible, shadowRootStyle, shadowRootStyleSync, show, styleInject, toggle, updateElement, visible };
+export { AddI18nElement, HTMLHarmony2dManipulatorElement, HTMLHarmonyAccordionElement, HTMLHarmonyCircularProgressElement, HTMLHarmonyColorPickerElement, HTMLHarmonyCopyElement, HTMLHarmonyFileInputElement, HTMLHarmonyItemElement, HTMLHarmonyLabelPropertyElement, HTMLHarmonyMenuElement, HTMLHarmonyPaletteElement, HTMLHarmonyPanelElement, HTMLHarmonyRadioElement, HTMLHarmonySelectElement, HTMLHarmonySliderElement, HTMLHarmonySlideshowElement, HTMLHarmonySplitterElement, HTMLHarmonySwitchElement, HTMLHarmonyTabElement, HTMLHarmonyTabGroupElement, HTMLHarmonyToggleButtonElement, HTMLHarmonyTooltipElement, HTMLHarmonyTreeElement, index as HarmonySVG, I18n, I18nElements, I18nEvents, ManipulatorCorner, ManipulatorDirection, ManipulatorResizeOrigin, ManipulatorSide, ManipulatorUpdatedEventType, TreeItem, TreeItemKind, cloneEvent, createElement, createElementNS, createShadowRoot, defineHarmony2dManipulator, defineHarmonyAccordion, defineHarmonyCircularProgress, defineHarmonyColorPicker, defineHarmonyCopy, defineHarmonyFileInput, defineHarmonyItem, defineHarmonyLabelProperty, defineHarmonyMenu, defineHarmonyPalette, defineHarmonyPanel, defineHarmonyRadio, defineHarmonySelect, defineHarmonySlider, defineHarmonySlideshow, defineHarmonySplitter, defineHarmonySwitch, defineHarmonyTab, defineHarmonyTabGroup, defineHarmonyToggleButton, defineHarmonyTooltip, defineHarmonyTree, display, documentStyle, documentStyleSync, hide, isVisible, shadowRootStyle, shadowRootStyleSync, show, styleInject, toggle, updateElement, visible };

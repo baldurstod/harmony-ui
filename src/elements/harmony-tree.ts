@@ -39,7 +39,6 @@ export type TreeItemOptions = {
 
 export class TreeItem {
 	name: string;
-	isRoot?: boolean;
 	icon?: string;
 	kind: TreeItemKind;
 	parent?: TreeItem;
@@ -227,7 +226,6 @@ type TreeItemElement = {
 	element: HTMLElement;
 	header: HTMLElement;
 	actions: HTMLElement;
-	childs: HTMLElement;
 }
 
 export class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
@@ -244,14 +242,22 @@ export class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
 	#items = new Map<TreeItem, HTMLElement>();
 	*/
 	#itemElements = new Map<TreeItem, TreeItemElement>();
+	#elementItem = new Map<HTMLElement, TreeItem>();
 	#selectedItem: TreeItem | null = null;
+	#rootLevel?: TreeItem;
+	#sticky = new Set<HTMLElement>();
+	#dynamicSheet = new CSSStyleSheet();
+	#cssLevel = new Set<number>();
 
 	protected createElement() {
 		this.#shadowRoot = this.attachShadow({ mode: 'closed' });
 		shadowRootStyle(this.#shadowRoot, treeCSS);
+		this.#shadowRoot.adoptedStyleSheets.push(this.#dynamicSheet);
 		I18n.observeElement(this.#shadowRoot);
 
 		this.#refresh();
+
+		this.addEventListener('scroll', () => this.#handleScroll());
 	}
 
 	adoptStyle(css: string) {
@@ -280,9 +286,6 @@ export class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
 
 	setRoot(root?: TreeItem | null) {
 		this.#root = root;
-		if (this.#root) {
-			this.#root.isRoot = true;
-		}
 
 		this.#refresh();
 	}
@@ -318,11 +321,13 @@ export class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
 			element = itemElement.element;
 			parent.append(element);
 		} else {
-			let childs: HTMLElement;
+
+			const itemLevel = item.getLevel();
 			let header: HTMLElement;
 			let actions: HTMLElement;
+			this.#addCssLevel(itemLevel);
 			element = createElement('div', {
-				class: `item level${item.getLevel()}`,
+				class: `item level${itemLevel}`,
 				parent: parent,
 				childs: [
 					header = createElement('div', {
@@ -348,15 +353,14 @@ export class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
 						},
 						$contextmenu: (event: MouseEvent) => this.#contextMenuHandler(event, item),
 					}),
-					childs = createElement('div', {
-						class: 'childs',
-					}),
 				]
 			});
-			this.#itemElements.set(item, { element: element, header: header, childs: childs, actions: actions });
+
+			this.#itemElements.set(item, { element: element, header: header, actions: actions });
+			this.#elementItem.set(element, item);
 		}
 
-		if (item.isRoot && item.name == '') {
+		if (item.kind == TreeItemKind.Root && item.name == '') {
 			element.classList.add('root');
 		}
 
@@ -378,32 +382,57 @@ export class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
 			this.expandItem(item.parent);
 		}
 
-		const childs = this.#itemElements.get(item)?.childs;
+		const element = this.#itemElements.get(item)?.element;
 
-		if (!childs || this.#isExpanded.get(item) === true) {
+		if (this.#isExpanded.get(item)) {
 			return;
 		}
 
 		this.#isExpanded.set(item, true);
-		show(childs);
 
 		if (!this.#isInitialized.has(item)) {
+			const childs: HTMLElement[] = [];
 			for (const child of item.childs) {
-				this.#createItem(child, childs, false);
+				childs.push(this.#createItem(child, this.#shadowRoot!, false));
 			}
 			this.#isInitialized.add(item);
+			element?.after(...childs);
+		} else {
+			for (const child of item.childs) {
+				this.showItem(child);
+			}
 		}
 	}
 
 	collapseItem(item: TreeItem): void {
-		const childs = this.#itemElements.get(item)?.childs;
+		this.#isExpanded.set(item, false);
 
-		if (!childs) {
-			return;
+		for (const child of item.childs) {
+			this.hideItem(child);
+		}
+	}
+
+	showItem(item: TreeItem): void {
+		const element = this.#itemElements.get(item);
+		if (element) {
+			show(element.element);
 		}
 
-		this.#isExpanded.set(item, false);
-		hide(childs);
+		if (this.#isExpanded.get(item)) {
+			for (const child of item.childs) {
+				this.showItem(child);
+			}
+		}
+	}
+
+	hideItem(item: TreeItem): void {
+		const element = this.#itemElements.get(item);
+		if (element) {
+			hide(element.element);
+		}
+		for (const child of item.childs) {
+			this.hideItem(child);
+		}
 	}
 
 	selectItem(item: TreeItem | null, scrollIntoView = true) {
@@ -508,6 +537,70 @@ export class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
 
 	static get observedAttributes() {
 		return ['data-root'];
+	}
+
+	#handleScroll() {
+		let stickyHeight = 0;
+		for (const sticky of this.#sticky) {
+			const rect = sticky.getBoundingClientRect();
+			stickyHeight += rect.height;
+		}
+
+		console.info(stickyHeight, this.#sticky);
+
+
+		const rect = this.getBoundingClientRect();
+		const elements = this.#shadowRoot!.elementsFromPoint(rect.x + 1, rect.y + stickyHeight + 1);
+
+		if (!elements) {
+			return;
+		}
+
+		for (const element of elements) {
+			let treeItem = this.#elementItem.get(element as HTMLElement);
+			if (!treeItem) {
+				continue;
+			}
+
+			treeItem = treeItem.parent;
+
+			if (!treeItem) {
+				continue;
+			}
+
+			this.#setSticky(treeItem);
+
+			break;
+		}
+	}
+
+	#addCssLevel(level: number): void {
+		if (level == 0) {
+			return;
+		}
+		if (!this.#cssLevel.has(level)) {
+			this.#cssLevel.add(level);
+			this.#dynamicSheet.insertRule(`.level${level}{padding-left: ${level}rem}`);
+		}
+	}
+
+	#setSticky(item: TreeItem): void {
+		for (const treeItemElement of this.#sticky) {
+			treeItemElement.style.cssText = '';
+		}
+
+		this.#sticky.clear();
+
+		let current: TreeItem | undefined = item;
+		while (current) {
+			const treeItemElement = this.#itemElements.get(current);
+			if (treeItemElement) {
+				this.#sticky.add(treeItemElement.element);
+				treeItemElement.element.style.cssText = `position:sticky;top:${current.getLevel()}rem;`;
+			}
+
+			current = current.parent;
+		}
 	}
 }
 

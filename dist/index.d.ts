@@ -442,6 +442,8 @@ export declare class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
     setRoot(root?: TreeItem | null): void;
     expandItem(item: TreeItem): void;
     collapseItem(item: TreeItem): void;
+    showItem(item: TreeItem): void;
+    hideItem(item: TreeItem): void;
     selectItem(item: TreeItem | null, scrollIntoView?: boolean): void;
     addAction(name: string, img: HTMLElement | string, tooltip?: string): void;
     refreshActions(item: TreeItem): void;
@@ -614,21 +616,13 @@ export declare type TreeContextMenuEventData = {
 export declare class TreeItem {
     #private;
     name: string;
-    isRoot?: boolean;
     icon?: string;
-    type: string;
+    kind: TreeItemKind;
     parent?: TreeItem;
     childs: Set<TreeItem>;
     actions: Set<string>;
     userData?: any;
-    constructor(name: string, options?: {
-        isRoot?: boolean;
-        icon?: string;
-        type?: string;
-        parent?: TreeItem;
-        childs?: Array<TreeItem>;
-        userData?: any;
-    });
+    constructor(name: string, options?: TreeItemOptions);
     addChild(child: TreeItem): void;
     getPath(separator?: string): string;
     getLevel(): number;
@@ -646,8 +640,23 @@ export declare class TreeItem {
 
 export declare type TreeItemFilter = {
     name?: string;
-    type?: string;
-    types?: Array<string>;
+    kind?: TreeItemKind;
+    kinds?: Array<TreeItemKind>;
+};
+
+export declare enum TreeItemKind {
+    Root = "root",
+    Directory = "directory",
+    File = "file",
+    Item = "item"
+}
+
+export declare type TreeItemOptions = {
+    icon?: string;
+    kind?: TreeItemKind;
+    parent?: TreeItem;
+    childs?: Array<TreeItem>;
+    userData?: any;
 };
 
 export declare function updateElement(element: HTMLElement | undefined, options: CreateElementOptions): HTMLElement | undefined;
