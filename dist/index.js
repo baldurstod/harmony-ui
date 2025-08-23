@@ -4469,6 +4469,9 @@ class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
                         class: 'header',
                         childs: [
                             createElement('div', {
+                                class: 'padding',
+                            }),
+                            createElement('div', {
                                 class: 'title',
                                 innerText: item.name,
                             }),
@@ -4674,7 +4677,7 @@ class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
         }
         if (!this.#cssLevel.has(level)) {
             this.#cssLevel.add(level);
-            this.#dynamicSheet.insertRule(`.level${level}{padding-left: ${level}rem}`);
+            this.#dynamicSheet.insertRule(`.level${level} .padding{width: ${level}rem}`);
         }
     }
     #setSticky(item) {
