@@ -114,7 +114,7 @@ export class HTMLHarmonyMenuElement extends HTMLElement {
 	}
 
 	#setItems(items: HarmonyMenuItems, userData: any) {
-		this.#shadowRoot.innerHTML = '';
+		this.#shadowRoot.replaceChildren();
 		if (items instanceof Array) {
 			for (const item of items) {
 				this.#shadowRoot.append(this.addItem(item, userData));
@@ -155,7 +155,7 @@ export class HTMLHarmonyMenuElement extends HTMLElement {
 			if (item.i18n) {
 				htmlItemTitle.classList.add('i18n');
 				htmlItemTitle.setAttribute('data-i18n', item.i18n);
-				htmlItemTitle.innerHTML = item.i18n;
+				htmlItemTitle.innerText = item.i18n;
 			} else {
 				htmlItemTitle.innerText = item.name ?? '';
 			}

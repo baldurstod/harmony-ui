@@ -1766,7 +1766,7 @@ class HTMLHarmonyMenuElement extends HTMLElement {
         }
     }
     #setItems(items, userData) {
-        this.#shadowRoot.innerHTML = '';
+        this.#shadowRoot.replaceChildren();
         if (items instanceof Array) {
             for (const item of items) {
                 this.#shadowRoot.append(this.addItem(item, userData));
@@ -1806,7 +1806,7 @@ class HTMLHarmonyMenuElement extends HTMLElement {
             if (item.i18n) {
                 htmlItemTitle.classList.add('i18n');
                 htmlItemTitle.setAttribute('data-i18n', item.i18n);
-                htmlItemTitle.innerHTML = item.i18n;
+                htmlItemTitle.innerText = item.i18n;
             }
             else {
                 htmlItemTitle.innerText = item.name ?? '';
@@ -2629,7 +2629,7 @@ class HTMLHarmonyPanelElement extends HTMLElement {
     set title(title) {
         if (title) {
             this.htmlTitle = this.htmlTitle ?? document.createElement('div');
-            this.htmlTitle.innerHTML = title;
+            this.htmlTitle.innerText = title;
             super.prepend(this.htmlTitle);
         }
         else {

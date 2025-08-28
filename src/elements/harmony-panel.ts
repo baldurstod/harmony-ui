@@ -372,7 +372,7 @@ export class HTMLHarmonyPanelElement extends HTMLElement {
 	set title(title: string) {
 		if (title) {
 			this.htmlTitle = this.htmlTitle ?? document.createElement('div');
-			this.htmlTitle.innerHTML = title;
+			this.htmlTitle.innerText = title;
 			super.prepend(this.htmlTitle);
 		} else {
 			this.htmlTitle.remove();
