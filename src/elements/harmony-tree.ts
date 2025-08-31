@@ -48,7 +48,6 @@ export class TreeItem {
 
 	constructor(name: string, options: TreeItemOptions = {}) {
 		this.name = name;
-		//this.isRoot = options.isRoot;
 		this.icon = options.icon;
 		this.kind = options.kind ?? TreeItemKind.File;
 		this.parent = options.parent;
@@ -237,10 +236,6 @@ export class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
 	#filter?: TreeItemFilter;
 	#isVisible = new Set<TreeItem>();
 	#actions = new Map<string, TreeAction>();
-	/*
-	#itemActions = new Map<TreeItem, HTMLElement>();
-	#items = new Map<TreeItem, HTMLElement>();
-	*/
 	#itemElements = new Map<TreeItem, TreeItemElement>();
 	#elementItem = new Map<HTMLElement, TreeItem>();
 	#selectedItem: TreeItem | null = null;
@@ -411,7 +406,6 @@ export class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
 				predecessor = childElement;
 			}
 			this.#isInitialized.add(item);
-			//element?.after(...childs);
 		} else {
 			for (const child of item.childs) {
 				this.showItem(child);
