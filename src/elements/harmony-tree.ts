@@ -274,7 +274,7 @@ export class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
 			return;
 		}
 
-		this.#createItem(this.#root, this.#shadowRoot, true);
+		this.#createItem(this.#root, null, true);
 		this.#refreshFilter();
 	}
 
@@ -312,23 +312,24 @@ export class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
 		}
 	}
 
-	#createItem(item: TreeItem, parent: HTMLElement | ShadowRoot, createExpanded: boolean): HTMLElement {
+	#createItem(item: TreeItem, predecessor: HTMLElement | null, createExpanded: boolean): HTMLElement {
 		let element: HTMLElement;
 
 		const itemElement = this.#itemElements.get(item);
 
 		if (itemElement) {
 			element = itemElement.element;
-			parent.append(element);
+			if (predecessor) {
+				predecessor.after(element);
+			}
 		} else {
-
 			const itemLevel = item.getLevel();
 			let header: HTMLElement;
 			let actions: HTMLElement;
 			this.#addCssLevel(itemLevel);
 			element = createElement('div', {
 				class: `item level${itemLevel}`,
-				parent: parent,
+				parent: this.#shadowRoot,
 				childs: [
 					header = createElement('div', {
 						class: 'header',
@@ -359,6 +360,10 @@ export class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
 				]
 			});
 
+			if (predecessor) {
+				predecessor.after(element);
+			}
+
 			this.#itemElements.set(item, { element: element, header: header, actions: actions });
 			this.#elementItem.set(element, item);
 		}
@@ -387,6 +392,10 @@ export class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
 
 		const element = this.#itemElements.get(item)?.element;
 
+		if (!element) {
+			return;
+		}
+
 		if (this.#isExpanded.get(item)) {
 			return;
 		}
@@ -395,11 +404,14 @@ export class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
 
 		if (!this.#isInitialized.has(item)) {
 			const childs: HTMLElement[] = [];
+			let predecessor = element;
 			for (const child of item.childs) {
-				childs.push(this.#createItem(child, this.#shadowRoot!, false));
+				const childElement = this.#createItem(child, predecessor, false);
+				childs.push(childElement);
+				predecessor = childElement;
 			}
 			this.#isInitialized.add(item);
-			element?.after(...childs);
+			//element?.after(...childs);
 		} else {
 			for (const child of item.childs) {
 				this.showItem(child);
