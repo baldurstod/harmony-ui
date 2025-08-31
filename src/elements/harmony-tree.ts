@@ -264,7 +264,6 @@ export class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
 		if (!this.#shadowRoot) {
 			return;
 		}
-		this.#shadowRoot.replaceChildren();
 		if (!this.#root) {
 			return;
 		}
@@ -275,8 +274,26 @@ export class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
 
 	#refreshFilter() {
 		for (const [item, itemElement] of this.#itemElements) {
-			display(itemElement.element, !this.#filter || this.#isVisible.has(item));
+			const show = !this.#filter || this.#isVisible.has(item) && this.#isFullyExpanded(item);
+			display(itemElement.element, show);
 		}
+	}
+
+	#isFullyExpanded(item: TreeItem): boolean {
+		let current: TreeItem | undefined = item.parent;
+
+		if (!current) {
+			return true;
+		}
+
+		do {
+			if (!this.#isExpanded.get(current)) {
+				return false;
+			}
+			current = current.parent;
+		} while (current)
+
+		return true;
 	}
 
 	setRoot(root?: TreeItem | null) {
@@ -316,6 +333,8 @@ export class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
 			element = itemElement.element;
 			if (predecessor) {
 				predecessor.after(element);
+			} else {
+				this.#shadowRoot?.append(element);
 			}
 		} else {
 			const itemLevel = item.getLevel();
@@ -524,9 +543,7 @@ export class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
 				let current: TreeItem | undefined = item;
 
 				do {
-					if (current) {
-						this.#isVisible.add(current);
-					}
+					this.#isVisible.add(current);
 					current = current.parent;
 				} while (current)
 			}

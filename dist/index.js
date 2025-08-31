@@ -4246,7 +4246,6 @@ class TreeItem {
     userData;
     constructor(name, options = {}) {
         this.name = name;
-        //this.isRoot = options.isRoot;
         this.icon = options.icon;
         this.kind = options.kind ?? TreeItemKind.File;
         this.parent = options.parent;
@@ -4387,10 +4386,6 @@ class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
     #filter;
     #isVisible = new Set();
     #actions = new Map();
-    /*
-    #itemActions = new Map<TreeItem, HTMLElement>();
-    #items = new Map<TreeItem, HTMLElement>();
-    */
     #itemElements = new Map();
     #elementItem = new Map();
     #selectedItem = null;
@@ -4414,17 +4409,31 @@ class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
         if (!this.#shadowRoot) {
             return;
         }
-        this.#shadowRoot.replaceChildren();
+        //this.#shadowRoot.replaceChildren();
         if (!this.#root) {
             return;
         }
-        this.#createItem(this.#root, this.#shadowRoot, true);
+        this.#createItem(this.#root, null, true);
         this.#refreshFilter();
     }
     #refreshFilter() {
         for (const [item, itemElement] of this.#itemElements) {
-            display(itemElement.element, !this.#filter || this.#isVisible.has(item));
+            const show = !this.#filter || this.#isVisible.has(item) && this.#isFullyExpanded(item);
+            display(itemElement.element, show);
         }
+    }
+    #isFullyExpanded(item) {
+        let current = item.parent;
+        if (!current) {
+            return true;
+        }
+        do {
+            if (!this.#isExpanded.get(current)) {
+                return false;
+            }
+            current = current.parent;
+        } while (current);
+        return true;
     }
     setRoot(root) {
         this.#root = root;
@@ -4449,12 +4458,17 @@ class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
             event.stopPropagation();
         }
     }
-    #createItem(item, parent, createExpanded) {
+    #createItem(item, predecessor, createExpanded) {
         let element;
         const itemElement = this.#itemElements.get(item);
         if (itemElement) {
             element = itemElement.element;
-            parent.append(element);
+            if (predecessor) {
+                predecessor.after(element);
+            }
+            else {
+                this.#shadowRoot?.append(element);
+            }
         }
         else {
             const itemLevel = item.getLevel();
@@ -4463,7 +4477,7 @@ class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
             this.#addCssLevel(itemLevel);
             element = createElement('div', {
                 class: `item level${itemLevel}`,
-                parent: parent,
+                parent: this.#shadowRoot,
                 childs: [
                     header = createElement('div', {
                         class: 'header',
@@ -4493,6 +4507,9 @@ class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
                     }),
                 ]
             });
+            if (predecessor) {
+                predecessor.after(element);
+            }
             this.#itemElements.set(item, { element: element, header: header, actions: actions });
             this.#elementItem.set(element, item);
         }
@@ -4513,17 +4530,20 @@ class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
             this.expandItem(item.parent);
         }
         const element = this.#itemElements.get(item)?.element;
+        if (!element) {
+            return;
+        }
         if (this.#isExpanded.get(item)) {
             return;
         }
         this.#isExpanded.set(item, true);
         if (!this.#isInitialized.has(item)) {
-            const childs = [];
+            let predecessor = element;
             for (const child of item.childs) {
-                childs.push(this.#createItem(child, this.#shadowRoot, false));
+                const childElement = this.#createItem(child, predecessor, false);
+                predecessor = childElement;
             }
             this.#isInitialized.add(item);
-            element?.after(...childs);
         }
         else {
             for (const child of item.childs) {
@@ -4626,9 +4646,7 @@ class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
             for (const item of this.#root.walk(this.#filter)) {
                 let current = item;
                 do {
-                    if (current) {
-                        this.#isVisible.add(current);
-                    }
+                    this.#isVisible.add(current);
                     current = current.parent;
                 } while (current);
             }
