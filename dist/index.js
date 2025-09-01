@@ -4409,7 +4409,6 @@ class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
         if (!this.#shadowRoot) {
             return;
         }
-        //this.#shadowRoot.replaceChildren();
         if (!this.#root) {
             return;
         }
@@ -4418,7 +4417,7 @@ class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
     }
     #refreshFilter() {
         for (const [item, itemElement] of this.#itemElements) {
-            const show = !this.#filter || this.#isVisible.has(item) && this.#isFullyExpanded(item);
+            const show = (!this.#filter || this.#isVisible.has(item)) && this.#isFullyExpanded(item);
             display(itemElement.element, show);
         }
     }
