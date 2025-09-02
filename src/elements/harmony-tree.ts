@@ -299,6 +299,8 @@ export class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
 	setRoot(root?: TreeItem | null) {
 		this.#root = root;
 
+		this.#shadowRoot?.replaceChildren();
+
 		this.#refresh();
 	}
 

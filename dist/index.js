@@ -4436,6 +4436,7 @@ class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
     }
     setRoot(root) {
         this.#root = root;
+        this.#shadowRoot?.replaceChildren();
         this.#refresh();
     }
     #buildContextMenu(contextMenu, x, y) {
