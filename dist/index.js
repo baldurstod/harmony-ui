@@ -4591,7 +4591,7 @@ class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
             itemElement?.classList.add('selected');
             if (scrollIntoView) {
                 setTimeout(() => {
-                    itemElement?.scrollIntoView();
+                    itemElement?.scrollIntoView({ block: 'center' });
                 }, 0);
             }
         }
