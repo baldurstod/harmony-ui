@@ -14,7 +14,7 @@ export declare type CreateElementOptions = {
     id?: string;
     class?: string;
     i18n?: string | I18nDescriptor | null;
-    parent?: HTMLElement | ShadowRoot;
+    parent?: Element | ShadowRoot;
     child?: CreateElementChildOption;
     childs?: Array<CreateElementChildOption>;
     events?: {

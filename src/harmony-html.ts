@@ -7,7 +7,7 @@ export type CreateElementOptions = {
 	id?: string,
 	class?: string,
 	i18n?: string | I18nDescriptor | null,
-	parent?: HTMLElement | ShadowRoot,
+	parent?: Element | ShadowRoot,
 	child?: CreateElementChildOption,
 	childs?: Array<CreateElementChildOption>,
 	events?: { [key: string]: any/*TODO: improve type*/, },
@@ -94,7 +94,7 @@ function createElementOptions(element: HTMLElement, options?: CreateElementOptio
 					AddI18nElement(element, optionValue);
 					break;
 				case 'parent':
-					optionValue.append(element);
+					(optionValue as Element | ShadowRoot).append(element);
 					break;
 				case 'child':
 					append(shadowRoot ?? element, optionValue as CreateElementChildOption);
