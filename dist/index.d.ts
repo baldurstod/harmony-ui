@@ -86,7 +86,7 @@ export declare function defineHarmonyTooltip(): void;
 
 export declare function defineHarmonyTree(): void;
 
-export declare function display(htmlElement: HTMLElement | ShadowRoot | Array<HTMLElement | ShadowRoot> | undefined | null, visible: boolean): void;
+export declare function display(htmlElement: HTMLElement | SVGElement | ShadowRoot | Array<HTMLElement | SVGElement | ShadowRoot> | undefined | null, visible: boolean): void;
 
 export declare function documentStyle(cssText: string): Promise<void>;
 
@@ -117,7 +117,7 @@ export declare type HarmonySlideshowOptions = {
     id?: string;
 };
 
-export declare function hide(htmlElement: HTMLElement | ShadowRoot | Array<HTMLElement | ShadowRoot> | undefined | null): void;
+export declare function hide(htmlElement: HTMLElement | SVGElement | ShadowRoot | Array<HTMLElement | SVGElement | ShadowRoot> | undefined | null): void;
 
 export declare class HTMLHarmony2dManipulatorElement extends HTMLElement {
     #private;
@@ -592,7 +592,7 @@ export declare function shadowRootStyle(shadowRoot: Document | ShadowRoot, cssTe
 
 export declare function shadowRootStyleSync(shadowRoot: Document | ShadowRoot, cssText: string): void;
 
-export declare function show(htmlElement: HTMLElement | ShadowRoot | Array<HTMLElement | ShadowRoot> | undefined | null): void;
+export declare function show(htmlElement: HTMLElement | SVGElement | ShadowRoot | Array<HTMLElement | SVGElement | ShadowRoot> | undefined | null): void;
 
 export declare function styleInject(css: string): void;
 
@@ -601,7 +601,7 @@ export declare type TabEventData = {
     originalEvent?: Event;
 };
 
-export declare function toggle(htmlElement: HTMLElement | ShadowRoot | undefined | null): void;
+export declare function toggle(htmlElement: HTMLElement | SVGElement | ShadowRoot | undefined | null): void;
 
 export declare type TreeAction = {
     name: string;
