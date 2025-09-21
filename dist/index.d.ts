@@ -6,6 +6,8 @@ export declare function cloneEvent(event: Event): Event;
 
 export declare function createElement(tagName: string, options?: CreateElementOptions): HTMLElement;
 
+export declare type CreateElementChildOption = Element | ShadowRoot | string;
+
 export declare function createElementNS(namespaceURI: string, tagName: string, options?: CreateElementOptions): Element;
 
 export declare type CreateElementOptions = {
@@ -13,8 +15,8 @@ export declare type CreateElementOptions = {
     class?: string;
     i18n?: string | I18nDescriptor | null;
     parent?: HTMLElement | ShadowRoot;
-    child?: HTMLElement | ShadowRoot | string;
-    childs?: Array<HTMLElement | ShadowRoot | string>;
+    child?: CreateElementChildOption;
+    childs?: Array<CreateElementChildOption>;
     events?: {
         [key: string]: any;
     };
@@ -34,7 +36,7 @@ export declare type CreateElementOptions = {
     style?: string;
     checked?: boolean;
     disabled?: boolean;
-    elementCreated?: (element: HTMLElement, root?: ShadowRoot) => void;
+    elementCreated?: (element: Element, root?: ShadowRoot) => void;
     [key: string]: any;
 };
 

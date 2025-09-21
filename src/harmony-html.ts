@@ -1,13 +1,15 @@
 import { AddI18nElement, I18nDescriptor } from './harmony-i18n';
 import { ET } from './utils/create';
 
+export type CreateElementChildOption = Element | ShadowRoot | string;
+
 export type CreateElementOptions = {
 	id?: string,
 	class?: string,
 	i18n?: string | I18nDescriptor | null,
 	parent?: HTMLElement | ShadowRoot,
-	child?: HTMLElement | ShadowRoot | string,
-	childs?: Array<HTMLElement | ShadowRoot | string>,
+	child?: CreateElementChildOption,
+	childs?: Array<CreateElementChildOption>,
 	events?: { [key: string]: any/*TODO: improve type*/, },
 	properties?: { [key: string]: any, },
 	hidden?: boolean,
@@ -21,7 +23,7 @@ export type CreateElementOptions = {
 	style?: string,
 	checked?: boolean,
 	disabled?: boolean,
-	elementCreated?: (element: HTMLElement, root?: ShadowRoot) => void,
+	elementCreated?: (element: Element, root?: ShadowRoot) => void,
 	[key: string]: any,
 }
 
@@ -54,7 +56,7 @@ export function updateElement(element: HTMLElement | undefined, options: CreateE
 	return element;
 }
 
-function append(element: HTMLElement | ShadowRoot, child: HTMLElement) {
+function append(element: Element | ShadowRoot, child: CreateElementChildOption) {
 	if (child === null || child === undefined) {
 		return;
 	}
@@ -95,10 +97,10 @@ function createElementOptions(element: HTMLElement, options?: CreateElementOptio
 					optionValue.append(element);
 					break;
 				case 'child':
-					append(shadowRoot ?? element, optionValue);
+					append(shadowRoot ?? element, optionValue as CreateElementChildOption);
 					break;
 				case 'childs':
-					optionValue.forEach((entry: HTMLElement) => append(shadowRoot ?? element, entry));
+					optionValue.forEach((entry: CreateElementChildOption) => append(shadowRoot ?? element, entry));
 					break;
 				case 'events':
 					for (const eventType in optionValue) {
