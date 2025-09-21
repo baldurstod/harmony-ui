@@ -5059,7 +5059,6 @@ class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
             const rect = sticky.getBoundingClientRect();
             stickyHeight += rect.height;
         }
-        console.info(stickyHeight, this.#sticky);
         const rect = this.getBoundingClientRect();
         const elements = this.#shadowRoot.elementsFromPoint(rect.x + 1, rect.y + stickyHeight + 1);
         if (!elements) {
