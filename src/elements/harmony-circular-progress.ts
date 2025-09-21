@@ -9,9 +9,9 @@ export class HTMLHarmonyCircularProgressElement extends HTMLHarmonyElement {
 	#shadowRoot?: ShadowRoot;
 	#disabled = false;
 	#htmlLabel?: HTMLElement;
-	#htmlSVG?: HTMLElement;
-	#htmlTrack?: HTMLElement;
-	#htmlProgress?: HTMLElement;
+	#htmlSVG?: SVGElement;
+	#htmlTrack?: SVGElement;
+	#htmlProgress?: SVGElement;
 	#start: number = 0;
 	#end: number = Math.PI * 2;
 	#progress: number = 0.5;
@@ -41,7 +41,7 @@ export class HTMLHarmonyCircularProgressElement extends HTMLHarmonyElement {
 						'shape-rendering': 'geometricPrecision',
 						stroke: 'currentColor',
 					}
-				}),
+				}) as SVGElement,
 				this.#htmlProgress = createElementNS('http://www.w3.org/2000/svg', 'circle', {
 					class: 'progress',
 					attributes: {
@@ -53,9 +53,9 @@ export class HTMLHarmonyCircularProgressElement extends HTMLHarmonyElement {
 						'shape-rendering': 'geometricPrecision',
 						stroke: 'currentColor',
 					}
-				}),
+				}) as SVGElement,
 			],
-		});
+		}) as SVGElement;
 
 		this.#refresh();
 	}
