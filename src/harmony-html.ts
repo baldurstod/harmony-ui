@@ -32,7 +32,7 @@ export function createElement(tagName: string, options?: CreateElementOptions) {
 	return element;
 }
 
-export function createElementNS(namespaceURI: string, tagName: string, options: CreateElementOptions) {
+export function createElementNS(namespaceURI: string, tagName: string, options?: CreateElementOptions) {
 	const element = (document.createElementNS(namespaceURI, tagName) as HTMLElement);
 	createElementOptions(element, options);
 	return element;
