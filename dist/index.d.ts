@@ -6,7 +6,7 @@ export declare function cloneEvent(event: Event): Event;
 
 export declare function createElement(tagName: string, options?: CreateElementOptions): HTMLElement;
 
-export declare function createElementNS(namespaceURI: string, tagName: string, options?: CreateElementOptions): HTMLElement;
+export declare function createElementNS(namespaceURI: string, tagName: string, options?: CreateElementOptions): Element;
 
 export declare type CreateElementOptions = {
     id?: string;

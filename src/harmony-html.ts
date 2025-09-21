@@ -25,16 +25,16 @@ export type CreateElementOptions = {
 	[key: string]: any,
 }
 
-export function createElement(tagName: string, options?: CreateElementOptions) {
+export function createElement(tagName: string, options?: CreateElementOptions): HTMLElement {
 	const element = document.createElement(tagName);
 	createElementOptions(element, options);
 	ET.dispatchEvent(new CustomEvent('created', { detail: element }));
 	return element;
 }
 
-export function createElementNS(namespaceURI: string, tagName: string, options?: CreateElementOptions) {
-	const element = (document.createElementNS(namespaceURI, tagName) as HTMLElement);
-	createElementOptions(element, options);
+export function createElementNS(namespaceURI: string, tagName: string, options?: CreateElementOptions): Element {
+	const element = document.createElementNS(namespaceURI, tagName);
+	createElementOptions(element as HTMLElement, options);
 	return element;
 }
 
