@@ -783,7 +783,7 @@ class HTMLHarmony2dManipulatorElement extends HTMLElement {
         if (this.#dragRotator && this.#canRotate) {
             const currentX = event.clientX;
             const currentY = event.clientY;
-            this.#rotation = -Math.atan2(currentX - this.#startRotationCenter.x, currentY - this.#startRotationCenter.y) + Math.PI;
+            this.#rotation = Math.atan2(currentX - this.#startRotationCenter.x, this.#startRotationCenter.y - currentY);
             if (event.ctrlKey) {
                 this.#snapRotation();
             }
