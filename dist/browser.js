@@ -1233,6 +1233,13 @@ class HTMLHarmony2dManipulatorElement extends HTMLElement {
     isDragging() {
         return this.#dragging;
     }
+    setRotation(rotation) {
+        if (this.#dragging) {
+            return;
+        }
+        this.#rotation = rotation;
+        this.#refresh();
+    }
 }
 let defined2dManipulator = false;
 function defineHarmony2dManipulator() {

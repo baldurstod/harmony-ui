@@ -1,7 +1,8 @@
-import { createElement } from '../harmony-html';
+import { Radian } from 'harmony-types';
 import manipulator2dCSS from '../css/harmony-2d-manipulator.css';
-import { toBool } from '../utils/attributes';
 import { shadowRootStyle } from '../harmony-css';
+import { createElement } from '../harmony-html';
+import { toBool } from '../utils/attributes';
 import { injectGlobalCss } from '../utils/globalcss';
 
 interface ResizeMatrix {
@@ -893,6 +894,15 @@ export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 
 	isDragging(): boolean {
 		return this.#dragging;
+	}
+
+	setRotation(rotation: Radian): void {
+		if (this.#dragging) {
+			return;
+		}
+
+		this.#rotation = rotation;
+		this.#refresh();
 	}
 }
 

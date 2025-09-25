@@ -1,4 +1,5 @@
 import { Color } from 'harmony-utils';
+import { Radian } from 'harmony-types';
 
 export declare function AddI18nElement(element: Element, descriptor: string | I18nDescriptor | null): void;
 
@@ -149,6 +150,7 @@ export declare class HTMLHarmony2dManipulatorElement extends HTMLElement {
     static get observedAttributes(): string[];
     private convertToUnit;
     isDragging(): boolean;
+    setRotation(rotation: Radian): void;
 }
 
 export declare class HTMLHarmonyAccordionElement extends HTMLElement {
