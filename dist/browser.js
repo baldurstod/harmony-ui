@@ -1230,6 +1230,9 @@ class HTMLHarmony2dManipulatorElement extends HTMLElement {
             }
         }
     }
+    isDragging() {
+        return this.#dragging;
+    }
 }
 let defined2dManipulator = false;
 function defineHarmony2dManipulator() {

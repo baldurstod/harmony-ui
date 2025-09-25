@@ -148,6 +148,7 @@ export declare class HTMLHarmony2dManipulatorElement extends HTMLElement {
     attributeChangedCallback(name: string, oldValue: string, newValue: string): void;
     static get observedAttributes(): string[];
     private convertToUnit;
+    isDragging(): boolean;
 }
 
 export declare class HTMLHarmonyAccordionElement extends HTMLElement {

@@ -890,6 +890,10 @@ export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 			}
 		}
 	}
+
+	isDragging(): boolean {
+		return this.#dragging;
+	}
 }
 
 let defined2dManipulator = false;
