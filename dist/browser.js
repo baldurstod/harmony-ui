@@ -276,6 +276,70 @@ class I18n {
     }
 }
 
+var helpCSS = "div {\n\tposition: fixed;\n\tleft: 20%;\n\ttop: 5%;\n\tmax-height: 30%;\n\twidth: 60%;\n\ttext-align: center;\n\tbackground-color: #772222;\n\tborder-radius: 1em;\n\toverflow: auto;\n\tz-index: 10;\n\tfont-family: tf2build, Verdana, sans-serif;\n\tpadding: 0.2rem;\n}\n";
+
+let helpInstance = null;
+function getHelp() {
+    if (!helpInstance) {
+        helpInstance = new Help();
+    }
+    return helpInstance;
+}
+class Help {
+    #display = false;
+    #html;
+    #shadowRoot;
+    #elements = new Map();
+    constructor() {
+        document.body.addEventListener('keydown', (event) => this.#handleKeyDown(event));
+        document.body.addEventListener('keyup', (event) => this.#handleKeyUp(event));
+        document.body.addEventListener('mousemove', (event) => this.#handleMouseMove(event));
+        this.#shadowRoot = createShadowRoot('div', {
+            parent: document.body,
+            hidden: true,
+            childs: [
+                this.#html = createElement('div', {
+                    class: 'help',
+                    i18n: '',
+                }),
+            ],
+        });
+        shadowRootStyle(this.#shadowRoot, helpCSS);
+    }
+    #handleKeyDown(event) {
+        if (event.key == 'F1') {
+            event.preventDefault();
+            show(this.#shadowRoot);
+            this.#display = true;
+        }
+    }
+    #handleKeyUp(event) {
+        if (event.key == 'F1') {
+            hide(this.#shadowRoot);
+            this.#display = false;
+        }
+    }
+    #handleMouseMove(event) {
+        const element = document.elementFromPoint(event.clientX, event.clientY);
+        if (!element) {
+            return;
+        }
+        const i18n = this.#elements.get(element);
+        if (i18n) {
+            updateElement(this.#html, {
+                i18n: i18n,
+            });
+            display(this.#shadowRoot, this.#display);
+        }
+        else {
+            hide(this.#shadowRoot);
+        }
+    }
+    addElement(element, i18n) {
+        this.#elements.set(element, i18n);
+    }
+}
+
 function createElement(tagName, options) {
     const element = document.createElement(tagName);
     createElementOptions(element, options);
@@ -396,6 +460,9 @@ function createElementOptions(element, options, shadowRoot) {
                     break;
                 case 'checked':
                     element.checked = optionValue;
+                    break;
+                case 'help':
+                    getHelp().addElement(element, optionValue);
                     break;
                 case 'elementCreated':
                     break;

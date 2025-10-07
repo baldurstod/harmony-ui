@@ -1,5 +1,6 @@
 import { AddI18nElement, I18nDescriptor } from './harmony-i18n';
 import { ET } from './utils/create';
+import { getHelp } from './utils/help';
 
 export type CreateElementChildOption = Element | ShadowRoot | string;
 
@@ -23,6 +24,7 @@ export type CreateElementOptions = {
 	style?: string,
 	checked?: boolean,
 	disabled?: boolean,
+	help?: string,
 	elementCreated?: (element: Element, root?: ShadowRoot) => void,
 	[key: string]: any,
 }
@@ -152,6 +154,9 @@ function createElementOptions(element: HTMLElement, options?: CreateElementOptio
 					break;
 				case 'checked':
 					(element as HTMLInputElement).checked = optionValue;
+					break;
+				case 'help':
+					getHelp().addElement(element, optionValue);
 					break;
 				case 'elementCreated':
 					break;

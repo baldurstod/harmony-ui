@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<title>Test help</title>
+	<link href="./assets/css/examples.css" rel="stylesheet">
+</head>
+
+<body>
+	<script type="module">
+		import { createElement, I18n } from '../dist/browser.js';
+		I18n.start();
+
+		createElement('div', { parent:document.body, innerText: 'div 1', help:'#div1' });
+		createElement('div', { parent:document.body, innerText: 'div 2', help:'#div2' });
+		createElement('div', { parent:document.body, innerText: 'div 3', help:'#div3' });
+		createElement('div', { parent:document.body, innerText: 'div 4', help:'#div4' });
+		createElement('div', { parent:document.body, innerText: 'div 5', help:'#div5' });
+	</script>
+</body>
+
+</html>

@@ -1,0 +1,14 @@
+div {
+	position: fixed;
+	left: 20%;
+	top: 5%;
+	max-height: 30%;
+	width: 60%;
+	text-align: center;
+	background-color: #772222;
+	border-radius: 1em;
+	overflow: auto;
+	z-index: 10;
+	font-family: tf2build, Verdana, sans-serif;
+	padding: 0.2rem;
+}
