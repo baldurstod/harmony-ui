@@ -6,6 +6,13 @@ import { toBool } from '../utils/attributes';
 import { injectGlobalCss } from '../utils/globalcss';
 import { HTMLHarmonyElement } from './harmony-element';
 
+export type HarmonySwitchChange = {
+	/** State of the switch. Is undefined if switch is ternary and in undefined state */
+	state: boolean | undefined;
+	/** @deprecated use state instead */
+	value: boolean | undefined;
+}
+
 export class HTMLHarmonySwitchElement extends HTMLHarmonyElement {
 	#shadowRoot?: ShadowRoot;
 	#disabled = false;
@@ -58,7 +65,7 @@ export class HTMLHarmonySwitchElement extends HTMLHarmonyElement {
 	set state(state) {
 		if (this.#state != state) {
 			this.#state = state;
-			this.dispatchEvent(new CustomEvent('change', { detail: { state: state, value: state } }));
+			this.dispatchEvent(new CustomEvent<HarmonySwitchChange>('change', { detail: { state: state, value: state } }));
 		} else {
 			this.#state = state;
 		}

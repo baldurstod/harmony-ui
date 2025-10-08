@@ -119,6 +119,13 @@ export declare type HarmonySlideshowOptions = {
     id?: string;
 };
 
+export declare type HarmonySwitchChange = {
+    /** State of the switch. Is undefined if switch is ternary and in undefined state */
+    state: boolean | undefined;
+    /** @deprecated use state instead */
+    value: boolean | undefined;
+};
+
 export declare function hide(htmlElement: HTMLElement | SVGElement | ShadowRoot | Array<HTMLElement | SVGElement | ShadowRoot> | undefined | null): void;
 
 export declare class HTMLHarmony2dManipulatorElement extends HTMLElement {
