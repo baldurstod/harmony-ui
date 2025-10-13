@@ -105,7 +105,11 @@ export declare type HarmonyMenuItem = {
     f?: (arg0: any) => void;
 };
 
-export declare type HarmonyMenuItems = Array<HarmonyMenuItem> | {
+export declare type HarmonyMenuItems = HarmonyMenuItemsArray | HarmonyMenuItemsDict;
+
+export declare type HarmonyMenuItemsArray = Array<HarmonyMenuItem>;
+
+export declare type HarmonyMenuItemsDict = {
     [key: string]: HarmonyMenuItem | null;
 };
 

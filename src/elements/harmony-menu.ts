@@ -15,7 +15,10 @@ export type HarmonyMenuItem = {
 	f?: (arg0: any) => void,
 };
 
-export type HarmonyMenuItems = Array<HarmonyMenuItem> | { [key: string]: HarmonyMenuItem | null };
+export type HarmonyMenuItemsArray = Array<HarmonyMenuItem>;
+export type HarmonyMenuItemsDict = { [key: string]: HarmonyMenuItem | null };
+
+export type HarmonyMenuItems = HarmonyMenuItemsArray | HarmonyMenuItemsDict;
 
 export class HTMLHarmonyMenuElement extends HTMLElement {
 	#doOnce = true;
