@@ -2,7 +2,7 @@ import { AddI18nElement, I18nDescriptor } from './harmony-i18n';
 import { ET } from './utils/create';
 import { getHelp } from './utils/help';
 
-export type CreateElementChildOption = Element | ShadowRoot | string;
+export type CreateElementChildOption = Element | ShadowRoot | string | null | undefined;
 
 export type CreateElementOptions = {
 	id?: string,
