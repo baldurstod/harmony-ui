@@ -145,7 +145,7 @@ function createElementOptions(element: HTMLElement, options?: CreateElementOptio
 					adoptStyleSheet(shadowRoot ?? element, optionValue);
 					break;
 				case 'adoptStyles':
-					optionValue.forEach((entry: string) => {
+					(optionValue ?? []).forEach((entry: string) => {
 						adoptStyleSheet(shadowRoot ?? element, entry);
 					});
 					break;

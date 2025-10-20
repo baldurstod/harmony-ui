@@ -454,7 +454,7 @@ function createElementOptions(element, options, shadowRoot) {
                     adoptStyleSheet(shadowRoot ?? element, optionValue);
                     break;
                 case 'adoptStyles':
-                    optionValue.forEach((entry) => {
+                    (optionValue ?? []).forEach((entry) => {
                         adoptStyleSheet(shadowRoot ?? element, entry);
                     });
                     break;
