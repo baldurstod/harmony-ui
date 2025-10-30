@@ -21,6 +21,8 @@ export type CreateElementOptions = {
 	htmlFor?: string,
 	adoptStyle?: string,
 	adoptStyles?: Array<string>,
+	adoptStyleSheet?: CSSStyleSheet,
+	adoptStyleSheets?: Array<CSSStyleSheet>,
 	style?: string,
 	checked?: boolean,
 	disabled?: boolean,
@@ -142,10 +144,18 @@ function createElementOptions(element: HTMLElement, options?: CreateElementOptio
 					(element as HTMLLabelElement).htmlFor = optionValue;
 					break;
 				case 'adoptStyle':
-					adoptStyleSheet(shadowRoot ?? element, optionValue);
+					adoptStyle(shadowRoot ?? element, optionValue);
 					break;
 				case 'adoptStyles':
 					(optionValue ?? []).forEach((entry: string) => {
+						adoptStyle(shadowRoot ?? element, entry);
+					});
+					break;
+				case 'adoptStyleSheet':
+					adoptStyleSheet(shadowRoot ?? element, optionValue);
+					break;
+				case 'adoptStyleSheets':
+					(optionValue ?? []).forEach((entry: CSSStyleSheet) => {
 						adoptStyleSheet(shadowRoot ?? element, entry);
 					});
 					break;
@@ -170,9 +180,13 @@ function createElementOptions(element: HTMLElement, options?: CreateElementOptio
 	}
 }
 
-async function adoptStyleSheet(element: HTMLElement | Document | ShadowRoot, cssText: string) {
+async function adoptStyle(element: HTMLElement | Document | ShadowRoot, cssText: string) {
 	const sheet = new CSSStyleSheet;
 	await sheet.replace(cssText);
+	adoptStyleSheet(element, sheet);
+}
+
+async function adoptStyleSheet(element: HTMLElement | Document | ShadowRoot, sheet: CSSStyleSheet) {
 	if ((element as any).adoptStyleSheet) {
 		(element as any).adoptStyleSheet(sheet);
 	} else {

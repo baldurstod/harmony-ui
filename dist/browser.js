@@ -448,9 +448,17 @@ function createElementOptions(element, options, shadowRoot) {
                     element.htmlFor = optionValue;
                     break;
                 case 'adoptStyle':
-                    adoptStyleSheet(shadowRoot ?? element, optionValue);
+                    adoptStyle(shadowRoot ?? element, optionValue);
                     break;
                 case 'adoptStyles':
+                    (optionValue ?? []).forEach((entry) => {
+                        adoptStyle(shadowRoot ?? element, entry);
+                    });
+                    break;
+                case 'adoptStyleSheet':
+                    adoptStyleSheet(shadowRoot ?? element, optionValue);
+                    break;
+                case 'adoptStyleSheets':
                     (optionValue ?? []).forEach((entry) => {
                         adoptStyleSheet(shadowRoot ?? element, entry);
                     });
@@ -474,9 +482,12 @@ function createElementOptions(element, options, shadowRoot) {
         options.elementCreated?.(element, shadowRoot);
     }
 }
-async function adoptStyleSheet(element, cssText) {
+async function adoptStyle(element, cssText) {
     const sheet = new CSSStyleSheet;
     await sheet.replace(cssText);
+    adoptStyleSheet(element, sheet);
+}
+async function adoptStyleSheet(element, sheet) {
     if (element.adoptStyleSheet) {
         element.adoptStyleSheet(sheet);
     }

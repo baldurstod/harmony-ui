@@ -34,6 +34,8 @@ export declare type CreateElementOptions = {
     htmlFor?: string;
     adoptStyle?: string;
     adoptStyles?: Array<string>;
+    adoptStyleSheet?: CSSStyleSheet;
+    adoptStyleSheets?: Array<CSSStyleSheet>;
     style?: string;
     checked?: boolean;
     disabled?: boolean;
