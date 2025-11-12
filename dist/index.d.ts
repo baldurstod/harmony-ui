@@ -94,7 +94,7 @@ export declare function documentStyle(cssText: string): Promise<void>;
 
 export declare function documentStyleSync(cssText: string): void;
 
-export declare type HarmonyEventListener = ((evt: Event) => void) | ((evt: MouseEvent) => void) | ((evt: WheelEvent) => void) | ((evt: PointerEvent) => void) | ((evt: KeyboardEvent) => void) | ((evt: CustomEvent) => void);
+export declare type HarmonyEventListener = ((evt: Event) => void) | ((evt: MouseEvent) => void) | ((evt: WheelEvent) => void) | ((evt: PointerEvent) => void) | ((evt: KeyboardEvent) => void) | ((evt: InputEvent) => void) | ((evt: CustomEvent) => void);
 
 export declare type HarmonyMenuItem = {
     i18n?: string;

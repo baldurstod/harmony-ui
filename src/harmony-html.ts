@@ -10,6 +10,7 @@ export type HarmonyEventListener = ((evt: Event) => void) |
 	((evt: WheelEvent) => void) |
 	((evt: PointerEvent) => void) |
 	((evt: KeyboardEvent) => void) |
+	((evt: InputEvent) => void) |
 	((evt: CustomEvent) => void);
 
 export type CreateElementOptions = {
