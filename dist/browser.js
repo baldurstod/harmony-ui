@@ -4527,13 +4527,6 @@ class HTMLHarmonyTabElement extends HTMLElement {
         this.#group?.closeTab(this);
         return true;
     }
-    /**
-     * @deprecated use setActive() instead
-     */
-    set active(active) {
-        console.warn('deprecated, use setActive instead');
-        this.setActive(active);
-    }
     setActive(active) {
         if (this.#active != active) {
             this.#active = active;
@@ -4554,13 +4547,6 @@ class HTMLHarmonyTabElement extends HTMLElement {
         if (active && this.#group) {
             this.#group.activateTab(this);
         }
-    }
-    /**
-     * @deprecated use isActive() instead
-     */
-    get active() {
-        console.warn('deprecated, use getActive instead');
-        return this.isActive();
     }
     isActive() {
         return this.#active;

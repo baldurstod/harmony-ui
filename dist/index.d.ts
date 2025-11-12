@@ -393,15 +393,7 @@ export declare class HTMLHarmonyTabElement extends HTMLElement {
     get disabled(): boolean;
     activate(): void;
     close(): boolean;
-    /**
-     * @deprecated use setActive() instead
-     */
-    set active(active: boolean);
     setActive(active: boolean): void;
-    /**
-     * @deprecated use isActive() instead
-     */
-    get active(): boolean;
     isActive(): boolean;
     isClosed(): boolean;
     scrollIntoView(): void;

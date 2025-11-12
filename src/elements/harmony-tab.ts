@@ -98,14 +98,6 @@ export class HTMLHarmonyTabElement extends HTMLElement {
 		return true;
 	}
 
-	/**
-	 * @deprecated use setActive() instead
-	 */
-	set active(active: boolean) {
-		console.warn('deprecated, use setActive instead');
-		this.setActive(active);
-	}
-
 	setActive(active: boolean): void {
 		if (this.#active != active) {
 			this.#active = active;
@@ -126,15 +118,6 @@ export class HTMLHarmonyTabElement extends HTMLElement {
 			this.#group.activateTab(this);
 		}
 	}
-
-	/**
-	 * @deprecated use isActive() instead
-	 */
-	get active(): boolean {
-		console.warn('deprecated, use getActive instead');
-		return this.isActive();
-	}
-
 	isActive(): boolean {
 		return this.#active;
 	}
