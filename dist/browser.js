@@ -2630,6 +2630,9 @@ class HTMLHarmonyFileInputElement extends HTMLElement {
     get accept() {
         return this.#htmlInput.accept;
     }
+    setMultiple(multiple) {
+        this.#htmlInput.multiple = multiple;
+    }
     adoptStyleSheet(styleSheet) {
         this.#shadowRoot.adoptedStyleSheets.push(styleSheet);
     }
@@ -2656,10 +2659,13 @@ class HTMLHarmonyFileInputElement extends HTMLElement {
             case 'data-accept':
                 this.accept = newValue;
                 break;
+            case 'multiple':
+                this.setMultiple(newValue != '');
+                break;
         }
     }
     static get observedAttributes() {
-        return ['data-label', 'data-i18n', 'data-accept', 'data-tooltip-i18n'];
+        return ['data-label', 'data-i18n', 'data-accept', 'data-tooltip-i18n', 'multiple'];
     }
 }
 let definedFileInput = false;

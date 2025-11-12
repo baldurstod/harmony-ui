@@ -40,6 +40,7 @@ export declare type CreateElementOptions = {
     checked?: boolean;
     disabled?: boolean;
     help?: string;
+    value?: string;
     elementCreated?: (element: Element, root?: ShadowRoot) => void;
     [key: string]: any;
 };
@@ -222,6 +223,7 @@ export declare class HTMLHarmonyFileInputElement extends HTMLElement {
     get files(): FileList | null;
     set accept(accept: string);
     get accept(): string;
+    setMultiple(multiple: boolean): void;
     adoptStyleSheet(styleSheet: CSSStyleSheet): void;
     attributeChangedCallback(name: string, oldValue: string, newValue: string): void;
     static get observedAttributes(): string[];
