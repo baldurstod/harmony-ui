@@ -27,6 +27,7 @@ export type CreateElementOptions = {
 	checked?: boolean,
 	disabled?: boolean,
 	help?: string,
+	value?: string,
 	elementCreated?: (element: Element, root?: ShadowRoot) => void,
 	[key: string]: any,
 }
