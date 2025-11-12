@@ -1,11 +1,11 @@
+import { folderOpenSVG, infoSVG } from 'harmony-svg';
+import fileInputCSS from '../css/harmony-file-input.css';
 import { shadowRootStyle } from '../harmony-css';
 import { createElement, hide, show } from '../harmony-html';
-import fileInputCSS from '../css/harmony-file-input.css';
-import { folderOpenSVG, infoSVG } from 'harmony-svg';
-import { cloneEvent } from '../utils/events';
 import { I18n } from '../harmony-i18n';
-import { defineHarmonyTooltip } from './harmony-tooltip';
+import { cloneEvent } from '../utils/events';
 import { injectGlobalCss } from '../utils/globalcss';
+import { defineHarmonyTooltip } from './harmony-tooltip';
 
 export class HTMLHarmonyFileInputElement extends HTMLElement {
 	#shadowRoot: ShadowRoot;
@@ -13,10 +13,11 @@ export class HTMLHarmonyFileInputElement extends HTMLElement {
 	#htmlInput: HTMLInputElement;
 	#htmlHelp: HTMLSpanElement;
 	#htmlTooltip: HTMLSpanElement;
+
 	constructor() {
 		super();
 		this.#shadowRoot = this.attachShadow({ mode: 'closed' });
-		shadowRootStyle(this.#shadowRoot, fileInputCSS);
+		void shadowRootStyle(this.#shadowRoot, fileInputCSS);
 		I18n.observeElement(this.#shadowRoot);
 
 		defineHarmonyTooltip();
@@ -55,7 +56,7 @@ export class HTMLHarmonyFileInputElement extends HTMLElement {
 		});
 	}
 
-	get files() {
+	get files(): FileList | null {
 		return this.#htmlInput.files
 	}
 
@@ -71,11 +72,11 @@ export class HTMLHarmonyFileInputElement extends HTMLElement {
 		this.#htmlInput.multiple = multiple;
 	}
 
-	adoptStyleSheet(styleSheet: CSSStyleSheet) {
+	adoptStyleSheet(styleSheet: CSSStyleSheet): void {
 		this.#shadowRoot.adoptedStyleSheets.push(styleSheet);
 	}
 
-	attributeChangedCallback(name: string, oldValue: string, newValue: string) {
+	attributeChangedCallback(name: string, oldValue: string, newValue: string): void {
 		switch (name) {
 			case 'data-label':
 				this.#htmlText.innerHTML = newValue;
@@ -103,13 +104,13 @@ export class HTMLHarmonyFileInputElement extends HTMLElement {
 		}
 	}
 
-	static get observedAttributes() {
+	static get observedAttributes(): string[] {
 		return ['data-label', 'data-i18n', 'data-accept', 'data-tooltip-i18n', 'multiple'];
 	}
 }
 
 let definedFileInput = false;
-export function defineHarmonyFileInput() {
+export function defineHarmonyFileInput(): void {
 	if (window.customElements && !definedFileInput) {
 		customElements.define('harmony-file-input', HTMLHarmonyFileInputElement);
 		definedFileInput = true;

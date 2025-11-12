@@ -26,10 +26,10 @@ export class HTMLHarmonyRadioElement extends HTMLElement {
 		this.#initMutationObserver();
 	}
 
-	connectedCallback() {
+	connectedCallback(): void {
 		if (this.#doOnce) {
 			I18n.observeElement(this.#shadowRoot);
-			shadowRootStyle(this.#shadowRoot, radioCSS);
+			void shadowRootStyle(this.#shadowRoot, radioCSS);
 			this.#shadowRoot.prepend(this.#htmlLabel);
 			hide(this.#htmlLabel);
 			this.#processChilds();
@@ -37,7 +37,7 @@ export class HTMLHarmonyRadioElement extends HTMLElement {
 		}
 	}
 
-	#processChilds() {
+	#processChilds(): void {
 		for (const child of this.children) {
 			this.#initButton(child as HTMLButtonElement)
 		}
@@ -62,7 +62,7 @@ export class HTMLHarmonyRadioElement extends HTMLElement {
 		}
 	}
 
-	select(value: string, select: boolean = true) {
+	select(value: string, select = true): void {
 		this.#selected[select ? 'add' : 'delete'](value);
 
 		const htmlButton = this.#buttons.get(value);
@@ -93,7 +93,7 @@ export class HTMLHarmonyRadioElement extends HTMLElement {
 		}
 	}
 
-	isSelected(value: string) {
+	isSelected(value: string): string | false {
 		const htmlButton = this.#buttons.get(value);
 		return htmlButton?.value ?? false;
 	}
@@ -103,11 +103,11 @@ export class HTMLHarmonyRadioElement extends HTMLElement {
 		this.classList[this.#disabled ? 'add' : 'remove']('disabled');
 	}
 
-	get disabled() {
+	get disabled(): boolean {
 		return this.#disabled;
 	}
 
-	clear() {
+	clear(): void {
 		for (const button of this.#buttons2) {
 			button.remove();
 		}
@@ -121,9 +121,9 @@ export class HTMLHarmonyRadioElement extends HTMLElement {
 		this.#slots.clear();
 	}
 
-	#initMutationObserver() {
+	#initMutationObserver(): void {
 		const config = { childList: true, subtree: true };
-		const mutationCallback = (mutationsList: Array<MutationRecord>, observer: MutationObserver) => {
+		const mutationCallback = (mutationsList: MutationRecord[]): void => {
 			for (const mutation of mutationsList) {
 				const addedNodes = mutation.addedNodes;
 				for (const addedNode of addedNodes) {
@@ -138,7 +138,7 @@ export class HTMLHarmonyRadioElement extends HTMLElement {
 		observer.observe(this, config);
 	}
 
-	attributeChangedCallback(name: string, oldValue: string, newValue: string) {
+	attributeChangedCallback(name: string, oldValue: string, newValue: string): void {
 		switch (name) {
 			case 'data-label':
 				this.#htmlLabel.innerHTML = newValue;
@@ -162,13 +162,13 @@ export class HTMLHarmonyRadioElement extends HTMLElement {
 		}
 	}
 
-	static get observedAttributes() {
+	static get observedAttributes(): string[] {
 		return ['data-label', 'data-i18n', 'disabled', 'multiple', 'value'];
 	}
 }
 
 let definedRadio = false;
-export function defineHarmonyRadio() {
+export function defineHarmonyRadio(): void {
 	if (window.customElements && !definedRadio) {
 		customElements.define('harmony-radio', HTMLHarmonyRadioElement);
 		definedRadio = true;

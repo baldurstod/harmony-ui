@@ -1,6 +1,6 @@
-import { createElement, hide } from '../harmony-html';
 import splitterCSS from '../css/harmony-splitter.css';
 import { shadowRootStyleSync } from '../harmony-css';
+import { createElement } from '../harmony-html';
 import { injectGlobalCss } from '../utils/globalcss';
 
 export class HTMLHarmonySplitterElement extends HTMLElement {
@@ -9,7 +9,7 @@ export class HTMLHarmonySplitterElement extends HTMLElement {
 	#htmlPanel2: HTMLSlotElement;
 	#htmlGutter: HTMLElement;
 	#doOnce = true;
-	#orientation: string = 'v';
+	#orientation = 'v';
 	#split = 0.5;
 	#startOffsetLeft = 0;
 	#startOffsetTop = 0;
@@ -35,7 +35,7 @@ export class HTMLHarmonySplitterElement extends HTMLElement {
 			/*events: {
 				mousedown: event => this.#handleMouseDown(event),
 			},*/
-		}) as HTMLElement;
+		});
 		this.#htmlPanel2 = createElement('slot', {
 			class: 'panel',
 			name: '2',
@@ -47,7 +47,7 @@ export class HTMLHarmonySplitterElement extends HTMLElement {
 		document.body.addEventListener('mouseup', () => this.#dragging = false);
 	}
 
-	connectedCallback() {
+	connectedCallback(): void {
 		if (this.#doOnce) {
 			this.setOrientation(this.getAttribute('orientation') ?? 'v');
 			this.#update();
@@ -55,12 +55,12 @@ export class HTMLHarmonySplitterElement extends HTMLElement {
 		}
 	}
 
-	#update() {
+	#update(): void {
 		this.#htmlPanel1.style.flexBasis = this.#split * 100 + '%';
 		this.#htmlPanel2.style.flexBasis = (1 - this.#split) * 100 + '%';
 	}
 
-	setOrientation(orientation: string) {
+	setOrientation(orientation: string): void {
 		this.classList.remove('vertical', 'horizontal');
 		switch (orientation) {
 			case 'v':
@@ -76,7 +76,7 @@ export class HTMLHarmonySplitterElement extends HTMLElement {
 		}
 	}
 
-	#handleMouseDown(event: MouseEvent) {
+	#handleMouseDown(event: MouseEvent): void {
 		this.#startOffsetLeft = this.#htmlGutter.offsetLeft;
 		this.#startOffsetTop = this.#htmlGutter.offsetTop;
 		this.#startOffsetX = event.offsetX;
@@ -87,7 +87,7 @@ export class HTMLHarmonySplitterElement extends HTMLElement {
 		event.stopPropagation();
 	}
 
-	#handleMouseMove(event: MouseEvent) {
+	#handleMouseMove(event: MouseEvent): void {
 		if (!this.#dragging) {
 			return;
 		}
@@ -108,7 +108,7 @@ export class HTMLHarmonySplitterElement extends HTMLElement {
 		this.#update();
 	}
 
-	attributeChangedCallback(name: string, oldValue: string, newValue: string) {
+	attributeChangedCallback(name: string, oldValue: string, newValue: string): void {
 		switch (name) {
 			case 'orientation':
 				this.setOrientation(newValue);
@@ -116,13 +116,13 @@ export class HTMLHarmonySplitterElement extends HTMLElement {
 		}
 	}
 
-	static get observedAttributes() {
+	static get observedAttributes(): string[] {
 		return ['orientation'];
 	}
 }
 
 let definedSplitter = false;
-export function defineHarmonySplitter() {
+export function defineHarmonySplitter(): void {
 	if (window.customElements && !definedSplitter) {
 		customElements.define('harmony-splitter', HTMLHarmonySplitterElement);
 		definedSplitter = true;

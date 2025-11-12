@@ -1,8 +1,8 @@
+import { Color } from 'harmony-utils';
+import colorPickerCSS from '../css/harmony-color-picker.css';
 import { shadowRootStyle } from '../harmony-css';
 import { createElement } from '../harmony-html';
-import colorPickerCSS from '../css/harmony-color-picker.css';
 import { injectGlobalCss } from '../utils/globalcss';
-import { Color } from 'harmony-utils';
 
 export class HTMLHarmonyColorPickerElement extends HTMLElement {
 	#doOnce = true;
@@ -19,17 +19,17 @@ export class HTMLHarmonyColorPickerElement extends HTMLElement {
 	#htmlOk: HTMLElement;
 	#htmlCancel: HTMLElement;
 	#dragElement: HTMLElement | null = null;
-	#shiftX: number = 0;
-	#shiftY: number = 0;
-	#pageX: number = 0;
-	#pageY: number = 0;
+	#shiftX = 0;
+	#shiftY = 0;
+	#pageX = 0;
+	#pageY = 0;
 	constructor() {
 		super();
 		document.addEventListener('mouseup', () => this.#dragElement = null);
 		document.addEventListener('mousemove', event => this.#handleMouseMove(event));
 
 		this.#shadowRoot = this.attachShadow({ mode: 'closed' });
-		shadowRootStyle(this.#shadowRoot, colorPickerCSS);
+		void shadowRootStyle(this.#shadowRoot, colorPickerCSS);
 		this.#htmlHuePicker = createElement('div', {
 			parent: this.#shadowRoot,
 			id: 'hue-picker',
@@ -39,14 +39,14 @@ export class HTMLHarmonyColorPickerElement extends HTMLElement {
 				events: {
 					mousedown: (event: MouseEvent) => this.#handleMouseDown(event),
 				},
-			}) as HTMLElement,
+			}),
 			events: {
 				mousedown: (event: MouseEvent) => {
 					this.#updateHue(event.offsetX / this.#htmlHuePicker.offsetWidth);
 					this.#handleMouseDown(event, this.#htmlHueSelector);
 				},
 			},
-		}) as HTMLElement;
+		});
 		this.#htmlMainPicker = createElement('div', {
 			parent: this.#shadowRoot,
 			id: 'main-picker',
@@ -56,14 +56,14 @@ export class HTMLHarmonyColorPickerElement extends HTMLElement {
 				events: {
 					mousedown: (event: MouseEvent) => this.#handleMouseDown(event),
 				},
-			}) as HTMLElement,
+			}),
 			events: {
 				mousedown: (event: MouseEvent) => {
 					this.#updateSatLum(event.offsetX / this.#htmlMainPicker.offsetWidth, 1 - (event.offsetY / this.#htmlMainPicker.offsetHeight));
 					this.#handleMouseDown(event, this.#htmlMainSelector);
 				},
 			},
-		}) as HTMLElement;
+		});
 		this.#htmlAlphaPicker = createElement('div', {
 			parent: this.#shadowRoot,
 			id: 'alpha-picker',
@@ -74,14 +74,14 @@ export class HTMLHarmonyColorPickerElement extends HTMLElement {
 				events: {
 					mousedown: (event: MouseEvent) => this.#handleMouseDown(event),
 				},
-			}) as HTMLElement,
+			}),
 			events: {
 				mousedown: (event: MouseEvent) => {
 					this.#updateAlpha(1 - (event.offsetY / this.#htmlAlphaPicker.offsetHeight));
 					this.#handleMouseDown(event, this.#htmlAlphaSelector);
 				},
 			},
-		}) as HTMLElement;
+		});
 		this.#htmlInput = createElement('input', {
 			parent: this.#shadowRoot,
 			id: 'input',
@@ -93,7 +93,7 @@ export class HTMLHarmonyColorPickerElement extends HTMLElement {
 			parent: this.#shadowRoot,
 			id: 'sample',
 			class: 'alpha-background',
-		}) as HTMLElement;
+		});
 		createElement('div', {
 			parent: this.#shadowRoot,
 			id: 'buttons',
@@ -107,37 +107,37 @@ export class HTMLHarmonyColorPickerElement extends HTMLElement {
 							this.dispatchEvent(new CustomEvent('ok', { detail: { hex: this.#color.getHex(), rgba: this.#color.getRgba() } }));
 						},
 					},
-				}) as HTMLElement,
+				}),
 				this.#htmlCancel = createElement('button', {
 					parent: this.#shadowRoot,
 					i18n: '#cancel',
 					events: {
 						click: () => this.dispatchEvent(new CustomEvent('cancel')),
 					}
-				}) as HTMLElement,
+				}),
 			],
 		});
 	}
 
-	#updateAlpha(alpha: number) {
+	#updateAlpha(alpha: number): void {
 		this.#color.alpha = alpha;
 		this.#update();
 		this.#colorChanged();
 	}
 
-	#updateHue(hue: number) {
+	#updateHue(hue: number): void {
 		this.#color.setHue(hue);
 		this.#update();
 		this.#colorChanged();
 	}
 
-	#updateHex(hex: string) {
+	#updateHex(hex: string): void {
 		this.#color.setHex(hex);
 		this.#update();
 		this.#colorChanged();
 	}
 
-	#updateSatLum(sat: number, lum: number) {
+	#updateSatLum(sat: number, lum: number): void {
 		/*const sat = event.offsetX / event.target.offsetWidth;
 		const lum = 1 - event.offsetY / event.target.offsetHeight;*/
 		this.#color.setSatLum(sat, lum);
@@ -145,22 +145,22 @@ export class HTMLHarmonyColorPickerElement extends HTMLElement {
 		this.#colorChanged();
 	}
 
-	#colorChanged() {
+	#colorChanged(): void {
 		this.dispatchEvent(new CustomEvent('change', { detail: { hex: this.#color.getHex(), rgba: this.#color.getRgba() } }));
 	}
 
-	connectedCallback() {
+	connectedCallback(): void {
 		if (this.#doOnce) {
 			this.#update();
 			this.#doOnce = false;
 		}
 	}
 
-	adoptStyleSheet(styleSheet: CSSStyleSheet) {
+	adoptStyleSheet(styleSheet: CSSStyleSheet): void {
 		this.#shadowRoot.adoptedStyleSheets.push(styleSheet);
 	}
 
-	#update() {
+	#update(): void {
 		const red = this.#color.red * 255;
 		const green = this.#color.green * 255;
 		const blue = this.#color.blue * 255;
@@ -184,16 +184,16 @@ export class HTMLHarmonyColorPickerElement extends HTMLElement {
 		this.#htmlMainSelector.style.top = `${100 - lum * 100}%`;;
 	}
 
-	getColor() {
+	getColor(): Color {
 		return this.#color;
 	}
 
-	setHex(hex: string) {
+	setHex(hex: string): void {
 		this.#color.setHex(hex);
 		this.#update();
 	}
 
-	#handleMouseDown(event: MouseEvent, selector?: HTMLElement) {
+	#handleMouseDown(event: MouseEvent, selector?: HTMLElement): void {
 		this.#dragElement = selector ?? (event.currentTarget as HTMLElement);
 		this.#shiftX = (selector ?? (event.currentTarget as HTMLElement)).offsetLeft;
 		this.#shiftY = (selector ?? (event.currentTarget as HTMLElement)).offsetTop;
@@ -202,7 +202,7 @@ export class HTMLHarmonyColorPickerElement extends HTMLElement {
 		event.stopPropagation();
 	}
 
-	#handleMouseMove(event: MouseEvent) {
+	#handleMouseMove(event: MouseEvent): void {
 		const pageX = event.pageX - this.#pageX;
 		const pageY = event.pageY - this.#pageY;
 
@@ -229,7 +229,7 @@ export class HTMLHarmonyColorPickerElement extends HTMLElement {
 }
 
 let definedColorPicker = false;
-export function defineHarmonyColorPicker() {
+export function defineHarmonyColorPicker(): void {
 	if (window.customElements && !definedColorPicker) {
 		customElements.define('harmony-color-picker', HTMLHarmonyColorPickerElement);
 		definedColorPicker = true;

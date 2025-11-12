@@ -1,29 +1,30 @@
+import selectCSS from '../css/harmony-select.css';
 import { shadowRootStyle } from '../harmony-css';
 import { createElement } from '../harmony-html';
-import selectCSS from '../css/harmony-select.css';
 import { injectGlobalCss } from '../utils/globalcss';
 
 export class HTMLHarmonySelectElement extends HTMLElement {
 	#htmlSelect: HTMLElement;
 	#shadowRoot: ShadowRoot;
+
 	constructor() {
 		super();
 		this.#shadowRoot = this.attachShadow({ mode: 'closed' });
 		this.#htmlSelect = createElement('select', { parent: this.#shadowRoot });
 	}
 
-	connectedCallback() {
-		shadowRootStyle(this.#shadowRoot, selectCSS);
+	connectedCallback(): void {
+		void shadowRootStyle(this.#shadowRoot, selectCSS);
 		this.#shadowRoot.append(this.#htmlSelect);
 	}
 
-	attributeChangedCallback(name: string, oldValue: string, newValue: string) {
+	attributeChangedCallback(name: string, oldValue: string, newValue: string): void {
 		if (name == 'multiple') {
 			this.#htmlSelect.setAttribute('multiple', newValue);
 		}
 	}
 
-	addEventListener(type: string, listener: EventListenerOrEventListenerObject) {
+	addEventListener(type: string, listener: EventListenerOrEventListenerObject): void {
 		this.#htmlSelect.addEventListener(type, listener);
 	}
 	/*
@@ -33,7 +34,7 @@ export class HTMLHarmonySelectElement extends HTMLElement {
 		}
 	*/
 
-	addOption(value: string, text?: string) {
+	addOption(value: string, text?: string): void {
 		text = text ?? value;
 		const option = document.createElement('option');
 		option.value = value;
@@ -41,7 +42,7 @@ export class HTMLHarmonySelectElement extends HTMLElement {
 		this.#htmlSelect.append(option);
 	}
 
-	addOptions(values: Map<any, any>) {
+	addOptions(values: Map<string, string>): void {
 		if (values && values.entries) {
 			for (const [value, text] of values.entries()) {
 				this.addOption(value, text);
@@ -49,65 +50,62 @@ export class HTMLHarmonySelectElement extends HTMLElement {
 		}
 	}
 
-	setOptions(values: Map<any, any>) {
+	setOptions(values: Map<string, string>): void {
 		this.removeAllOptions();
 		this.addOptions(values);
 	}
 
-	removeOption(value: any) {
-		const list = this.#htmlSelect.children;
-		for (let i = 0; i < list.length; i++) {
-			if ((list[i] as HTMLOptionElement).value === value) {
-				list[i]!.remove();
+	removeOption(value: string): void {
+		for (const option of this.#htmlSelect.children) {
+			if ((option as HTMLOptionElement).value === value) {
+				(option as HTMLOptionElement).remove();
 			}
 		}
 	}
 
-	removeAllOptions() {
+	removeAllOptions(): void {
 		const list = this.#htmlSelect.children;
 		while (list[0]) {
 			list[0].remove();
 		}
 	}
 
-	select(value: any) {
-		const list = this.#htmlSelect.children;
-		for (let i = 0; i < list.length; i++) {
-			if ((list[i] as HTMLOptionElement).value === value) {
-				(list[i] as HTMLOptionElement).selected = true;
+	select(value: string): void {
+		for (const option of this.#htmlSelect.children) {
+			if ((option as HTMLOptionElement).value === value) {
+				(option as HTMLOptionElement).selected = true;
 			}
 		}
 	}
 
-	selectFirst() {
+	selectFirst(): void {
 		if (this.#htmlSelect.children[0]) {
 			(this.#htmlSelect.children[0] as HTMLOptionElement).selected = true;
 			this.#htmlSelect.dispatchEvent(new Event('input'));
 		}
 	}
 
-	unselect(value: any) {
-		const list = this.#htmlSelect.children;
-		for (let i = 0; i < list.length; i++) {
-			if ((list[i] as HTMLOptionElement).value === value) {
-				(list[i] as HTMLOptionElement).selected = false;
+	unselect(value: string): void {
+		for (const option of this.#htmlSelect.children) {
+			if ((option as HTMLOptionElement).value === value) {
+				(option as HTMLOptionElement).selected = false;
 			}
 		}
 	}
-	unselectAll() {
-		const list = this.#htmlSelect.children;
-		for (let i = 0; i < list.length; i++) {
-			(list[i] as HTMLOptionElement).selected = false;
+
+	unselectAll(): void {
+		for (const option of this.#htmlSelect.children) {
+			(option as HTMLOptionElement).selected = false;
 		}
 	}
 
-	static get observedAttributes() {
+	static get observedAttributes(): string[] {
 		return ['multiple'];
 	}
 }
 
 let definedSelect = false;
-export function defineHarmonySelect() {
+export function defineHarmonySelect(): void {
 	if (window.customElements && !definedSelect) {
 		customElements.define('harmony-select', HTMLHarmonySelectElement);
 		definedSelect = true;

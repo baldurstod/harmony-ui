@@ -1,17 +1,17 @@
-import { createElement } from '../harmony-html';
 import itemCSS from '../css/harmony-item.css';
 import { shadowRootStyle } from '../harmony-css';
+import { createElement } from '../harmony-html';
 
 export class HTMLHarmonyItemElement extends HTMLElement {
 	#shadowRoot: ShadowRoot;
 	#htmlHeader: HTMLSlotElement;
 	#htmlContent: HTMLSlotElement;
-	#id: string = '';
+	#id = '';
 
 	constructor() {
 		super();
 		this.#shadowRoot = this.attachShadow({ mode: 'closed' });
-		shadowRootStyle(this.#shadowRoot, itemCSS);
+		void shadowRootStyle(this.#shadowRoot, itemCSS);
 
 		this.#htmlHeader = createElement('slot', {
 			name: 'header',
@@ -23,19 +23,19 @@ export class HTMLHarmonyItemElement extends HTMLElement {
 		}) as HTMLSlotElement;
 	}
 
-	getHeader() {
+	getHeader(): HTMLSlotElement {
 		return this.#htmlHeader;
 	}
 
-	getContent() {
+	getContent(): HTMLSlotElement {
 		return this.#htmlContent;
 	}
 
-	getId() {
+	getId(): string {
 		return this.#id;
 	}
 
-	attributeChangedCallback(name: string, oldValue: string, newValue: string) {
+	attributeChangedCallback(name: string, oldValue: string, newValue: string): void {
 		switch (name) {
 			case 'id':
 			case 'item-id':
@@ -44,13 +44,13 @@ export class HTMLHarmonyItemElement extends HTMLElement {
 		}
 	}
 
-	static get observedAttributes() {
+	static get observedAttributes(): string[] {
 		return ['id', 'item-id'];
 	}
 }
 
 let definedHarmonyItem = false;
-export function defineHarmonyItem() {
+export function defineHarmonyItem(): void {
 	if (window.customElements && !definedHarmonyItem) {
 		customElements.define('harmony-item', HTMLHarmonyItemElement);
 		definedHarmonyItem = true;

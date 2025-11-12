@@ -1,7 +1,7 @@
+import menuCSS from '../css/harmony-menu.css';
 import { shadowRootStyle } from '../harmony-css';
 import { createElement, hide } from '../harmony-html';
 import { I18n } from '../harmony-i18n';
-import menuCSS from '../css/harmony-menu.css';
 import { injectGlobalCss } from '../utils/globalcss';
 
 export type HarmonyMenuItem = {
@@ -12,11 +12,11 @@ export type HarmonyMenuItem = {
 	disabled?: boolean,
 	submenu?: HarmonyMenuItems,
 	cmd?: string,
-	f?: (arg0: any) => void,
+	f?: (arg0: unknown) => void,
 };
 
-export type HarmonyMenuItemsArray = Array<HarmonyMenuItem>;
-export type HarmonyMenuItemsDict = { [key: string]: HarmonyMenuItem | null };
+export type HarmonyMenuItemsArray = HarmonyMenuItem[];
+export type HarmonyMenuItemsDict = Record<string, HarmonyMenuItem | null>;
 
 export type HarmonyMenuItems = HarmonyMenuItemsArray | HarmonyMenuItemsDict;
 
@@ -37,17 +37,17 @@ export class HTMLHarmonyMenuElement extends HTMLElement {
 		});
 	}
 
-	#show(items: HarmonyMenuItems, userData?: any) {
+	#show(items: HarmonyMenuItems, userData?: unknown): void {
 		this.#setItems(items, userData);
 		this.#checkSize();
 	}
 
-	show(items: HarmonyMenuItems, userData?: any) {
+	show(items: HarmonyMenuItems, userData?: unknown): void {
 		this.#show(items, userData);
 		this.setContextual(false);
 	}
 
-	showContextual(items: HarmonyMenuItems, clientX: number, clientY: number, userData?: any) {
+	showContextual(items: HarmonyMenuItems, clientX: number, clientY: number, userData?: unknown): void {
 		document.body.append(this);
 		this.style.left = clientX + 'px';
 		this.style.top = clientY + 'px';
@@ -55,12 +55,12 @@ export class HTMLHarmonyMenuElement extends HTMLElement {
 		this.#show(items, userData);
 	}
 
-	setContextual(contextual: boolean) {
+	setContextual(contextual: boolean): void {
 		this.style.position = contextual ? 'absolute' : '';
 		this.#contextual = contextual;
 	}
 
-	#checkSize() {
+	#checkSize(): void {
 		const bodyRect = document.body.getBoundingClientRect();
 		const elemRect = this.getBoundingClientRect();
 
@@ -93,18 +93,18 @@ export class HTMLHarmonyMenuElement extends HTMLElement {
 		}
 	}
 
-	close() {
+	close(): void {
 		if (this.#contextual) {
 			this.remove();
 		}
 	}
 
-	connectedCallback() {
+	connectedCallback(): void {
 		if (this.#doOnce) {
 			I18n.observeElement(this.#shadowRoot);
-			shadowRootStyle(this.#shadowRoot, menuCSS);
+			void shadowRootStyle(this.#shadowRoot, menuCSS);
 
-			const callback = (entries: Array<ResizeObserverEntry>, observer: ResizeObserver) => {
+			const callback = (entries: ResizeObserverEntry[]): void => {
 				entries.forEach(() => {
 					this.#checkSize();
 				});
@@ -116,7 +116,7 @@ export class HTMLHarmonyMenuElement extends HTMLElement {
 		}
 	}
 
-	#setItems(items: HarmonyMenuItems, userData: any) {
+	#setItems(items: HarmonyMenuItems, userData: unknown): void {
 		this.#shadowRoot.replaceChildren();
 		if (items instanceof Array) {
 			for (const item of items) {
@@ -130,7 +130,7 @@ export class HTMLHarmonyMenuElement extends HTMLElement {
 		}
 	}
 
-	#openSubMenu(htmlSubMenu: HTMLElement) {
+	#openSubMenu(htmlSubMenu: HTMLElement): void {
 		for (const [htmlItem, sub] of this.#subMenus) {
 			if (sub == htmlSubMenu || sub.contains(htmlSubMenu)) {
 				htmlItem.classList.add('opened');
@@ -143,17 +143,17 @@ export class HTMLHarmonyMenuElement extends HTMLElement {
 		this.#checkSize();
 	}
 
-	addItem(item: HarmonyMenuItem | null, userData: any) {
+	addItem(item: HarmonyMenuItem | null, userData: unknown): HTMLElement {
 		const htmlItem = createElement('div', {
 			class: 'harmony-menu-item',
-		}) as HTMLElement;
+		});
 
 		if (!item) {
 			htmlItem.classList.add('separator');
 		} else {
 			const htmlItemTitle = createElement('div', {
 				class: 'harmony-menu-item-title',
-			}) as HTMLElement;
+			});
 
 			if (item.i18n) {
 				htmlItemTitle.classList.add('i18n');
@@ -173,7 +173,7 @@ export class HTMLHarmonyMenuElement extends HTMLElement {
 			if (item.submenu) {
 				const htmlSubMenu = createElement('div', {
 					class: 'submenu',
-				}) as HTMLElement;
+				});
 				this.#subMenus.set(htmlItem, htmlSubMenu);
 				let subItems = 0;
 				if (item.submenu instanceof Array) {
@@ -226,7 +226,7 @@ export class HTMLHarmonyMenuElement extends HTMLElement {
 }
 
 let definedMenu = false;
-export function defineHarmonyMenu() {
+export function defineHarmonyMenu(): void {
 	if (window.customElements && !definedMenu) {
 		customElements.define('harmony-menu', HTMLHarmonyMenuElement);
 		definedMenu = true;

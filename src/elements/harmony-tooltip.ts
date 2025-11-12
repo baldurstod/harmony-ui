@@ -1,16 +1,17 @@
-import { documentStyle, shadowRootStyle } from '../harmony-css';
-import { createElement, hide, show } from '../harmony-html';
 import tooltipCSS from '../css/harmony-tooltip.css';
+import { shadowRootStyle } from '../harmony-css';
+import { createElement } from '../harmony-html';
 import { I18n } from '../harmony-i18n';
 import { injectGlobalCss } from '../utils/globalcss';
 
 export class HTMLHarmonyTooltipElement extends HTMLElement {
 	#shadowRoot: ShadowRoot;
 	#htmlText: HTMLSpanElement;
+
 	constructor() {
 		super();
 		this.#shadowRoot = this.attachShadow({ mode: 'closed' });
-		shadowRootStyle(this.#shadowRoot, tooltipCSS);
+		void shadowRootStyle(this.#shadowRoot, tooltipCSS);
 		I18n.observeElement(this.#shadowRoot);
 
 		this.#htmlText = createElement('div', {
@@ -19,7 +20,7 @@ export class HTMLHarmonyTooltipElement extends HTMLElement {
 		});
 	}
 
-	attributeChangedCallback(name: string, oldValue: string, newValue: string) {
+	attributeChangedCallback(name: string, oldValue: string, newValue: string): void {
 		switch (name) {
 			case 'data-label':
 				this.#htmlText.innerHTML = newValue;
@@ -36,13 +37,13 @@ export class HTMLHarmonyTooltipElement extends HTMLElement {
 		}
 	}
 
-	static get observedAttributes() {
+	static get observedAttributes(): string[] {
 		return ['data-label', 'data-i18n', 'data-position'];
 	}
 }
 
 let definedTooltip = false;
-export function defineHarmonyTooltip() {
+export function defineHarmonyTooltip(): void {
 	if (window.customElements && !definedTooltip) {
 		customElements.define('harmony-tooltip', HTMLHarmonyTooltipElement);
 		definedTooltip = true;

@@ -1,7 +1,7 @@
-import { shadowRootStyle } from '../harmony-css';
-import { createElement, hide, show, updateElement } from '../harmony-html';
-import { I18n } from '../harmony-i18n';
 import toggleButtonCSS from '../css/harmony-toggle-button.css';
+import { shadowRootStyle } from '../harmony-css';
+import { createElement, hide, show } from '../harmony-html';
+import { I18n } from '../harmony-i18n';
 import { toBool } from '../utils/attributes';
 import { injectGlobalCss } from '../utils/globalcss';
 
@@ -25,7 +25,7 @@ export class HTMLHarmonyToggleButtonElement extends HTMLElement {
 
 
 		I18n.observeElement(this.#shadowRoot);
-		shadowRootStyle(this.#shadowRoot, toggleButtonCSS);
+		void shadowRootStyle(this.#shadowRoot, toggleButtonCSS);
 
 		this.addEventListener('click', (event: Event) => {
 			this.#click();
@@ -34,17 +34,17 @@ export class HTMLHarmonyToggleButtonElement extends HTMLElement {
 		this.#initObserver();
 	}
 
-	connectedCallback() {
+	connectedCallback(): void {
 		this.#refresh();
 	}
 
-	attributeChangedCallback(name: string, oldValue: string, newValue: string) {
+	attributeChangedCallback(name: string, oldValue: string, newValue: string): void {
 		if (name == 'state') {
 			this.state = toBool(newValue);
 		}
 	}
 
-	get state() {
+	get state(): boolean {
 		return this.#state;
 	}
 
@@ -57,7 +57,7 @@ export class HTMLHarmonyToggleButtonElement extends HTMLElement {
 		}
 	}
 
-	#refresh() {
+	#refresh(): void {
 		this.classList.remove('on', 'off');
 		if (this.#state) {
 			this.classList.add('on');
@@ -74,13 +74,13 @@ export class HTMLHarmonyToggleButtonElement extends HTMLElement {
 		}
 	}
 
-	#click() {
+	#click(): void {
 		this.state = !this.#state;
 	}
 
-	#initObserver() {
+	#initObserver(): void {
 		const config = { childList: true, subtree: true };
-		const mutationCallback = (mutationsList: Array<MutationRecord>, observer: MutationObserver) => {
+		const mutationCallback = (mutationsList: MutationRecord[]): void => {
 			for (const mutation of mutationsList) {
 				for (const addedNode of mutation.addedNodes) {
 					if (addedNode.parentNode == this) {
@@ -94,17 +94,17 @@ export class HTMLHarmonyToggleButtonElement extends HTMLElement {
 		observer.observe(this, config);
 	}
 
-	adoptStyleSheet(styleSheet: CSSStyleSheet) {
+	adoptStyleSheet(styleSheet: CSSStyleSheet): void {
 		this.#shadowRoot.adoptedStyleSheets.push(styleSheet);
 	}
 
-	static get observedAttributes() {
+	static get observedAttributes(): string[] {
 		return ['state'];
 	}
 }
 
 let definedToggleButton = false;
-export function defineHarmonyToggleButton() {
+export function defineHarmonyToggleButton(): void {
 	if (window.customElements && !definedToggleButton) {
 		customElements.define('harmony-toggle-button', HTMLHarmonyToggleButtonElement);
 		definedToggleButton = true;

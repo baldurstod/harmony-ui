@@ -1,7 +1,7 @@
+import switchCSS from '../css/harmony-switch.css';
 import { shadowRootStyle } from '../harmony-css';
 import { createElement } from '../harmony-html';
 import { I18n } from '../harmony-i18n';
-import switchCSS from '../css/harmony-switch.css';
 import { toBool } from '../utils/attributes';
 import { injectGlobalCss } from '../utils/globalcss';
 import { HTMLHarmonyElement } from './harmony-element';
@@ -21,9 +21,9 @@ export class HTMLHarmonySwitchElement extends HTMLHarmonyElement {
 	#state? = false;
 	#ternary = false;
 
-	protected createElement() {
+	protected createElement(): void {
 		this.#shadowRoot = this.attachShadow({ mode: 'closed' });
-		shadowRootStyle(this.#shadowRoot, switchCSS);
+		void shadowRootStyle(this.#shadowRoot, switchCSS);
 		I18n.observeElement(this.#shadowRoot);
 
 		this.#htmlLabel = createElement('div', {
@@ -40,9 +40,9 @@ export class HTMLHarmonySwitchElement extends HTMLHarmonyElement {
 		this.#htmlSwitchOuter = createElement('span', {
 			parent: this.#shadowRoot,
 			class: 'harmony-switch-outer',
-			child: createElement('span', { class: 'harmony-switch-inner' }) as HTMLElement,
+			child: createElement('span', { class: 'harmony-switch-inner' }),
 			$click: () => this.toggle(),
-		}) as HTMLElement;
+		});
 
 		createElement('slot', {
 			parent: this.#shadowRoot,
@@ -58,7 +58,7 @@ export class HTMLHarmonySwitchElement extends HTMLHarmonyElement {
 		this.classList[this.#disabled ? 'add' : 'remove']('disabled');
 	}
 
-	get disabled() {
+	get disabled(): boolean {
 		return this.#disabled;
 	}
 
@@ -72,7 +72,7 @@ export class HTMLHarmonySwitchElement extends HTMLHarmonyElement {
 		this.#refresh();
 	}
 
-	get state() {
+	get state(): boolean | undefined {
 		return this.#state;
 	}
 
@@ -80,7 +80,7 @@ export class HTMLHarmonySwitchElement extends HTMLHarmonyElement {
 		this.state = checked;
 	}
 
-	get checked() {
+	get checked(): boolean | undefined {
 		return this.#state;
 	}
 
@@ -89,11 +89,11 @@ export class HTMLHarmonySwitchElement extends HTMLHarmonyElement {
 		this.#refresh();
 	}
 
-	get ternary() {
+	get ternary(): boolean {
 		return this.#ternary;
 	}
 
-	toggle() {
+	toggle(): void {
 		if (this.#ternary) {
 			if (this.#state === false) {
 				this.state = undefined;
@@ -108,7 +108,7 @@ export class HTMLHarmonySwitchElement extends HTMLHarmonyElement {
 		this.#refresh();
 	}
 
-	#refresh() {
+	#refresh(): void {
 		this.#htmlSwitchOuter?.classList.remove('on', 'off', 'ternary');
 		if (this.#ternary) {
 			this.#htmlSwitchOuter?.classList.add('ternary');
@@ -119,7 +119,7 @@ export class HTMLHarmonySwitchElement extends HTMLHarmonyElement {
 		this.#htmlSwitchOuter?.classList.add(this.#state ? 'on' : 'off');
 	}
 
-	protected onAttributeChanged(name: string, oldValue: string, newValue: string) {
+	protected onAttributeChanged(name: string, oldValue: string, newValue: string): void {
 		switch (name) {
 			case 'data-label':
 				if (this.#htmlLabel) {
@@ -153,13 +153,13 @@ export class HTMLHarmonySwitchElement extends HTMLHarmonyElement {
 		}
 	}
 
-	static get observedAttributes() {
+	static get observedAttributes(): string[] {
 		return ['data-label', 'data-i18n', 'disabled', 'ternary', 'state'];
 	}
 }
 
 let definedSwitch = false;
-export function defineHarmonySwitch() {
+export function defineHarmonySwitch(): void {
 	if (window.customElements && !definedSwitch) {
 		customElements.define('harmony-switch', HTMLHarmonySwitchElement);
 		definedSwitch = true;

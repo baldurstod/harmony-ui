@@ -17,33 +17,30 @@ export declare type CreateElementOptions = {
     i18n?: string | I18nDescriptor | null;
     parent?: Element | ShadowRoot;
     child?: CreateElementChildOption;
-    childs?: Array<CreateElementChildOption>;
-    events?: {
-        [key: string]: any;
-    };
-    properties?: {
-        [key: string]: any;
-    };
+    childs?: CreateElementChildOption[];
+    events?: Record<string, HarmonyEventListener>;
+    properties?: Record<string, unknown>;
     hidden?: boolean;
     innerHTML?: string | null;
     innerText?: string | null;
-    attributes?: {
-        [key: string]: any;
-    };
+    attributes?: Record<string, string>;
     slot?: string;
     htmlFor?: string;
     adoptStyle?: string;
-    adoptStyles?: Array<string>;
+    adoptStyles?: string[];
     adoptStyleSheet?: CSSStyleSheet;
-    adoptStyleSheets?: Array<CSSStyleSheet>;
+    adoptStyleSheets?: CSSStyleSheet[];
     style?: string;
     checked?: boolean;
     disabled?: boolean;
     help?: string;
     value?: string;
     elementCreated?: (element: Element, root?: ShadowRoot) => void;
-    [key: string]: any;
+    [key: string]: unknown;
+    [key: `$${string}`]: HarmonyEventListener;
 };
+
+export declare type CreateElementOptionValue = null | boolean | string | I18nDescriptor | EventListenerOrEventListenerObject | [] | Record<string, string>;
 
 export declare function createShadowRoot(tagName: string, options?: CreateElementOptions, mode?: 'open' | 'closed'): ShadowRoot;
 
@@ -91,11 +88,13 @@ export declare function defineHarmonyTooltip(): void;
 
 export declare function defineHarmonyTree(): void;
 
-export declare function display(htmlElement: HTMLElement | SVGElement | ShadowRoot | Array<HTMLElement | SVGElement | ShadowRoot> | undefined | null, visible: boolean): void;
+export declare function display(htmlElement: HTMLElement | SVGElement | ShadowRoot | (HTMLElement | SVGElement | ShadowRoot)[] | undefined | null, visible: boolean): void;
 
 export declare function documentStyle(cssText: string): Promise<void>;
 
 export declare function documentStyleSync(cssText: string): void;
+
+export declare type HarmonyEventListener = ((evt: Event) => void) | ((evt: MouseEvent) => void) | ((evt: WheelEvent) => void) | ((evt: PointerEvent) => void) | ((evt: KeyboardEvent) => void) | ((evt: CustomEvent) => void);
 
 export declare type HarmonyMenuItem = {
     i18n?: string;
@@ -105,23 +104,21 @@ export declare type HarmonyMenuItem = {
     disabled?: boolean;
     submenu?: HarmonyMenuItems;
     cmd?: string;
-    f?: (arg0: any) => void;
+    f?: (arg0: unknown) => void;
 };
 
 export declare type HarmonyMenuItems = HarmonyMenuItemsArray | HarmonyMenuItemsDict;
 
-export declare type HarmonyMenuItemsArray = Array<HarmonyMenuItem>;
+export declare type HarmonyMenuItemsArray = HarmonyMenuItem[];
 
-export declare type HarmonyMenuItemsDict = {
-    [key: string]: HarmonyMenuItem | null;
-};
+export declare type HarmonyMenuItemsDict = Record<string, HarmonyMenuItem | null>;
 
 export declare type HarmonySlideshowOptions = {
     autoPlay?: boolean;
     autoPlayDelay?: number;
     smoothScroll?: boolean;
     smoothScrollTransitionTime?: number;
-    images?: Array<string>;
+    images?: string[];
     class?: string;
     id?: string;
 };
@@ -133,12 +130,11 @@ export declare type HarmonySwitchChange = {
     value: boolean | undefined;
 };
 
-export declare function hide(htmlElement: HTMLElement | SVGElement | ShadowRoot | Array<HTMLElement | SVGElement | ShadowRoot> | undefined | null): void;
+export declare function hide(htmlElement: HTMLElement | SVGElement | ShadowRoot | (HTMLElement | SVGElement | ShadowRoot)[] | undefined | null): void;
 
 export declare class HTMLHarmony2dManipulatorElement extends HTMLElement {
     #private;
     constructor();
-    setTopLeft(x: number, y: number): void;
     getTopLeft(): v2;
     getTopRight(): v2;
     getBottomLeft(): v2;
@@ -250,12 +246,12 @@ export declare class HTMLHarmonyLabelPropertyElement extends HTMLElement {
 export declare class HTMLHarmonyMenuElement extends HTMLElement {
     #private;
     constructor();
-    show(items: HarmonyMenuItems, userData?: any): void;
-    showContextual(items: HarmonyMenuItems, clientX: number, clientY: number, userData?: any): void;
+    show(items: HarmonyMenuItems, userData?: unknown): void;
+    showContextual(items: HarmonyMenuItems, clientX: number, clientY: number, userData?: unknown): void;
     setContextual(contextual: boolean): void;
     close(): void;
     connectedCallback(): void;
-    addItem(item: HarmonyMenuItem | null, userData: any): HTMLElement;
+    addItem(item: HarmonyMenuItem | null, userData: unknown): HTMLElement;
 }
 
 export declare class HTMLHarmonyPaletteElement extends HTMLElement {
@@ -264,9 +260,9 @@ export declare class HTMLHarmonyPaletteElement extends HTMLElement {
     connectedCallback(): void;
     adoptStyleSheet(styleSheet: CSSStyleSheet): void;
     clearColors(): void;
-    addColor(color: string | Array<number>, tooltip: string): PaletteColor | undefined;
-    selectColor(color: string | Array<number>, selected?: boolean): void;
-    toggleColor(color: string | Array<number>): void;
+    addColor(color: string | number[]): PaletteColor | null;
+    selectColor(color: string | number[], selected?: boolean): void;
+    toggleColor(color: string | number[]): void;
     attributeChangedCallback(name: string, oldValue: string, newValue: string): void;
     static get observedAttributes(): string[];
 }
@@ -296,15 +292,6 @@ export declare class HTMLHarmonyPanelElement extends HTMLElement {
     set title(title: string);
     set titleI18n(titleI18n: string);
     static get nextId(): string;
-    static saveDisposition(): {
-        panels: {
-            [key: string]: any;
-        };
-        dummies: Array<any>;
-    };
-    static restoreDisposition(json: {
-        [key: string]: any;
-    }): void;
 }
 
 export declare class HTMLHarmonyRadioElement extends HTMLElement {
@@ -327,13 +314,13 @@ export declare class HTMLHarmonySelectElement extends HTMLElement {
     attributeChangedCallback(name: string, oldValue: string, newValue: string): void;
     addEventListener(type: string, listener: EventListenerOrEventListenerObject): void;
     addOption(value: string, text?: string): void;
-    addOptions(values: Map<any, any>): void;
-    setOptions(values: Map<any, any>): void;
-    removeOption(value: any): void;
+    addOptions(values: Map<string, string>): void;
+    setOptions(values: Map<string, string>): void;
+    removeOption(value: string): void;
     removeAllOptions(): void;
-    select(value: any): void;
+    select(value: string): void;
     selectFirst(): void;
-    unselect(value: any): void;
+    unselect(value: string): void;
     unselectAll(): void;
     static get observedAttributes(): string[];
 }
@@ -343,7 +330,7 @@ export declare class HTMLHarmonySliderElement extends HTMLHarmonyElement {
     protected createElement(): void;
     get value(): number | [number, number];
     isRange(): boolean;
-    setValue(value: number | Array<number>): void;
+    setValue(value: number | number[]): void;
     protected onAttributeChanged(name: string, oldValue: string | null, newValue: string | null): void;
     static get observedAttributes(): string[];
 }
@@ -469,15 +456,13 @@ export declare class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
     addAction(name: string, img: HTMLElement | string, tooltip?: string): void;
     refreshActions(item: TreeItem): void;
     setFilter(filter?: TreeItemFilter): void;
-    protected onAttributeChanged(name: string, oldValue: string, newValue: string): void;
-    static get observedAttributes(): string[];
 }
 
 export declare class I18n {
     #private;
     static start(): void;
     static setOptions(options: {
-        translations: Array<I18nTranslation>;
+        translations: I18nTranslation[];
     }): void;
     static addTranslation(translation: I18nTranslation): void;
     static observeElement(element: HTMLElement | ShadowRoot): void;
@@ -491,9 +476,7 @@ export declare class I18n {
     static setDefaultLang(defaultLang: string): void;
     static addEventListener(type: string, callback: EventListenerOrEventListenerObject | null, options?: AddEventListenerOptions | boolean): void;
     static getString(s: string): string;
-    static formatString(s: string, values: {
-        [key: string]: I18nValue;
-    }): string;
+    static formatString(s: string, values: Record<string, I18nValue>): string;
     /**
      * @deprecated use getAuthors() instead
      */
@@ -508,9 +491,7 @@ export declare type I18nDescriptor = {
     placeholder?: string | null;
     title?: string | null;
     label?: string | null;
-    values?: {
-        [key: string]: I18nValue;
-    };
+    values?: Record<string, I18nValue>;
 };
 
 export declare const I18nElements: Map<Element, I18nDescriptor>;
@@ -523,10 +504,8 @@ export declare enum I18nEvents {
 
 export declare type I18nTranslation = {
     lang: string;
-    authors?: Array<string>;
-    strings: {
-        [key: string]: string;
-    };
+    authors?: string[];
+    strings: Record<string, string>;
 };
 
 export declare type I18nValue = string | number | boolean | null | undefined;
@@ -611,7 +590,7 @@ export declare function shadowRootStyle(shadowRoot: Document | ShadowRoot, cssTe
 
 export declare function shadowRootStyleSync(shadowRoot: Document | ShadowRoot, cssText: string): void;
 
-export declare function show(htmlElement: HTMLElement | SVGElement | ShadowRoot | Array<HTMLElement | SVGElement | ShadowRoot> | undefined | null): void;
+export declare function show(htmlElement: HTMLElement | SVGElement | ShadowRoot | (HTMLElement | SVGElement | ShadowRoot)[] | undefined | null): void;
 
 export declare function styleInject(css: string): void;
 
@@ -642,18 +621,18 @@ export declare class TreeItem {
     parent?: TreeItem;
     childs: Set<TreeItem>;
     actions: Set<string>;
-    userData?: any;
+    userData?: unknown;
     constructor(name: string, options?: TreeItemOptions);
     addChild(child: TreeItem): void;
     getPath(separator?: string): string;
     getLevel(): number;
     addAction(action: string): void;
-    addActions(actions: Array<string>): void;
+    addActions(actions: string[]): void;
     removeAction(action: string): void;
-    static createFromPathList(paths: Set<string> | Map<string, any>, options?: {
+    static createFromPathList(paths: Set<string> | Map<string, unknown>, options?: {
         pathSeparator?: string;
-        rootUserData?: any;
-        userData?: any;
+        rootUserData?: unknown;
+        userData?: unknown;
         rootName?: string;
     }): TreeItem;
     walk(filter?: TreeItemFilter): Generator<TreeItem, void, unknown>;
@@ -662,7 +641,7 @@ export declare class TreeItem {
 export declare type TreeItemFilter = {
     name?: string;
     kind?: TreeItemKind;
-    kinds?: Array<TreeItemKind>;
+    kinds?: TreeItemKind[];
 };
 
 export declare enum TreeItemKind {
@@ -676,8 +655,8 @@ export declare type TreeItemOptions = {
     icon?: string;
     kind?: TreeItemKind;
     parent?: TreeItem;
-    childs?: Array<TreeItem>;
-    userData?: any;
+    childs?: TreeItem[];
+    userData?: unknown;
 };
 
 export declare function updateElement(element: HTMLElement | undefined, options: CreateElementOptions): HTMLElement | undefined;

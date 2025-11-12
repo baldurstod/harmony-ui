@@ -1,6 +1,6 @@
-import { createElement } from '../harmony-html';
-import { shadowRootStyle } from '../harmony-css';
 import labelPropertyCSS from '../css/harmony-label-property.css';
+import { shadowRootStyle } from '../harmony-css';
+import { createElement } from '../harmony-html';
 import { injectGlobalCss } from '../utils/globalcss';
 
 export class HTMLHarmonyLabelPropertyElement extends HTMLElement {
@@ -8,10 +8,11 @@ export class HTMLHarmonyLabelPropertyElement extends HTMLElement {
 	#htmlLabel: HTMLElement;
 	#htmlProperty: HTMLElement;
 	#shadowRoot: ShadowRoot;
+
 	constructor() {
 		super();
 		this.#shadowRoot = this.attachShadow({ mode: 'closed' });
-		shadowRootStyle(this.#shadowRoot, labelPropertyCSS);
+		void shadowRootStyle(this.#shadowRoot, labelPropertyCSS);
 		this.#htmlLabel = createElement('label', { i18n: '', parent: this.#shadowRoot });
 		this.#htmlProperty = createElement('span', { parent: this.#shadowRoot });
 	}
@@ -24,7 +25,7 @@ export class HTMLHarmonyLabelPropertyElement extends HTMLElement {
 		this.#htmlProperty.innerHTML = property;
 	}
 
-	connectedCallback() {
+	connectedCallback(): void {
 		if (!this.#doOnce) {
 			this.#doOnce = true;
 			this.append(this.#htmlLabel, this.#htmlProperty);
@@ -33,7 +34,7 @@ export class HTMLHarmonyLabelPropertyElement extends HTMLElement {
 }
 
 let definedLabelProperty = false;
-export function defineHarmonyLabelProperty() {
+export function defineHarmonyLabelProperty(): void {
 	if (window.customElements && !definedLabelProperty) {
 		customElements.define('harmony-label-property', HTMLHarmonyLabelPropertyElement);
 		definedLabelProperty = true;

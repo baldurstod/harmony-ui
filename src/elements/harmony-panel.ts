@@ -1,10 +1,10 @@
+import panelCSS from '../css/harmony-panel.css';
 import { shadowRootStyle } from "../harmony-css";
 import { createElement } from "../harmony-html";
 import { toBool } from "../utils/attributes";
-import panelCSS from '../css/harmony-panel.css';
 import { injectGlobalCss } from "../utils/globalcss";
 
-const dragged = null;
+//const dragged = null;
 let nextId = 0;
 //let spliter: HTMLElement = createElement('div', { class: 'harmony-panel-splitter' }) as HTMLElement;
 let highlitPanel: HTMLElement;
@@ -14,7 +14,7 @@ export class HTMLHarmonyPanelElement extends HTMLElement {
 	#parent = null;
 	#panels = new Set();
 	#size = 1;
-	#direction: string = 'undefined';
+	#direction = 'undefined';
 	#isContainer = false;
 	#isMovable = false;
 	#isCollapsible = false;
@@ -28,7 +28,7 @@ export class HTMLHarmonyPanelElement extends HTMLElement {
 	constructor() {
 		super();
 		this.#shadowRoot = this.attachShadow({ mode: 'closed' });
-		shadowRootStyle(this.#shadowRoot, panelCSS);
+		void shadowRootStyle(this.#shadowRoot, panelCSS);
 		//this.addEventListener('dragstart', event => this._handleDragStart(event));
 		//this.addEventListener('dragover', event => this._handleDragOver(event));
 		//this.addEventListener('drop', event => this._handleDrop(event));
@@ -49,7 +49,7 @@ export class HTMLHarmonyPanelElement extends HTMLElement {
 		});
 	}
 
-	connectedCallback() {
+	connectedCallback(): void {
 		if (this.#doOnce) {
 			//this.append(...this.childNodes);
 			this.#doOnce = false;
@@ -80,11 +80,13 @@ export class HTMLHarmonyPanelElement extends HTMLElement {
 		}*/
 	}
 
-	append() {
+	append(): void {
+		// eslint-disable-next-line prefer-rest-params
 		this.htmlContent.append(...arguments);
 	}
 
-	prepend() {
+	prepend(): void {
+		// eslint-disable-next-line prefer-rest-params
 		this.htmlContent.prepend(...arguments);
 	}
 	/*
@@ -93,7 +95,7 @@ export class HTMLHarmonyPanelElement extends HTMLElement {
 		}
 	*/
 
-	get innerHTML() {
+	get innerHTML(): string {
 		return this.htmlContent.innerHTML;
 	}
 
@@ -101,7 +103,7 @@ export class HTMLHarmonyPanelElement extends HTMLElement {
 		this.htmlContent.innerHTML = innerHTML;
 	}
 
-	attributeChangedCallback(name: string, oldValue: string, newValue: string) {
+	attributeChangedCallback(name: string, oldValue: string, newValue: string): void {
 		if (oldValue == newValue) {
 			return;
 		}
@@ -123,7 +125,7 @@ export class HTMLHarmonyPanelElement extends HTMLElement {
 			this.titleI18n = newValue;
 		}
 	}
-	static get observedAttributes() {
+	static get observedAttributes(): string[] {
 		return ['panel-direction', 'panel-size', 'is-container', 'is-movable', 'title', 'title-i18n', 'collapsible', 'collapsed'];
 	}
 	/*
@@ -329,7 +331,7 @@ export class HTMLHarmonyPanelElement extends HTMLElement {
 		}
 	}
 
-	get direction() {
+	get direction(): string {
 		return this.#direction;
 	}
 
@@ -342,7 +344,7 @@ export class HTMLHarmonyPanelElement extends HTMLElement {
 		this.style.flex = String(size);
 	}
 
-	get size() {
+	get size(): number {
 		return this.#size;
 	}
 
@@ -386,18 +388,19 @@ export class HTMLHarmonyPanelElement extends HTMLElement {
 		this.title = titleI18n;
 	}
 
-	#toggleCollapse() {
+	#toggleCollapse(): void {
 		this.collapsed = !this.#isCollapsed;
 	}
 
 
-	static get nextId() {
+	static get nextId(): string {
 		return `harmony-panel-dummy-${++nextId}`;
 	}
 
-	static saveDisposition() {
+	/*
+	static saveDisposition(): JSONObject {
 		const list = document.getElementsByTagName('harmony-panel');
-		const json: { panels: { [key: string]: any }, dummies: Array<any> } = { panels: {}, dummies: [] };
+		const json: { panels: Record<string, any>, dummies: any[] } = { panels: {}, dummies: [] };
 		for (const panel of list) {
 			if (panel.id && panel.parentElement && panel.parentElement.id && panel.parentElement.tagName == 'HARMONY-PANEL') {
 				json.panels[(panel as any).id] = { parent: panel.parentElement.id, size: (panel as any).size, direction: (panel as any).direction };
@@ -408,8 +411,10 @@ export class HTMLHarmonyPanelElement extends HTMLElement {
 		}
 		return json;
 	}
+	*/
 
-	static restoreDisposition(json: { [key: string]: any }) {
+	/*
+	static restoreDisposition(json: Record<string, any>): void {
 		return;
 		/*
 		if (!json || !json.dummies || !json.panels) { return; }
@@ -444,12 +449,13 @@ export class HTMLHarmonyPanelElement extends HTMLElement {
 					}
 				}
 			}
-		}*/
+		}* /
 	}
+	*/
 }
 
 let definedPanel = false;
-export function defineHarmonyPanel() {
+export function defineHarmonyPanel(): void {
 	if (window.customElements && !definedPanel) {
 		customElements.define('harmony-panel', HTMLHarmonyPanelElement);
 		definedPanel = true;

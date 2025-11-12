@@ -26,21 +26,21 @@ export class HTMLHarmonyTabGroupElement extends HTMLElement {
 		});
 	}
 
-	connectedCallback() {
+	connectedCallback(): void {
 		if (this.#doOnce) {
 			I18n.observeElement(this.#shadowRoot);
-			shadowRootStyle(this.#shadowRoot, tabGroupCSS);
-			shadowRootStyle(this.#shadowRoot, tabCSS);
+			void shadowRootStyle(this.#shadowRoot, tabGroupCSS);
+			void shadowRootStyle(this.#shadowRoot, tabCSS);
 			this.#shadowRoot.append(this.#header, this.#content);
 			this.#doOnce = false;
 		}
 	}
 
-	adoptStyleSheet(styleSheet: CSSStyleSheet) {
+	adoptStyleSheet(styleSheet: CSSStyleSheet): void {
 		this.#shadowRoot.adoptedStyleSheets.push(styleSheet);
 	}
 
-	addTab(tab: HTMLHarmonyTabElement) {
+	addTab(tab: HTMLHarmonyTabElement): void {
 		this.#tabs.add(tab);
 		if (!this.#activeTab) {
 			this.#activeTab = tab;
@@ -52,7 +52,7 @@ export class HTMLHarmonyTabGroupElement extends HTMLElement {
 		return new Set<HTMLHarmonyTabElement>(this.#tabs);
 	}
 
-	#refresh() {
+	#refresh(): void {
 		this.#header.replaceChildren();
 		this.#content.replaceChildren();
 		for (const tab of this.#tabs) {
@@ -77,14 +77,14 @@ export class HTMLHarmonyTabGroupElement extends HTMLElement {
 		this.activateTab(tab);
 	}
 
-	activateTab(tab: HTMLHarmonyTabElement) {
+	activateTab(tab: HTMLHarmonyTabElement): void {
 		if (this.#activeTab != tab) {
 			this.#activeTab = tab;
 			this.#refresh();
 		}
 	}
 
-	closeTab(tab: HTMLHarmonyTabElement) {
+	closeTab(tab: HTMLHarmonyTabElement): void {
 		this.#tabs.delete(tab);
 		if (this.#activeTab == tab) {
 			this.#activeTab = this.#tabs.values().next().value;
@@ -98,7 +98,7 @@ export class HTMLHarmonyTabGroupElement extends HTMLElement {
 		}
 	}
 
-	clear() {
+	clear(): void {
 		this.#tabs.clear();
 		this.#activeTab = undefined;
 		this.#header.innerText = '';
@@ -107,7 +107,7 @@ export class HTMLHarmonyTabGroupElement extends HTMLElement {
 }
 
 let definedTabGroup = false;
-export function defineHarmonyTabGroup() {
+export function defineHarmonyTabGroup(): void {
 	if (window.customElements && !definedTabGroup) {
 		customElements.define('harmony-tab-group', HTMLHarmonyTabGroupElement);
 		definedTabGroup = true;

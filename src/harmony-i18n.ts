@@ -1,3 +1,4 @@
+import { JSONObject } from 'harmony-types';
 import { ET } from './utils/create';
 
 const I18N_DELAY_BEFORE_REFRESH = 100;
@@ -14,8 +15,8 @@ const targets: ['innerHTML', 'innerText', 'placeholder', 'title', 'label'] = ['i
 export type I18nValue = string | number | boolean | null | undefined;
 export type I18nTranslation = {
 	lang: string,
-	authors?: Array<string>,
-	strings: { [key: string]: string },
+	authors?: string[],
+	strings: Record<string, string>,
 };
 
 export type I18nDescriptor = {
@@ -24,7 +25,7 @@ export type I18nDescriptor = {
 	placeholder?: string | null,
 	title?: string | null,
 	label?: string | null,
-	values?: { [key: string]: I18nValue },
+	values?: Record<string, I18nValue>,
 }
 
 type Target = {
@@ -37,7 +38,7 @@ type Target = {
 
 export const I18nElements = new Map<Element, I18nDescriptor>();
 
-export function AddI18nElement(element: Element, descriptor: string | I18nDescriptor | null) {
+export function AddI18nElement(element: Element, descriptor: string | I18nDescriptor | null):void {
 	if (typeof descriptor == 'string') {
 		descriptor = { innerText: descriptor };
 	}
@@ -88,17 +89,17 @@ export class I18n {
 	static #observed = new Set<HTMLElement | ShadowRoot>();
 	static #eventTarget = new EventTarget();
 
-	static start() {
+	static start(): void {
 		if (this.#started) {
 			return;
 		}
 		this.#started = true;
 		this.observeElement(document.body);
-		ET.addEventListener('created', (event: Event) => this.#processElement2((event as CustomEvent).detail));
-		ET.addEventListener('updated', (event: Event) => this.#processElement2((event as CustomEvent).detail));
+		ET.addEventListener('created', (event: Event) => this.#processElement2((event as CustomEvent<HTMLElement>).detail));
+		ET.addEventListener('updated', (event: Event) => this.#processElement2((event as CustomEvent<HTMLElement>).detail));
 	}
 
-	static setOptions(options: { translations: Array<I18nTranslation> }) {
+	static setOptions(options: { translations: I18nTranslation[] }): void {
 		if (options.translations) {
 			for (const translation of options.translations) {
 				this.#addTranslation(translation);
@@ -109,22 +110,22 @@ export class I18n {
 		this.i18n();
 	}
 
-	static addTranslation(translation: I18nTranslation) {
+	static addTranslation(translation: I18nTranslation): void {
 		this.#addTranslation(translation);
 		if (translation.lang == this.#lang) {
 			this.i18n();
 		}
 	}
 
-	static #addTranslation(translation: I18nTranslation) {
+	static #addTranslation(translation: I18nTranslation): void {
 		this.#translations.set(translation.lang, translation);
 	}
 
-	static #initObserver() {
+	static #initObserver(): void {
 		if (this.#observer) {
 			return;
 		}
-		const callback = async (mutationsList: Array<MutationRecord>) => {
+		const callback = (mutationsList: MutationRecord[]) :void=> {
 			for (const mutation of mutationsList) {
 				if (mutation.type === 'childList') {
 					for (const node of mutation.addedNodes) {
@@ -140,7 +141,7 @@ export class I18n {
 		this.#observer = new MutationObserver(callback);
 	}
 
-	static observeElement(element: HTMLElement | ShadowRoot) {
+	static observeElement(element: HTMLElement | ShadowRoot): void {
 		this.#observed.add(element);
 
 		this.#initObserver();
@@ -148,7 +149,7 @@ export class I18n {
 		this.updateElement(element);
 	}
 
-	static #processList(parentNode: Element | ShadowRoot, className: string, attribute: string, subElement: 'innerHTML') {
+	static #processList(parentNode: Element | ShadowRoot, className: string, attribute: string, subElement: 'innerHTML'): void {
 		const elements = parentNode.querySelectorAll('.' + className);
 
 		if ((parentNode as HTMLElement).classList?.contains(className)) {
@@ -160,7 +161,7 @@ export class I18n {
 		}
 	}
 
-	static #processJSON(parentNode: Element | ShadowRoot) {
+	static #processJSON(parentNode: Element | ShadowRoot): void {
 		const className = 'i18n';
 		const elements = parentNode.querySelectorAll('.' + className);
 
@@ -173,7 +174,7 @@ export class I18n {
 		}
 	}
 
-	static #processElement(htmlElement: Element, attribute: string, subElement: 'innerHTML') {
+	static #processElement(htmlElement: Element, attribute: string, subElement: 'innerHTML'): void {
 		const dataLabel = htmlElement.getAttribute(attribute);
 		if (dataLabel) {
 			htmlElement[subElement] = this.getString(dataLabel);
@@ -181,7 +182,7 @@ export class I18n {
 	}
 
 	// TODO: merge with function above
-	static #processElement2(htmlElement: Element) {
+	static #processElement2(htmlElement: Element): void {
 		const descriptor = I18nElements.get(htmlElement);
 		if (descriptor) {
 			const values = descriptor.values ?? {};
@@ -194,42 +195,42 @@ export class I18n {
 		}
 	}
 
-	static #processElementJSON(htmlElement: Element) {
+	static #processElementJSON(htmlElement: Element): void {
 		const str = htmlElement.getAttribute('data-i18n-json');
 		if (!str) {
 			return;
 		}
 
-		const dataJSON = JSON.parse(str);
+		const dataJSON = JSON.parse(str) as JSONObject;
 		if (!dataJSON) {
 			return;
 		}
 
-		let valuesJSON;
+		let valuesJSON: Record<string, I18nValue>;
 		const values = htmlElement.getAttribute('data-i18n-values');
 		if (values) {
-			valuesJSON = JSON.parse(values);
+			valuesJSON = JSON.parse(values) as Record<string, I18nValue>;
 		} else {
-			valuesJSON = dataJSON.values;
+			valuesJSON = dataJSON.values as Record<string, I18nValue>;
 		}
 
-		const innerHTML = dataJSON.innerHTML;
+		const innerHTML = dataJSON.innerHTML as string;
 		if (innerHTML) {
 			htmlElement.innerHTML = this.formatString(innerHTML, valuesJSON);
 		}
-		const innerText = dataJSON.innerText;
+		const innerText = dataJSON.innerText as string;
 		if (innerText && ((htmlElement as HTMLElement).innerText !== undefined)) {
 			(htmlElement as HTMLElement).innerText = this.formatString(innerText, valuesJSON);
 		}
 	}
 
-	static i18n() {
+	static i18n(): void {
 		if (!this.#refreshTimeout) {
 			this.#refreshTimeout = setTimeout(() => this.#i18n(), I18N_DELAY_BEFORE_REFRESH);
 		}
 	}
 
-	static #i18n() {
+	static #i18n(): void {
 		this.#refreshTimeout = null;
 		if (this.#executing) { return; }
 		this.#executing = true;
@@ -247,7 +248,7 @@ export class I18n {
 		return;
 	}
 
-	static updateElement(htmlElement: Element | ShadowRoot) {
+	static updateElement(htmlElement: Element | ShadowRoot): void {
 		this.#processList(htmlElement, 'i18n', 'data-i18n', 'innerHTML');
 		this.#processJSON(htmlElement);
 	}
@@ -256,10 +257,10 @@ export class I18n {
 	 * @deprecated use setLang() instead
 	 */
 	static set lang(lang: string) {
-		throw 'Deprecated, use setLang() instead';
+		throw new Error('Deprecated, use setLang() instead');
 	}
 
-	static setLang(lang: string) {
+	static setLang(lang: string): void {
 		if (this.#lang != lang) {
 			const oldLang = this.#lang;
 			this.#lang = lang;
@@ -269,7 +270,7 @@ export class I18n {
 		}
 	}
 
-	static setDefaultLang(defaultLang: string) {
+	static setDefaultLang(defaultLang: string): void {
 		this.#defaultLang = defaultLang;
 	}
 
@@ -277,7 +278,7 @@ export class I18n {
 		this.#eventTarget.addEventListener(type, callback, options);
 	}
 
-	static getString(s: string) {
+	static getString(s: string): string {
 		const s2 = this.#translations.get(this.#lang)?.strings?.[s] ?? this.#translations.get(this.#defaultLang)?.strings?.[s];
 
 		if (typeof s2 == 'string') {
@@ -290,7 +291,7 @@ export class I18n {
 		return s;
 	}
 
-	static formatString(s: string, values: { [key: string]: I18nValue }) {
+	static formatString(s: string, values: Record<string, I18nValue>): string {
 		let str = this.getString(s);
 
 		for (const key in values) {
@@ -302,20 +303,20 @@ export class I18n {
 	/**
 	 * @deprecated use getAuthors() instead
 	 */
-	static get authors() {
-		throw 'Deprecated, use getAuthors() instead';
+	static get authors(): void {
+		throw new Error('Deprecated, use getAuthors() instead');
 	}
 
-	static getAuthors() {
+	static getAuthors(): string[] {
 		return this.#translations.get(this.#lang)?.authors ?? [];
 	}
 
-	static setValue(element: HTMLElement | undefined, name: string, value: I18nValue) {
+	static setValue(element: HTMLElement | undefined, name: string, value: I18nValue): void {
 		if (!element) {
 			return;
 		}
 
-		const i18n: { [key: string]: I18nValue } = {};
+		const i18n: Record<string, I18nValue> = {};
 		i18n[name] = value;
 
 		AddI18nElement(element, { values: i18n });

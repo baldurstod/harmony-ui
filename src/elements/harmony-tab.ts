@@ -37,10 +37,10 @@ export class HTMLHarmonyTabElement extends HTMLElement {
 			],
 			$click: () => this.#click(),
 			$contextmenu: (event: PointerEvent) => this.#onContextMenu(event),
-		}) as HTMLElement;
+		});
 	}
 
-	get htmlHeader() {
+	get htmlHeader(): HTMLElement {
 		return this.#header;
 	}
 
@@ -48,7 +48,7 @@ export class HTMLHarmonyTabElement extends HTMLElement {
 		return this.#group;
 	}
 
-	connectedCallback() {
+	connectedCallback(): void {
 		const parentElement = this.parentElement as HTMLHarmonyTabGroupElement;
 		if (parentElement && parentElement.tagName == 'HARMONY-TAB-GROUP') {
 			parentElement.addTab(this);
@@ -56,7 +56,7 @@ export class HTMLHarmonyTabElement extends HTMLElement {
 		}
 	}
 
-	attributeChangedCallback(name: string, oldValue: string, newValue: string) {
+	attributeChangedCallback(name: string, oldValue: string, newValue: string): void {
 		switch (name) {
 			case 'data-i18n':
 				this.#htmlTitle.setAttribute('data-i18n', newValue);
@@ -79,11 +79,11 @@ export class HTMLHarmonyTabElement extends HTMLElement {
 		this.#header.classList[this.#disabled ? 'add' : 'remove']('disabled');
 	}
 
-	get disabled() {
+	get disabled(): boolean {
 		return this.#disabled;
 	}
 
-	activate() {
+	activate(): void {
 		this.setActive(true);
 	}
 
@@ -106,7 +106,7 @@ export class HTMLHarmonyTabElement extends HTMLElement {
 		this.setActive(active);
 	}
 
-	setActive(active: boolean) {
+	setActive(active: boolean): void {
 		if (this.#active != active) {
 			this.#active = active;
 			if (active) {
@@ -135,15 +135,15 @@ export class HTMLHarmonyTabElement extends HTMLElement {
 		return this.isActive();
 	}
 
-	isActive() {
+	isActive(): boolean {
 		return this.#active;
 	}
 
-	isClosed() {
+	isClosed(): boolean {
 		return this.#closed;
 	}
 
-	#click() {
+	#click(): void {
 		if (!this.dispatchEvent(new CustomEvent<TabEventData>('click', { cancelable: true, detail: { tab: this } }))) {
 			return;
 		}
@@ -153,21 +153,21 @@ export class HTMLHarmonyTabElement extends HTMLElement {
 		}
 	}
 
-	#onContextMenu(event: PointerEvent) {
+	#onContextMenu(event: PointerEvent): void {
 		this.dispatchEvent(new CustomEvent<TabEventData>('contextmenu', { detail: { tab: this, originalEvent: event } }));
 	}
 
-	scrollIntoView() {
+	scrollIntoView(): void {
 		this.#header.scrollIntoView();
 	}
 
-	static get observedAttributes() {
+	static get observedAttributes(): string[] {
 		return ['data-i18n', 'data-text', 'disabled', 'data-closable'];
 	}
 }
 
 let definedTab = false;
-export function defineHarmonyTab() {
+export function defineHarmonyTab(): void {
 	if (window.customElements && !definedTab) {
 		customElements.define('harmony-tab', HTMLHarmonyTabElement);
 		definedTab = true;

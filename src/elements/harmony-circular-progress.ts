@@ -1,7 +1,7 @@
+import circularProgressCSS from '../css/harmony-circular-progress.css';
 import { shadowRootStyle } from '../harmony-css';
 import { createElement, createElementNS } from '../harmony-html';
 import { I18n } from '../harmony-i18n';
-import circularProgressCSS from '../css/harmony-circular-progress.css';
 import { injectGlobalCss } from '../utils/globalcss';
 import { HTMLHarmonyElement } from './harmony-element';
 
@@ -12,13 +12,13 @@ export class HTMLHarmonyCircularProgressElement extends HTMLHarmonyElement {
 	#htmlSVG?: SVGElement;
 	#htmlTrack?: SVGElement;
 	#htmlProgress?: SVGElement;
-	#start: number = 0;
+	#start = 0;
 	#end: number = Math.PI * 2;
-	#progress: number = 0.5;
+	#progress = 0.5;
 
-	protected createElement() {
+	protected createElement(): void {
 		this.#shadowRoot = this.attachShadow({ mode: 'closed' });
-		shadowRootStyle(this.#shadowRoot, circularProgressCSS);
+		void shadowRootStyle(this.#shadowRoot, circularProgressCSS);
 		I18n.observeElement(this.#shadowRoot);
 
 		this.#htmlLabel = createElement('div', {
@@ -60,20 +60,20 @@ export class HTMLHarmonyCircularProgressElement extends HTMLHarmonyElement {
 		this.#refresh();
 	}
 
-	setProgress(progress: number) {
+	setProgress(progress: number): void {
 		this.#progress = progress;
 		if (this.#htmlSVG) {
 			this.#htmlSVG.style.cssText = `--progress: ${progress}`;
 		}
 	}
 
-	#refresh() {
+	#refresh(): void {
 		if (this.#htmlSVG) {
 			this.#htmlSVG.style.cssText = `--progress: ${this.#progress}`;
 		}
 	}
 
-	protected onAttributeChanged(name: string, oldValue: string, newValue: string) {
+	protected onAttributeChanged(name: string, oldValue: string, newValue: string): void {
 		switch (name) {
 			case 'data-label':
 				if (this.#htmlLabel) {
@@ -91,13 +91,13 @@ export class HTMLHarmonyCircularProgressElement extends HTMLHarmonyElement {
 		}
 	}
 
-	static get observedAttributes() {
+	static get observedAttributes(): string[] {
 		return ['data-label', 'data-i18n'];
 	}
 }
 
 let definedCircularProgress = false;
-export function defineHarmonyCircularProgress() {
+export function defineHarmonyCircularProgress(): void {
 	if (window.customElements && !definedCircularProgress) {
 		customElements.define('harmony-circular-progress', class extends HTMLHarmonyCircularProgressElement { });
 		customElements.define('h-cp', class extends HTMLHarmonyCircularProgressElement { });

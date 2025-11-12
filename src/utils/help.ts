@@ -32,7 +32,7 @@ class Help {
 			],
 		});
 
-		shadowRootStyle(this.#shadowRoot, helpCSS);
+		void shadowRootStyle(this.#shadowRoot, helpCSS);
 	}
 
 	#handleKeyDown(event: KeyboardEvent): void {

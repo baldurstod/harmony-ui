@@ -6,7 +6,7 @@ import { I18n } from '../harmony-i18n';
 import { toBool } from '../utils/attributes';
 import { injectGlobalCss } from '../utils/globalcss';
 
-function clampColor(val: number) {
+function clampColor(val: number): number {
 	return Math.min(Math.max(0, val), 1);
 }
 
@@ -31,23 +31,23 @@ export class HTMLHarmonyPaletteElement extends HTMLElement {
 		this.#shadowRoot = this.attachShadow({ mode: 'closed' });
 	}
 
-	connectedCallback() {
+	connectedCallback(): void {
 		if (!this.#initialized) {
 			I18n.observeElement(this.#shadowRoot);
-			shadowRootStyle(this.#shadowRoot, paletteCSS);
+			void shadowRootStyle(this.#shadowRoot, paletteCSS);
 			this.#initialized = true;
 			this.#processChilds();
 		}
 	}
 
-	adoptStyleSheet(styleSheet: CSSStyleSheet) {
+	adoptStyleSheet(styleSheet: CSSStyleSheet): void {
 		this.#shadowRoot.adoptedStyleSheets.push(styleSheet);
 	}
 
-	#processChilds() {
+	#processChilds(): void {
 		//This is a 2 steps process cause we may change DOM
 		const children = this.children;
-		const list: Array<HTMLElement> = [];
+		const list: HTMLElement[] = [];
 		for (const child of children) {
 			list.push(child as HTMLElement);
 		}
@@ -61,14 +61,14 @@ export class HTMLHarmonyPaletteElement extends HTMLElement {
 		this.#refreshHTML();
 	}
 
-	#refreshHTML() {
+	#refreshHTML(): void {
 		if (!this.#initialized) {
 			return;
 		}
 		this.innerText = '';
 		this.#colorElements.clear();
 
-		for (const [colorHex, color] of this.#colors) {
+		for (const [colorHex] of this.#colors) {
 			const element = createElement('div', {
 				parent: this.#shadowRoot,
 				class: 'color',
@@ -77,7 +77,7 @@ export class HTMLHarmonyPaletteElement extends HTMLElement {
 				events: {
 					click: (event: MouseEvent) => this.#selectColor(colorHex, event.target as HTMLElement),
 				}
-			}) as HTMLElement;
+			});
 			this.#colorElements.set(colorHex, element);
 			if (this.#preSelected.has(colorHex)) {
 				this.#selectColor(colorHex, element);
@@ -87,7 +87,7 @@ export class HTMLHarmonyPaletteElement extends HTMLElement {
 		this.#preSelected.clear();
 	}
 
-	#selectColor(hex: string, element?: HTMLElement, selected = false) {
+	#selectColor(hex: string, element?: HTMLElement, selected = false): void {
 		const s = this.#selected.get(hex);
 		if (s && selected !== true) {
 			if (this.#multiple) {
@@ -111,7 +111,7 @@ export class HTMLHarmonyPaletteElement extends HTMLElement {
 		}
 	}
 
-	#setSelected(element: HTMLElement, selected: boolean) {
+	#setSelected(element: HTMLElement, selected: boolean): void {
 		if (!element) {
 			return;
 		}
@@ -125,35 +125,35 @@ export class HTMLHarmonyPaletteElement extends HTMLElement {
 
 	}
 
-	#dispatchSelect(hex: string, selected: boolean) {
+	#dispatchSelect(hex: string, selected: boolean): void {
 		this.dispatchEvent(new CustomEvent(selected ? 'select' : 'unselect', { detail: { hex: hex } }));
 	}
 
-	clearColors() {
+	clearColors(): void {
 		this.#colors.clear();
 		this.#refreshHTML();
 	}
 
-	addColor(color: string | Array<number>, tooltip: string) {
-		const c = this.#addColor(color, tooltip);
+	addColor(color: string | number[]/*, tooltip: string*/): PaletteColor | null {
+		const c = this.#addColor(color/*, tooltip*/);
 		this.#refreshHTML();
 		return c;
 	}
 
-	selectColor(color: string | Array<number>, selected = true) {
+	selectColor(color: string | number[], selected = true): void {
 		const c = this.#getColorAsRGB(color);
 		this.#selectColor(c.h, this.#colorElements.get(c.h), selected);
 	}
 
-	toggleColor(color: string | Array<number>) {
+	toggleColor(color: string | number[]): void {
 		const c = this.#getColorAsRGB(color);
 		this.#selectColor(c.h, this.#colorElements.get(c.h));
 	}
 
-	#addColor(color: string | Array<number>, tooltip?: string) {
+	#addColor(color: string | number[]/*, tooltip?: string*/): PaletteColor | null {
 		const c = this.#getColorAsRGB(color);
 		if (!c) {
-			return;
+			return null;
 		}
 
 		/*
@@ -165,7 +165,7 @@ export class HTMLHarmonyPaletteElement extends HTMLElement {
 		return c;
 	}
 
-	#getColorAsRGB(color: string | Array<number>): PaletteColor {
+	#getColorAsRGB(color: string | number[]): PaletteColor {
 		let r = 0, g = 0, b = 0;
 		switch (true) {
 			case typeof color == 'string':
@@ -183,7 +183,7 @@ export class HTMLHarmonyPaletteElement extends HTMLElement {
 		return { r: r, g: g, b: b, h: '#' + Number((r * 255 << 16) + (g * 255 << 8) + (b * 255)).toString(16).padStart(6, '0') };
 	}
 
-	attributeChangedCallback(name: string, oldValue: string, newValue: string) {
+	attributeChangedCallback(name: string, oldValue: string, newValue: string): void {
 		switch (name) {
 			case 'multiple':
 				this.#multiple = toBool(newValue);
@@ -191,13 +191,13 @@ export class HTMLHarmonyPaletteElement extends HTMLElement {
 		}
 	}
 
-	static get observedAttributes() {
+	static get observedAttributes(): string[] {
 		return ['multiple'];
 	}
 }
 
 let definedPalette = false;
-export function defineHarmonyPalette() {
+export function defineHarmonyPalette(): void {
 	if (window.customElements && !definedPalette) {
 		customElements.define('harmony-palette', HTMLHarmonyPaletteElement);
 		definedPalette = true;

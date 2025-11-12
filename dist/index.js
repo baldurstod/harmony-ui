@@ -2,6 +2,7 @@ import { Color } from 'harmony-utils';
 import { folderOpenSVG, infoSVG, checkOutlineSVG, closeSVG } from 'harmony-svg';
 
 function cloneEvent(event) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-explicit-any
     return new event.constructor(event.type, event);
 }
 
@@ -110,7 +111,7 @@ class I18n {
         if (this.#observer) {
             return;
         }
-        const callback = async (mutationsList) => {
+        const callback = (mutationsList) => {
             for (const mutation of mutationsList) {
                 if (mutation.type === 'childList') {
                     for (const node of mutation.addedNodes) {
@@ -225,7 +226,7 @@ class I18n {
      * @deprecated use setLang() instead
      */
     static set lang(lang) {
-        throw 'Deprecated, use setLang() instead';
+        throw new Error('Deprecated, use setLang() instead');
     }
     static setLang(lang) {
         if (this.#lang != lang) {
@@ -263,7 +264,7 @@ class I18n {
      * @deprecated use getAuthors() instead
      */
     static get authors() {
-        throw 'Deprecated, use getAuthors() instead';
+        throw new Error('Deprecated, use getAuthors() instead');
     }
     static getAuthors() {
         return this.#translations.get(this.#lang)?.authors ?? [];
@@ -307,7 +308,7 @@ class Help {
                 }),
             ],
         });
-        shadowRootStyle(this.#shadowRoot, helpCSS);
+        void shadowRootStyle(this.#shadowRoot, helpCSS);
     }
     #handleKeyDown(event) {
         if (event.key == 'F1') {
@@ -385,12 +386,7 @@ function createElementOptions(element, options, shadowRoot) {
             const optionValue = options[optionName];
             if (optionName.startsWith('$')) {
                 const eventType = optionName.substring(1);
-                if (typeof optionValue === 'function') {
-                    element.addEventListener(eventType, optionValue);
-                }
-                else {
-                    element.addEventListener(eventType, optionValue.listener, optionValue.options);
-                }
+                element.addEventListener(eventType, optionValue);
                 continue;
             }
             switch (optionName) {
@@ -415,16 +411,12 @@ function createElementOptions(element, options, shadowRoot) {
                 case 'events':
                     for (const eventType in optionValue) {
                         const eventParams = optionValue[eventType];
-                        if (typeof eventParams === 'function') {
-                            element.addEventListener(eventType, eventParams);
-                        }
-                        else {
-                            element.addEventListener(eventType, eventParams.listener, eventParams.options);
-                        }
+                        element.addEventListener(eventType, eventParams);
                     }
                     break;
                 case 'properties':
                     for (const name in optionValue) {
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-member-access
                         element[name] = optionValue[name];
                     }
                     break;
@@ -451,11 +443,11 @@ function createElementOptions(element, options, shadowRoot) {
                     element.htmlFor = optionValue;
                     break;
                 case 'adoptStyle':
-                    adoptStyle(shadowRoot ?? element, optionValue);
+                    void adoptStyle(shadowRoot ?? element, optionValue);
                     break;
                 case 'adoptStyles':
                     (optionValue ?? []).forEach((entry) => {
-                        adoptStyle(shadowRoot ?? element, entry);
+                        void adoptStyle(shadowRoot ?? element, entry);
                     });
                     break;
                 case 'adoptStyleSheet':
@@ -490,7 +482,7 @@ async function adoptStyle(element, cssText) {
     await sheet.replace(cssText);
     adoptStyleSheet(element, sheet);
 }
-async function adoptStyleSheet(element, sheet) {
+function adoptStyleSheet(element, sheet) {
     if (element.adoptStyleSheet) {
         element.adoptStyleSheet(sheet);
     }
@@ -565,7 +557,7 @@ function injectGlobalCss() {
     if (injected) {
         return;
     }
-    documentStyle(uiCSS);
+    void documentStyle(uiCSS);
     injected = true;
 }
 
@@ -610,6 +602,7 @@ var ManipulatorUpdatedEventType;
     ManipulatorUpdatedEventType["Rotation"] = "rotation";
 })(ManipulatorUpdatedEventType || (ManipulatorUpdatedEventType = {}));
 const CORNERS = [[-1, -1], [1, -1], [-1, 1], [1, 1]];
+//const SCALE_CORNERS: [[number, number], [number, number], [number, number], [number, number]] = [[-1, -1], [1, -1], [-1, 1], [1, 1]];
 const SIDES = [[0.5, 0], [0.5, 1], [0, 0.5], [1, 0.5]];
 const SCALE_SIDES = [[0, 1], [0, 1], [1, 0], [1, 0]];
 const SNAP_POSITION = 20; // Pixels
@@ -683,7 +676,7 @@ class HTMLHarmony2dManipulatorElement extends HTMLElement {
     constructor() {
         super();
         this.#shadowRoot = this.attachShadow({ mode: 'closed' });
-        shadowRootStyle(this.#shadowRoot, manipulator2dCSS);
+        void shadowRootStyle(this.#shadowRoot, manipulator2dCSS);
         this.#htmlQuad = createElement('div', {
             parent: this.#shadowRoot,
             class: 'manipulator',
@@ -698,7 +691,7 @@ class HTMLHarmony2dManipulatorElement extends HTMLElement {
                                 break;
                             case 2:
                                 event.stopPropagation();
-                                this.#rotateInput(event);
+                                this.#rotateInput();
                                 break;
                         }
                     },
@@ -711,7 +704,7 @@ class HTMLHarmony2dManipulatorElement extends HTMLElement {
                             this.#startTranslate(event);
                             break;
                         case 2:
-                            this.#translateInput(event);
+                            this.#translateInput();
                             break;
                     }
                 },
@@ -746,16 +739,19 @@ class HTMLHarmony2dManipulatorElement extends HTMLElement {
             this.#htmlResizeSides.push(htmlCorner);
         }
         document.addEventListener('mousemove', (event) => this.#onMouseMove(event));
-        document.addEventListener('mouseup', (event) => this.#stopDrag(event));
+        document.addEventListener('mouseup', () => this.#stopDrag());
     }
-    setTopLeft(x, y) {
+    /*
+    setTopLeft(x: number, y: number) {
+
     }
+    */
     #onMouseMove(event) {
         this.#translate(event);
         this.#resize(event);
         this.#rotate(event);
     }
-    #stopDrag(event) {
+    #stopDrag() {
         if (this.#dragging) {
             let type = ManipulatorUpdatedEventType.Position;
             switch (true) {
@@ -773,18 +769,18 @@ class HTMLHarmony2dManipulatorElement extends HTMLElement {
             this.#dragging = false;
             this.#dispatchEvent('updateend', type);
         }
-        this.#stopTranslate(event);
-        this.#stopDragRotator(event);
-        this.#stopDragCorner(event);
-        this.#stopDragSide(event);
+        this.#stopTranslate();
+        this.#stopDragRotator();
+        this.#stopDragCorner();
+        this.#stopDragSide();
     }
-    #stopTranslate(event) {
+    #stopTranslate() {
         this.#dragThis = false;
     }
-    #stopDragRotator(event) {
+    #stopDragRotator() {
         this.#dragRotator = false;
     }
-    #stopDragCorner(event) {
+    #stopDragCorner() {
         if (this.#dragCorner < 0) {
             return;
         }
@@ -792,7 +788,7 @@ class HTMLHarmony2dManipulatorElement extends HTMLElement {
         this.classList.remove('grabbing');
         this.#dragCorner = ManipulatorCorner.None;
     }
-    #stopDragSide(event) {
+    #stopDragSide() {
         if (this.#dragSide < 0) {
             return;
         }
@@ -1050,8 +1046,8 @@ class HTMLHarmony2dManipulatorElement extends HTMLElement {
         const left = this.#translationMode == ManipulatorDirection.All || this.#translationMode == ManipulatorDirection.X;
         const top = this.#translationMode == ManipulatorDirection.All || this.#translationMode == ManipulatorDirection.Y;
         const delta = this.#getDelta(event);
-        const deltaX = this.convertToUnit(delta.x, 'width') * this.#transformScale;
-        const deltaY = this.convertToUnit(delta.y, 'height') * this.#transformScale;
+        const deltaX = this.convertToUnit(delta.x /*, 'width'*/) * this.#transformScale;
+        const deltaY = this.convertToUnit(delta.y /*, 'height'*/) * this.#transformScale;
         if (top) {
             this.#center.y = this.#startTop + deltaY;
         }
@@ -1224,7 +1220,7 @@ class HTMLHarmony2dManipulatorElement extends HTMLElement {
             d
         };
     }
-    convertToUnit(value, ratio) {
+    convertToUnit(value /*, ratio: 'width' | 'height'*/) {
         return value;
         /*
         if (this.unit === 'px') {
@@ -1293,7 +1289,7 @@ class HTMLHarmony2dManipulatorElement extends HTMLElement {
             this.#startCorners[i] = this.getCorner(i);
         }
     }
-    #rotateInput(event) {
+    #rotateInput() {
         const result = prompt('rotation', String(this.#rotation * RAD_TO_DEG));
         if (result) {
             this.#rotation = Number(result) * DEG_TO_RAD;
@@ -1302,7 +1298,7 @@ class HTMLHarmony2dManipulatorElement extends HTMLElement {
             this.#dispatchEvent('updateend', ManipulatorUpdatedEventType.Rotation);
         }
     }
-    #translateInput(event) {
+    #translateInput() {
         const result = prompt('center', `${this.#center.x} ${this.#center.y}`);
         if (result) {
             const a = result.split(' ');
@@ -1347,7 +1343,7 @@ class HTMLHarmonyItemElement extends HTMLElement {
     constructor() {
         super();
         this.#shadowRoot = this.attachShadow({ mode: 'closed' });
-        shadowRootStyle(this.#shadowRoot, itemCSS);
+        void shadowRootStyle(this.#shadowRoot, itemCSS);
         this.#htmlHeader = createElement('slot', {
             name: 'header',
             parent: this.#shadowRoot,
@@ -1397,7 +1393,7 @@ class HTMLHarmonyAccordionElement extends HTMLElement {
     constructor() {
         super();
         this.#shadowRoot = this.attachShadow({ mode: 'closed', slotAssignment: "manual", });
-        shadowRootStyle(this.#shadowRoot, accordionCSS);
+        void shadowRootStyle(this.#shadowRoot, accordionCSS);
         this.#initMutationObserver();
     }
     connectedCallback() {
@@ -1437,7 +1433,7 @@ class HTMLHarmonyAccordionElement extends HTMLElement {
             hide(htmlItem.getContent());
         }
     }
-    #toggle(htmlItem, collapse = true) {
+    #toggle(htmlItem /*, collapse = true*/) {
         //let content = this.#items.get(header);
         /*
         if (collapse && !this.#multiple) {
@@ -1522,7 +1518,7 @@ class HTMLHarmonyAccordionElement extends HTMLElement {
     }
     #initMutationObserver() {
         const config = { childList: true, subtree: true };
-        const mutationCallback = (mutationsList, observer) => {
+        const mutationCallback = (mutationsList) => {
             for (const mutation of mutationsList) {
                 const addedNodes = mutation.addedNodes;
                 for (const addedNode of addedNodes) {
@@ -1589,7 +1585,7 @@ class HTMLHarmonyColorPickerElement extends HTMLElement {
         document.addEventListener('mouseup', () => this.#dragElement = null);
         document.addEventListener('mousemove', event => this.#handleMouseMove(event));
         this.#shadowRoot = this.attachShadow({ mode: 'closed' });
-        shadowRootStyle(this.#shadowRoot, colorPickerCSS);
+        void shadowRootStyle(this.#shadowRoot, colorPickerCSS);
         this.#htmlHuePicker = createElement('div', {
             parent: this.#shadowRoot,
             id: 'hue-picker',
@@ -1845,8 +1841,8 @@ class HTMLHarmonyMenuElement extends HTMLElement {
     connectedCallback() {
         if (this.#doOnce) {
             I18n.observeElement(this.#shadowRoot);
-            shadowRootStyle(this.#shadowRoot, menuCSS);
-            const callback = (entries, observer) => {
+            void shadowRootStyle(this.#shadowRoot, menuCSS);
+            const callback = (entries) => {
                 entries.forEach(() => {
                     this.#checkSize();
                 });
@@ -1982,7 +1978,7 @@ class HTMLHarmonyCopyElement extends HTMLElement {
     constructor() {
         super();
         this.#htmlCopied = createElement('div', { class: 'harmony-copy-copied' });
-        this.addEventListener('click', () => this.#copy());
+        this.addEventListener('click', () => { void this.#copy(); });
     }
     connectedCallback() {
         if (this.#doOnce) {
@@ -2009,7 +2005,7 @@ let definedCopy = false;
 function defineHarmonyCopy() {
     if (window.customElements && !definedCopy) {
         customElements.define('harmony-copy', HTMLHarmonyCopyElement);
-        documentStyle(copyCSS);
+        void documentStyle(copyCSS);
         definedCopy = true;
         injectGlobalCss();
     }
@@ -2025,7 +2021,7 @@ class HTMLHarmonyTooltipElement extends HTMLElement {
     constructor() {
         super();
         this.#shadowRoot = this.attachShadow({ mode: 'closed' });
-        shadowRootStyle(this.#shadowRoot, tooltipCSS);
+        void shadowRootStyle(this.#shadowRoot, tooltipCSS);
         I18n.observeElement(this.#shadowRoot);
         this.#htmlText = createElement('div', {
             class: 'tooltip',
@@ -2070,7 +2066,7 @@ class HTMLHarmonyFileInputElement extends HTMLElement {
     constructor() {
         super();
         this.#shadowRoot = this.attachShadow({ mode: 'closed' });
-        shadowRootStyle(this.#shadowRoot, fileInputCSS);
+        void shadowRootStyle(this.#shadowRoot, fileInputCSS);
         I18n.observeElement(this.#shadowRoot);
         defineHarmonyTooltip();
         createElement('label', {
@@ -2173,7 +2169,7 @@ class HTMLHarmonyLabelPropertyElement extends HTMLElement {
     constructor() {
         super();
         this.#shadowRoot = this.attachShadow({ mode: 'closed' });
-        shadowRootStyle(this.#shadowRoot, labelPropertyCSS);
+        void shadowRootStyle(this.#shadowRoot, labelPropertyCSS);
         this.#htmlLabel = createElement('label', { i18n: '', parent: this.#shadowRoot });
         this.#htmlProperty = createElement('span', { parent: this.#shadowRoot });
     }
@@ -2219,7 +2215,7 @@ class HTMLHarmonyPaletteElement extends HTMLElement {
     connectedCallback() {
         if (!this.#initialized) {
             I18n.observeElement(this.#shadowRoot);
-            shadowRootStyle(this.#shadowRoot, paletteCSS);
+            void shadowRootStyle(this.#shadowRoot, paletteCSS);
             this.#initialized = true;
             this.#processChilds();
         }
@@ -2249,7 +2245,7 @@ class HTMLHarmonyPaletteElement extends HTMLElement {
         }
         this.innerText = '';
         this.#colorElements.clear();
-        for (const [colorHex, color] of this.#colors) {
+        for (const [colorHex] of this.#colors) {
             const element = createElement('div', {
                 parent: this.#shadowRoot,
                 class: 'color',
@@ -2310,8 +2306,8 @@ class HTMLHarmonyPaletteElement extends HTMLElement {
         this.#colors.clear();
         this.#refreshHTML();
     }
-    addColor(color, tooltip) {
-        const c = this.#addColor(color, tooltip);
+    addColor(color /*, tooltip: string*/) {
+        const c = this.#addColor(color /*, tooltip*/);
         this.#refreshHTML();
         return c;
     }
@@ -2323,10 +2319,10 @@ class HTMLHarmonyPaletteElement extends HTMLElement {
         const c = this.#getColorAsRGB(color);
         this.#selectColor(c.h, this.#colorElements.get(c.h));
     }
-    #addColor(color, tooltip) {
+    #addColor(color /*, tooltip?: string*/) {
         const c = this.#getColorAsRGB(color);
         if (!c) {
-            return;
+            return null;
         }
         /*
         c.selected = false;
@@ -2374,6 +2370,7 @@ function defineHarmonyPalette() {
 
 var panelCSS = ":host {\n\tdisplay: flex;\n\tflex: 1;\n\tflex-direction: column;\n\n\tflex: 0 0 auto;\n\t/*flex-grow: 0;\n\tflex-shrink: 0;\n\tflex-basis: auto;*/\n\t/*flex-basis: 0;*/\n\t/*flex: 1;*/\n\t/*height:100%;\n\twidth:100%;*/\n\n\t/*padding: 5px !important;*/\n\tbox-sizing: border-box;\n\tpointer-events: all;\n\toverflow: hidden;\n\tposition: relative;\n\tflex-direction: column;\n\tbox-sizing: border-box;\n}\n\n.harmony-panel-row {\n\tflex-direction: row;\n}\n\n.harmony-panel-row>harmony-panel {\n\theight: 100%;\n}\n\n.harmony-panel-column {\n\tflex-direction: column;\n}\n\n.harmony-panel-column>harmony-panel {\n\twidth: 100%;\n}\n\n.harmony-panel-splitter {\n\tdisplay: none;\n\tflex: 0 0 10px;\n\tbackground-color: red;\n}\n\n.title {\n\tcursor: pointer;\n\ttext-align: center;\n\tfont-size: 1.5em;\n\tpadding: 4px;\n\toverflow: hidden;\n}\n\n.content {\n\twidth: 100%;\n\tbox-sizing: border-box;\n}\n\n[collapsible='1']>.title::after {\n\tcontent: \"-\";\n\tright: 5px;\n\tposition: absolute;\n}\n\n[collapsed='1']>.title::after {\n\tcontent: \"+\";\n}\n";
 
+//const dragged = null;
 let nextId = 0;
 //let spliter: HTMLElement = createElement('div', { class: 'harmony-panel-splitter' }) as HTMLElement;
 let highlitPanel;
@@ -2395,7 +2392,7 @@ class HTMLHarmonyPanelElement extends HTMLElement {
     constructor() {
         super();
         this.#shadowRoot = this.attachShadow({ mode: 'closed' });
-        shadowRootStyle(this.#shadowRoot, panelCSS);
+        void shadowRootStyle(this.#shadowRoot, panelCSS);
         //this.addEventListener('dragstart', event => this._handleDragStart(event));
         //this.addEventListener('dragover', event => this._handleDragOver(event));
         //this.addEventListener('drop', event => this._handleDrop(event));
@@ -2441,9 +2438,11 @@ class HTMLHarmonyPanelElement extends HTMLElement {
         }*/
     }
     append() {
+        // eslint-disable-next-line prefer-rest-params
         this.htmlContent.append(...arguments);
     }
     prepend() {
+        // eslint-disable-next-line prefer-rest-params
         this.htmlContent.prepend(...arguments);
     }
     /*
@@ -2746,56 +2745,6 @@ class HTMLHarmonyPanelElement extends HTMLElement {
     static get nextId() {
         return `harmony-panel-dummy-${++nextId}`;
     }
-    static saveDisposition() {
-        const list = document.getElementsByTagName('harmony-panel');
-        const json = { panels: {}, dummies: [] };
-        for (const panel of list) {
-            if (panel.id && panel.parentElement && panel.parentElement.id && panel.parentElement.tagName == 'HARMONY-PANEL') {
-                json.panels[panel.id] = { parent: panel.parentElement.id, size: panel.size, direction: panel.direction };
-                if (panel.#isDummy) {
-                    json.dummies.push(panel.id);
-                }
-            }
-        }
-        return json;
-    }
-    static restoreDisposition(json) {
-        return;
-        /*
-        if (!json || !json.dummies || !json.panels) { return; }
-
-        let dummiesList = new Map();
-        for (let oldDummy of json.dummies) {
-            let newDummy = HTMLHarmonyPanelElement._createDummy();
-            document.body.append(newDummy);
-            dummiesList.set(oldDummy, newDummy.id);
-        }
-
-        let list = document.getElementsByTagName('harmony-panel');
-        for (let panel of list) {
-            if (panel.id) {
-                let p = json.panels[panel.id];
-                if (p) {
-                    if (p.size != 1 || panel._isDummy) {
-                        panel.size = p.size;
-                    }
-                    panel.direction = p.direction;
-                    let newParentId = dummiesList.get(p.parent) || p.parent;
-                    if (p && newParentId) {
-                        let parent = document.getElementById(newParentId);
-                        /*if (!parent && p.dummy) {
-                            parent = document.createElement('harmony-panel');
-                        }* /
-                        if (parent) {
-                            parent.append(panel);
-                        } else {
-                            console.error('no parent', panel, newParentId);
-                        }
-                    }
-                }
-            }
-        }*/
-    }
 }
 let definedPanel = false;
 function defineHarmonyPanel() {
@@ -2817,6 +2766,7 @@ class HTMLHarmonyElement extends HTMLElement {
         this.initialized = true;
         this.createElement();
     }
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
     createElement() {
     }
     connectedCallback() {
@@ -2826,6 +2776,7 @@ class HTMLHarmonyElement extends HTMLElement {
         this.initElement();
         this.onAttributeChanged(name, oldValue, newValue);
     }
+    // eslint-disable-next-line @typescript-eslint/no-empty-function, @typescript-eslint/no-unused-vars
     onAttributeChanged(name, oldValue, newValue) {
     }
     static get observedAttributes() {
@@ -2845,7 +2796,7 @@ class HTMLHarmonyCircularProgressElement extends HTMLHarmonyElement {
     #progress = 0.5;
     createElement() {
         this.#shadowRoot = this.attachShadow({ mode: 'closed' });
-        shadowRootStyle(this.#shadowRoot, circularProgressCSS);
+        void shadowRootStyle(this.#shadowRoot, circularProgressCSS);
         I18n.observeElement(this.#shadowRoot);
         this.#htmlLabel = createElement('div', {
             parent: this.#shadowRoot,
@@ -2949,7 +2900,7 @@ class HTMLHarmonyRadioElement extends HTMLElement {
     connectedCallback() {
         if (this.#doOnce) {
             I18n.observeElement(this.#shadowRoot);
-            shadowRootStyle(this.#shadowRoot, radioCSS);
+            void shadowRootStyle(this.#shadowRoot, radioCSS);
             this.#shadowRoot.prepend(this.#htmlLabel);
             hide(this.#htmlLabel);
             this.#processChilds();
@@ -3030,7 +2981,7 @@ class HTMLHarmonyRadioElement extends HTMLElement {
     }
     #initMutationObserver() {
         const config = { childList: true, subtree: true };
-        const mutationCallback = (mutationsList, observer) => {
+        const mutationCallback = (mutationsList) => {
             for (const mutation of mutationsList) {
                 const addedNodes = mutation.addedNodes;
                 for (const addedNode of addedNodes) {
@@ -3083,7 +3034,7 @@ var slideshowZoomCSS = ":host {\n\tposition: fixed;\n\tpointer-events: none;\n\t
 
 var slideshowCSS = ":host {\n\toverflow: hidden;\n\tdisplay: flex;\n\talign-items: center;\n\tjustify-content: center;\n\tflex-direction: column;\n\tposition: relative;\n}\n\n.image {\n\tposition: relative;\n\tflex-shrink: 0;\n}\n\n.images {\n\toverflow: hidden;\n\tflex: 1;\n\twidth: 100%;\n}\n\n.images-outer {\n\toverflow: hidden;\n\tmargin: auto;\n}\n\n.images-inner {\n\tdisplay: flex;\n\tposition: relative;\n\twidth: 100%;\n\theight: 100%;\n}\n\n:host(.dynamic) .images-inner {\n\ttransition: all 0.5s ease 0s;\n}\n\n/* Controls */\n.controls {\n\tposition: absolute;\n\tz-index: 1000;\n\topacity: 0;\n\twidth: 100%;\n\theight: 100%;\n\tdisplay: none;\n}\n\n:host(.dynamic) .controls {\n\tdisplay: unset;\n}\n\n.controls>div {\n\tposition: absolute;\n\n\tbackground-size: 100%;\n\tbackground-repeat: no-repeat;\n\tbackground-position: center;\n\tpointer-events: all;\n\tcursor: pointer;\n}\n\n.previous-image,\n.next-image {\n\ttop: calc(50% - 24px);\n\twidth: 48px;\n\theight: 48px;\n\tbackground-image: url(\"data:image/svg+xml,%3C%3Fxml version='1.0'%3F%3E%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath style='fill:%23ffffff;stroke:%23000000;stroke-width:10;' d='M 360,100 300,30 30,256 300,482 360,412 175,256 Z'/%3E%3C/svg%3E%0A\");\n\n}\n\n.previous-image {\n\tleft: 10px;\n}\n\n.next-image {\n\tright: 10px;\n\ttransform: scaleX(-1);\n}\n\n.play,\n.pause {\n\tbottom: 10px;\n\tleft: 10px;\n\twidth: 25px;\n\theight: 25px;\n}\n\n.play {\n\tbackground-image: url(\"data:image/svg+xml,%3C%3Fxml version='1.0'%3F%3E%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath style='fill:%23ffffff;stroke:%23000000;stroke-width:40;' d='M20 20 L470 256 L20 492 Z'/%3E%3C/svg%3E%0A\");\n}\n\n.pause {\n\tright: 0px;\n\tbackground-image: url(\"data:image/svg+xml,%3C%3Fxml version='1.0'%3F%3E%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cg style='fill:%23ffffff;stroke:%23000000;stroke-width:30;'%3E%3Crect width='140' height='452' x='30' y='30' /%3E%3Crect width='140' height='452' x='342' y='30' /%3E%3C/g%3E%3C/svg%3E%0A\");\n}\n\n/* thumbnails */\n.thumbnails {\n\twidth: 100%;\n\t/*background-color: red;*/\n\tflex: 0;\n\tdisplay: flex;\n\tjustify-content: center;\n}\n\n:host(.dynamic) .thumbnails {\n\tdisplay: none;\n}\n\n.thumbnails>img {\n\tobject-fit: contain;\n\theight: 80px;\n\tcursor: pointer;\n\tmargin: 3px;\n}\n\n.zoom {\n\tposition: fixed;\n\tpointer-events: none;\n\t/*transform: scale(3);*/\n\twidth: 100%;\n\theight: 100%;\n}\n\n.zoom>img {\n\t/*transform: scale(3);*/\n\twidth: 100%;\n\tposition: relative;\n\twidth: 1500px;\n}\n";
 
-const resizeCallback = (entries, observer) => {
+const resizeCallback = (entries) => {
     entries.forEach(entry => {
         entry.target.onResized();
     });
@@ -3142,13 +3093,13 @@ class HTMLHarmonySlideshowElement extends HTMLElement {
                 createElement('div', {
                     class: 'previous-image',
                     events: {
-                        click: (event) => { this.previousImage(); this.setAutoPlay(false); },
+                        click: () => { this.previousImage(); this.setAutoPlay(false); },
                     },
                 }),
                 createElement('div', {
                     class: 'next-image',
                     events: {
-                        click: (event) => { this.nextImage(); this.setAutoPlay(false); },
+                        click: () => { this.nextImage(); this.setAutoPlay(false); },
                     },
                 }),
                 this.#htmlPlayButton = createElement('div', {
@@ -3233,7 +3184,7 @@ class HTMLHarmonySlideshowElement extends HTMLElement {
                 htmlImage.classList.add('image');
                 htmlImage.decode().then(() => {
                     this.refresh();
-                });
+                }).catch(() => { return; });
                 htmlImage.onload = () => this.checkImageSize(htmlImage);
                 const htmlThumbnailImage = htmlImage.cloneNode();
                 this.#htmlThumbnails.append(htmlThumbnailImage);
@@ -3396,7 +3347,7 @@ class HTMLHarmonySlideshowElement extends HTMLElement {
     }
     #initObserver() {
         const config = { childList: true, subtree: true };
-        const mutationCallback = (mutationsList, observer) => {
+        const mutationCallback = (mutationsList) => {
             for (const mutation of mutationsList) {
                 for (const addedNode of mutation.addedNodes) {
                     if (addedNode.parentNode == this) {
@@ -3439,7 +3390,7 @@ class HTMLHarmonySelectElement extends HTMLElement {
         this.#htmlSelect = createElement('select', { parent: this.#shadowRoot });
     }
     connectedCallback() {
-        shadowRootStyle(this.#shadowRoot, selectCSS);
+        void shadowRootStyle(this.#shadowRoot, selectCSS);
         this.#shadowRoot.append(this.#htmlSelect);
     }
     attributeChangedCallback(name, oldValue, newValue) {
@@ -3475,10 +3426,9 @@ class HTMLHarmonySelectElement extends HTMLElement {
         this.addOptions(values);
     }
     removeOption(value) {
-        const list = this.#htmlSelect.children;
-        for (let i = 0; i < list.length; i++) {
-            if (list[i].value === value) {
-                list[i].remove();
+        for (const option of this.#htmlSelect.children) {
+            if (option.value === value) {
+                option.remove();
             }
         }
     }
@@ -3489,10 +3439,9 @@ class HTMLHarmonySelectElement extends HTMLElement {
         }
     }
     select(value) {
-        const list = this.#htmlSelect.children;
-        for (let i = 0; i < list.length; i++) {
-            if (list[i].value === value) {
-                list[i].selected = true;
+        for (const option of this.#htmlSelect.children) {
+            if (option.value === value) {
+                option.selected = true;
             }
         }
     }
@@ -3503,17 +3452,15 @@ class HTMLHarmonySelectElement extends HTMLElement {
         }
     }
     unselect(value) {
-        const list = this.#htmlSelect.children;
-        for (let i = 0; i < list.length; i++) {
-            if (list[i].value === value) {
-                list[i].selected = false;
+        for (const option of this.#htmlSelect.children) {
+            if (option.value === value) {
+                option.selected = false;
             }
         }
     }
     unselectAll() {
-        const list = this.#htmlSelect.children;
-        for (let i = 0; i < list.length; i++) {
-            list[i].selected = false;
+        for (const option of this.#htmlSelect.children) {
+            option.selected = false;
         }
     }
     static get observedAttributes() {
@@ -3546,7 +3493,7 @@ class HTMLHarmonySliderElement extends HTMLHarmonyElement {
     #isRange = false;
     createElement() {
         this.#shadowRoot = this.attachShadow({ mode: 'closed' });
-        shadowRootStyle(this.#shadowRoot, sliderCSS);
+        void shadowRootStyle(this.#shadowRoot, sliderCSS);
         I18n.observeElement(this.#shadowRoot);
         this.#htmlLabel = createElement('label', {
             parent: this.#shadowRoot,
@@ -3852,7 +3799,7 @@ class HTMLHarmonySwitchElement extends HTMLHarmonyElement {
     #ternary = false;
     createElement() {
         this.#shadowRoot = this.attachShadow({ mode: 'closed' });
-        shadowRootStyle(this.#shadowRoot, switchCSS);
+        void shadowRootStyle(this.#shadowRoot, switchCSS);
         I18n.observeElement(this.#shadowRoot);
         this.#htmlLabel = createElement('div', {
             parent: this.#shadowRoot,
@@ -4155,8 +4102,8 @@ class HTMLHarmonyTabGroupElement extends HTMLElement {
     connectedCallback() {
         if (this.#doOnce) {
             I18n.observeElement(this.#shadowRoot);
-            shadowRootStyle(this.#shadowRoot, tabGroupCSS);
-            shadowRootStyle(this.#shadowRoot, tabCSS);
+            void shadowRootStyle(this.#shadowRoot, tabGroupCSS);
+            void shadowRootStyle(this.#shadowRoot, tabCSS);
             this.#shadowRoot.append(this.#header, this.#content);
             this.#doOnce = false;
         }
@@ -4249,7 +4196,7 @@ class HTMLHarmonyToggleButtonElement extends HTMLElement {
             name: 'off',
         });
         I18n.observeElement(this.#shadowRoot);
-        shadowRootStyle(this.#shadowRoot, toggleButtonCSS);
+        void shadowRootStyle(this.#shadowRoot, toggleButtonCSS);
         this.addEventListener('click', (event) => {
             this.#click();
             event.stopPropagation();
@@ -4297,7 +4244,7 @@ class HTMLHarmonyToggleButtonElement extends HTMLElement {
     }
     #initObserver() {
         const config = { childList: true, subtree: true };
-        const mutationCallback = (mutationsList, observer) => {
+        const mutationCallback = (mutationsList) => {
             for (const mutation of mutationsList) {
                 for (const addedNode of mutation.addedNodes) {
                     if (addedNode.parentNode == this) {
@@ -4459,7 +4406,7 @@ class TreeItem {
         return true;
     }
     *walk(filter) {
-        let stack = [this];
+        const stack = [this];
         let current;
         do {
             current = stack.pop();
@@ -4469,7 +4416,7 @@ class TreeItem {
             if (current.#matchFilter(filter)) {
                 yield current;
             }
-            for (let child of current.childs) {
+            for (const child of current.childs) {
                 stack.push(child);
             }
         } while (current);
@@ -4493,7 +4440,7 @@ class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
     #cssLevel = new Set();
     createElement() {
         this.#shadowRoot = this.attachShadow({ mode: 'closed' });
-        shadowRootStyle(this.#shadowRoot, treeCSS);
+        void shadowRootStyle(this.#shadowRoot, treeCSS);
         this.#shadowRoot.adoptedStyleSheets.push(this.#dynamicSheet);
         I18n.observeElement(this.#shadowRoot);
         this.#refresh();
@@ -4501,7 +4448,7 @@ class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
     }
     adoptStyle(css) {
         this.initElement();
-        shadowRootStyle(this.#shadowRoot, css);
+        void shadowRootStyle(this.#shadowRoot, css);
     }
     #refresh() {
         if (!this.#shadowRoot) {
@@ -4750,17 +4697,6 @@ class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
             }
         }
         this.#refresh();
-    }
-    onAttributeChanged(name, oldValue, newValue) {
-        switch (name) {
-            case 'data-root':
-                const root = JSON.parse(newValue);
-                this.setRoot(root);
-                break;
-        }
-    }
-    static get observedAttributes() {
-        return ['data-root'];
     }
     #handleScroll() {
         let stickyHeight = 0;

@@ -1,18 +1,19 @@
+import copyCSS from '../css/harmony-copy.css';
 import { documentStyle } from '../harmony-css';
 import { createElement, hide, show } from '../harmony-html';
-import copyCSS from '../css/harmony-copy.css';
 import { injectGlobalCss } from '../utils/globalcss';
 
 export class HTMLHarmonyCopyElement extends HTMLElement {
 	#doOnce = true;
 	#htmlCopied: HTMLElement;
+
 	constructor() {
 		super();
-		this.#htmlCopied = createElement('div', { class: 'harmony-copy-copied' }) as HTMLElement;
-		this.addEventListener('click', () => this.#copy());
+		this.#htmlCopied = createElement('div', { class: 'harmony-copy-copied' });
+		this.addEventListener('click', () => { void this.#copy() });
 	}
 
-	connectedCallback() {
+	connectedCallback(): void {
 		if (this.#doOnce) {
 			this.#doOnce = false;
 			this.append(this.#htmlCopied);
@@ -20,7 +21,7 @@ export class HTMLHarmonyCopyElement extends HTMLElement {
 		}
 	}
 
-	async #copy() {
+	async #copy(): Promise<void> {
 		try {
 			const text = this.innerText
 			this.#htmlCopied.innerText = text;
@@ -36,10 +37,10 @@ export class HTMLHarmonyCopyElement extends HTMLElement {
 }
 
 let definedCopy = false;
-export function defineHarmonyCopy() {
+export function defineHarmonyCopy(): void {
 	if (window.customElements && !definedCopy) {
 		customElements.define('harmony-copy', HTMLHarmonyCopyElement);
-		documentStyle(copyCSS);
+		void documentStyle(copyCSS);
 		definedCopy = true;
 		injectGlobalCss();
 	}

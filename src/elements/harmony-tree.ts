@@ -19,7 +19,7 @@ export type TreeAction = {
 export type TreeItemFilter = {
 	name?: string;
 	kind?: TreeItemKind;
-	kinds?: Array<TreeItemKind>;
+	kinds?: TreeItemKind[];
 }
 
 export enum TreeItemKind {
@@ -33,8 +33,8 @@ export type TreeItemOptions = {
 	icon?: string,
 	kind?: TreeItemKind,
 	parent?: TreeItem,
-	childs?: Array<TreeItem>,
-	userData?: any,
+	childs?: TreeItem[],
+	userData?: unknown,
 }
 
 export class TreeItem {
@@ -44,7 +44,7 @@ export class TreeItem {
 	parent?: TreeItem;
 	childs = new Set<TreeItem>;
 	actions = new Set<string>();
-	userData?: any;
+	userData?: unknown;
 
 	constructor(name: string, options: TreeItemOptions = {}) {
 		this.name = name;
@@ -66,12 +66,11 @@ export class TreeItem {
 		this.#sortByName();
 	}
 
-	addChild(child: TreeItem) {
+	addChild(child: TreeItem): void {
 		this.childs.add(child);
 	}
 
-	#sortByName() {
-		let that = this;
+	#sortByName(): void {
 		this.childs[Symbol.iterator] = function* (): ArrayIterator<TreeItem> {
 			yield* [...this.values()].sort(
 				(a, b) => {
@@ -81,7 +80,7 @@ export class TreeItem {
 		}
 	}
 
-	getPath(separator: string = '/'): string {
+	getPath(separator = '/'): string {
 		let path = '';
 		if (this.parent) {
 			const parentPath = this.parent.getPath(separator);
@@ -101,21 +100,21 @@ export class TreeItem {
 		return 0;
 	}
 
-	addAction(action: string) {
+	addAction(action: string): void {
 		this.actions.add(action);
 	}
 
-	addActions(actions: Array<string>) {
+	addActions(actions: string[]): void {
 		for (const action of actions) {
 			this.actions.add(action);
 		}
 	}
 
-	removeAction(action: string) {
+	removeAction(action: string) : void {
 		this.actions.delete(action);
 	}
 
-	static createFromPathList(paths: Set<string> | Map<string, any>, options: { pathSeparator?: string, rootUserData?: any, userData?: any, rootName?: string } = {}): TreeItem {
+	static createFromPathList(paths: Set<string> | Map<string, unknown>, options: { pathSeparator?: string, rootUserData?: unknown, userData?: unknown, rootName?: string } = {}): TreeItem {
 		class element {
 			tree: TreeItem;
 			childs = new Map<string, element>()
@@ -195,8 +194,8 @@ export class TreeItem {
 		return true;
 	}
 
-	*walk(filter?: TreeItemFilter) {
-		let stack: Array<TreeItem> = [this];
+	*walk(filter?: TreeItemFilter): Generator<TreeItem, void, unknown> {
+		const stack: TreeItem[] = [this];
 		let current: TreeItem | undefined;
 
 		do {
@@ -209,7 +208,7 @@ export class TreeItem {
 				yield current;
 			}
 
-			for (let child of current.childs) {
+			for (const child of current.childs) {
 				stack.push(child);
 			}
 		} while (current)
@@ -244,9 +243,9 @@ export class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
 	#dynamicSheet = new CSSStyleSheet();
 	#cssLevel = new Set<number>();
 
-	protected createElement() {
+	protected createElement(): void {
 		this.#shadowRoot = this.attachShadow({ mode: 'closed' });
-		shadowRootStyle(this.#shadowRoot, treeCSS);
+		void shadowRootStyle(this.#shadowRoot, treeCSS);
 		this.#shadowRoot.adoptedStyleSheets.push(this.#dynamicSheet);
 		I18n.observeElement(this.#shadowRoot);
 
@@ -255,12 +254,12 @@ export class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
 		this.addEventListener('scroll', () => this.#handleScroll());
 	}
 
-	adoptStyle(css: string) {
+	adoptStyle(css: string): void {
 		this.initElement();
-		shadowRootStyle(this.#shadowRoot!, css);
+		void shadowRootStyle(this.#shadowRoot!, css);
 	}
 
-	#refresh() {
+	#refresh(): void {
 		if (!this.#shadowRoot) {
 			return;
 		}
@@ -272,7 +271,7 @@ export class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
 		this.#refreshFilter();
 	}
 
-	#refreshFilter() {
+	#refreshFilter(): void {
 		for (const [item, itemElement] of this.#itemElements) {
 			const show = (!this.#filter || this.#isVisible.has(item)) && this.#isFullyExpanded(item);
 			display(itemElement.element, show);
@@ -296,7 +295,7 @@ export class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
 		return true;
 	}
 
-	setRoot(root?: TreeItem | null) {
+	setRoot(root?: TreeItem | null): void {
 		this.#root = root;
 
 		this.#shadowRoot?.replaceChildren();
@@ -304,7 +303,7 @@ export class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
 		this.#refresh();
 	}
 
-	#buildContextMenu(contextMenu: HarmonyMenuItems, x: number, y: number) {
+	#buildContextMenu(contextMenu: HarmonyMenuItems, x: number, y: number): void {
 		if (!this.#htmlContextMenu) {
 			defineHarmonyMenu();
 			this.#htmlContextMenu = createElement('harmony-menu') as HTMLHarmonyMenuElement;
@@ -313,12 +312,12 @@ export class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
 		this.#htmlContextMenu.showContextual(contextMenu, x, y);
 	}
 
-	#contextMenuHandler(event: MouseEvent, item: TreeItem) {
+	#contextMenuHandler(event: MouseEvent, item: TreeItem): void {
 		if (!event.shiftKey) {
 			this.dispatchEvent(new CustomEvent<TreeContextMenuEventData>('contextmenu', {
 				detail: {
 					item: item,
-					buildContextMenu: (menu: HarmonyMenuItems) => this.#buildContextMenu(menu, event.clientX, event.clientY),
+					buildContextMenu: (menu: HarmonyMenuItems): void => this.#buildContextMenu(menu, event.clientX, event.clientY),
 				},
 			}));
 			event.preventDefault();
@@ -465,7 +464,7 @@ export class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
 		}
 	}
 
-	selectItem(item: TreeItem | null, scrollIntoView = true) {
+	selectItem(item: TreeItem | null, scrollIntoView = true): void {
 		if (item == this.#selectedItem) {
 			return;
 		}
@@ -489,7 +488,7 @@ export class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
 		this.#selectedItem = item;
 	}
 
-	addAction(name: string, img: HTMLElement | string, tooltip?: string) {
+	addAction(name: string, img: HTMLElement | string, tooltip?: string): void {
 		const action: TreeAction = {
 			name: name,
 			tooltip: tooltip,
@@ -505,7 +504,7 @@ export class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
 		this.#actions.set(name, action);
 	}
 
-	refreshActions(item: TreeItem) {
+	refreshActions(item: TreeItem): void {
 		const htmlActions = this.#itemElements.get(item)?.actions;
 
 		htmlActions?.replaceChildren();
@@ -525,7 +524,7 @@ export class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
 		}
 	}
 
-	#actionHandler(event: MouseEvent, item: TreeItem, action: string) {
+	#actionHandler(event: MouseEvent, item: TreeItem, action: string): void {
 		this.dispatchEvent(new CustomEvent<ItemActionEventData>('itemaction', {
 			detail: {
 				item: item,
@@ -536,7 +535,7 @@ export class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
 		event.stopPropagation();
 	}
 
-	setFilter(filter?: TreeItemFilter) {
+	setFilter(filter?: TreeItemFilter): void {
 		this.#filter = filter;
 
 		this.#isVisible.clear();
@@ -554,20 +553,7 @@ export class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
 		this.#refresh();
 	}
 
-	protected onAttributeChanged(name: string, oldValue: string, newValue: string) {
-		switch (name) {
-			case 'data-root':
-				const root = JSON.parse(newValue);
-				this.setRoot(root);
-				break;
-		}
-	}
-
-	static get observedAttributes() {
-		return ['data-root'];
-	}
-
-	#handleScroll() {
+	#handleScroll(): void {
 		let stickyHeight = 0;
 		for (const sticky of this.#sticky) {
 			const rect = sticky.getBoundingClientRect();
@@ -630,7 +616,7 @@ export class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
 }
 
 let definedTree = false;
-export function defineHarmonyTree() {
+export function defineHarmonyTree(): void {
 	if (window.customElements && !definedTree) {
 		customElements.define('harmony-tree', class extends HTMLHarmonyTreeElement { });
 		customElements.define('h-tree', class extends HTMLHarmonyTreeElement { });

@@ -4,7 +4,7 @@ export class HarmonyElement extends HTMLElement {
 		super();
 	}
 
-	connectedCallback() {
+	connectedCallback(): void {
 		if (this.#doOnce) {
 			this.#doOnce = false;
 		}

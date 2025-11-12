@@ -1,6 +1,7 @@
+import { JSONObject } from 'harmony-types';
+import sliderCSS from '../css/harmony-slider.css';
 import { shadowRootStyle } from '../harmony-css';
 import { createElement, hide, show, updateElement } from '../harmony-html';
-import sliderCSS from '../css/harmony-slider.css';
 import { I18n } from '../harmony-i18n';
 import { injectGlobalCss } from '../utils/globalcss';
 import { HTMLHarmonyElement } from './harmony-element';
@@ -19,9 +20,9 @@ export class HTMLHarmonySliderElement extends HTMLHarmonyElement {
 	#value: [number, number] = [50, 50];
 	#isRange = false;
 
-	protected createElement() {
+	protected createElement(): void {
 		this.#shadowRoot = this.attachShadow({ mode: 'closed' });
-		shadowRootStyle(this.#shadowRoot, sliderCSS);
+		void shadowRootStyle(this.#shadowRoot, sliderCSS);
 		I18n.observeElement(this.#shadowRoot);
 
 		this.#htmlLabel = createElement('label', {
@@ -82,7 +83,7 @@ export class HTMLHarmonySliderElement extends HTMLHarmonyElement {
 		return max;
 	}
 
-	#setValue(min?: number, max?: number, initiator?: HTMLElement) {
+	#setValue(min?: number, max?: number, initiator?: HTMLElement): void {
 		//	 TODO: swap min/max
 
 		if (min !== undefined) {
@@ -107,15 +108,15 @@ export class HTMLHarmonySliderElement extends HTMLHarmonyElement {
 		}));
 	}
 
-	get value() {
+	get value(): number | [number, number] {
 		return this.#isRange ? this.#value : this.#value[0];
 	}
 
-	isRange() {
+	isRange(): boolean {
 		return this.#isRange;
 	}
 
-	setValue(value: number | Array<number>) {
+	setValue(value: number | number[]): void {
 		if (Array.isArray(value)) {
 			this.#setValue(value[0], value[1]);
 		} else {
@@ -127,7 +128,7 @@ export class HTMLHarmonySliderElement extends HTMLHarmonyElement {
 		}
 	}
 
-	protected onAttributeChanged(name: string, oldValue: string | null, newValue: string | null) {
+	protected onAttributeChanged(name: string, oldValue: string | null, newValue: string | null): void {
 		let step: number | undefined;
 		switch (name) {
 			case 'label':
@@ -150,7 +151,7 @@ export class HTMLHarmonySliderElement extends HTMLHarmonyElement {
 					break;
 				}
 
-				const value = JSON.parse(newValue);
+				const value = JSON.parse(newValue) as JSONObject;
 				if (Array.isArray(value)) {
 					this.setValue(value);
 				} else {
@@ -202,13 +203,13 @@ export class HTMLHarmonySliderElement extends HTMLHarmonyElement {
 		}
 	}
 
-	static get observedAttributes() {
+	static get observedAttributes(): string[] {
 		return super.observedAttributes.concat(['label', 'min', 'max', 'input-step', 'has-input', 'append-icon', 'prepend-icon', 'value']);
 	}
 }
 
 let definedSlider = false;
-export function defineHarmonySlider() {
+export function defineHarmonySlider(): void {
 	if (window.customElements && !definedSlider) {
 		customElements.define('harmony-slider', HTMLHarmonySliderElement);
 		definedSlider = true;

@@ -1,8 +1,16 @@
+import { HTMLHarmonyToggleButtonElement } from './browser';
 import { AddI18nElement, I18nDescriptor } from './harmony-i18n';
 import { ET } from './utils/create';
 import { getHelp } from './utils/help';
 
 export type CreateElementChildOption = Element | ShadowRoot | string | null | undefined;
+
+export type HarmonyEventListener = ((evt: Event) => void) |
+	((evt: MouseEvent) => void) |
+	((evt: WheelEvent) => void) |
+	((evt: PointerEvent) => void) |
+	((evt: KeyboardEvent) => void) |
+	((evt: CustomEvent) => void);
 
 export type CreateElementOptions = {
 	id?: string,
@@ -10,32 +18,35 @@ export type CreateElementOptions = {
 	i18n?: string | I18nDescriptor | null,
 	parent?: Element | ShadowRoot,
 	child?: CreateElementChildOption,
-	childs?: Array<CreateElementChildOption>,
-	events?: { [key: string]: any/*TODO: improve type*/, },
-	properties?: { [key: string]: any, },
+	childs?: CreateElementChildOption[],
+	events?: Record<string, HarmonyEventListener>,
+	properties?: Record<string, unknown>,
 	hidden?: boolean,
 	innerHTML?: string | null,
 	innerText?: string | null,
-	attributes?: { [key: string]: any, },
+	attributes?: Record<string, string>,
 	slot?: string,
 	htmlFor?: string,
 	adoptStyle?: string,
-	adoptStyles?: Array<string>,
+	adoptStyles?: string[],
 	adoptStyleSheet?: CSSStyleSheet,
-	adoptStyleSheets?: Array<CSSStyleSheet>,
+	adoptStyleSheets?: CSSStyleSheet[],
 	style?: string,
 	checked?: boolean,
 	disabled?: boolean,
 	help?: string,
 	value?: string,
 	elementCreated?: (element: Element, root?: ShadowRoot) => void,
-	[key: string]: any,
+	[key: string]: unknown,
+	[key: `$${string}`]: HarmonyEventListener,
 }
+
+export type CreateElementOptionValue = null | boolean | string | I18nDescriptor | EventListenerOrEventListenerObject | [] | Record<string, string>;
 
 export function createElement(tagName: string, options?: CreateElementOptions): HTMLElement {
 	const element = document.createElement(tagName);
 	createElementOptions(element, options);
-	ET.dispatchEvent(new CustomEvent('created', { detail: element }));
+	ET.dispatchEvent(new CustomEvent<HTMLElement>('created', { detail: element }));
 	return element;
 }
 
@@ -45,23 +56,23 @@ export function createElementNS(namespaceURI: string, tagName: string, options?:
 	return element;
 }
 
-export function createShadowRoot(tagName: string, options?: CreateElementOptions, mode: 'open' | 'closed' = 'closed') {
+export function createShadowRoot(tagName: string, options?: CreateElementOptions, mode: 'open' | 'closed' = 'closed'): ShadowRoot {
 	const element = document.createElement(tagName);
 	const shadowRoot = element.attachShadow({ mode: mode });
 	createElementOptions(element, options, shadowRoot);
 	return shadowRoot;
 }
 
-export function updateElement(element: HTMLElement | undefined, options: CreateElementOptions) {
+export function updateElement(element: HTMLElement | undefined, options: CreateElementOptions): HTMLElement | undefined {
 	if (!element) {
 		return;
 	}
 	createElementOptions(element, options);
-	ET.dispatchEvent(new CustomEvent('updated', { detail: element }));
+	ET.dispatchEvent(new CustomEvent<HTMLElement>('updated', { detail: element }));
 	return element;
 }
 
-function append(element: Element | ShadowRoot, child: CreateElementChildOption) {
+function append(element: Element | ShadowRoot, child: CreateElementChildOption): void {
 	if (child === null || child === undefined) {
 		return;
 	}
@@ -73,30 +84,26 @@ function append(element: Element | ShadowRoot, child: CreateElementChildOption) 
 	}
 }
 
-function createElementOptions(element: HTMLElement, options?: CreateElementOptions, shadowRoot?: ShadowRoot) {
+function createElementOptions(element: HTMLElement, options?: CreateElementOptions, shadowRoot?: ShadowRoot): void {
 	if (options) {
 		for (const optionName in options) {
-			const optionValue = options[optionName];
+			const optionValue = options[optionName] as CreateElementOptionValue;
 
 			if (optionName.startsWith('$')) {
 				const eventType = optionName.substring(1);
-				if (typeof optionValue === 'function') {
-					element.addEventListener(eventType, optionValue);
-				} else {
-					element.addEventListener(eventType, optionValue.listener, optionValue.options);
-				}
+				element.addEventListener(eventType, optionValue as EventListener);
 				continue;
 			}
 
 			switch (optionName) {
 				case 'id':
-					element.id = optionValue;
+					element.id = optionValue as string;
 					break;
 				case 'class':
-					element.classList.add(...optionValue.split(' ').filter((n: string) => n));
+					element.classList.add(...(optionValue as string).split(' ').filter((n: string) => n));
 					break;
 				case 'i18n':
-					AddI18nElement(element, optionValue);
+					AddI18nElement(element, optionValue as string | I18nDescriptor | null);
 					break;
 				case 'parent':
 					(optionValue as Element | ShadowRoot).append(element);
@@ -105,21 +112,18 @@ function createElementOptions(element: HTMLElement, options?: CreateElementOptio
 					append(shadowRoot ?? element, optionValue as CreateElementChildOption);
 					break;
 				case 'childs':
-					optionValue.forEach((entry: CreateElementChildOption) => append(shadowRoot ?? element, entry));
+					(optionValue as CreateElementChildOption[]).forEach((entry: CreateElementChildOption) => append(shadowRoot ?? element, entry));
 					break;
 				case 'events':
-					for (const eventType in optionValue) {
-						const eventParams = optionValue[eventType];
-						if (typeof eventParams === 'function') {
-							element.addEventListener(eventType, eventParams);
-						} else {
-							element.addEventListener(eventType, eventParams.listener, eventParams.options);
-						}
+					for (const eventType in optionValue as Record<string, EventListener>) {
+						const eventParams = (optionValue as Record<string, EventListener>)[eventType]!;
+						element.addEventListener(eventType, eventParams);
 					}
 					break;
 				case 'properties':
-					for (const name in optionValue) {
-						(element as any)[name] = optionValue[name];
+					for (const name in optionValue as Record<string, unknown>) {
+						// eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-member-access
+						(element as any)[name] = (optionValue as Record<string, unknown>)[name];
 					}
 					break;
 				case 'hidden':
@@ -128,51 +132,51 @@ function createElementOptions(element: HTMLElement, options?: CreateElementOptio
 					}
 					break;
 				case 'innerHTML':
-					element.innerHTML = optionValue ?? '';
+					element.innerHTML = (optionValue as string) ?? '';
 					break;
 				case 'innerText':
-					element.innerText = optionValue ?? '';
+					element.innerText = (optionValue as string) ?? '';
 					break;
 				case 'attributes':
-					for (const attributeName in optionValue) {
-						element.setAttribute(attributeName, optionValue[attributeName]);
+					for (const attributeName in optionValue as Record<string, string>) {
+						element.setAttribute(attributeName, (optionValue as Record<string, string>)[attributeName]!);
 					}
 					break;
 				case 'slot':
-					element.slot = optionValue;
+					element.slot = optionValue as string;
 					break;
 				case 'htmlFor':
-					(element as HTMLLabelElement).htmlFor = optionValue;
+					(element as HTMLLabelElement).htmlFor = optionValue as string;
 					break;
 				case 'adoptStyle':
-					adoptStyle(shadowRoot ?? element, optionValue);
+					void adoptStyle(shadowRoot ?? element, optionValue as string);
 					break;
 				case 'adoptStyles':
-					(optionValue ?? []).forEach((entry: string) => {
-						adoptStyle(shadowRoot ?? element, entry);
+					((optionValue as string[]) ?? []).forEach((entry: string) => {
+						void adoptStyle(shadowRoot ?? element, entry);
 					});
 					break;
 				case 'adoptStyleSheet':
-					adoptStyleSheet(shadowRoot ?? element, optionValue);
+					adoptStyleSheet(shadowRoot ?? element, optionValue as CSSStyleSheet);
 					break;
 				case 'adoptStyleSheets':
-					(optionValue ?? []).forEach((entry: CSSStyleSheet) => {
+					((optionValue as CSSStyleSheet[]) ?? []).forEach((entry: CSSStyleSheet) => {
 						adoptStyleSheet(shadowRoot ?? element, entry);
 					});
 					break;
 				case 'style':
-					element.style.cssText = optionValue;
+					element.style.cssText = optionValue as string;
 					break;
 				case 'checked':
-					(element as HTMLInputElement).checked = optionValue;
+					(element as HTMLInputElement).checked = optionValue as boolean;
 					break;
 				case 'help':
-					getHelp().addElement(element, optionValue);
+					getHelp().addElement(element, optionValue as string);
 					break;
 				case 'elementCreated':
 					break;
 				default:
-					element.setAttribute(optionName, optionValue);
+					element.setAttribute(optionName, optionValue as string);
 					break;
 			}
 		}
@@ -181,15 +185,15 @@ function createElementOptions(element: HTMLElement, options?: CreateElementOptio
 	}
 }
 
-async function adoptStyle(element: HTMLElement | Document | ShadowRoot, cssText: string) {
+async function adoptStyle(element: HTMLElement | Document | ShadowRoot, cssText: string): Promise<void> {
 	const sheet = new CSSStyleSheet;
 	await sheet.replace(cssText);
 	adoptStyleSheet(element, sheet);
 }
 
-async function adoptStyleSheet(element: HTMLElement | Document | ShadowRoot, sheet: CSSStyleSheet) {
-	if ((element as any).adoptStyleSheet) {
-		(element as any).adoptStyleSheet(sheet);
+function adoptStyleSheet(element: HTMLElement | Document | ShadowRoot, sheet: CSSStyleSheet): void {
+	if ((element as HTMLHarmonyToggleButtonElement).adoptStyleSheet) {
+		(element as HTMLHarmonyToggleButtonElement).adoptStyleSheet(sheet);
 	} else {
 		if ((element as Document).adoptedStyleSheets) {
 			(element as Document).adoptedStyleSheets.push(sheet);
@@ -197,7 +201,7 @@ async function adoptStyleSheet(element: HTMLElement | Document | ShadowRoot, she
 	}
 }
 
-export function display(htmlElement: HTMLElement | SVGElement | ShadowRoot | Array<HTMLElement | SVGElement | ShadowRoot> | undefined | null, visible: boolean) {
+export function display(htmlElement: HTMLElement | SVGElement | ShadowRoot | (HTMLElement | SVGElement | ShadowRoot)[] | undefined | null, visible: boolean): void {
 	if (Array.isArray(htmlElement)) {
 		for (const e of htmlElement) {
 			disp(e, visible);
@@ -207,7 +211,7 @@ export function display(htmlElement: HTMLElement | SVGElement | ShadowRoot | Arr
 	}
 }
 
-function disp(htmlElement: HTMLElement | SVGElement | ShadowRoot | undefined | null, visible: boolean) {
+function disp(htmlElement: HTMLElement | SVGElement | ShadowRoot | undefined | null, visible: boolean): void {
 	if (!htmlElement) {
 		return;
 	}
@@ -223,15 +227,15 @@ function disp(htmlElement: HTMLElement | SVGElement | ShadowRoot | undefined | n
 	}
 }
 
-export function show(htmlElement: HTMLElement | SVGElement | ShadowRoot | Array<HTMLElement | SVGElement | ShadowRoot> | undefined | null) {
+export function show(htmlElement: HTMLElement | SVGElement | ShadowRoot | (HTMLElement | SVGElement | ShadowRoot)[] | undefined | null): void {
 	display(htmlElement, true);
 }
 
-export function hide(htmlElement: HTMLElement | SVGElement | ShadowRoot | Array<HTMLElement | SVGElement | ShadowRoot> | undefined | null) {
+export function hide(htmlElement: HTMLElement | SVGElement | ShadowRoot | (HTMLElement | SVGElement | ShadowRoot)[] | undefined | null): void {
 	display(htmlElement, false);
 }
 
-export function toggle(htmlElement: HTMLElement | SVGElement | ShadowRoot | undefined | null) {
+export function toggle(htmlElement: HTMLElement | SVGElement | ShadowRoot | undefined | null): void {
 	if (!htmlElement) {
 		return;
 	}
@@ -247,12 +251,12 @@ export function toggle(htmlElement: HTMLElement | SVGElement | ShadowRoot | unde
 	}
 }
 
-export function isVisible(htmlElement: HTMLElement) {
+export function isVisible(htmlElement: HTMLElement): boolean {
 	return htmlElement.style.display == ''
 }
 
 export const visible = isVisible;
 
-export function styleInject(css: string) {
+export function styleInject(css: string): void {
 	document.head.append(createElement('style', { textContent: css }));
 }
