@@ -341,7 +341,7 @@ export declare class HTMLHarmonySelectElement extends HTMLElement {
 export declare class HTMLHarmonySliderElement extends HTMLHarmonyElement {
     #private;
     protected createElement(): void;
-    get value(): number | number[];
+    get value(): number | [number, number];
     isRange(): boolean;
     setValue(value: number | Array<number>): void;
     protected onAttributeChanged(name: string, oldValue: string | null, newValue: string | null): void;
@@ -359,7 +359,7 @@ export declare class HTMLHarmonySlideshowElement extends HTMLElement {
     addImage(htmlImage: HTMLImageElement): void;
     removeAllImages(): void;
     refresh(): void;
-    set active(htmlImage: HTMLImageElement);
+    set active(htmlImage: HTMLImageElement | undefined);
     set dynamic(dynamic: boolean);
     setAutoPlay(autoPlay: boolean): void;
     play(autoPlay?: boolean): void;

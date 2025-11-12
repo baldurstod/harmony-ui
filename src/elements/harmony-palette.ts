@@ -175,9 +175,9 @@ export class HTMLHarmonyPaletteElement extends HTMLElement {
 				b = (c & 0xFF) / 255;
 				break;
 			case Array.isArray(color):
-				r = clampColor(color[0]);
-				g = clampColor(color[1]);
-				b = clampColor(color[2]);
+				r = clampColor(color[0] ?? 0);
+				g = clampColor(color[1] ?? 0);
+				b = clampColor(color[2] ?? 0);
 				break;
 		}
 		return { r: r, g: g, b: b, h: '#' + Number((r * 255 << 16) + (g * 255 << 8) + (b * 255)).toString(16).padStart(6, '0') };

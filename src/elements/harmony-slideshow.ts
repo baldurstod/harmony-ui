@@ -243,7 +243,7 @@ export class HTMLHarmonySlideshowElement extends HTMLElement {
 		list.forEach(element => this.addImage(element));
 	}
 
-	set active(htmlImage: HTMLImageElement) {
+	set active(htmlImage: HTMLImageElement | undefined) {
 		if (htmlImage) {
 			this.#activeImage = htmlImage;
 			this.refresh();

@@ -68,10 +68,10 @@ export type ManipulatorUpdatedEventData = {
 	bottomRight: v2,
 };
 
-const CORNERS = [[-1, -1], [1, -1], [-1, 1], [1, 1]];
-const SCALE_CORNERS = [[-1, -1], [1, -1], [-1, 1], [1, 1]];
-const SIDES = [[0.5, 0], [0.5, 1], [0, 0.5], [1, 0.5]];
-const SCALE_SIDES = [[0, 1], [0, 1], [1, 0], [1, 0]];
+const CORNERS: [[number, number], [number, number], [number, number], [number, number]] = [[-1, -1], [1, -1], [-1, 1], [1, 1]];
+const SCALE_CORNERS: [[number, number], [number, number], [number, number], [number, number]] = [[-1, -1], [1, -1], [-1, 1], [1, 1]];
+const SIDES: [[number, number], [number, number], [number, number], [number, number]] = [[0.5, 0], [0.5, 1], [0, 0.5], [1, 0.5]];
+const SCALE_SIDES: [[number, number], [number, number], [number, number], [number, number]] = [[0, 1], [0, 1], [1, 0], [1, 0]];
 const SNAP_POSITION = 20;// Pixels
 const SNAP_ROTATION = 15;// Degrees
 
@@ -86,6 +86,8 @@ export enum ManipulatorCorner {
 	BottomRight = 3,
 }
 
+type DefinedManipulatorCorner = ManipulatorCorner.TopLeft | ManipulatorCorner.TopRight | ManipulatorCorner.BottomLeft | ManipulatorCorner.BottomRight;
+
 export enum ManipulatorSide {
 	None = -1,
 	Top = 0,
@@ -93,6 +95,8 @@ export enum ManipulatorSide {
 	Left = 2,
 	Right = 3,
 }
+
+type DefinedManipulatorSide = ManipulatorSide.Top | ManipulatorSide.Bottom | ManipulatorSide.Left | ManipulatorSide.Right;
 
 export enum ManipulatorResizeOrigin {
 	OppositeCorner = 0,
@@ -134,7 +138,7 @@ export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 	#startLeft: number = 0;
 	#startCenter: v2 = { x: 0, y: 0 };
 	#startRotationCenter: v2 = { x: 0, y: 0 };
-	#startCorners: Array<v2> = [];
+	readonly #startCorners: [v2, v2, v2, v2] = [{ x: 0, y: 0 }, { x: 0, y: 0 }, { x: 0, y: 0 }, { x: 0, y: 0 }];
 	#c0_x: number = 0;
 	#c0_y: number = 0;
 	#qp0_x: number = 0;
@@ -266,7 +270,7 @@ export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 			return;
 		}
 
-		this.#htmlScaleCorners[this.#dragCorner].classList.remove('grabbing');
+		this.#htmlScaleCorners[this.#dragCorner]?.classList.remove('grabbing');
 		this.classList.remove('grabbing');
 		this.#dragCorner = ManipulatorCorner.None;
 	}
@@ -276,7 +280,7 @@ export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 			return;
 		}
 
-		this.#htmlResizeSides[this.#dragSide].classList.remove('grabbing');
+		this.#htmlResizeSides[this.#dragSide]?.classList.remove('grabbing');
 		this.classList.remove('grabbing');
 		this.#dragSide = ManipulatorSide.None;
 	}
@@ -305,7 +309,7 @@ export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 		if (this.#dragging) {
 			return;
 		}
-		this.#htmlScaleCorners[i].classList.add('grabbing');
+		this.#htmlScaleCorners[i]?.classList.add('grabbing');
 		this.classList.add('grabbing');
 
 		this.#dragging = true;
@@ -317,7 +321,7 @@ export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 		if (this.#dragging) {
 			return;
 		}
-		this.#htmlResizeSides[i].classList.add('grabbing');
+		this.#htmlResizeSides[i]?.classList.add('grabbing');
 		this.classList.add('grabbing');
 
 		this.#dragging = true;
@@ -422,7 +426,7 @@ export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 		if (i < 0 || i >= 4) {
 			return { x: 0, y: 0 };
 		}
-		const c = CORNERS[i];
+		const c = CORNERS[i as DefinedManipulatorCorner];
 		const x = c[0] * this.#width * 0.5;
 		const y = c[1] * this.#height * 0.5;
 
@@ -502,17 +506,21 @@ export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 
 
 		for (let i = 0; i < 4; i++) {
-			const c = CORNERS[i];
+			const c = CORNERS[i]!;
 			const htmlCorner = this.#htmlScaleCorners[i];
-			htmlCorner.style.left = `${(c[0] == -1 ? 0 : 1) * width}px`;
-			htmlCorner.style.top = `${(c[1] == -1 ? 0 : 1) * height}px`;
+			if (htmlCorner) {
+				htmlCorner.style.left = `${(c[0] == -1 ? 0 : 1) * width}px`;
+				htmlCorner.style.top = `${(c[1] == -1 ? 0 : 1) * height}px`;
+			}
 		}
 
 		for (let i = 0; i < 4; i++) {
-			const s = SIDES[i];
+			const s = SIDES[i]!;
 			const htmlSide = this.#htmlResizeSides[i];
-			htmlSide.style.left = `${s[0] * width}px`;
-			htmlSide.style.top = `${s[1] * height}px`;
+			if (htmlSide) {
+				htmlSide.style.left = `${s[0] * width}px`;
+				htmlSide.style.top = `${s[1] * height}px`;
+			}
 		}
 
 		if (this.#htmlRotator) {
@@ -601,7 +609,7 @@ export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 			const br = this.#startCorners[ManipulatorCorner.BottomRight];
 			const startCenter: v2 = { x: (tl.x + br.x) * 0.5, y: (tl.y + br.y) * 0.5 };
 
-			const v: v2 = { x: this.#startCorners[this.#dragCorner].x - startCenter.x, y: this.#startCorners[this.#dragCorner].y - startCenter.y };
+			const v: v2 = { x: this.#startCorners[this.#dragCorner as DefinedManipulatorCorner].x - startCenter.x, y: this.#startCorners[this.#dragCorner as DefinedManipulatorCorner].y - startCenter.y };
 			const norm = Math.sqrt(v.x * v.x + v.y * v.y);
 			v.x = v.x / norm * (this.#startWidth < 0 ? -1 : 1);
 			v.y = v.y / norm * (this.#startHeight < 0 ? -1 : 1);
@@ -612,7 +620,7 @@ export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 		}
 
 		if (this.#dragSide > ManipulatorSide.None) {
-			const c = SCALE_SIDES[this.#dragSide];
+			const c = SCALE_SIDES[this.#dragSide as DefinedManipulatorSide];
 			const v = { x: c[0] * Math.cos(this.#rotation) - c[1] * Math.sin(this.#rotation), y: c[0] * Math.sin(this.#rotation) + c[1] * Math.cos(this.#rotation) }
 			const d = dot(delta, v);
 			delta.x = v.x * d;
@@ -734,7 +742,7 @@ export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 			if (oppositeCorner != ManipulatorCorner.None) {
 				const startCorner = this.#startCorners[oppositeCorner];
 
-				const c = CORNERS[this.#dragCorner];
+				const c = CORNERS[this.#dragCorner as DefinedManipulatorCorner];
 				const x = c[0] * (this.#startWidth + deltaWidth) * 0.5;
 				const y = c[1] * (this.#startHeight + deltaHeight) * 0.5;
 

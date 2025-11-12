@@ -135,7 +135,7 @@ export class TreeItem {
 			let current = top;
 			let parent = root;
 			for (let i = 0, l = segments.length; i < l; i++) {
-				const s = segments[i];
+				const s = segments[i]!;
 				if (s == '') {
 					continue;
 				}

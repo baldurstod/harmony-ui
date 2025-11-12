@@ -124,7 +124,7 @@ export class HTMLHarmonyMenuElement extends HTMLElement {
 			}
 		} else {
 			for (const itemId in items) {
-				const item = items[itemId];
+				const item = items[itemId]!;
 				this.#shadowRoot.append(this.addItem(item, userData));
 			}
 		}
@@ -183,7 +183,7 @@ export class HTMLHarmonyMenuElement extends HTMLElement {
 					}
 				} else {
 					for (const subItemName in item.submenu) {
-						const subItem = item.submenu[subItemName];
+						const subItem = item.submenu[subItemName]!;
 						htmlSubMenu.append(this.addItem(subItem, userData));
 						++subItems;
 					}

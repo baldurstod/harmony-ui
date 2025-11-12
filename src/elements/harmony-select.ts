@@ -58,7 +58,7 @@ export class HTMLHarmonySelectElement extends HTMLElement {
 		const list = this.#htmlSelect.children;
 		for (let i = 0; i < list.length; i++) {
 			if ((list[i] as HTMLOptionElement).value === value) {
-				list[i].remove();
+				list[i]!.remove();
 			}
 		}
 	}

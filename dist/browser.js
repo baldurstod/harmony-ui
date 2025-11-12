@@ -667,7 +667,7 @@ class HTMLHarmony2dManipulatorElement extends HTMLElement {
     #startLeft = 0;
     #startCenter = { x: 0, y: 0 };
     #startRotationCenter = { x: 0, y: 0 };
-    #startCorners = [];
+    #startCorners = [{ x: 0, y: 0 }, { x: 0, y: 0 }, { x: 0, y: 0 }, { x: 0, y: 0 }];
     #c0_x = 0;
     #c0_y = 0;
     #qp0_x = 0;
@@ -785,7 +785,7 @@ class HTMLHarmony2dManipulatorElement extends HTMLElement {
         if (this.#dragCorner < 0) {
             return;
         }
-        this.#htmlScaleCorners[this.#dragCorner].classList.remove('grabbing');
+        this.#htmlScaleCorners[this.#dragCorner]?.classList.remove('grabbing');
         this.classList.remove('grabbing');
         this.#dragCorner = ManipulatorCorner.None;
     }
@@ -793,7 +793,7 @@ class HTMLHarmony2dManipulatorElement extends HTMLElement {
         if (this.#dragSide < 0) {
             return;
         }
-        this.#htmlResizeSides[this.#dragSide].classList.remove('grabbing');
+        this.#htmlResizeSides[this.#dragSide]?.classList.remove('grabbing');
         this.classList.remove('grabbing');
         this.#dragSide = ManipulatorSide.None;
     }
@@ -819,7 +819,7 @@ class HTMLHarmony2dManipulatorElement extends HTMLElement {
         if (this.#dragging) {
             return;
         }
-        this.#htmlScaleCorners[i].classList.add('grabbing');
+        this.#htmlScaleCorners[i]?.classList.add('grabbing');
         this.classList.add('grabbing');
         this.#dragging = true;
         this.#dragCorner = i;
@@ -829,7 +829,7 @@ class HTMLHarmony2dManipulatorElement extends HTMLElement {
         if (this.#dragging) {
             return;
         }
-        this.#htmlResizeSides[i].classList.add('grabbing');
+        this.#htmlResizeSides[i]?.classList.add('grabbing');
         this.classList.add('grabbing');
         this.#dragging = true;
         this.#dragSide = i;
@@ -987,14 +987,18 @@ class HTMLHarmony2dManipulatorElement extends HTMLElement {
         for (let i = 0; i < 4; i++) {
             const c = CORNERS[i];
             const htmlCorner = this.#htmlScaleCorners[i];
-            htmlCorner.style.left = `${(c[0] == -1 ? 0 : 1) * width}px`;
-            htmlCorner.style.top = `${(c[1] == -1 ? 0 : 1) * height}px`;
+            if (htmlCorner) {
+                htmlCorner.style.left = `${(c[0] == -1 ? 0 : 1) * width}px`;
+                htmlCorner.style.top = `${(c[1] == -1 ? 0 : 1) * height}px`;
+            }
         }
         for (let i = 0; i < 4; i++) {
             const s = SIDES[i];
             const htmlSide = this.#htmlResizeSides[i];
-            htmlSide.style.left = `${s[0] * width}px`;
-            htmlSide.style.top = `${s[1] * height}px`;
+            if (htmlSide) {
+                htmlSide.style.left = `${s[0] * width}px`;
+                htmlSide.style.top = `${s[1] * height}px`;
+            }
         }
         if (this.#htmlRotator) {
             this.#htmlRotator.style.left = `${0.5 * width}px`;
@@ -2859,9 +2863,9 @@ class HTMLHarmonyPaletteElement extends HTMLElement {
                 b = (c & 0xFF) / 255;
                 break;
             case Array.isArray(color):
-                r = clampColor(color[0]);
-                g = clampColor(color[1]);
-                b = clampColor(color[2]);
+                r = clampColor(color[0] ?? 0);
+                g = clampColor(color[1] ?? 0);
+                b = clampColor(color[2] ?? 0);
                 break;
         }
         return { r: r, g: g, b: b, h: '#' + Number((r * 255 << 16) + (g * 255 << 8) + (b * 255)).toString(16).padStart(6, '0') };
@@ -4091,7 +4095,7 @@ class HTMLHarmonySliderElement extends HTMLHarmonyElement {
             type: 'number',
             hidden: true,
             parent: this.#shadowRoot,
-            value: 50,
+            value: String(50),
             step: 'any',
             min: 0,
             max: 1000,

@@ -16,7 +16,7 @@ export class HTMLHarmonySliderElement extends HTMLHarmonyElement {
 	#htmlAppendIcon?: HTMLImageElement;
 	#min = 0;
 	#max = 100;
-	#value: Array<number> = [50, 50];
+	#value: [number, number] = [50, 50];
 	#isRange = false;
 
 	protected createElement() {
@@ -59,7 +59,7 @@ export class HTMLHarmonySliderElement extends HTMLHarmonyElement {
 			type: 'number',
 			hidden: true,
 			parent: this.#shadowRoot,
-			value: 50,
+			value: String(50),
 			step: 'any',
 			min: 0,
 			max: 1000,
