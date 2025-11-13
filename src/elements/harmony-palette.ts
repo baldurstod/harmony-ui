@@ -17,6 +17,10 @@ export type PaletteColor = {
 	h: string;
 }
 
+export type HarmonyPaletteSelectEventData = {
+	hex: string;
+};
+
 export class HTMLHarmonyPaletteElement extends HTMLElement {
 	#initialized = false;
 	#multiple = false;
@@ -126,7 +130,7 @@ export class HTMLHarmonyPaletteElement extends HTMLElement {
 	}
 
 	#dispatchSelect(hex: string, selected: boolean): void {
-		this.dispatchEvent(new CustomEvent(selected ? 'select' : 'unselect', { detail: { hex: hex } }));
+		this.dispatchEvent(new CustomEvent<HarmonyPaletteSelectEventData>(selected ? 'select' : 'unselect', { detail: { hex: hex } }));
 	}
 
 	clearColors(): void {

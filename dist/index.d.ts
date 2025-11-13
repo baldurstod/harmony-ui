@@ -113,6 +113,10 @@ export declare type HarmonyMenuItemsArray = HarmonyMenuItem[];
 
 export declare type HarmonyMenuItemsDict = Record<string, HarmonyMenuItem | null>;
 
+export declare type HarmonyPaletteSelectEventData = {
+    hex: string;
+};
+
 export declare type HarmonySlideshowOptions = {
     autoPlay?: boolean;
     autoPlayDelay?: number;
