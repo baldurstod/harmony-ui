@@ -342,22 +342,8 @@ export class HTMLHarmonySlideshowElement extends HTMLElement {
 					const mouseX = event.offsetX / activeImage.offsetWidth - 0.5;
 					const mouseY = event.offsetY / activeImage.offsetHeight - 0.5;
 
-					/*if (deltaWidth >= 0) {
-						this.#htmlZoomImage.style.left = `${-mouseX * deltaWidth}px`;
-					} else {
-
-					}
-					if (deltaHeight >= 0) {
-						this.#htmlZoomImage.style.top = `${-mouseY * deltaHeight}px`;
-					}*/
-					//console.log(deltaWidth, deltaHeight);
-					//console.log(mouseX, mouseY);
-
-
-
 					this.#htmlZoomImage.style.left = `${deltaWidth * 0.5 - Math.sign(deltaWidth) * mouseX * deltaWidth}px`;
 					this.#htmlZoomImage.style.top = `${deltaHeight * 0.5 - Math.sign(deltaHeight) * mouseY * deltaHeight}px`;
-
 				}
 				break;
 			case 'mouseout':
