@@ -3447,6 +3447,7 @@ class HTMLHarmonyRadioElement extends HTMLElement {
         }
     }
     select(value, select = true) {
+        const previouslySelected = this.#selected.has((value));
         this.#selected[select ? 'add' : 'delete'](value);
         const htmlButton = this.#buttons.get(value);
         if (htmlButton) {
@@ -3470,8 +3471,10 @@ class HTMLHarmonyRadioElement extends HTMLElement {
             else {
                 htmlButton.removeAttribute('selected');
             }
-            this.dispatchEvent(new CustomEvent('change', { detail: { value: htmlButton.value, state: select } }));
-            htmlButton.dispatchEvent(new CustomEvent('change', { detail: { value: htmlButton.value, state: select } }));
+            if (previouslySelected != select) {
+                this.dispatchEvent(new CustomEvent('change', { detail: { value: htmlButton.value, state: select } }));
+                htmlButton.dispatchEvent(new CustomEvent('change', { detail: { value: htmlButton.value, state: select } }));
+            }
         }
     }
     isSelected(value) {
@@ -3844,16 +3847,6 @@ class HTMLHarmonySlideshowElement extends HTMLElement {
                     const deltaHeight = this.#zoomShadowRoot.host.clientHeight - this.#htmlZoomImage.clientHeight;
                     const mouseX = event.offsetX / activeImage.offsetWidth - 0.5;
                     const mouseY = event.offsetY / activeImage.offsetHeight - 0.5;
-                    /*if (deltaWidth >= 0) {
-                        this.#htmlZoomImage.style.left = `${-mouseX * deltaWidth}px`;
-                    } else {
-
-                    }
-                    if (deltaHeight >= 0) {
-                        this.#htmlZoomImage.style.top = `${-mouseY * deltaHeight}px`;
-                    }*/
-                    //console.log(deltaWidth, deltaHeight);
-                    //console.log(mouseX, mouseY);
                     this.#htmlZoomImage.style.left = `${deltaWidth * 0.5 - Math.sign(deltaWidth) * mouseX * deltaWidth}px`;
                     this.#htmlZoomImage.style.top = `${deltaHeight * 0.5 - Math.sign(deltaHeight) * mouseY * deltaHeight}px`;
                 }

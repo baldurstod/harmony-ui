@@ -63,6 +63,7 @@ export class HTMLHarmonyRadioElement extends HTMLElement {
 	}
 
 	select(value: string, select = true): void {
+		const previouslySelected = this.#selected.has((value));
 		this.#selected[select ? 'add' : 'delete'](value);
 
 		const htmlButton = this.#buttons.get(value);
@@ -88,8 +89,11 @@ export class HTMLHarmonyRadioElement extends HTMLElement {
 			} else {
 				htmlButton.removeAttribute('selected');
 			}
-			this.dispatchEvent(new CustomEvent<RadioChangedEventData>('change', { detail: { value: htmlButton.value, state: select } }));
-			htmlButton.dispatchEvent(new CustomEvent<RadioChangedEventData>('change', { detail: { value: htmlButton.value, state: select } }));
+
+			if (previouslySelected != select) {
+				this.dispatchEvent(new CustomEvent<RadioChangedEventData>('change', { detail: { value: htmlButton.value, state: select } }));
+				htmlButton.dispatchEvent(new CustomEvent<RadioChangedEventData>('change', { detail: { value: htmlButton.value, state: select } }));
+			}
 		}
 	}
 
