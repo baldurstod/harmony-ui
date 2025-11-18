@@ -2936,7 +2936,7 @@ class HTMLHarmonyRadioElement extends HTMLElement {
             if (select) {
                 if (!this.#multiple) {
                     for (const child of this.children) {
-                        if (child.hasAttribute('selected')) {
+                        if (child != htmlButton && child.hasAttribute('selected')) {
                             child.removeAttribute('selected');
                             this.#selected.delete(child.value);
                             this.dispatchEvent(new CustomEvent('change', { detail: { value: child.value, state: false } }));
