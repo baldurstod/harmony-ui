@@ -2159,6 +2159,76 @@ function defineHarmonyFileInput() {
     }
 }
 
+var infoBoxCSS = ":host {\n\tdisplay: flex;\n\tpadding: 0.5rem;\n}\n\n:host-context(.ok) {\n\tbackground-color: green;\n}\n\n:host-context(.warning) {\n\tbackground-color: orange;\n}\n\n:host-context(.error) {\n\tbackground-color: red;\n}\n";
+
+var HTMLHarmonyInfoBoxElementType;
+(function (HTMLHarmonyInfoBoxElementType) {
+    HTMLHarmonyInfoBoxElementType["Ok"] = "ok";
+    HTMLHarmonyInfoBoxElementType["Warning"] = "warning";
+    HTMLHarmonyInfoBoxElementType["Error"] = "error";
+})(HTMLHarmonyInfoBoxElementType || (HTMLHarmonyInfoBoxElementType = {}));
+class HTMLHarmonyInfoBoxElement extends HTMLElement {
+    #doOnce = false;
+    #shadowRoot;
+    //#htmlHeader: HTMLElement;
+    #htmlContent;
+    #type = HTMLHarmonyInfoBoxElementType.Ok;
+    constructor() {
+        super();
+        this.#shadowRoot = this.attachShadow({ mode: 'closed' });
+        void shadowRootStyle(this.#shadowRoot, infoBoxCSS);
+        this.#setClass();
+        //this.#htmlHeader = createElement('div', { parent: this.#shadowRoot, hidden: true });
+        this.#htmlContent = createElement('div');
+    }
+    #setClass() {
+        this.#shadowRoot.host.classList.remove('ok', 'warning', 'error');
+        this.#shadowRoot.host.classList.add(this.#type);
+    }
+    connectedCallback() {
+        if (!this.#doOnce) {
+            this.#doOnce = true;
+            this.#processChilds();
+            this.#shadowRoot.append(this.#htmlContent);
+        }
+    }
+    #processChilds() {
+        for (const child of this.childNodes) {
+            this.#htmlContent.append(child);
+        }
+    }
+    attributeChangedCallback(name, oldValue, newValue) {
+        switch (name) {
+            case 'i18n':
+                updateElement(this.#htmlContent, {
+                    i18n: newValue,
+                });
+                break;
+            case 'type':
+                switch (newValue) {
+                    case HTMLHarmonyInfoBoxElementType.Ok:
+                    case HTMLHarmonyInfoBoxElementType.Warning:
+                    case HTMLHarmonyInfoBoxElementType.Error:
+                        this.#type = newValue;
+                        this.#setClass();
+                        break;
+                }
+                break;
+        }
+    }
+    static get observedAttributes() {
+        return ['i18n', 'type'];
+    }
+}
+let definedInfoBox = false;
+function defineHarmonyInfoBox() {
+    if (window.customElements && !definedInfoBox) {
+        customElements.define('harmony-info-box', HTMLHarmonyInfoBoxElement);
+        definedInfoBox = true;
+        injectGlobalCss();
+    }
+}
+
 var labelPropertyCSS = ":host {\n\tdisplay: flex;\n\tgap: var(--harmony-label-property-gap, 0.5);\n}\n";
 
 class HTMLHarmonyLabelPropertyElement extends HTMLElement {
@@ -4739,4 +4809,4 @@ function defineHarmonyTree() {
     }
 }
 
-export { AddI18nElement, HTMLHarmony2dManipulatorElement, HTMLHarmonyAccordionElement, HTMLHarmonyCircularProgressElement, HTMLHarmonyColorPickerElement, HTMLHarmonyCopyElement, HTMLHarmonyFileInputElement, HTMLHarmonyItemElement, HTMLHarmonyLabelPropertyElement, HTMLHarmonyMenuElement, HTMLHarmonyPaletteElement, HTMLHarmonyPanelElement, HTMLHarmonyRadioElement, HTMLHarmonySelectElement, HTMLHarmonySliderElement, HTMLHarmonySlideshowElement, HTMLHarmonySplitterElement, HTMLHarmonySwitchElement, HTMLHarmonyTabElement, HTMLHarmonyTabGroupElement, HTMLHarmonyToggleButtonElement, HTMLHarmonyTooltipElement, HTMLHarmonyTreeElement, I18n, I18nElements, I18nEvents, ManipulatorCorner, ManipulatorDirection, ManipulatorResizeOrigin, ManipulatorSide, ManipulatorUpdatedEventType, TreeItem, TreeItemKind, cloneEvent, createElement, createElementNS, createShadowRoot, defineHarmony2dManipulator, defineHarmonyAccordion, defineHarmonyCircularProgress, defineHarmonyColorPicker, defineHarmonyCopy, defineHarmonyFileInput, defineHarmonyItem, defineHarmonyLabelProperty, defineHarmonyMenu, defineHarmonyPalette, defineHarmonyPanel, defineHarmonyRadio, defineHarmonySelect, defineHarmonySlider, defineHarmonySlideshow, defineHarmonySplitter, defineHarmonySwitch, defineHarmonyTab, defineHarmonyTabGroup, defineHarmonyToggleButton, defineHarmonyTooltip, defineHarmonyTree, display, documentStyle, documentStyleSync, hide, isVisible, shadowRootStyle, shadowRootStyleSync, show, styleInject, toggle, updateElement, visible };
+export { AddI18nElement, HTMLHarmony2dManipulatorElement, HTMLHarmonyAccordionElement, HTMLHarmonyCircularProgressElement, HTMLHarmonyColorPickerElement, HTMLHarmonyCopyElement, HTMLHarmonyFileInputElement, HTMLHarmonyInfoBoxElement, HTMLHarmonyInfoBoxElementType, HTMLHarmonyItemElement, HTMLHarmonyLabelPropertyElement, HTMLHarmonyMenuElement, HTMLHarmonyPaletteElement, HTMLHarmonyPanelElement, HTMLHarmonyRadioElement, HTMLHarmonySelectElement, HTMLHarmonySliderElement, HTMLHarmonySlideshowElement, HTMLHarmonySplitterElement, HTMLHarmonySwitchElement, HTMLHarmonyTabElement, HTMLHarmonyTabGroupElement, HTMLHarmonyToggleButtonElement, HTMLHarmonyTooltipElement, HTMLHarmonyTreeElement, I18n, I18nElements, I18nEvents, ManipulatorCorner, ManipulatorDirection, ManipulatorResizeOrigin, ManipulatorSide, ManipulatorUpdatedEventType, TreeItem, TreeItemKind, cloneEvent, createElement, createElementNS, createShadowRoot, defineHarmony2dManipulator, defineHarmonyAccordion, defineHarmonyCircularProgress, defineHarmonyColorPicker, defineHarmonyCopy, defineHarmonyFileInput, defineHarmonyInfoBox, defineHarmonyItem, defineHarmonyLabelProperty, defineHarmonyMenu, defineHarmonyPalette, defineHarmonyPanel, defineHarmonyRadio, defineHarmonySelect, defineHarmonySlider, defineHarmonySlideshow, defineHarmonySplitter, defineHarmonySwitch, defineHarmonyTab, defineHarmonyTabGroup, defineHarmonyToggleButton, defineHarmonyTooltip, defineHarmonyTree, display, documentStyle, documentStyleSync, hide, isVisible, shadowRootStyle, shadowRootStyleSync, show, styleInject, toggle, updateElement, visible };

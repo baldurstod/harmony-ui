@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<title>Test info box</title>
+	<link href="./assets/css/examples.css" rel="stylesheet">
+	</link>
+</head>
+
+<body>
+	<harmony-info-box i18n="#ok_message"></harmony-info-box>
+	<harmony-info-box type="warning" i18n="#warning_message"></harmony-info-box>
+	<harmony-info-box type="error" i18n="#error_message"></harmony-info-box>
+</body>
+<script type="module">
+	import { defineHarmonyInfoBox, I18n } from '../dist/browser.js';
+	I18n.start();
+	defineHarmonyInfoBox();
+</script>
+
+</html>

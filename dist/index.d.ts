@@ -56,6 +56,8 @@ export declare function defineHarmonyCopy(): void;
 
 export declare function defineHarmonyFileInput(): void;
 
+export declare function defineHarmonyInfoBox(): void;
+
 export declare function defineHarmonyItem(): void;
 
 export declare function defineHarmonyLabelProperty(): void;
@@ -227,6 +229,20 @@ export declare class HTMLHarmonyFileInputElement extends HTMLElement {
     adoptStyleSheet(styleSheet: CSSStyleSheet): void;
     attributeChangedCallback(name: string, oldValue: string, newValue: string): void;
     static get observedAttributes(): string[];
+}
+
+export declare class HTMLHarmonyInfoBoxElement extends HTMLElement {
+    #private;
+    constructor();
+    connectedCallback(): void;
+    attributeChangedCallback(name: string, oldValue: string, newValue: string): void;
+    static get observedAttributes(): string[];
+}
+
+export declare enum HTMLHarmonyInfoBoxElementType {
+    Ok = "ok",
+    Warning = "warning",
+    Error = "error"
 }
 
 export declare class HTMLHarmonyItemElement extends HTMLElement {

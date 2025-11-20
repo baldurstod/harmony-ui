@@ -1,0 +1,16 @@
+:host {
+	display: flex;
+	padding: 0.5rem;
+}
+
+:host-context(.ok) {
+	background-color: green;
+}
+
+:host-context(.warning) {
+	background-color: orange;
+}
+
+:host-context(.error) {
+	background-color: red;
+}
