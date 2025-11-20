@@ -20,7 +20,6 @@ export class HTMLHarmonyInfoBoxElement extends HTMLElement {
 		super();
 		this.#shadowRoot = this.attachShadow({ mode: 'closed' });
 		void shadowRootStyle(this.#shadowRoot, infoBoxCSS);
-		this.#setClass();
 		//this.#htmlHeader = createElement('div', { parent: this.#shadowRoot, hidden: true });
 		this.#htmlContent = createElement('div');
 	}
@@ -33,6 +32,7 @@ export class HTMLHarmonyInfoBoxElement extends HTMLElement {
 	connectedCallback(): void {
 		if (!this.#doOnce) {
 			this.#doOnce = true;
+			this.#setClass();
 			this.#processChilds();
 			this.#shadowRoot.append(this.#htmlContent);
 		}

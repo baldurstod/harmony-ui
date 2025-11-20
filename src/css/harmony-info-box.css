@@ -8,9 +8,11 @@
 }
 
 :host-context(.warning) {
-	background-color: orange;
+	background-color: #413c26;
+	color: #D3A247;
 }
 
 :host-context(.error) {
-	background-color: red;
+	background-color: #4E3534;
+	color: red;
 }

@@ -2159,7 +2159,7 @@ function defineHarmonyFileInput() {
     }
 }
 
-var infoBoxCSS = ":host {\n\tdisplay: flex;\n\tpadding: 0.5rem;\n}\n\n:host-context(.ok) {\n\tbackground-color: green;\n}\n\n:host-context(.warning) {\n\tbackground-color: orange;\n}\n\n:host-context(.error) {\n\tbackground-color: red;\n}\n";
+var infoBoxCSS = ":host {\n\tdisplay: flex;\n\tpadding: 0.5rem;\n}\n\n:host-context(.ok) {\n\tbackground-color: green;\n}\n\n:host-context(.warning) {\n\tbackground-color: #413c26;\n\tcolor: #D3A247;\n}\n\n:host-context(.error) {\n\tbackground-color: #4E3534;\n\tcolor: red;\n}\n";
 
 var HTMLHarmonyInfoBoxElementType;
 (function (HTMLHarmonyInfoBoxElementType) {
@@ -2177,7 +2177,6 @@ class HTMLHarmonyInfoBoxElement extends HTMLElement {
         super();
         this.#shadowRoot = this.attachShadow({ mode: 'closed' });
         void shadowRootStyle(this.#shadowRoot, infoBoxCSS);
-        this.#setClass();
         //this.#htmlHeader = createElement('div', { parent: this.#shadowRoot, hidden: true });
         this.#htmlContent = createElement('div');
     }
@@ -2188,6 +2187,7 @@ class HTMLHarmonyInfoBoxElement extends HTMLElement {
     connectedCallback() {
         if (!this.#doOnce) {
             this.#doOnce = true;
+            this.#setClass();
             this.#processChilds();
             this.#shadowRoot.append(this.#htmlContent);
         }
