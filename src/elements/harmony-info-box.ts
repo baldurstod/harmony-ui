@@ -39,9 +39,12 @@ export class HTMLHarmonyInfoBoxElement extends HTMLElement {
 	}
 
 	#processChilds(): void {
+		//This is a 2 steps process cause we may change DOM
+		const list: HTMLImageElement[] = [];
 		for (const child of this.childNodes) {
-			this.#htmlContent.append(child);
+			list.push(child as HTMLImageElement);
 		}
+		list.forEach(element => this.#htmlContent.append(element));
 	}
 
 	attributeChangedCallback(name: string, oldValue: string, newValue: string): void {

@@ -5,6 +5,7 @@
 
 :host-context(.ok) {
 	background-color: green;
+	color: white;
 }
 
 :host-context(.warning) {
