@@ -3832,7 +3832,7 @@ class HTMLHarmonySplitterElement extends HTMLElement {
             this.#split = (clientY - elemRect.y) / elemRect.height;
         }
         this.#split = Math.max(Math.min(this.#split, 0.99), 0.01);
-        this.dispatchEvent(new CustomEvent('change', { detail: { value: this.#split } }));
+        this.dispatchEvent(new CustomEvent('change', { detail: this.#split }));
         this.#update();
     }
     attributeChangedCallback(name, oldValue, newValue) {

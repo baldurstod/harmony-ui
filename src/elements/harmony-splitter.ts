@@ -103,7 +103,7 @@ export class HTMLHarmonySplitterElement extends HTMLElement {
 
 		this.#split = Math.max(Math.min(this.#split, 0.99), 0.01);
 
-		this.dispatchEvent(new CustomEvent('change', { detail: { value: this.#split } }));
+		this.dispatchEvent(new CustomEvent<number>('change', { detail: this.#split }));
 
 		this.#update();
 	}
