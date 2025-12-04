@@ -5,6 +5,11 @@ export declare function AddI18nElement(element: Element, descriptor: string | I1
 
 export declare function cloneEvent(event: Event): Event;
 
+export declare type ColorPickerEventData = {
+    hex: string;
+    rgba: [number, number, number, number];
+};
+
 export declare function createElement(tagName: string, options?: CreateElementOptions): HTMLElement;
 
 export declare type CreateElementChildOption = Element | ShadowRoot | string | null | undefined;

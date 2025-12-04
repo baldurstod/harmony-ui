@@ -4,6 +4,11 @@ import { shadowRootStyle } from '../harmony-css';
 import { createElement } from '../harmony-html';
 import { injectGlobalCss } from '../utils/globalcss';
 
+export type ColorPickerEventData = {
+	hex: string;
+	rgba: [number, number, number, number];
+};
+
 export class HTMLHarmonyColorPickerElement extends HTMLElement {
 	#doOnce = true;
 	#shadowRoot;
@@ -104,7 +109,7 @@ export class HTMLHarmonyColorPickerElement extends HTMLElement {
 					events: {
 						click: () => {
 							this.#updateHex(this.#htmlInput.value);
-							this.dispatchEvent(new CustomEvent('ok', { detail: { hex: this.#color.getHex(), rgba: this.#color.getRgba() } }));
+							this.dispatchEvent(new CustomEvent<ColorPickerEventData>('ok', { detail: { hex: this.#color.getHex(), rgba: this.#color.getRgba() } }));
 						},
 					},
 				}),

@@ -9,7 +9,6 @@ export type TabEventData = {
 	originalEvent?: Event;
 };
 
-
 export class HTMLHarmonyTabElement extends HTMLElement {
 	#disabled = false;
 	#active = false;

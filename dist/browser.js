@@ -1558,12 +1558,13 @@ function defineHarmonyAccordion() {
 
 function rgbToHsl(r, g, b) {
     const max = Math.max(r, g, b), min = Math.min(r, g, b);
-    let h = 0, s, l = (max + min) / 2;
+    let h = 0, s;
+    const l = (max + min) / 2;
     if (max == min) {
         h = s = 0; // achromatic
     }
     else {
-        var d = max - min;
+        const d = max - min;
         s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
         switch (max) {
             case r:
@@ -1581,7 +1582,7 @@ function rgbToHsl(r, g, b) {
     return [h, s, l];
 }
 function hslToRgb(h, s, l) {
-    var r, g, b;
+    let r, g, b;
     if (s == 0) {
         r = g = b = l; // achromatic
     }
@@ -1599,8 +1600,8 @@ function hslToRgb(h, s, l) {
                 return p + (q - p) * (2 / 3 - t) * 6;
             return p;
         }
-        var q = l < 0.5 ? l * (1 + s) : l + s - l * s;
-        var p = 2 * l - q;
+        const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+        const p = 2 * l - q;
         r = hue2rgb(p, q, h + 1 / 3);
         g = hue2rgb(p, q, h);
         b = hue2rgb(p, q, h - 1 / 3);
@@ -1608,12 +1609,9 @@ function hslToRgb(h, s, l) {
     return [r, g, b];
 }
 class Color {
-    #rgba = [];
+    #rgba;
     constructor({ red = 0, green = 0, blue = 0, alpha = 1, hex = '' } = {}) {
-        this.#rgba[0] = red;
-        this.#rgba[1] = green;
-        this.#rgba[2] = blue;
-        this.#rgba[3] = alpha;
+        this.#rgba = [red, green, blue, alpha];
         if (hex) {
             this.setHex(hex);
         }
