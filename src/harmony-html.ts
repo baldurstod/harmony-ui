@@ -252,8 +252,16 @@ export function toggle(htmlElement: HTMLElement | SVGElement | ShadowRoot | unde
 	}
 }
 
-export function isVisible(htmlElement: HTMLElement): boolean {
-	return htmlElement.style.display == ''
+export function isVisible(htmlElement: HTMLElement | SVGElement | ShadowRoot | undefined | null): boolean {
+	if (!htmlElement) {
+		return false;
+	}
+
+	if (htmlElement instanceof ShadowRoot) {
+		return (htmlElement.host as HTMLElement).style.display == '';
+	}
+
+	return htmlElement.style.display == '';
 }
 
 export const visible = isVisible;

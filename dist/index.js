@@ -537,6 +537,12 @@ function toggle(htmlElement) {
     }
 }
 function isVisible(htmlElement) {
+    if (!htmlElement) {
+        return false;
+    }
+    if (htmlElement instanceof ShadowRoot) {
+        return htmlElement.host.style.display == '';
+    }
     return htmlElement.style.display == '';
 }
 const visible = isVisible;

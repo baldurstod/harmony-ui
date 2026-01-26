@@ -527,7 +527,7 @@ export declare type I18nTranslation = {
 
 export declare type I18nValue = string | number | boolean | null | undefined;
 
-export declare function isVisible(htmlElement: HTMLElement): boolean;
+export declare function isVisible(htmlElement: HTMLElement | SVGElement | ShadowRoot | undefined | null): boolean;
 
 export declare type ItemActionEventData = {
     item: TreeItem;
