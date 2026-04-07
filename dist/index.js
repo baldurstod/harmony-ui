@@ -79,6 +79,7 @@ class I18n {
     static #observer;
     static #observed = new Set();
     static #eventTarget = new EventTarget();
+    static #missingKeys;
     static start() {
         if (this.#started) {
             return;
@@ -249,7 +250,11 @@ class I18n {
             return s2;
         }
         else {
-            console.warn('Missing translation for key ' + s);
+            if (!this.#missingKeys) {
+                this.#missingKeys = new Set();
+                console.warn('Missing translation for the following keys ', this.#missingKeys);
+            }
+            this.#missingKeys.add(s);
             return s;
         }
     }

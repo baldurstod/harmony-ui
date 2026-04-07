@@ -38,7 +38,7 @@ type Target = {
 
 export const I18nElements = new Map<Element, I18nDescriptor>();
 
-export function AddI18nElement(element: Element, descriptor: string | I18nDescriptor | null):void {
+export function AddI18nElement(element: Element, descriptor: string | I18nDescriptor | null): void {
 	if (typeof descriptor == 'string') {
 		descriptor = { innerText: descriptor };
 	}
@@ -88,6 +88,7 @@ export class I18n {
 	static #observer?: MutationObserver;
 	static #observed = new Set<HTMLElement | ShadowRoot>();
 	static #eventTarget = new EventTarget();
+	static #missingKeys?: Set<string>;
 
 	static start(): void {
 		if (this.#started) {
@@ -125,7 +126,7 @@ export class I18n {
 		if (this.#observer) {
 			return;
 		}
-		const callback = (mutationsList: MutationRecord[]) :void=> {
+		const callback = (mutationsList: MutationRecord[]): void => {
 			for (const mutation of mutationsList) {
 				if (mutation.type === 'childList') {
 					for (const node of mutation.addedNodes) {
@@ -284,11 +285,13 @@ export class I18n {
 		if (typeof s2 == 'string') {
 			return s2;
 		} else {
-			console.warn('Missing translation for key ' + s);
+			if (!this.#missingKeys) {
+				this.#missingKeys = new Set()
+				console.warn('Missing translation for the following keys ', this.#missingKeys);
+			}
+			this.#missingKeys.add(s);
 			return s;
 		}
-
-		return s;
 	}
 
 	static formatString(s: string, values: Record<string, I18nValue>): string {
