@@ -47,7 +47,16 @@ export declare type CreateElementOptions = {
 
 export declare type CreateElementOptionValue = null | boolean | string | I18nDescriptor | EventListenerOrEventListenerObject | [] | Record<string, string>;
 
-export declare function createShadowRoot(tagName: string, options?: CreateElementOptions, mode?: 'open' | 'closed'): ShadowRoot;
+export declare function createShadowRoot(tagName: string, options?: CreateElementOptions, shadowOptions?: ShadowRootInit): ShadowRoot;
+
+export declare type CreateShadowRootOptions = {
+    clonable?: boolean;
+    customElementRegistry?: CustomElementRegistry;
+    delegatesFocus?: boolean;
+    mode: ShadowRootMode;
+    serializable?: boolean;
+    slotAssignment?: SlotAssignmentMode;
+};
 
 export declare function defineHarmony2dManipulator(): void;
 

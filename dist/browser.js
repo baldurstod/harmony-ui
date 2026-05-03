@@ -249,7 +249,7 @@ class I18n {
         else {
             if (!this.#missingKeys) {
                 this.#missingKeys = new Set();
-                console.warn('Missing translation for the following keys ', this.#missingKeys);
+                console.warn('Missing translation for the following keys', this.#missingKeys);
             }
             this.#missingKeys.add(s);
             return s;
@@ -357,9 +357,16 @@ function createElementNS(namespaceURI, tagName, options) {
     createElementOptions(element, options);
     return element;
 }
-function createShadowRoot(tagName, options, mode = 'closed') {
+function createShadowRoot(tagName, options, shadowOptions) {
     const element = document.createElement(tagName);
-    const shadowRoot = element.attachShadow({ mode: mode });
+    const shadowRoot = element.attachShadow({
+        clonable: shadowOptions?.clonable,
+        customElementRegistry: shadowOptions?.customElementRegistry,
+        delegatesFocus: shadowOptions?.delegatesFocus,
+        mode: shadowOptions?.mode ?? 'closed',
+        serializable: shadowOptions?.serializable,
+        slotAssignment: shadowOptions?.slotAssignment,
+    });
     createElementOptions(element, options, shadowRoot);
     return shadowRoot;
 }

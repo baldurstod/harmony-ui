@@ -42,6 +42,15 @@ export type CreateElementOptions = {
 	[key: `$${string}`]: HarmonyEventListener,
 }
 
+export type CreateShadowRootOptions = {
+	clonable?: boolean;
+	customElementRegistry?: CustomElementRegistry;
+	delegatesFocus?: boolean;
+	mode: ShadowRootMode;
+	serializable?: boolean;
+	slotAssignment?: SlotAssignmentMode;
+}
+
 export type CreateElementOptionValue = null | boolean | string | I18nDescriptor | EventListenerOrEventListenerObject | [] | Record<string, string>;
 
 export function createElement(tagName: string, options?: CreateElementOptions): HTMLElement {
@@ -57,9 +66,16 @@ export function createElementNS(namespaceURI: string, tagName: string, options?:
 	return element;
 }
 
-export function createShadowRoot(tagName: string, options?: CreateElementOptions, mode: 'open' | 'closed' = 'closed'): ShadowRoot {
+export function createShadowRoot(tagName: string, options?: CreateElementOptions, shadowOptions?: ShadowRootInit): ShadowRoot {
 	const element = document.createElement(tagName);
-	const shadowRoot = element.attachShadow({ mode: mode });
+	const shadowRoot = element.attachShadow({
+		clonable: shadowOptions?.clonable,
+		customElementRegistry: shadowOptions?.customElementRegistry,
+		delegatesFocus: shadowOptions?.delegatesFocus,
+		mode: shadowOptions?.mode ?? 'closed',
+		serializable: shadowOptions?.serializable,
+		slotAssignment: shadowOptions?.slotAssignment,
+	});
 	createElementOptions(element, options, shadowRoot);
 	return shadowRoot;
 }

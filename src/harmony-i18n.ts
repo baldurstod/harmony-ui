@@ -287,7 +287,7 @@ export class I18n {
 		} else {
 			if (!this.#missingKeys) {
 				this.#missingKeys = new Set()
-				console.warn('Missing translation for the following keys ', this.#missingKeys);
+				console.warn('Missing translation for the following keys', this.#missingKeys);
 			}
 			this.#missingKeys.add(s);
 			return s;
