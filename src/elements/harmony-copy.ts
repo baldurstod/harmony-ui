@@ -1,6 +1,6 @@
 import copyCSS from '../css/harmony-copy.css';
 import { documentStyle } from '../harmony-css';
-import { createElement, hide, show } from '../harmony-html';
+import { createElement, defineElement, hide, show } from '../harmony-html';
 import { injectGlobalCss } from '../utils/globalcss';
 
 export class HTMLHarmonyCopyElement extends HTMLElement {
@@ -38,8 +38,8 @@ export class HTMLHarmonyCopyElement extends HTMLElement {
 
 let definedCopy = false;
 export function defineHarmonyCopy(): void {
-	if (window.customElements && !definedCopy) {
-		customElements.define('harmony-copy', HTMLHarmonyCopyElement);
+	if (!definedCopy) {
+		defineElement('harmony-copy', HTMLHarmonyCopyElement);
 		void documentStyle(copyCSS);
 		definedCopy = true;
 		injectGlobalCss();

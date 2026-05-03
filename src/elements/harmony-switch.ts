@@ -1,6 +1,6 @@
 import switchCSS from '../css/harmony-switch.css';
 import { shadowRootStyle } from '../harmony-css';
-import { createElement } from '../harmony-html';
+import { createElement, defineElement } from '../harmony-html';
 import { I18n } from '../harmony-i18n';
 import { toBool } from '../utils/attributes';
 import { injectGlobalCss } from '../utils/globalcss';
@@ -160,8 +160,8 @@ export class HTMLHarmonySwitchElement extends HTMLHarmonyElement {
 
 let definedSwitch = false;
 export function defineHarmonySwitch(): void {
-	if (window.customElements && !definedSwitch) {
-		customElements.define('harmony-switch', HTMLHarmonySwitchElement);
+	if (!definedSwitch) {
+		defineElement('harmony-switch', HTMLHarmonySwitchElement);
 		definedSwitch = true;
 		injectGlobalCss();
 	}

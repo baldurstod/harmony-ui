@@ -1,6 +1,6 @@
 import selectCSS from '../css/harmony-select.css';
 import { shadowRootStyle } from '../harmony-css';
-import { createElement } from '../harmony-html';
+import { createElement, defineElement } from '../harmony-html';
 import { injectGlobalCss } from '../utils/globalcss';
 
 export class HTMLHarmonySelectElement extends HTMLElement {
@@ -106,8 +106,8 @@ export class HTMLHarmonySelectElement extends HTMLElement {
 
 let definedSelect = false;
 export function defineHarmonySelect(): void {
-	if (window.customElements && !definedSelect) {
-		customElements.define('harmony-select', HTMLHarmonySelectElement);
+	if (!definedSelect) {
+		defineElement('harmony-select', HTMLHarmonySelectElement);
 		definedSelect = true;
 		injectGlobalCss();
 	}

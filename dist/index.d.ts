@@ -58,6 +58,8 @@ export declare type CreateShadowRootOptions = {
     slotAssignment?: SlotAssignmentMode;
 };
 
+export declare function defineElement(name: string, constructor: CustomElementConstructor, options?: ElementDefinitionOptions): void;
+
 export declare function defineHarmony2dManipulator(): void;
 
 export declare function defineHarmonyAccordion(): void;
@@ -109,6 +111,8 @@ export declare function display(htmlElement: HTMLElement | SVGElement | ShadowRo
 export declare function documentStyle(cssText: string): Promise<void>;
 
 export declare function documentStyleSync(cssText: string): void;
+
+export declare function getCustomElementRegistry(): CustomElementRegistry;
 
 export declare type HarmonyEventListener = ((evt: Event) => void) | ((evt: MouseEvent) => void) | ((evt: WheelEvent) => void) | ((evt: PointerEvent) => void) | ((evt: KeyboardEvent) => void) | ((evt: InputEvent) => void) | ((evt: CustomEvent) => void);
 

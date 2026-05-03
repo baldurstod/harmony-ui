@@ -285,3 +285,18 @@ export const visible = isVisible;
 export function styleInject(css: string): void {
 	document.head.append(createElement('style', { textContent: css }));
 }
+
+let customElementRegistry: CustomElementRegistry;
+export function getCustomElementRegistry(): CustomElementRegistry {
+	if (!customElementRegistry) {
+		customElementRegistry = new CustomElementRegistry();
+	}
+	return customElementRegistry;
+}
+
+export function defineElement(name: string, constructor: CustomElementConstructor, options?: ElementDefinitionOptions): void {
+	if (window.customElements) {
+		customElements.define(name, constructor, options);
+	}
+	getCustomElementRegistry().define(name, constructor, options);
+}

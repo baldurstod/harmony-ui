@@ -558,6 +558,19 @@ const visible = isVisible;
 function styleInject(css) {
     document.head.append(createElement('style', { textContent: css }));
 }
+let customElementRegistry;
+function getCustomElementRegistry() {
+    if (!customElementRegistry) {
+        customElementRegistry = new CustomElementRegistry();
+    }
+    return customElementRegistry;
+}
+function defineElement(name, constructor, options) {
+    if (window.customElements) {
+        customElements.define(name, constructor, options);
+    }
+    getCustomElementRegistry().define(name, constructor, options);
+}
 
 var manipulator2dCSS = ":host {\n\t--handle-radius: var(--harmony-2d-manipulator-radius, 0.5rem);\n\t--harmony-2d-manipulator-shadow-bg-color: var(--harmony-2d-manipulator-bg-color, red);\n\t--harmony-2d-manipulator-shadow-border: var(--harmony-2d-manipulator-border, none);\n\t--handle-bg-color: var(--harmony-2d-manipulator-handle-bg-color, chartreuse);\n\t--corner-bg-color: var(--harmony-2d-manipulator-corner-bg-color, var(--handle-bg-color));\n\t--side-bg-color: var(--harmony-2d-manipulator-side-bg-color, var(--handle-bg-color));\n\t--rotate-bg-color: var(--harmony-2d-manipulator-rotate-bg-color, var(--handle-bg-color));\n\n\twidth: 1rem;\n\theight: 1rem;\n\tdisplay: block;\n\tuser-select: none;\n\tpointer-events: all;\n}\n\n:host-context(.grabbing) {\n\tcursor: grabbing;\n}\n\n.manipulator {\n\tposition: absolute;\n\tbackground-color: var(--harmony-2d-manipulator-shadow-bg-color);\n\tborder: var(--harmony-2d-manipulator-shadow-border);\n\tcursor: move;\n\tpointer-events: all;\n}\n\n.rotator {\n\tscale: var(--rotate);\n\tposition: absolute;\n\twidth: var(--handle-radius);\n\theight: var(--handle-radius);\n\tbackground-color: var(--rotate-bg-color);\n\tborder-radius: calc(var(--handle-radius) * 0.5);\n\ttransform: translate(-50%, -50%);\n\tcursor: grab;\n}\n\n.corner {\n\tscale: var(--scale);\n\tposition: absolute;\n\twidth: var(--handle-radius);\n\theight: var(--handle-radius);\n\tbackground-color: var(--corner-bg-color);\n\tborder-radius: calc(var(--handle-radius) * 0.5);\n\ttransform: translate(-50%, -50%);\n\tcursor: grab;\n}\n\n.side {\n\tposition: absolute;\n\twidth: var(--handle-radius);\n\theight: var(--handle-radius);\n\tbackground-color: var(--side-bg-color);\n\tborder-radius: calc(var(--handle-radius) * 0.5);\n\ttransform: translate(-50%, -50%);\n\tcursor: grab;\n}\n\n.side.x {\n\tscale: var(--resize-x);\n}\n\n.side.y {\n\tscale: var(--resize-y);\n}\n\n.corner.grabbing {\n\tcursor: grabbing;\n}\n";
 
@@ -1339,8 +1352,8 @@ class HTMLHarmony2dManipulatorElement extends HTMLElement {
 }
 let defined2dManipulator = false;
 function defineHarmony2dManipulator() {
-    if (window.customElements && !defined2dManipulator) {
-        customElements.define('harmony-2d-manipulator', HTMLHarmony2dManipulatorElement);
+    if (!defined2dManipulator) {
+        defineElement('harmony-2d-manipulator', HTMLHarmony2dManipulatorElement);
         defined2dManipulator = true;
         injectGlobalCss();
     }
@@ -1391,8 +1404,8 @@ class HTMLHarmonyItemElement extends HTMLElement {
 }
 let definedHarmonyItem = false;
 function defineHarmonyItem() {
-    if (window.customElements && !definedHarmonyItem) {
-        customElements.define('harmony-item', HTMLHarmonyItemElement);
+    if (!definedHarmonyItem) {
+        defineElement('harmony-item', HTMLHarmonyItemElement);
         definedHarmonyItem = true;
     }
 }
@@ -1566,9 +1579,9 @@ class HTMLHarmonyAccordionElement extends HTMLElement {
 }
 let definedAccordion = false;
 function defineHarmonyAccordion() {
-    if (window.customElements && !definedAccordion) {
+    if (!definedAccordion) {
         defineHarmonyItem();
-        customElements.define('harmony-accordion', HTMLHarmonyAccordionElement);
+        defineElement('harmony-accordion', HTMLHarmonyAccordionElement);
         definedAccordion = true;
         injectGlobalCss();
     }
@@ -1936,8 +1949,8 @@ class HTMLHarmonyColorPickerElement extends HTMLElement {
 }
 let definedColorPicker = false;
 function defineHarmonyColorPicker() {
-    if (window.customElements && !definedColorPicker) {
-        customElements.define('harmony-color-picker', HTMLHarmonyColorPickerElement);
+    if (!definedColorPicker) {
+        defineElement('harmony-color-picker', HTMLHarmonyColorPickerElement);
         definedColorPicker = true;
         injectGlobalCss();
     }
@@ -2136,8 +2149,8 @@ class HTMLHarmonyMenuElement extends HTMLElement {
 }
 let definedMenu = false;
 function defineHarmonyMenu() {
-    if (window.customElements && !definedMenu) {
-        customElements.define('harmony-menu', HTMLHarmonyMenuElement);
+    if (!definedMenu) {
+        defineElement('harmony-menu', HTMLHarmonyMenuElement);
         definedMenu = true;
         injectGlobalCss();
     }
@@ -2176,8 +2189,8 @@ class HTMLHarmonyCopyElement extends HTMLElement {
 }
 let definedCopy = false;
 function defineHarmonyCopy() {
-    if (window.customElements && !definedCopy) {
-        customElements.define('harmony-copy', HTMLHarmonyCopyElement);
+    if (!definedCopy) {
+        defineElement('harmony-copy', HTMLHarmonyCopyElement);
         void documentStyle(copyCSS);
         definedCopy = true;
         injectGlobalCss();
@@ -2584,8 +2597,8 @@ class HTMLHarmonyTooltipElement extends HTMLElement {
 }
 let definedTooltip = false;
 function defineHarmonyTooltip() {
-    if (window.customElements && !definedTooltip) {
-        customElements.define('harmony-tooltip', HTMLHarmonyTooltipElement);
+    if (!definedTooltip) {
+        defineElement('harmony-tooltip', HTMLHarmonyTooltipElement);
         definedTooltip = true;
         injectGlobalCss();
     }
@@ -2686,8 +2699,8 @@ class HTMLHarmonyFileInputElement extends HTMLElement {
 }
 let definedFileInput = false;
 function defineHarmonyFileInput() {
-    if (window.customElements && !definedFileInput) {
-        customElements.define('harmony-file-input', HTMLHarmonyFileInputElement);
+    if (!definedFileInput) {
+        defineElement('harmony-file-input', HTMLHarmonyFileInputElement);
         definedFileInput = true;
         injectGlobalCss();
     }
@@ -2759,8 +2772,8 @@ class HTMLHarmonyInfoBoxElement extends HTMLElement {
 }
 let definedInfoBox = false;
 function defineHarmonyInfoBox() {
-    if (window.customElements && !definedInfoBox) {
-        customElements.define('harmony-info-box', HTMLHarmonyInfoBoxElement);
+    if (!definedInfoBox) {
+        defineElement('harmony-info-box', HTMLHarmonyInfoBoxElement);
         definedInfoBox = true;
         injectGlobalCss();
     }
@@ -2795,8 +2808,8 @@ class HTMLHarmonyLabelPropertyElement extends HTMLElement {
 }
 let definedLabelProperty = false;
 function defineHarmonyLabelProperty() {
-    if (window.customElements && !definedLabelProperty) {
-        customElements.define('harmony-label-property', HTMLHarmonyLabelPropertyElement);
+    if (!definedLabelProperty) {
+        defineElement('harmony-label-property', HTMLHarmonyLabelPropertyElement);
         definedLabelProperty = true;
         injectGlobalCss();
     }
@@ -2968,8 +2981,8 @@ class HTMLHarmonyPaletteElement extends HTMLElement {
 }
 let definedPalette = false;
 function defineHarmonyPalette() {
-    if (window.customElements && !definedPalette) {
-        customElements.define('harmony-palette', HTMLHarmonyPaletteElement);
+    if (!definedPalette) {
+        defineElement('harmony-palette', HTMLHarmonyPaletteElement);
         definedPalette = true;
         injectGlobalCss();
     }
@@ -3355,8 +3368,8 @@ class HTMLHarmonyPanelElement extends HTMLElement {
 }
 let definedPanel = false;
 function defineHarmonyPanel() {
-    if (window.customElements && !definedPanel) {
-        customElements.define('harmony-panel', HTMLHarmonyPanelElement);
+    if (!definedPanel) {
+        defineElement('harmony-panel', HTMLHarmonyPanelElement);
         definedPanel = true;
         injectGlobalCss();
     }
@@ -3475,10 +3488,10 @@ class HTMLHarmonyCircularProgressElement extends HTMLHarmonyElement {
 }
 let definedCircularProgress = false;
 function defineHarmonyCircularProgress() {
-    if (window.customElements && !definedCircularProgress) {
-        customElements.define('harmony-circular-progress', class extends HTMLHarmonyCircularProgressElement {
+    if (!definedCircularProgress) {
+        defineElement('harmony-circular-progress', class extends HTMLHarmonyCircularProgressElement {
         });
-        customElements.define('h-cp', class extends HTMLHarmonyCircularProgressElement {
+        defineElement('h-cp', class extends HTMLHarmonyCircularProgressElement {
         });
         definedCircularProgress = true;
         injectGlobalCss();
@@ -3634,8 +3647,8 @@ class HTMLHarmonyRadioElement extends HTMLElement {
 }
 let definedRadio = false;
 function defineHarmonyRadio() {
-    if (window.customElements && !definedRadio) {
-        customElements.define('harmony-radio', HTMLHarmonyRadioElement);
+    if (!definedRadio) {
+        defineElement('harmony-radio', HTMLHarmonyRadioElement);
         definedRadio = true;
         injectGlobalCss();
     }
@@ -3973,8 +3986,8 @@ class HTMLHarmonySlideshowElement extends HTMLElement {
 }
 let definedSlideshow = false;
 function defineHarmonySlideshow() {
-    if (window.customElements && !definedSlideshow) {
-        customElements.define('harmony-slideshow', HTMLHarmonySlideshowElement);
+    if (!definedSlideshow) {
+        defineElement('harmony-slideshow', HTMLHarmonySlideshowElement);
         definedSlideshow = true;
         injectGlobalCss();
     }
@@ -4070,8 +4083,8 @@ class HTMLHarmonySelectElement extends HTMLElement {
 }
 let definedSelect = false;
 function defineHarmonySelect() {
-    if (window.customElements && !definedSelect) {
-        customElements.define('harmony-select', HTMLHarmonySelectElement);
+    if (!definedSelect) {
+        defineElement('harmony-select', HTMLHarmonySelectElement);
         definedSelect = true;
         injectGlobalCss();
     }
@@ -4267,8 +4280,8 @@ class HTMLHarmonySliderElement extends HTMLHarmonyElement {
 }
 let definedSlider = false;
 function defineHarmonySlider() {
-    if (window.customElements && !definedSlider) {
-        customElements.define('harmony-slider', HTMLHarmonySliderElement);
+    if (!definedSlider) {
+        defineElement('harmony-slider', HTMLHarmonySliderElement);
         definedSlider = true;
         injectGlobalCss();
     }
@@ -4382,8 +4395,8 @@ class HTMLHarmonySplitterElement extends HTMLElement {
 }
 let definedSplitter = false;
 function defineHarmonySplitter() {
-    if (window.customElements && !definedSplitter) {
-        customElements.define('harmony-splitter', HTMLHarmonySplitterElement);
+    if (!definedSplitter) {
+        defineElement('harmony-splitter', HTMLHarmonySplitterElement);
         definedSplitter = true;
         injectGlobalCss();
     }
@@ -4525,8 +4538,8 @@ class HTMLHarmonySwitchElement extends HTMLHarmonyElement {
 }
 let definedSwitch = false;
 function defineHarmonySwitch() {
-    if (window.customElements && !definedSwitch) {
-        customElements.define('harmony-switch', HTMLHarmonySwitchElement);
+    if (!definedSwitch) {
+        defineElement('harmony-switch', HTMLHarmonySwitchElement);
         definedSwitch = true;
         injectGlobalCss();
     }
@@ -4657,8 +4670,8 @@ class HTMLHarmonyTabElement extends HTMLElement {
 }
 let definedTab = false;
 function defineHarmonyTab() {
-    if (window.customElements && !definedTab) {
-        customElements.define('harmony-tab', HTMLHarmonyTabElement);
+    if (!definedTab) {
+        defineElement('harmony-tab', HTMLHarmonyTabElement);
         definedTab = true;
         injectGlobalCss();
     }
@@ -4757,8 +4770,8 @@ class HTMLHarmonyTabGroupElement extends HTMLElement {
 }
 let definedTabGroup = false;
 function defineHarmonyTabGroup() {
-    if (window.customElements && !definedTabGroup) {
-        customElements.define('harmony-tab-group', HTMLHarmonyTabGroupElement);
+    if (!definedTabGroup) {
+        defineElement('harmony-tab-group', HTMLHarmonyTabGroupElement);
         definedTabGroup = true;
         injectGlobalCss();
     }
@@ -4852,8 +4865,8 @@ class HTMLHarmonyToggleButtonElement extends HTMLElement {
 }
 let definedToggleButton = false;
 function defineHarmonyToggleButton() {
-    if (window.customElements && !definedToggleButton) {
-        customElements.define('harmony-toggle-button', HTMLHarmonyToggleButtonElement);
+    if (!definedToggleButton) {
+        defineElement('harmony-toggle-button', HTMLHarmonyToggleButtonElement);
         definedToggleButton = true;
         injectGlobalCss();
     }
@@ -5336,14 +5349,14 @@ class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
 }
 let definedTree = false;
 function defineHarmonyTree() {
-    if (window.customElements && !definedTree) {
-        customElements.define('harmony-tree', class extends HTMLHarmonyTreeElement {
+    if (!definedTree) {
+        defineElement('harmony-tree', class extends HTMLHarmonyTreeElement {
         });
-        customElements.define('h-tree', class extends HTMLHarmonyTreeElement {
+        defineElement('h-tree', class extends HTMLHarmonyTreeElement {
         });
         definedTree = true;
         injectGlobalCss();
     }
 }
 
-export { AddI18nElement, HTMLHarmony2dManipulatorElement, HTMLHarmonyAccordionElement, HTMLHarmonyCircularProgressElement, HTMLHarmonyColorPickerElement, HTMLHarmonyCopyElement, HTMLHarmonyFileInputElement, HTMLHarmonyInfoBoxElement, HTMLHarmonyInfoBoxElementType, HTMLHarmonyItemElement, HTMLHarmonyLabelPropertyElement, HTMLHarmonyMenuElement, HTMLHarmonyPaletteElement, HTMLHarmonyPanelElement, HTMLHarmonyRadioElement, HTMLHarmonySelectElement, HTMLHarmonySliderElement, HTMLHarmonySlideshowElement, HTMLHarmonySplitterElement, HTMLHarmonySwitchElement, HTMLHarmonyTabElement, HTMLHarmonyTabGroupElement, HTMLHarmonyToggleButtonElement, HTMLHarmonyTooltipElement, HTMLHarmonyTreeElement, index as HarmonySVG, I18n, I18nElements, I18nEvents, ManipulatorCorner, ManipulatorDirection, ManipulatorResizeOrigin, ManipulatorSide, ManipulatorUpdatedEventType, TreeItem, TreeItemKind, cloneEvent, createElement, createElementNS, createShadowRoot, defineHarmony2dManipulator, defineHarmonyAccordion, defineHarmonyCircularProgress, defineHarmonyColorPicker, defineHarmonyCopy, defineHarmonyFileInput, defineHarmonyInfoBox, defineHarmonyItem, defineHarmonyLabelProperty, defineHarmonyMenu, defineHarmonyPalette, defineHarmonyPanel, defineHarmonyRadio, defineHarmonySelect, defineHarmonySlider, defineHarmonySlideshow, defineHarmonySplitter, defineHarmonySwitch, defineHarmonyTab, defineHarmonyTabGroup, defineHarmonyToggleButton, defineHarmonyTooltip, defineHarmonyTree, display, documentStyle, documentStyleSync, hide, isVisible, shadowRootStyle, shadowRootStyleSync, show, styleInject, toggle, updateElement, visible };
+export { AddI18nElement, HTMLHarmony2dManipulatorElement, HTMLHarmonyAccordionElement, HTMLHarmonyCircularProgressElement, HTMLHarmonyColorPickerElement, HTMLHarmonyCopyElement, HTMLHarmonyFileInputElement, HTMLHarmonyInfoBoxElement, HTMLHarmonyInfoBoxElementType, HTMLHarmonyItemElement, HTMLHarmonyLabelPropertyElement, HTMLHarmonyMenuElement, HTMLHarmonyPaletteElement, HTMLHarmonyPanelElement, HTMLHarmonyRadioElement, HTMLHarmonySelectElement, HTMLHarmonySliderElement, HTMLHarmonySlideshowElement, HTMLHarmonySplitterElement, HTMLHarmonySwitchElement, HTMLHarmonyTabElement, HTMLHarmonyTabGroupElement, HTMLHarmonyToggleButtonElement, HTMLHarmonyTooltipElement, HTMLHarmonyTreeElement, index as HarmonySVG, I18n, I18nElements, I18nEvents, ManipulatorCorner, ManipulatorDirection, ManipulatorResizeOrigin, ManipulatorSide, ManipulatorUpdatedEventType, TreeItem, TreeItemKind, cloneEvent, createElement, createElementNS, createShadowRoot, defineElement, defineHarmony2dManipulator, defineHarmonyAccordion, defineHarmonyCircularProgress, defineHarmonyColorPicker, defineHarmonyCopy, defineHarmonyFileInput, defineHarmonyInfoBox, defineHarmonyItem, defineHarmonyLabelProperty, defineHarmonyMenu, defineHarmonyPalette, defineHarmonyPanel, defineHarmonyRadio, defineHarmonySelect, defineHarmonySlider, defineHarmonySlideshow, defineHarmonySplitter, defineHarmonySwitch, defineHarmonyTab, defineHarmonyTabGroup, defineHarmonyToggleButton, defineHarmonyTooltip, defineHarmonyTree, display, documentStyle, documentStyleSync, getCustomElementRegistry, hide, isVisible, shadowRootStyle, shadowRootStyleSync, show, styleInject, toggle, updateElement, visible };

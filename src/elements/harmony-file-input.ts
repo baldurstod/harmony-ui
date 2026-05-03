@@ -1,7 +1,7 @@
 import { folderOpenSVG, infoSVG } from 'harmony-svg';
 import fileInputCSS from '../css/harmony-file-input.css';
 import { shadowRootStyle } from '../harmony-css';
-import { createElement, hide, show } from '../harmony-html';
+import { createElement, defineElement, hide, show } from '../harmony-html';
 import { I18n } from '../harmony-i18n';
 import { cloneEvent } from '../utils/events';
 import { injectGlobalCss } from '../utils/globalcss';
@@ -111,8 +111,8 @@ export class HTMLHarmonyFileInputElement extends HTMLElement {
 
 let definedFileInput = false;
 export function defineHarmonyFileInput(): void {
-	if (window.customElements && !definedFileInput) {
-		customElements.define('harmony-file-input', HTMLHarmonyFileInputElement);
+	if (!definedFileInput) {
+		defineElement('harmony-file-input', HTMLHarmonyFileInputElement);
 		definedFileInput = true;
 		injectGlobalCss();
 	}

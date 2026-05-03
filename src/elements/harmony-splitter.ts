@@ -1,6 +1,6 @@
 import splitterCSS from '../css/harmony-splitter.css';
 import { shadowRootStyleSync } from '../harmony-css';
-import { createElement } from '../harmony-html';
+import { createElement, defineElement } from '../harmony-html';
 import { injectGlobalCss } from '../utils/globalcss';
 
 export class HTMLHarmonySplitterElement extends HTMLElement {
@@ -123,8 +123,8 @@ export class HTMLHarmonySplitterElement extends HTMLElement {
 
 let definedSplitter = false;
 export function defineHarmonySplitter(): void {
-	if (window.customElements && !definedSplitter) {
-		customElements.define('harmony-splitter', HTMLHarmonySplitterElement);
+	if (!definedSplitter) {
+		defineElement('harmony-splitter', HTMLHarmonySplitterElement);
 		definedSplitter = true;
 		injectGlobalCss();
 	}

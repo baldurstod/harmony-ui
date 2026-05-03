@@ -1,6 +1,6 @@
 import treeCSS from '../css/harmony-tree.css';
 import { shadowRootStyle } from '../harmony-css';
-import { createElement, display, hide, show } from '../harmony-html';
+import { createElement, defineElement, display, hide, show } from '../harmony-html';
 import { I18n } from '../harmony-i18n';
 import { injectGlobalCss } from '../utils/globalcss';
 import { HTMLHarmonyElement } from './harmony-element';
@@ -110,7 +110,7 @@ export class TreeItem {
 		}
 	}
 
-	removeAction(action: string) : void {
+	removeAction(action: string): void {
 		this.actions.delete(action);
 	}
 
@@ -617,9 +617,9 @@ export class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
 
 let definedTree = false;
 export function defineHarmonyTree(): void {
-	if (window.customElements && !definedTree) {
-		customElements.define('harmony-tree', class extends HTMLHarmonyTreeElement { });
-		customElements.define('h-tree', class extends HTMLHarmonyTreeElement { });
+	if (!definedTree) {
+		defineElement('harmony-tree', class extends HTMLHarmonyTreeElement { });
+		defineElement('h-tree', class extends HTMLHarmonyTreeElement { });
 		definedTree = true;
 		injectGlobalCss();
 	}

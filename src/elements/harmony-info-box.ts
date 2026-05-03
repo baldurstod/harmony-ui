@@ -1,6 +1,6 @@
 import infoBoxCSS from '../css/harmony-info-box.css';
 import { shadowRootStyle } from '../harmony-css';
-import { createElement, updateElement } from '../harmony-html';
+import { createElement, defineElement, updateElement } from '../harmony-html';
 import { injectGlobalCss } from '../utils/globalcss';
 
 export enum HTMLHarmonyInfoBoxElementType {
@@ -74,8 +74,8 @@ export class HTMLHarmonyInfoBoxElement extends HTMLElement {
 
 let definedInfoBox = false;
 export function defineHarmonyInfoBox(): void {
-	if (window.customElements && !definedInfoBox) {
-		customElements.define('harmony-info-box', HTMLHarmonyInfoBoxElement);
+	if (!definedInfoBox) {
+		defineElement('harmony-info-box', HTMLHarmonyInfoBoxElement);
 		definedInfoBox = true;
 		injectGlobalCss();
 	}

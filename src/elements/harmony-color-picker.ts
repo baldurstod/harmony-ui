@@ -1,7 +1,7 @@
 import { Color } from 'harmony-utils';
 import colorPickerCSS from '../css/harmony-color-picker.css';
 import { shadowRootStyle } from '../harmony-css';
-import { createElement } from '../harmony-html';
+import { createElement, defineElement } from '../harmony-html';
 import { injectGlobalCss } from '../utils/globalcss';
 
 export type ColorPickerEventData = {
@@ -235,8 +235,8 @@ export class HTMLHarmonyColorPickerElement extends HTMLElement {
 
 let definedColorPicker = false;
 export function defineHarmonyColorPicker(): void {
-	if (window.customElements && !definedColorPicker) {
-		customElements.define('harmony-color-picker', HTMLHarmonyColorPickerElement);
+	if (!definedColorPicker) {
+		defineElement('harmony-color-picker', HTMLHarmonyColorPickerElement);
 		definedColorPicker = true;
 		injectGlobalCss();
 	}

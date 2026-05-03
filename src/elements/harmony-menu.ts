@@ -1,6 +1,6 @@
 import menuCSS from '../css/harmony-menu.css';
 import { shadowRootStyle } from '../harmony-css';
-import { createElement, hide } from '../harmony-html';
+import { createElement, defineElement, hide } from '../harmony-html';
 import { I18n } from '../harmony-i18n';
 import { injectGlobalCss } from '../utils/globalcss';
 
@@ -227,8 +227,8 @@ export class HTMLHarmonyMenuElement extends HTMLElement {
 
 let definedMenu = false;
 export function defineHarmonyMenu(): void {
-	if (window.customElements && !definedMenu) {
-		customElements.define('harmony-menu', HTMLHarmonyMenuElement);
+	if (!definedMenu) {
+		defineElement('harmony-menu', HTMLHarmonyMenuElement);
 		definedMenu = true;
 		injectGlobalCss();
 	}

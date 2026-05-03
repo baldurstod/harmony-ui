@@ -1,6 +1,6 @@
 import toggleButtonCSS from '../css/harmony-toggle-button.css';
 import { shadowRootStyle } from '../harmony-css';
-import { createElement, hide, show } from '../harmony-html';
+import { createElement, defineElement, hide, show } from '../harmony-html';
 import { I18n } from '../harmony-i18n';
 import { toBool } from '../utils/attributes';
 import { injectGlobalCss } from '../utils/globalcss';
@@ -105,8 +105,8 @@ export class HTMLHarmonyToggleButtonElement extends HTMLElement {
 
 let definedToggleButton = false;
 export function defineHarmonyToggleButton(): void {
-	if (window.customElements && !definedToggleButton) {
-		customElements.define('harmony-toggle-button', HTMLHarmonyToggleButtonElement);
+	if (!definedToggleButton) {
+		defineElement('harmony-toggle-button', HTMLHarmonyToggleButtonElement);
 		definedToggleButton = true;
 		injectGlobalCss();
 	}

@@ -1,7 +1,7 @@
 import { Radian } from 'harmony-types';
 import manipulator2dCSS from '../css/harmony-2d-manipulator.css';
 import { shadowRootStyle } from '../harmony-css';
-import { createElement } from '../harmony-html';
+import { createElement, defineElement } from '../harmony-html';
 import { toBool } from '../utils/attributes';
 import { injectGlobalCss } from '../utils/globalcss';
 
@@ -918,8 +918,8 @@ export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 
 let defined2dManipulator = false;
 export function defineHarmony2dManipulator(): void {
-	if (window.customElements && !defined2dManipulator) {
-		customElements.define('harmony-2d-manipulator', HTMLHarmony2dManipulatorElement);
+	if (!defined2dManipulator) {
+		defineElement('harmony-2d-manipulator', HTMLHarmony2dManipulatorElement);
 		defined2dManipulator = true;
 		injectGlobalCss();
 	}

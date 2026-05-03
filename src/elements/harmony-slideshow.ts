@@ -1,7 +1,7 @@
 import slideshowZoomCSS from '../css/harmony-slideshow-zoom.css';
 import slideshowCSS from '../css/harmony-slideshow.css';
 import { shadowRootStyleSync } from '../harmony-css';
-import { createElement, createShadowRoot, hide, show } from '../harmony-html';
+import { createElement, createShadowRoot, defineElement, hide, show } from '../harmony-html';
 import { I18n } from '../harmony-i18n';
 import { toBool } from '../utils/attributes';
 import { injectGlobalCss } from '../utils/globalcss';
@@ -386,8 +386,8 @@ export class HTMLHarmonySlideshowElement extends HTMLElement {
 
 let definedSlideshow = false;
 export function defineHarmonySlideshow(): void {
-	if (window.customElements && !definedSlideshow) {
-		customElements.define('harmony-slideshow', HTMLHarmonySlideshowElement);
+	if (!definedSlideshow) {
+		defineElement('harmony-slideshow', HTMLHarmonySlideshowElement);
 		definedSlideshow = true;
 		injectGlobalCss();
 	}

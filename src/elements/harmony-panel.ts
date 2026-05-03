@@ -1,6 +1,6 @@
 import panelCSS from '../css/harmony-panel.css';
 import { shadowRootStyle } from "../harmony-css";
-import { createElement } from "../harmony-html";
+import { createElement, defineElement } from "../harmony-html";
 import { toBool } from "../utils/attributes";
 import { injectGlobalCss } from "../utils/globalcss";
 
@@ -456,8 +456,8 @@ export class HTMLHarmonyPanelElement extends HTMLElement {
 
 let definedPanel = false;
 export function defineHarmonyPanel(): void {
-	if (window.customElements && !definedPanel) {
-		customElements.define('harmony-panel', HTMLHarmonyPanelElement);
+	if (!definedPanel) {
+		defineElement('harmony-panel', HTMLHarmonyPanelElement);
 		definedPanel = true;
 		injectGlobalCss();
 	}

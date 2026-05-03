@@ -1,5 +1,5 @@
 import { closeSVG } from 'harmony-svg';
-import { createElement, display } from '../harmony-html';
+import { createElement, defineElement, display } from '../harmony-html';
 import { toBool } from '../utils/attributes';
 import { injectGlobalCss } from '../utils/globalcss';
 import { HTMLHarmonyTabGroupElement } from './harmony-tab-group';
@@ -150,8 +150,8 @@ export class HTMLHarmonyTabElement extends HTMLElement {
 
 let definedTab = false;
 export function defineHarmonyTab(): void {
-	if (window.customElements && !definedTab) {
-		customElements.define('harmony-tab', HTMLHarmonyTabElement);
+	if (!definedTab) {
+		defineElement('harmony-tab', HTMLHarmonyTabElement);
 		definedTab = true;
 		injectGlobalCss();
 	}

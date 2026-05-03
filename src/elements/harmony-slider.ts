@@ -1,7 +1,7 @@
 import { JSONObject } from 'harmony-types';
 import sliderCSS from '../css/harmony-slider.css';
 import { shadowRootStyle } from '../harmony-css';
-import { createElement, hide, show, updateElement } from '../harmony-html';
+import { createElement, defineElement, hide, show, updateElement } from '../harmony-html';
 import { I18n } from '../harmony-i18n';
 import { injectGlobalCss } from '../utils/globalcss';
 import { HTMLHarmonyElement } from './harmony-element';
@@ -210,8 +210,8 @@ export class HTMLHarmonySliderElement extends HTMLHarmonyElement {
 
 let definedSlider = false;
 export function defineHarmonySlider(): void {
-	if (window.customElements && !definedSlider) {
-		customElements.define('harmony-slider', HTMLHarmonySliderElement);
+	if (!definedSlider) {
+		defineElement('harmony-slider', HTMLHarmonySliderElement);
 		definedSlider = true;
 		injectGlobalCss();
 	}

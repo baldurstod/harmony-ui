@@ -1,7 +1,7 @@
 import { checkOutlineSVG } from 'harmony-svg';
 import paletteCSS from '../css/harmony-palette.css';
 import { shadowRootStyle } from '../harmony-css';
-import { createElement } from '../harmony-html';
+import { createElement, defineElement } from '../harmony-html';
 import { I18n } from '../harmony-i18n';
 import { toBool } from '../utils/attributes';
 import { injectGlobalCss } from '../utils/globalcss';
@@ -202,8 +202,8 @@ export class HTMLHarmonyPaletteElement extends HTMLElement {
 
 let definedPalette = false;
 export function defineHarmonyPalette(): void {
-	if (window.customElements && !definedPalette) {
-		customElements.define('harmony-palette', HTMLHarmonyPaletteElement);
+	if (!definedPalette) {
+		defineElement('harmony-palette', HTMLHarmonyPaletteElement);
 		definedPalette = true;
 		injectGlobalCss();
 	}

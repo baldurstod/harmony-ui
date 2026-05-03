@@ -1,6 +1,6 @@
 import itemCSS from '../css/harmony-item.css';
 import { shadowRootStyle } from '../harmony-css';
-import { createElement } from '../harmony-html';
+import { createElement, defineElement } from '../harmony-html';
 
 export class HTMLHarmonyItemElement extends HTMLElement {
 	#shadowRoot: ShadowRoot;
@@ -51,8 +51,8 @@ export class HTMLHarmonyItemElement extends HTMLElement {
 
 let definedHarmonyItem = false;
 export function defineHarmonyItem(): void {
-	if (window.customElements && !definedHarmonyItem) {
-		customElements.define('harmony-item', HTMLHarmonyItemElement);
+	if (!definedHarmonyItem) {
+		defineElement('harmony-item', HTMLHarmonyItemElement);
 		definedHarmonyItem = true;
 	}
 }

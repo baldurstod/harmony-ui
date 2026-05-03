@@ -1,6 +1,6 @@
 import circularProgressCSS from '../css/harmony-circular-progress.css';
 import { shadowRootStyle } from '../harmony-css';
-import { createElement, createElementNS } from '../harmony-html';
+import { createElement, createElementNS, defineElement } from '../harmony-html';
 import { I18n } from '../harmony-i18n';
 import { injectGlobalCss } from '../utils/globalcss';
 import { HTMLHarmonyElement } from './harmony-element';
@@ -98,9 +98,9 @@ export class HTMLHarmonyCircularProgressElement extends HTMLHarmonyElement {
 
 let definedCircularProgress = false;
 export function defineHarmonyCircularProgress(): void {
-	if (window.customElements && !definedCircularProgress) {
-		customElements.define('harmony-circular-progress', class extends HTMLHarmonyCircularProgressElement { });
-		customElements.define('h-cp', class extends HTMLHarmonyCircularProgressElement { });
+	if (!definedCircularProgress) {
+		defineElement('harmony-circular-progress', class extends HTMLHarmonyCircularProgressElement { });
+		defineElement('h-cp', class extends HTMLHarmonyCircularProgressElement { });
 		definedCircularProgress = true;
 		injectGlobalCss();
 	}

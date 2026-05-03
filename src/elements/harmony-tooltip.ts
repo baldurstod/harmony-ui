@@ -1,6 +1,6 @@
 import tooltipCSS from '../css/harmony-tooltip.css';
 import { shadowRootStyle } from '../harmony-css';
-import { createElement } from '../harmony-html';
+import { createElement, defineElement } from '../harmony-html';
 import { I18n } from '../harmony-i18n';
 import { injectGlobalCss } from '../utils/globalcss';
 
@@ -44,8 +44,8 @@ export class HTMLHarmonyTooltipElement extends HTMLElement {
 
 let definedTooltip = false;
 export function defineHarmonyTooltip(): void {
-	if (window.customElements && !definedTooltip) {
-		customElements.define('harmony-tooltip', HTMLHarmonyTooltipElement);
+	if (!definedTooltip) {
+		defineElement('harmony-tooltip', HTMLHarmonyTooltipElement);
 		definedTooltip = true;
 		injectGlobalCss();
 	}
