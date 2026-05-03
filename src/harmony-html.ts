@@ -66,7 +66,9 @@ export function createElementNS(namespaceURI: string, tagName: string, options?:
 	return element;
 }
 
-export function createShadowRoot(tagName: string, options?: CreateElementOptions, shadowOptions?: ShadowRootInit): ShadowRoot {
+type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
+
+export function createShadowRoot(tagName: string, options?: CreateElementOptions, shadowOptions?: PartialBy<ShadowRootInit, 'mode'>): ShadowRoot {
 	const element = document.createElement(tagName);
 	const shadowRoot = element.attachShadow({
 		clonable: shadowOptions?.clonable,

@@ -47,7 +47,7 @@ export declare type CreateElementOptions = {
 
 export declare type CreateElementOptionValue = null | boolean | string | I18nDescriptor | EventListenerOrEventListenerObject | [] | Record<string, string>;
 
-export declare function createShadowRoot(tagName: string, options?: CreateElementOptions, shadowOptions?: ShadowRootInit): ShadowRoot;
+export declare function createShadowRoot(tagName: string, options?: CreateElementOptions, shadowOptions?: PartialBy<ShadowRootInit, 'mode'>): ShadowRoot;
 
 export declare type CreateShadowRootOptions = {
     clonable?: boolean;
@@ -610,6 +610,8 @@ export declare type PaletteColor = {
     b: number;
     h: string;
 };
+
+declare type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 
 export declare type RadioChangedEventData = {
     value: string;
