@@ -561,7 +561,13 @@ function styleInject(css) {
 let customElementRegistry;
 function getCustomElementRegistry() {
     if (!customElementRegistry) {
-        customElementRegistry = new CustomElementRegistry();
+        try {
+            // As of writing, firefox doesn't support CustomElementRegistry constructor
+            customElementRegistry = new CustomElementRegistry();
+        }
+        catch (e) {
+            return;
+        }
     }
     return customElementRegistry;
 }
@@ -569,7 +575,7 @@ function defineElement(name, constructor, options) {
     if (window.customElements) {
         customElements.define(name, constructor, options);
     }
-    getCustomElementRegistry().define(name, constructor, options);
+    getCustomElementRegistry()?.define(name, constructor, options);
 }
 
 var manipulator2dCSS = ":host {\n\t--handle-radius: var(--harmony-2d-manipulator-radius, 0.5rem);\n\t--harmony-2d-manipulator-shadow-bg-color: var(--harmony-2d-manipulator-bg-color, red);\n\t--harmony-2d-manipulator-shadow-border: var(--harmony-2d-manipulator-border, none);\n\t--handle-bg-color: var(--harmony-2d-manipulator-handle-bg-color, chartreuse);\n\t--corner-bg-color: var(--harmony-2d-manipulator-corner-bg-color, var(--handle-bg-color));\n\t--side-bg-color: var(--harmony-2d-manipulator-side-bg-color, var(--handle-bg-color));\n\t--rotate-bg-color: var(--harmony-2d-manipulator-rotate-bg-color, var(--handle-bg-color));\n\n\twidth: 1rem;\n\theight: 1rem;\n\tdisplay: block;\n\tuser-select: none;\n\tpointer-events: all;\n}\n\n:host-context(.grabbing) {\n\tcursor: grabbing;\n}\n\n.manipulator {\n\tposition: absolute;\n\tbackground-color: var(--harmony-2d-manipulator-shadow-bg-color);\n\tborder: var(--harmony-2d-manipulator-shadow-border);\n\tcursor: move;\n\tpointer-events: all;\n}\n\n.rotator {\n\tscale: var(--rotate);\n\tposition: absolute;\n\twidth: var(--handle-radius);\n\theight: var(--handle-radius);\n\tbackground-color: var(--rotate-bg-color);\n\tborder-radius: calc(var(--handle-radius) * 0.5);\n\ttransform: translate(-50%, -50%);\n\tcursor: grab;\n}\n\n.corner {\n\tscale: var(--scale);\n\tposition: absolute;\n\twidth: var(--handle-radius);\n\theight: var(--handle-radius);\n\tbackground-color: var(--corner-bg-color);\n\tborder-radius: calc(var(--handle-radius) * 0.5);\n\ttransform: translate(-50%, -50%);\n\tcursor: grab;\n}\n\n.side {\n\tposition: absolute;\n\twidth: var(--handle-radius);\n\theight: var(--handle-radius);\n\tbackground-color: var(--side-bg-color);\n\tborder-radius: calc(var(--handle-radius) * 0.5);\n\ttransform: translate(-50%, -50%);\n\tcursor: grab;\n}\n\n.side.x {\n\tscale: var(--resize-x);\n}\n\n.side.y {\n\tscale: var(--resize-y);\n}\n\n.corner.grabbing {\n\tcursor: grabbing;\n}\n";

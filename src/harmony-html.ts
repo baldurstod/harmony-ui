@@ -289,9 +289,14 @@ export function styleInject(css: string): void {
 }
 
 let customElementRegistry: CustomElementRegistry;
-export function getCustomElementRegistry(): CustomElementRegistry {
+export function getCustomElementRegistry(): CustomElementRegistry | undefined {
 	if (!customElementRegistry) {
-		customElementRegistry = new CustomElementRegistry();
+		try {
+			// As of writing, firefox doesn't support CustomElementRegistry constructor
+			customElementRegistry = new CustomElementRegistry();
+		} catch (e) {
+			return;
+		}
 	}
 	return customElementRegistry;
 }
@@ -300,5 +305,5 @@ export function defineElement(name: string, constructor: CustomElementConstructo
 	if (window.customElements) {
 		customElements.define(name, constructor, options);
 	}
-	getCustomElementRegistry().define(name, constructor, options);
+	getCustomElementRegistry()?.define(name, constructor, options);
 }
