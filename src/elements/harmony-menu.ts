@@ -12,7 +12,7 @@ export type HarmonyMenuItem = {
 	disabled?: boolean,
 	submenu?: HarmonyMenuItems,
 	cmd?: string,
-	f?: (arg0: unknown) => void | Promise<void>,
+	f?: <T>(userData: T) => void | Promise<void>,
 };
 
 export type HarmonyMenuItemsArray = HarmonyMenuItem[];
@@ -37,17 +37,17 @@ export class HTMLHarmonyMenuElement extends HTMLElement {
 		});
 	}
 
-	#show(items: HarmonyMenuItems, userData?: unknown): void {
+	#show<T>(items: HarmonyMenuItems, userData?: T): void {
 		this.#setItems(items, userData);
 		this.#checkSize();
 	}
 
-	show(items: HarmonyMenuItems, userData?: unknown): void {
+	show<T>(items: HarmonyMenuItems, userData?: T): void {
 		this.#show(items, userData);
 		this.setContextual(false);
 	}
 
-	showContextual(items: HarmonyMenuItems, clientX: number, clientY: number, userData?: unknown): void {
+	showContextual<T>(items: HarmonyMenuItems, clientX: number, clientY: number, userData?: T): void {
 		document.body.append(this);
 		this.style.left = clientX + 'px';
 		this.style.top = clientY + 'px';
@@ -116,7 +116,7 @@ export class HTMLHarmonyMenuElement extends HTMLElement {
 		}
 	}
 
-	#setItems(items: HarmonyMenuItems, userData: unknown): void {
+	#setItems<T>(items: HarmonyMenuItems, userData: T): void {
 		this.#shadowRoot.replaceChildren();
 		if (items instanceof Array) {
 			for (const item of items) {
@@ -143,7 +143,7 @@ export class HTMLHarmonyMenuElement extends HTMLElement {
 		this.#checkSize();
 	}
 
-	addItem(item: HarmonyMenuItem | null, userData: unknown): HTMLElement {
+	addItem<T>(item: HarmonyMenuItem | null, userData: T): HTMLElement {
 		const htmlItem = createElement('div', {
 			class: 'harmony-menu-item',
 		});
