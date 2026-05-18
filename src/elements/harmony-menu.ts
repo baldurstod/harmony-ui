@@ -12,7 +12,8 @@ export type HarmonyMenuItem = {
 	disabled?: boolean,
 	submenu?: HarmonyMenuItems,
 	cmd?: string,
-	f?: (arg0: unknown) => void | Promise<void>,
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	f?: (userData: any) => void | Promise<void>,
 };
 
 export type HarmonyMenuItemsArray = HarmonyMenuItem[];

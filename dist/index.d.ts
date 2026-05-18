@@ -124,7 +124,7 @@ export declare type HarmonyMenuItem = {
     disabled?: boolean;
     submenu?: HarmonyMenuItems;
     cmd?: string;
-    f?: (arg0: unknown) => void | Promise<void>;
+    f?: (userData: any) => void | Promise<void>;
 };
 
 export declare type HarmonyMenuItems = HarmonyMenuItemsArray | HarmonyMenuItemsDict;
