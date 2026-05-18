@@ -24,7 +24,7 @@ export class HTMLHarmonyInfoBoxElement extends HTMLElement {
 		this.#htmlContent = createElement('div');
 	}
 
-	#setClass() {
+	#setClass(): void {
 		this.#shadowRoot.host.classList.remove('ok', 'warning', 'error');
 		this.#shadowRoot.host.classList.add(this.#type);
 	}
@@ -55,11 +55,11 @@ export class HTMLHarmonyInfoBoxElement extends HTMLElement {
 				});
 				break;
 			case 'type':
-				switch (newValue) {
+				switch (newValue as HTMLHarmonyInfoBoxElementType) {
 					case HTMLHarmonyInfoBoxElementType.Ok:
 					case HTMLHarmonyInfoBoxElementType.Warning:
 					case HTMLHarmonyInfoBoxElementType.Error:
-						this.#type = newValue;
+						this.#type = newValue as HTMLHarmonyInfoBoxElementType;
 						this.#setClass();
 						break;
 				}

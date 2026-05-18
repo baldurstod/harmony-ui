@@ -294,7 +294,9 @@ export function getCustomElementRegistry(): CustomElementRegistry | undefined {
 		try {
 			// As of writing, firefox doesn't support CustomElementRegistry constructor
 			customElementRegistry = new CustomElementRegistry();
-		} catch (e) {
+		}
+		// eslint-disable-next-line @typescript-eslint/no-unused-vars
+		catch (e) {
 			return;
 		}
 	}

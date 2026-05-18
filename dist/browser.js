@@ -565,6 +565,7 @@ function getCustomElementRegistry() {
             // As of writing, firefox doesn't support CustomElementRegistry constructor
             customElementRegistry = new CustomElementRegistry();
         }
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         catch (e) {
             return;
         }
@@ -2129,7 +2130,7 @@ class HTMLHarmonyMenuElement extends HTMLElement {
                         this.dispatchEvent(new CustomEvent(item.cmd));
                     }
                     if (item.f) {
-                        item.f(userData);
+                        void item.f(userData);
                     }
                     event.stopPropagation();
                 });
@@ -2143,7 +2144,7 @@ class HTMLHarmonyMenuElement extends HTMLElement {
                         this.dispatchEvent(new CustomEvent(item.cmd));
                     }
                     if (item.f) {
-                        item.f(userData);
+                        void item.f(userData);
                     }
                     event.stopPropagation();
                 });

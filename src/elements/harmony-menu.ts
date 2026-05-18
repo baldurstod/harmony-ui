@@ -12,7 +12,7 @@ export type HarmonyMenuItem = {
 	disabled?: boolean,
 	submenu?: HarmonyMenuItems,
 	cmd?: string,
-	f?: (arg0: unknown) => void,
+	f?: (arg0: unknown) => void | Promise<void>,
 };
 
 export type HarmonyMenuItemsArray = HarmonyMenuItem[];
@@ -200,7 +200,7 @@ export class HTMLHarmonyMenuElement extends HTMLElement {
 						this.dispatchEvent(new CustomEvent(item.cmd));
 					}
 					if (item.f) {
-						item.f(userData);
+						void item.f(userData);
 					}
 					event.stopPropagation();
 				});
@@ -213,7 +213,7 @@ export class HTMLHarmonyMenuElement extends HTMLElement {
 						this.dispatchEvent(new CustomEvent(item.cmd));
 					}
 					if (item.f) {
-						item.f(userData);
+						void item.f(userData);
 					}
 					event.stopPropagation();
 				}
