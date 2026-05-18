@@ -124,7 +124,7 @@ export declare type HarmonyMenuItem = {
     disabled?: boolean;
     submenu?: HarmonyMenuItems;
     cmd?: string;
-    f?: <T>(userData: T) => void | Promise<void>;
+    f?: (arg0: unknown) => void | Promise<void>;
 };
 
 export declare type HarmonyMenuItems = HarmonyMenuItemsArray | HarmonyMenuItemsDict;
@@ -284,12 +284,12 @@ export declare class HTMLHarmonyLabelPropertyElement extends HTMLElement {
 export declare class HTMLHarmonyMenuElement extends HTMLElement {
     #private;
     constructor();
-    show<T>(items: HarmonyMenuItems, userData?: T): void;
-    showContextual<T>(items: HarmonyMenuItems, clientX: number, clientY: number, userData?: T): void;
+    show(items: HarmonyMenuItems, userData?: unknown): void;
+    showContextual(items: HarmonyMenuItems, clientX: number, clientY: number, userData?: unknown): void;
     setContextual(contextual: boolean): void;
     close(): void;
     connectedCallback(): void;
-    addItem<T>(item: HarmonyMenuItem | null, userData: T): HTMLElement;
+    addItem(item: HarmonyMenuItem | null, userData: unknown): HTMLElement;
 }
 
 export declare class HTMLHarmonyPaletteElement extends HTMLElement {
