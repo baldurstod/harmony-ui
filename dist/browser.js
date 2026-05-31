@@ -395,7 +395,7 @@ function createElementOptions(element, options, shadowRoot) {
             const optionValue = options[optionName];
             if (optionName.startsWith('$')) {
                 const eventType = optionName.substring(1);
-                element.addEventListener(eventType, optionValue);
+                (shadowRoot ?? element).addEventListener(eventType, optionValue);
                 continue;
             }
             switch (optionName) {
