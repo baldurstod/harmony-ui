@@ -198,6 +198,11 @@ export class HTMLHarmonyColorPickerElement extends HTMLElement {
 		this.#update();
 	}
 
+	setRgba(rgba: [number, number, number, number]): void {
+		this.#color.setRgba(rgba);
+		this.#update();
+	}
+
 	#handleMouseDown(event: MouseEvent, selector?: HTMLElement): void {
 		this.#dragElement = selector ?? (event.currentTarget as HTMLElement);
 		this.#shiftX = (selector ?? (event.currentTarget as HTMLElement)).offsetLeft;

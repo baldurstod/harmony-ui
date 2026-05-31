@@ -219,6 +219,7 @@ export declare class HTMLHarmonyColorPickerElement extends HTMLElement {
     adoptStyleSheet(styleSheet: CSSStyleSheet): void;
     getColor(): Color;
     setHex(hex: string): void;
+    setRgba(rgba: [number, number, number, number]): void;
 }
 
 export declare class HTMLHarmonyCopyElement extends HTMLElement {

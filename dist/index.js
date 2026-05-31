@@ -1771,6 +1771,10 @@ class HTMLHarmonyColorPickerElement extends HTMLElement {
         this.#color.setHex(hex);
         this.#update();
     }
+    setRgba(rgba) {
+        this.#color.setRgba(rgba);
+        this.#update();
+    }
     #handleMouseDown(event, selector) {
         this.#dragElement = selector ?? event.currentTarget;
         this.#shiftX = (selector ?? event.currentTarget).offsetLeft;

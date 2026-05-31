@@ -1699,6 +1699,12 @@ class Color {
     getRgba() {
         return this.#rgba;
     }
+    setRgba(rgba) {
+        this.#rgba[0] = rgba[0];
+        this.#rgba[1] = rgba[1];
+        this.#rgba[2] = rgba[2];
+        this.#rgba[3] = rgba[3];
+    }
     set red(red) {
         this.#rgba[0] = red;
     }
@@ -1924,6 +1930,10 @@ class HTMLHarmonyColorPickerElement extends HTMLElement {
     }
     setHex(hex) {
         this.#color.setHex(hex);
+        this.#update();
+    }
+    setRgba(rgba) {
+        this.#color.setRgba(rgba);
         this.#update();
     }
     #handleMouseDown(event, selector) {
