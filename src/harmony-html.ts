@@ -110,7 +110,7 @@ function createElementOptions(element: HTMLElement, options?: CreateElementOptio
 
 			if (optionName.startsWith('$')) {
 				const eventType = optionName.substring(1);
-				element.addEventListener(eventType, optionValue as EventListener);
+				(shadowRoot ?? element).addEventListener(eventType, optionValue as EventListener);
 				continue;
 			}
 
