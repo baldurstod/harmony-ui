@@ -627,6 +627,8 @@ export declare function show(htmlElement: HTMLElement | SVGElement | ShadowRoot 
 
 export declare function styleInject(css: string): void;
 
+export declare const svgNamespace = "http://www.w3.org/2000/svg";
+
 export declare type TabEventData = {
     tab: HTMLHarmonyTabElement;
     originalEvent?: Event;

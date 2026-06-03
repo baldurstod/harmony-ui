@@ -3,6 +3,8 @@ import { AddI18nElement, I18nDescriptor } from './harmony-i18n';
 import { ET } from './utils/create';
 import { getHelp } from './utils/help';
 
+export const svgNamespace = 'http://www.w3.org/2000/svg';
+
 export type CreateElementChildOption = Element | ShadowRoot | string | null | undefined;
 
 export type HarmonyEventListener = ((evt: Event) => void) |
