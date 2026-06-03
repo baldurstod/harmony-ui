@@ -2483,7 +2483,7 @@ function defineHarmonyPalette() {
     }
 }
 
-var panelCSS = ":host {\n\tdisplay: flex;\n\tflex: 1;\n\tflex-direction: column;\n\n\tflex: 0 0 auto;\n\t/*flex-grow: 0;\n\tflex-shrink: 0;\n\tflex-basis: auto;*/\n\t/*flex-basis: 0;*/\n\t/*flex: 1;*/\n\t/*height:100%;\n\twidth:100%;*/\n\n\t/*padding: 5px !important;*/\n\tbox-sizing: border-box;\n\tpointer-events: all;\n\toverflow: hidden;\n\tposition: relative;\n\tflex-direction: column;\n\tbox-sizing: border-box;\n}\n\n.harmony-panel-row {\n\tflex-direction: row;\n}\n\n.harmony-panel-row>harmony-panel {\n\theight: 100%;\n}\n\n.harmony-panel-column {\n\tflex-direction: column;\n}\n\n.harmony-panel-column>harmony-panel {\n\twidth: 100%;\n}\n\n.harmony-panel-splitter {\n\tdisplay: none;\n\tflex: 0 0 10px;\n\tbackground-color: red;\n}\n\n.title {\n\tcursor: pointer;\n\ttext-align: center;\n\tfont-size: 1.5em;\n\tpadding: 4px;\n\toverflow: hidden;\n}\n\n.content {\n\twidth: 100%;\n\tbox-sizing: border-box;\n}\n\n[collapsible='1']>.title::after {\n\tcontent: \"-\";\n\tright: 5px;\n\tposition: absolute;\n}\n\n[collapsed='1']>.title::after {\n\tcontent: \"+\";\n}\n";
+var panelCSS = ":host {\n\tdisplay: flex;\n\tflex: 1;\n\tflex-direction: column;\n\n\tflex: 0 0 auto;\n\t/*flex-grow: 0;\n\tflex-shrink: 0;\n\tflex-basis: auto;*/\n\t/*flex-basis: 0;*/\n\t/*flex: 1;*/\n\t/*height:100%;\n\twidth:100%;*/\n\n\t/*padding: 5px !important;*/\n\tbox-sizing: border-box;\n\tpointer-events: all;\n\toverflow: hidden;\n\tposition: relative;\n\tflex-direction: column;\n\tbox-sizing: border-box;\n\t--header-bg-color: var(--harmony-panel-header-bg-color, var(--main-bg-color-dark, black));\n\t--content-bg-color: var(--harmony-panel-content-bg-color, var(--main-bg-color-dark, black));\n}\n\n.harmony-panel-row {\n\tflex-direction: row;\n}\n\n.harmony-panel-row>harmony-panel {\n\theight: 100%;\n}\n\n.harmony-panel-column {\n\tflex-direction: column;\n}\n\n.harmony-panel-column>harmony-panel {\n\twidth: 100%;\n}\n\n.harmony-panel-splitter {\n\tdisplay: none;\n\tflex: 0 0 10px;\n\tbackground-color: red;\n}\n\n.header {\n\tcursor: pointer;\n\t/*text-align: center;*/\n\tfont-size: 1.5em;\n\tpadding: 4px;\n\toverflow: hidden;\n\tflex: 0 0 2rem;\n\tbackground-color: var(--header-bg-color);\n\tdisplay: flex;\n\talign-items: center;\n}\n\n.content {\n\twidth: 100%;\n\tbox-sizing: border-box;\n\tbackground-color: var(--content-bg-color);\n\tflex: 1;\n}\n\n[collapsible='1']>.title::after {\n\tcontent: \"-\";\n\tright: 5px;\n\tposition: absolute;\n}\n\n[collapsed='1']>.title::after {\n\tcontent: \"+\";\n}\n";
 
 //const dragged = null;
 let nextId = 0;
@@ -2497,11 +2497,11 @@ class HTMLHarmonyPanelElement extends HTMLElement {
     #direction = 'undefined';
     #isContainer = false;
     #isMovable = false;
-    #isCollapsible = false;
+    #isCollapsible = true;
     #isCollapsed = false;
     customPanelId = nextId++;
-    htmlTitle;
-    htmlContent;
+    #htmlHeader;
+    #htmlContent;
     #isDummy = false;
     #shadowRoot;
     constructor() {
@@ -2514,14 +2514,12 @@ class HTMLHarmonyPanelElement extends HTMLElement {
         //this.addEventListener('mouseenter', event => this._handleMouseEnter(event));
         //this.addEventListener('mousemove', event => this._handleMouseMove(event));
         //this.addEventListener('mouseleave', event => this._handleMouseLeave(event));
-        this.htmlTitle = createElement('div', {
-            class: 'title',
+        this.#htmlHeader = createElement('div', {
+            class: 'header',
             parent: this.#shadowRoot,
-            events: {
-                click: () => this.#toggleCollapse(),
-            }
+            $dblclick: () => this.#toggleCollapse(),
         });
-        this.htmlContent = createElement('div', {
+        this.#htmlContent = createElement('div', {
             class: 'content',
             parent: this.#shadowRoot,
         });
@@ -2531,8 +2529,8 @@ class HTMLHarmonyPanelElement extends HTMLElement {
             //this.append(...this.childNodes);
             this.#doOnce = false;
         }
-        super.append(this.htmlTitle);
-        super.append(this.htmlContent);
+        //super.append(this.#htmlTitle);
+        //super.append(this.#htmlContent);
         //let parentElement = this.parentElement;
         /*if (this._parent && (this._parent != parentElement)) {
             this._parent._removePanel(this);
@@ -2554,11 +2552,11 @@ class HTMLHarmonyPanelElement extends HTMLElement {
     }
     append() {
         // eslint-disable-next-line prefer-rest-params
-        this.htmlContent.append(...arguments);
+        this.#htmlContent.append(...arguments);
     }
     prepend() {
         // eslint-disable-next-line prefer-rest-params
-        this.htmlContent.prepend(...arguments);
+        this.#htmlContent.prepend(...arguments);
     }
     /*
         appendChild(child: HTMLElement) {
@@ -2566,10 +2564,10 @@ class HTMLHarmonyPanelElement extends HTMLElement {
         }
     */
     get innerHTML() {
-        return this.htmlContent.innerHTML;
+        return this.#htmlContent.innerHTML;
     }
     set innerHTML(innerHTML) {
-        this.htmlContent.innerHTML = innerHTML;
+        this.#htmlContent.innerHTML = innerHTML;
     }
     attributeChangedCallback(name, oldValue, newValue) {
         if (oldValue == newValue) {
@@ -2594,10 +2592,10 @@ class HTMLHarmonyPanelElement extends HTMLElement {
             this.collapsed = toBool(newValue);
         }
         else if (name == 'title') {
-            this.title = newValue;
+            this.setTitle(newValue);
         }
         else if (name == 'title-i18n') {
-            this.titleI18n = newValue;
+            this.setTitleI18n(newValue);
         }
     }
     static get observedAttributes() {
@@ -2832,26 +2830,36 @@ class HTMLHarmonyPanelElement extends HTMLElement {
         this.#isCollapsed = (collapsed == true) ? this.#isCollapsible : false;
         this.setAttribute('collapsed', String(this.#isCollapsed ? 1 : 0));
         if (this.#isCollapsed) {
-            this.htmlContent.style.display = 'none';
+            this.collapse();
         }
         else {
-            this.htmlContent.style.display = '';
+            this.expand();
         }
     }
-    set title(title) {
+    collapse() {
+        hide(this.#htmlContent);
+        this.#isCollapsed = true;
+    }
+    expand() {
+        show(this.#htmlContent);
+        this.#isCollapsed = false;
+    }
+    setTitle(title) {
+        this.#htmlHeader.innerText = title;
+        /*
         if (title) {
-            this.htmlTitle = this.htmlTitle ?? document.createElement('div');
-            this.htmlTitle.innerText = title;
-            super.prepend(this.htmlTitle);
+            //this.#htmlTitle = this.#htmlTitle ?? document.createElement('div');
+            super.prepend(this.#htmlTitle);
+        } else {
+            this.#htmlTitle.remove();
         }
-        else {
-            this.htmlTitle.remove();
-        }
+        */
     }
-    set titleI18n(titleI18n) {
-        this.htmlTitle.classList.add('i18n');
-        this.htmlTitle.setAttribute('data-i18n', titleI18n);
-        this.htmlTitle.remove();
+    setTitleI18n(titleI18n) {
+        //this.#htmlHeader.classList.add('i18n');
+        //this.#htmlHeader.setAttribute('data-i18n', titleI18n);
+        AddI18nElement(this.#htmlHeader, titleI18n);
+        //this.#htmlHeader.remove();
         this.title = titleI18n;
     }
     #toggleCollapse() {

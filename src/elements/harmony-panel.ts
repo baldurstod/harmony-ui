@@ -1,6 +1,7 @@
 import panelCSS from '../css/harmony-panel.css';
 import { shadowRootStyle } from "../harmony-css";
-import { createElement, defineElement } from "../harmony-html";
+import { createElement, defineElement, hide, show } from "../harmony-html";
+import { AddI18nElement as addI18nElement } from '../harmony-i18n';
 import { toBool } from "../utils/attributes";
 import { injectGlobalCss } from "../utils/globalcss";
 
@@ -17,11 +18,11 @@ export class HTMLHarmonyPanelElement extends HTMLElement {
 	#direction = 'undefined';
 	#isContainer = false;
 	#isMovable = false;
-	#isCollapsible = false;
+	#isCollapsible = true;
 	#isCollapsed = false;
 	customPanelId = nextId++;
-	htmlTitle: HTMLElement;
-	htmlContent: HTMLElement;
+	readonly #htmlHeader: HTMLElement;
+	readonly #htmlContent: HTMLElement;
 	#isDummy = false;
 	#shadowRoot: ShadowRoot;
 
@@ -36,14 +37,12 @@ export class HTMLHarmonyPanelElement extends HTMLElement {
 		//this.addEventListener('mousemove', event => this._handleMouseMove(event));
 		//this.addEventListener('mouseleave', event => this._handleMouseLeave(event));
 
-		this.htmlTitle = createElement('div', {
-			class: 'title',
+		this.#htmlHeader = createElement('div', {
+			class: 'header',
 			parent: this.#shadowRoot,
-			events: {
-				click: () => this.#toggleCollapse(),
-			}
+			$dblclick: () => this.#toggleCollapse(),
 		});
-		this.htmlContent = createElement('div', {
+		this.#htmlContent = createElement('div', {
 			class: 'content',
 			parent: this.#shadowRoot,
 		});
@@ -55,8 +54,8 @@ export class HTMLHarmonyPanelElement extends HTMLElement {
 			this.#doOnce = false;
 		}
 
-		super.append(this.htmlTitle);
-		super.append(this.htmlContent);
+		//super.append(this.#htmlTitle);
+		//super.append(this.#htmlContent);
 
 		//let parentElement = this.parentElement;
 
@@ -82,12 +81,12 @@ export class HTMLHarmonyPanelElement extends HTMLElement {
 
 	append(): void {
 		// eslint-disable-next-line prefer-rest-params
-		this.htmlContent.append(...arguments);
+		this.#htmlContent.append(...arguments);
 	}
 
 	prepend(): void {
 		// eslint-disable-next-line prefer-rest-params
-		this.htmlContent.prepend(...arguments);
+		this.#htmlContent.prepend(...arguments);
 	}
 	/*
 		appendChild(child: HTMLElement) {
@@ -96,11 +95,11 @@ export class HTMLHarmonyPanelElement extends HTMLElement {
 	*/
 
 	get innerHTML(): string {
-		return this.htmlContent.innerHTML;
+		return this.#htmlContent.innerHTML;
 	}
 
 	set innerHTML(innerHTML) {
-		this.htmlContent.innerHTML = innerHTML;
+		this.#htmlContent.innerHTML = innerHTML;
 	}
 
 	attributeChangedCallback(name: string, oldValue: string, newValue: string): void {
@@ -120,11 +119,12 @@ export class HTMLHarmonyPanelElement extends HTMLElement {
 		} else if (name == 'collapsed') {
 			this.collapsed = toBool(newValue);
 		} else if (name == 'title') {
-			this.title = newValue;
+			this.setTitle(newValue);
 		} else if (name == 'title-i18n') {
-			this.titleI18n = newValue;
+			this.setTitleI18n(newValue);
 		}
 	}
+
 	static get observedAttributes(): string[] {
 		return ['panel-direction', 'panel-size', 'is-container', 'is-movable', 'title', 'title-i18n', 'collapsible', 'collapsed'];
 	}
@@ -365,26 +365,39 @@ export class HTMLHarmonyPanelElement extends HTMLElement {
 		this.#isCollapsed = (collapsed == true) ? this.#isCollapsible : false;
 		this.setAttribute('collapsed', String(this.#isCollapsed ? 1 : 0));
 		if (this.#isCollapsed) {
-			this.htmlContent.style.display = 'none';
+			this.collapse();
 		} else {
-			this.htmlContent.style.display = '';
+			this.expand();
 		}
 	}
 
-	set title(title: string) {
+	collapse(): void {
+		hide(this.#htmlContent);
+		this.#isCollapsed = true;
+	}
+
+	expand(): void {
+		show(this.#htmlContent);
+		this.#isCollapsed = false;
+	}
+
+	setTitle(title: string): void {
+		this.#htmlHeader.innerText = title;
+		/*
 		if (title) {
-			this.htmlTitle = this.htmlTitle ?? document.createElement('div');
-			this.htmlTitle.innerText = title;
-			super.prepend(this.htmlTitle);
+			//this.#htmlTitle = this.#htmlTitle ?? document.createElement('div');
+			super.prepend(this.#htmlTitle);
 		} else {
-			this.htmlTitle.remove();
+			this.#htmlTitle.remove();
 		}
+		*/
 	}
 
-	set titleI18n(titleI18n: string) {
-		this.htmlTitle.classList.add('i18n');
-		this.htmlTitle.setAttribute('data-i18n', titleI18n);
-		this.htmlTitle.remove();
+	setTitleI18n(titleI18n: string): void {
+		//this.#htmlHeader.classList.add('i18n');
+		//this.#htmlHeader.setAttribute('data-i18n', titleI18n);
+		addI18nElement(this.#htmlHeader, titleI18n);
+		//this.#htmlHeader.remove();
 		this.title = titleI18n;
 	}
 

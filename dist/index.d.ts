@@ -309,8 +309,6 @@ export declare class HTMLHarmonyPaletteElement extends HTMLElement {
 export declare class HTMLHarmonyPanelElement extends HTMLElement {
     #private;
     customPanelId: number;
-    htmlTitle: HTMLElement;
-    htmlContent: HTMLElement;
     constructor();
     connectedCallback(): void;
     append(): void;
@@ -328,8 +326,10 @@ export declare class HTMLHarmonyPanelElement extends HTMLElement {
     set isMovable(isMovable: boolean);
     set collapsible(collapsible: boolean);
     set collapsed(collapsed: boolean);
-    set title(title: string);
-    set titleI18n(titleI18n: string);
+    collapse(): void;
+    expand(): void;
+    setTitle(title: string): void;
+    setTitleI18n(titleI18n: string): void;
     static get nextId(): string;
 }
 

@@ -19,6 +19,8 @@
 	position: relative;
 	flex-direction: column;
 	box-sizing: border-box;
+	--header-bg-color: var(--harmony-panel-header-bg-color, var(--main-bg-color-dark, black));
+	--content-bg-color: var(--harmony-panel-content-bg-color, var(--main-bg-color-dark, black));
 }
 
 .harmony-panel-row {
@@ -43,17 +45,23 @@
 	background-color: red;
 }
 
-.title {
+.header {
 	cursor: pointer;
-	text-align: center;
+	/*text-align: center;*/
 	font-size: 1.5em;
 	padding: 4px;
 	overflow: hidden;
+	flex: 0 0 2rem;
+	background-color: var(--header-bg-color);
+	display: flex;
+	align-items: center;
 }
 
 .content {
 	width: 100%;
 	box-sizing: border-box;
+	background-color: var(--content-bg-color);
+	flex: 1;
 }
 
 [collapsible='1']>.title::after {
