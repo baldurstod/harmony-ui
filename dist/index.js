@@ -2496,7 +2496,6 @@ class HTMLHarmonyPanelElement extends HTMLElement {
     #panels = new Set();
     #size = 1;
     #direction = 'undefined';
-    #isContainer = false;
     #isMovable = false;
     #isCollapsible = true;
     #isCollapsed = false;
@@ -2505,6 +2504,7 @@ class HTMLHarmonyPanelElement extends HTMLElement {
     #htmlContent;
     #isDummy = false;
     #shadowRoot;
+    #hasHeader = true;
     constructor() {
         super();
         this.#shadowRoot = this.attachShadow({ mode: 'closed' });
@@ -2551,13 +2551,13 @@ class HTMLHarmonyPanelElement extends HTMLElement {
             //this.draggable = true;
         }*/
     }
-    append() {
+    append(...nodes) {
         // eslint-disable-next-line prefer-rest-params
-        this.#htmlContent.append(...arguments);
+        this.#htmlContent.append(...nodes);
     }
-    prepend() {
+    prepend(...nodes) {
         // eslint-disable-next-line prefer-rest-params
-        this.#htmlContent.prepend(...arguments);
+        this.#htmlContent.prepend(...nodes);
     }
     /*
         appendChild(child: HTMLElement) {
@@ -2574,33 +2574,35 @@ class HTMLHarmonyPanelElement extends HTMLElement {
         if (oldValue == newValue) {
             return;
         }
-        if (name == 'panel-direction') {
-            this.#direction = newValue;
-        }
-        else if (name == 'panel-size') {
-            this.size = Number(newValue);
-        }
-        else if (name == 'is-container') {
-            this.isContainer = toBool(newValue);
-        }
-        else if (name == 'is-movable') {
-            this.isMovable = toBool(newValue);
-        }
-        else if (name == 'collapsible') {
-            this.collapsible = toBool(newValue);
-        }
-        else if (name == 'collapsed') {
-            this.collapsed = toBool(newValue);
-        }
-        else if (name == 'title') {
-            this.setTitle(newValue);
-        }
-        else if (name == 'title-i18n') {
-            this.setTitleI18n(newValue);
+        switch (name) {
+            case 'panel-direction':
+                this.#direction = newValue;
+                break;
+            case 'panel-size':
+                this.size = Number(newValue);
+                break;
+            case 'is-movable':
+                this.isMovable = toBool(newValue);
+                break;
+            case 'collapsible':
+                this.collapsible = toBool(newValue);
+                break;
+            case 'collapsed':
+                this.collapsed = toBool(newValue);
+                break;
+            case 'title':
+                this.setTitle(newValue);
+                break;
+            case 'title-i18n':
+                this.setTitleI18n(newValue);
+                break;
+            case 'has-header':
+                this.hasHeader = toBool(newValue);
+                break;
         }
     }
     static get observedAttributes() {
-        return ['panel-direction', 'panel-size', 'is-container', 'is-movable', 'title', 'title-i18n', 'collapsible', 'collapsed'];
+        return ['panel-direction', 'panel-size', 'is-movable', 'title', 'title-i18n', 'collapsible', 'collapsed', 'has-header'];
     }
     /*
         _handleDragStart(event) {
@@ -2817,9 +2819,6 @@ class HTMLHarmonyPanelElement extends HTMLElement {
     get size() {
         return this.#size;
     }
-    set isContainer(isContainer) {
-        this.#isContainer = isContainer;
-    }
     set isMovable(isMovable) {
         this.#isMovable = isMovable;
     }
@@ -2836,6 +2835,13 @@ class HTMLHarmonyPanelElement extends HTMLElement {
         else {
             this.expand();
         }
+    }
+    set hasHeader(hasHeader) {
+        this.#hasHeader = hasHeader;
+        display(this.#htmlHeader, hasHeader);
+    }
+    get hasHeader() {
+        return this.#hasHeader;
     }
     collapse() {
         hide(this.#htmlContent);
@@ -2857,10 +2863,7 @@ class HTMLHarmonyPanelElement extends HTMLElement {
         */
     }
     setTitleI18n(titleI18n) {
-        //this.#htmlHeader.classList.add('i18n');
-        //this.#htmlHeader.setAttribute('data-i18n', titleI18n);
         AddI18nElement(this.#htmlHeader, titleI18n);
-        //this.#htmlHeader.remove();
         this.title = titleI18n;
     }
     #toggleCollapse() {
@@ -2868,6 +2871,63 @@ class HTMLHarmonyPanelElement extends HTMLElement {
     }
     static get nextId() {
         return `harmony-panel-dummy-${++nextId}`;
+    }
+    /*
+    static saveDisposition(): JSONObject {
+        const list = document.getElementsByTagName('harmony-panel');
+        const json: { panels: Record<string, any>, dummies: any[] } = { panels: {}, dummies: [] };
+        for (const panel of list) {
+            if (panel.id && panel.parentElement && panel.parentElement.id && panel.parentElement.tagName == 'HARMONY-PANEL') {
+                json.panels[(panel as any).id] = { parent: panel.parentElement.id, size: (panel as any).size, direction: (panel as any).direction };
+                if ((panel as HTMLHarmonyPanelElement).#isDummy) {
+                    json.dummies.push((panel as any).id);
+                }
+            }
+        }
+        return json;
+    }
+    */
+    /*
+    static restoreDisposition(json: Record<string, any>): void {
+        return;
+        /*
+        if (!json || !json.dummies || !json.panels) { return; }
+
+        let dummiesList = new Map();
+        for (let oldDummy of json.dummies) {
+            let newDummy = HTMLHarmonyPanelElement._createDummy();
+            document.body.append(newDummy);
+            dummiesList.set(oldDummy, newDummy.id);
+        }
+
+        let list = document.getElementsByTagName('harmony-panel');
+        for (let panel of list) {
+            if (panel.id) {
+                let p = json.panels[panel.id];
+                if (p) {
+                    if (p.size != 1 || panel._isDummy) {
+                        panel.size = p.size;
+                    }
+                    panel.direction = p.direction;
+                    let newParentId = dummiesList.get(p.parent) || p.parent;
+                    if (p && newParentId) {
+                        let parent = document.getElementById(newParentId);
+                        /*if (!parent && p.dummy) {
+                            parent = document.createElement('harmony-panel');
+                        }* /
+                        if (parent) {
+                            parent.append(panel);
+                        } else {
+                            console.error('no parent', panel, newParentId);
+                        }
+                    }
+                }
+            }
+        }* /
+    }
+    */
+    adoptStyleSheet(styleSheet) {
+        this.#shadowRoot.adoptedStyleSheets.push(styleSheet);
     }
 }
 let definedPanel = false;

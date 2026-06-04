@@ -311,8 +311,8 @@ export declare class HTMLHarmonyPanelElement extends HTMLElement {
     customPanelId: number;
     constructor();
     connectedCallback(): void;
-    append(): void;
-    prepend(): void;
+    append(...nodes: (Node | string)[]): void;
+    prepend(...nodes: (Node | string)[]): void;
     get innerHTML(): string;
     set innerHTML(innerHTML: string);
     attributeChangedCallback(name: string, oldValue: string, newValue: string): void;
@@ -322,15 +322,17 @@ export declare class HTMLHarmonyPanelElement extends HTMLElement {
     get direction(): string;
     set size(size: number);
     get size(): number;
-    set isContainer(isContainer: boolean);
     set isMovable(isMovable: boolean);
     set collapsible(collapsible: boolean);
     set collapsed(collapsed: boolean);
+    set hasHeader(hasHeader: boolean);
+    get hasHeader(): boolean;
     collapse(): void;
     expand(): void;
     setTitle(title: string): void;
     setTitleI18n(titleI18n: string): void;
     static get nextId(): string;
+    adoptStyleSheet(styleSheet: CSSStyleSheet): void;
 }
 
 export declare class HTMLHarmonyRadioElement extends HTMLElement {

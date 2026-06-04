@@ -1,6 +1,6 @@
 import panelCSS from '../css/harmony-panel.css';
 import { shadowRootStyle } from "../harmony-css";
-import { createElement, defineElement, hide, show } from "../harmony-html";
+import { createElement, defineElement, display, hide, show } from "../harmony-html";
 import { AddI18nElement as addI18nElement } from '../harmony-i18n';
 import { toBool } from "../utils/attributes";
 import { injectGlobalCss } from "../utils/globalcss";
@@ -16,7 +16,6 @@ export class HTMLHarmonyPanelElement extends HTMLElement {
 	#panels = new Set();
 	#size = 1;
 	#direction = 'undefined';
-	#isContainer = false;
 	#isMovable = false;
 	#isCollapsible = true;
 	#isCollapsed = false;
@@ -25,6 +24,7 @@ export class HTMLHarmonyPanelElement extends HTMLElement {
 	readonly #htmlContent: HTMLElement;
 	#isDummy = false;
 	#shadowRoot: ShadowRoot;
+	#hasHeader = true;
 
 	constructor() {
 		super();
@@ -79,14 +79,14 @@ export class HTMLHarmonyPanelElement extends HTMLElement {
 		}*/
 	}
 
-	append(): void {
+	append(...nodes: (Node | string)[]): void {
 		// eslint-disable-next-line prefer-rest-params
-		this.#htmlContent.append(...arguments);
+		this.#htmlContent.append(...nodes);
 	}
 
-	prepend(): void {
+	prepend(...nodes: (Node | string)[]): void {
 		// eslint-disable-next-line prefer-rest-params
-		this.#htmlContent.prepend(...arguments);
+		this.#htmlContent.prepend(...nodes);
 	}
 	/*
 		appendChild(child: HTMLElement) {
@@ -106,27 +106,37 @@ export class HTMLHarmonyPanelElement extends HTMLElement {
 		if (oldValue == newValue) {
 			return;
 		}
-		if (name == 'panel-direction') {
-			this.#direction = newValue;
-		} else if (name == 'panel-size') {
-			this.size = Number(newValue);
-		} else if (name == 'is-container') {
-			this.isContainer = toBool(newValue);
-		} else if (name == 'is-movable') {
-			this.isMovable = toBool(newValue);
-		} else if (name == 'collapsible') {
-			this.collapsible = toBool(newValue);
-		} else if (name == 'collapsed') {
-			this.collapsed = toBool(newValue);
-		} else if (name == 'title') {
-			this.setTitle(newValue);
-		} else if (name == 'title-i18n') {
-			this.setTitleI18n(newValue);
+
+		switch (name) {
+			case 'panel-direction':
+				this.#direction = newValue;
+				break;
+			case 'panel-size':
+				this.size = Number(newValue);
+				break;
+			case 'is-movable':
+				this.isMovable = toBool(newValue);
+				break;
+			case 'collapsible':
+				this.collapsible = toBool(newValue);
+				break;
+			case 'collapsed':
+				this.collapsed = toBool(newValue);
+				break;
+			case 'title':
+				this.setTitle(newValue);
+				break;
+			case 'title-i18n':
+				this.setTitleI18n(newValue);
+				break;
+			case 'has-header':
+				this.hasHeader = toBool(newValue);
+				break;
 		}
 	}
 
 	static get observedAttributes(): string[] {
-		return ['panel-direction', 'panel-size', 'is-container', 'is-movable', 'title', 'title-i18n', 'collapsible', 'collapsed'];
+		return ['panel-direction', 'panel-size', 'is-movable', 'title', 'title-i18n', 'collapsible', 'collapsed', 'has-header'];
 	}
 	/*
 		_handleDragStart(event) {
@@ -348,10 +358,6 @@ export class HTMLHarmonyPanelElement extends HTMLElement {
 		return this.#size;
 	}
 
-	set isContainer(isContainer: boolean) {
-		this.#isContainer = isContainer;
-	}
-
 	set isMovable(isMovable: boolean) {
 		this.#isMovable = isMovable;
 	}
@@ -369,6 +375,16 @@ export class HTMLHarmonyPanelElement extends HTMLElement {
 		} else {
 			this.expand();
 		}
+	}
+
+	set hasHeader(hasHeader: boolean) {
+		this.#hasHeader = hasHeader;
+
+		display(this.#htmlHeader, hasHeader);
+	}
+
+	get hasHeader(): boolean {
+		return this.#hasHeader;
 	}
 
 	collapse(): void {
@@ -394,10 +410,7 @@ export class HTMLHarmonyPanelElement extends HTMLElement {
 	}
 
 	setTitleI18n(titleI18n: string): void {
-		//this.#htmlHeader.classList.add('i18n');
-		//this.#htmlHeader.setAttribute('data-i18n', titleI18n);
 		addI18nElement(this.#htmlHeader, titleI18n);
-		//this.#htmlHeader.remove();
 		this.title = titleI18n;
 	}
 
@@ -465,6 +478,10 @@ export class HTMLHarmonyPanelElement extends HTMLElement {
 		}* /
 	}
 	*/
+
+	adoptStyleSheet(styleSheet: CSSStyleSheet): void {
+		this.#shadowRoot.adoptedStyleSheets.push(styleSheet);
+	}
 }
 
 let definedPanel = false;
