@@ -64,6 +64,14 @@
 	flex: 1;
 }
 
+.header.target {
+	background: blue;
+}
+
+.content.target {
+	background: blue;
+}
+
 [collapsible='1']>.title::after {
 	content: "-";
 	right: 5px;

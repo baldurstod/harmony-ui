@@ -2484,16 +2484,17 @@ function defineHarmonyPalette() {
     }
 }
 
-var panelCSS = ":host {\n\tdisplay: flex;\n\tflex: 1;\n\tflex-direction: column;\n\n\tflex: 0 0 auto;\n\t/*flex-grow: 0;\n\tflex-shrink: 0;\n\tflex-basis: auto;*/\n\t/*flex-basis: 0;*/\n\t/*flex: 1;*/\n\t/*height:100%;\n\twidth:100%;*/\n\n\t/*padding: 5px !important;*/\n\tbox-sizing: border-box;\n\tpointer-events: all;\n\toverflow: hidden;\n\tposition: relative;\n\tflex-direction: column;\n\tbox-sizing: border-box;\n\t--header-bg-color: var(--harmony-panel-header-bg-color, var(--main-bg-color-dark, black));\n\t--content-bg-color: var(--harmony-panel-content-bg-color, var(--main-bg-color-dark, black));\n}\n\n.harmony-panel-row {\n\tflex-direction: row;\n}\n\n.harmony-panel-row>harmony-panel {\n\theight: 100%;\n}\n\n.harmony-panel-column {\n\tflex-direction: column;\n}\n\n.harmony-panel-column>harmony-panel {\n\twidth: 100%;\n}\n\n.harmony-panel-splitter {\n\tdisplay: none;\n\tflex: 0 0 10px;\n\tbackground-color: red;\n}\n\n.header {\n\tcursor: pointer;\n\t/*text-align: center;*/\n\tfont-size: 1.5em;\n\tpadding: 4px;\n\toverflow: hidden;\n\tflex: 0 0 2rem;\n\tbackground-color: var(--header-bg-color);\n\tdisplay: flex;\n\talign-items: center;\n}\n\n.content {\n\twidth: 100%;\n\tbox-sizing: border-box;\n\tbackground-color: var(--content-bg-color);\n\tflex: 1;\n}\n\n[collapsible='1']>.title::after {\n\tcontent: \"-\";\n\tright: 5px;\n\tposition: absolute;\n}\n\n[collapsed='1']>.title::after {\n\tcontent: \"+\";\n}\n";
+var panelCSS = ":host {\n\tdisplay: flex;\n\tflex: 1;\n\tflex-direction: column;\n\n\tflex: 0 0 auto;\n\t/*flex-grow: 0;\n\tflex-shrink: 0;\n\tflex-basis: auto;*/\n\t/*flex-basis: 0;*/\n\t/*flex: 1;*/\n\t/*height:100%;\n\twidth:100%;*/\n\n\t/*padding: 5px !important;*/\n\tbox-sizing: border-box;\n\tpointer-events: all;\n\toverflow: hidden;\n\tposition: relative;\n\tflex-direction: column;\n\tbox-sizing: border-box;\n\t--header-bg-color: var(--harmony-panel-header-bg-color, var(--main-bg-color-dark, black));\n\t--content-bg-color: var(--harmony-panel-content-bg-color, var(--main-bg-color-dark, black));\n}\n\n.harmony-panel-row {\n\tflex-direction: row;\n}\n\n.harmony-panel-row>harmony-panel {\n\theight: 100%;\n}\n\n.harmony-panel-column {\n\tflex-direction: column;\n}\n\n.harmony-panel-column>harmony-panel {\n\twidth: 100%;\n}\n\n.harmony-panel-splitter {\n\tdisplay: none;\n\tflex: 0 0 10px;\n\tbackground-color: red;\n}\n\n.header {\n\tcursor: pointer;\n\t/*text-align: center;*/\n\tfont-size: 1.5em;\n\tpadding: 4px;\n\toverflow: hidden;\n\tflex: 0 0 2rem;\n\tbackground-color: var(--header-bg-color);\n\tdisplay: flex;\n\talign-items: center;\n}\n\n.content {\n\twidth: 100%;\n\tbox-sizing: border-box;\n\tbackground-color: var(--content-bg-color);\n\tflex: 1;\n}\n\n.header.target {\n\tbackground: blue;\n}\n\n.content.target {\n\tbackground: blue;\n}\n\n[collapsible='1']>.title::after {\n\tcontent: \"-\";\n\tright: 5px;\n\tposition: absolute;\n}\n\n[collapsed='1']>.title::after {\n\tcontent: \"+\";\n}\n";
 
+var _a;
 //const dragged = null;
 let nextId = 0;
 //let spliter: HTMLElement = createElement('div', { class: 'harmony-panel-splitter' }) as HTMLElement;
 let highlitPanel;
+const DRAG_THRESHOLD = 15;
 class HTMLHarmonyPanelElement extends HTMLElement {
     #doOnce = true;
     #parent = null;
-    #panels = new Set();
     #size = 1;
     #direction = 'undefined';
     #isMovable = false;
@@ -2505,8 +2506,24 @@ class HTMLHarmonyPanelElement extends HTMLElement {
     #isDummy = false;
     #shadowRoot;
     #hasHeader = true;
+    #isDraggable = true;
+    static #dragging = false;
+    static #draggedPanel;
+    static #deltaX = 0;
+    static #deltaY = 0;
+    static #startClientX = 0;
+    static #startClientY = 0;
+    static #mouseDown = false;
+    static #panels = new Set;
+    static #target;
+    static {
+        document.addEventListener('mousedown', (event) => _a.#handleDocumentMouseDown(event));
+        document.addEventListener('mousemove', (event) => _a.#handleDocumentMouseMove(event));
+        document.addEventListener('mouseup', (event) => _a.#handleDocumentMouseUp(event));
+    }
     constructor() {
         super();
+        _a.#panels.add(this);
         this.#shadowRoot = this.attachShadow({ mode: 'closed' });
         void shadowRootStyle(this.#shadowRoot, panelCSS);
         //this.addEventListener('dragstart', event => this._handleDragStart(event));
@@ -2519,6 +2536,10 @@ class HTMLHarmonyPanelElement extends HTMLElement {
             class: 'header',
             parent: this.#shadowRoot,
             $dblclick: () => this.#toggleCollapse(),
+            //$dragstart: (event: Event) => this.#handleDragStart(event as DragEvent),
+            //$drag: (event: Event) => this.#handleDrag(event as DragEvent),
+            //$mousemove: (event: Event) => this.#handleDrag(event as DragEvent),
+            $mousedown: (event) => this.#handleMouseDown(event),
         });
         this.#htmlContent = createElement('div', {
             class: 'content',
@@ -2599,10 +2620,14 @@ class HTMLHarmonyPanelElement extends HTMLElement {
             case 'has-header':
                 this.hasHeader = toBool(newValue);
                 break;
+            case 'draggable':
+                this.#isDraggable = toBool(newValue);
+                this.#htmlHeader.setAttribute('draggable', newValue);
+                break;
         }
     }
     static get observedAttributes() {
-        return ['panel-direction', 'panel-size', 'is-movable', 'title', 'title-i18n', 'collapsible', 'collapsed', 'has-header'];
+        return ['panel-direction', 'panel-size', 'is-movable', 'title', 'title-i18n', 'collapsible', 'collapsed', 'has-header', 'draggable'];
     }
     /*
         _handleDragStart(event) {
@@ -2929,7 +2954,94 @@ class HTMLHarmonyPanelElement extends HTMLElement {
     adoptStyleSheet(styleSheet) {
         this.#shadowRoot.adoptedStyleSheets.push(styleSheet);
     }
+    #handleMouseDown(event) {
+        if (this.#isDraggable) {
+            _a.#draggedPanel = this;
+        }
+    }
+    #startDrag() {
+        if (_a.#dragging) {
+            return;
+        }
+        _a.#dragging = true;
+        const rect = this.getBoundingClientRect();
+        document.body.append(this);
+        this.style.left = `${rect.x}px`;
+        this.style.top = `${rect.y}px`;
+        this.style.position = 'absolute';
+        _a.#deltaX = rect.x - _a.#startClientX;
+        _a.#deltaY = rect.y - _a.#startClientY;
+    }
+    #drag(event) {
+        if (!_a.#dragging) {
+            return;
+        }
+        this.style.left = `${event.clientX + _a.#deltaX}px`;
+        this.style.top = `${event.clientY + _a.#deltaY}px`;
+        const panel = this.#getPanelAtMousePosition(event);
+        _a.#setTarget(panel);
+    }
+    #stopDrag() {
+        _a.#dragging = false;
+        if (_a.#target) {
+            _a.#target.append(this);
+            this.style = '';
+        }
+    }
+    static #setTarget(target) {
+        if (this.#target) {
+            this.#target.#htmlHeader.classList.remove('target');
+            this.#target.#htmlContent.classList.remove('target');
+        }
+        if (target) {
+            target.#htmlHeader.classList.add('target');
+            target.#htmlContent.classList.add('target');
+        }
+        this.#target = target;
+    }
+    static #handleDocumentMouseMove(event) {
+        if (!this.#mouseDown || !this.#draggedPanel) {
+            return;
+        }
+        const deltaX = event.clientX - this.#startClientX;
+        const deltaY = event.clientY - this.#startClientY;
+        //console.info(deltaX, deltaY, HTMLHarmonyPanelElement.#deltaX, HTMLHarmonyPanelElement.#deltaY);
+        if (deltaX * deltaX + deltaY * deltaY > DRAG_THRESHOLD) {
+            this.#draggedPanel.#startDrag();
+        }
+        this.#draggedPanel.#drag(event);
+    }
+    static #handleDocumentMouseDown(event) {
+        this.#mouseDown = true;
+        this.#startClientX = event.clientX;
+        this.#startClientY = event.clientY;
+    }
+    static #handleDocumentMouseUp(event) {
+        this.#mouseDown = false;
+        _a.#dragging = false;
+        if (this.#draggedPanel) {
+            this.#draggedPanel.#stopDrag();
+            this.#draggedPanel = undefined;
+        }
+        this.#setTarget();
+    }
+    #getPanelAtMousePosition(event) {
+        for (const panel of _a.#panels) {
+            if (panel === this) {
+                continue;
+            }
+            const rect = panel.getBoundingClientRect();
+            if (event.clientX >= rect.left
+                && event.clientX < rect.right
+                && event.clientY >= rect.top
+                && event.clientY < rect.bottom) {
+                return panel;
+            }
+        }
+        return;
+    }
 }
+_a = HTMLHarmonyPanelElement;
 let definedPanel = false;
 function defineHarmonyPanel() {
     if (!definedPanel) {

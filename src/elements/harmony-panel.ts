@@ -1,19 +1,20 @@
 import panelCSS from '../css/harmony-panel.css';
-import { shadowRootStyle } from "../harmony-css";
-import { createElement, defineElement, display, hide, show } from "../harmony-html";
+import { shadowRootStyle } from '../harmony-css';
+import { createElement, defineElement, display, hide, show } from '../harmony-html';
 import { AddI18nElement as addI18nElement } from '../harmony-i18n';
-import { toBool } from "../utils/attributes";
-import { injectGlobalCss } from "../utils/globalcss";
+import { toBool } from '../utils/attributes';
+import { injectGlobalCss } from '../utils/globalcss';
 
 //const dragged = null;
 let nextId = 0;
 //let spliter: HTMLElement = createElement('div', { class: 'harmony-panel-splitter' }) as HTMLElement;
 let highlitPanel: HTMLElement;
 
+const DRAG_THRESHOLD = 15;
+
 export class HTMLHarmonyPanelElement extends HTMLElement {
 	#doOnce = true;
 	#parent = null;
-	#panels = new Set();
 	#size = 1;
 	#direction = 'undefined';
 	#isMovable = false;
@@ -25,9 +26,26 @@ export class HTMLHarmonyPanelElement extends HTMLElement {
 	#isDummy = false;
 	#shadowRoot: ShadowRoot;
 	#hasHeader = true;
+	#isDraggable = true;
+	static #dragging = false;
+	static #draggedPanel?: HTMLHarmonyPanelElement;
+	static #deltaX = 0;
+	static #deltaY = 0;
+	static #startClientX = 0;
+	static #startClientY = 0;
+	static #mouseDown = false;
+	static #panels = new Set<HTMLHarmonyPanelElement>;
+	static #target?: HTMLHarmonyPanelElement;
+
+	static {
+		document.addEventListener('mousedown', (event: Event) => HTMLHarmonyPanelElement.#handleDocumentMouseDown(event as MouseEvent));
+		document.addEventListener('mousemove', (event: Event) => HTMLHarmonyPanelElement.#handleDocumentMouseMove(event as MouseEvent));
+		document.addEventListener('mouseup', (event: Event) => HTMLHarmonyPanelElement.#handleDocumentMouseUp(event as MouseEvent));
+	}
 
 	constructor() {
 		super();
+		HTMLHarmonyPanelElement.#panels.add(this);
 		this.#shadowRoot = this.attachShadow({ mode: 'closed' });
 		void shadowRootStyle(this.#shadowRoot, panelCSS);
 		//this.addEventListener('dragstart', event => this._handleDragStart(event));
@@ -41,6 +59,10 @@ export class HTMLHarmonyPanelElement extends HTMLElement {
 			class: 'header',
 			parent: this.#shadowRoot,
 			$dblclick: () => this.#toggleCollapse(),
+			//$dragstart: (event: Event) => this.#handleDragStart(event as DragEvent),
+			//$drag: (event: Event) => this.#handleDrag(event as DragEvent),
+			//$mousemove: (event: Event) => this.#handleDrag(event as DragEvent),
+			$mousedown: (event: Event) => this.#handleMouseDown(event as MouseEvent),
 		});
 		this.#htmlContent = createElement('div', {
 			class: 'content',
@@ -132,11 +154,15 @@ export class HTMLHarmonyPanelElement extends HTMLElement {
 			case 'has-header':
 				this.hasHeader = toBool(newValue);
 				break;
+			case 'draggable':
+				this.#isDraggable = toBool(newValue);
+				this.#htmlHeader.setAttribute('draggable', newValue);
+				break;
 		}
 	}
 
 	static get observedAttributes(): string[] {
-		return ['panel-direction', 'panel-size', 'is-movable', 'title', 'title-i18n', 'collapsible', 'collapsed', 'has-header'];
+		return ['panel-direction', 'panel-size', 'is-movable', 'title', 'title-i18n', 'collapsible', 'collapsed', 'has-header', 'draggable'];
 	}
 	/*
 		_handleDragStart(event) {
@@ -481,6 +507,115 @@ export class HTMLHarmonyPanelElement extends HTMLElement {
 
 	adoptStyleSheet(styleSheet: CSSStyleSheet): void {
 		this.#shadowRoot.adoptedStyleSheets.push(styleSheet);
+	}
+
+	#handleMouseDown(event: MouseEvent): void {
+		if (this.#isDraggable) {
+			HTMLHarmonyPanelElement.#draggedPanel = this;
+		}
+	}
+
+	#startDrag(): void {
+		if (HTMLHarmonyPanelElement.#dragging) {
+			return;
+		}
+		HTMLHarmonyPanelElement.#dragging = true;
+
+		const rect = this.getBoundingClientRect();
+		document.body.append(this);
+
+		this.style.left = `${rect.x}px`;
+		this.style.top = `${rect.y}px`;
+		this.style.position = 'absolute';
+
+		HTMLHarmonyPanelElement.#deltaX = rect.x - HTMLHarmonyPanelElement.#startClientX;
+		HTMLHarmonyPanelElement.#deltaY = rect.y - HTMLHarmonyPanelElement.#startClientY;
+	}
+
+	#drag(event: MouseEvent): void {
+		if (!HTMLHarmonyPanelElement.#dragging) {
+			return;
+		}
+
+		this.style.left = `${(event as MouseEvent).clientX + HTMLHarmonyPanelElement.#deltaX}px`;
+		this.style.top = `${(event as MouseEvent).clientY + HTMLHarmonyPanelElement.#deltaY}px`;
+
+		const panel = this.#getPanelAtMousePosition(event);
+		HTMLHarmonyPanelElement.#setTarget(panel);
+	}
+
+	#stopDrag(): void {
+		HTMLHarmonyPanelElement.#dragging = false;
+		if (HTMLHarmonyPanelElement.#target) {
+			HTMLHarmonyPanelElement.#target.append(this);
+			this.style = '';
+		}
+
+	}
+
+	static #setTarget(target?: HTMLHarmonyPanelElement): void {
+		if (this.#target) {
+			this.#target.#htmlHeader.classList.remove('target');
+			this.#target.#htmlContent.classList.remove('target');
+		}
+
+		if (target) {
+			target.#htmlHeader.classList.add('target');
+			target.#htmlContent.classList.add('target');
+		}
+		this.#target = target;
+	}
+
+	static #handleDocumentMouseMove(event: MouseEvent): void {
+		if (!this.#mouseDown || !this.#draggedPanel) {
+			return;
+		}
+		const deltaX = (event as MouseEvent).clientX - this.#startClientX;
+		const deltaY = (event as MouseEvent).clientY - this.#startClientY;
+
+		//console.info(deltaX, deltaY, HTMLHarmonyPanelElement.#deltaX, HTMLHarmonyPanelElement.#deltaY);
+
+		if (deltaX * deltaX + deltaY * deltaY > DRAG_THRESHOLD) {
+			this.#draggedPanel.#startDrag();
+		}
+
+		this.#draggedPanel.#drag(event);
+	}
+
+	static #handleDocumentMouseDown(event: MouseEvent): void {
+		this.#mouseDown = true;
+
+		this.#startClientX = (event as MouseEvent).clientX;
+		this.#startClientY = (event as MouseEvent).clientY;
+	}
+
+	static #handleDocumentMouseUp(event: MouseEvent): void {
+		this.#mouseDown = false;
+		HTMLHarmonyPanelElement.#dragging = false;
+
+		if (this.#draggedPanel) {
+			this.#draggedPanel.#stopDrag();
+			this.#draggedPanel = undefined;
+		}
+		this.#setTarget();
+	}
+
+	#getPanelAtMousePosition(event: MouseEvent): HTMLHarmonyPanelElement | undefined {
+		for (const panel of HTMLHarmonyPanelElement.#panels) {
+			if (panel === this) {
+				continue;
+			}
+
+			const rect = panel.getBoundingClientRect();
+			if (event.clientX >= rect.left
+				&& event.clientX < rect.right
+				&& event.clientY >= rect.top
+				&& event.clientY < rect.bottom
+			) {
+				return panel;
+			}
+		}
+		return;
 	}
 }
 
