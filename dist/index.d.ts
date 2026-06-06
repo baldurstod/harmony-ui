@@ -333,6 +333,8 @@ export declare class HTMLHarmonyPanelElement extends HTMLElement {
     setTitleI18n(titleI18n: string): void;
     static get nextId(): string;
     adoptStyleSheet(styleSheet: CSSStyleSheet): void;
+    setFloating(): void;
+    setDocked(): void;
 }
 
 export declare class HTMLHarmonyRadioElement extends HTMLElement {
