@@ -154,6 +154,10 @@ export declare type HarmonySwitchChange = {
     value: boolean | undefined;
 };
 
+declare interface HasI18n {
+    setI18n(i18n: string | I18nDescriptor | null): void;
+}
+
 export declare function hide(htmlElement: HTMLElement | SVGElement | ShadowRoot | (HTMLElement | SVGElement | ShadowRoot)[] | undefined | null): void;
 
 export declare class HTMLHarmony2dManipulatorElement extends HTMLElement {
@@ -306,7 +310,7 @@ export declare class HTMLHarmonyPaletteElement extends HTMLElement {
     static get observedAttributes(): string[];
 }
 
-export declare class HTMLHarmonyPanelElement extends HTMLElement {
+export declare class HTMLHarmonyPanelElement extends HTMLElement implements HasI18n {
     #private;
     customPanelId: number;
     constructor();
@@ -330,7 +334,7 @@ export declare class HTMLHarmonyPanelElement extends HTMLElement {
     collapse(): void;
     expand(): void;
     setTitle(title: string): void;
-    setTitleI18n(titleI18n: string): void;
+    setI18n(i18n: string | I18nDescriptor | null): void;
     static get nextId(): string;
     adoptStyleSheet(styleSheet: CSSStyleSheet): void;
     setFloating(): void;

@@ -1,7 +1,9 @@
+import { errorOnce } from 'harmony-utils';
 import panelCSS from '../css/harmony-panel.css';
 import { shadowRootStyle } from '../harmony-css';
 import { createElement, defineElement, display, hide, show } from '../harmony-html';
-import { AddI18nElement as addI18nElement } from '../harmony-i18n';
+import { AddI18nElement as addI18nElement, I18nDescriptor } from '../harmony-i18n';
+import { HasI18n } from '../interfaces/hasi18n';
 import { toBool } from '../utils/attributes';
 import { injectGlobalCss } from '../utils/globalcss';
 
@@ -18,7 +20,7 @@ enum DragMode {
 	Resize,
 }
 
-export class HTMLHarmonyPanelElement extends HTMLElement {
+export class HTMLHarmonyPanelElement extends HTMLElement implements HasI18n {
 	#doOnce = true;
 	#parent = null;
 	#size = 1;
@@ -167,9 +169,6 @@ export class HTMLHarmonyPanelElement extends HTMLElement {
 			case 'title':
 				this.setTitle(newValue);
 				break;
-			case 'title-i18n':
-				this.setTitleI18n(newValue);
-				break;
 			case 'has-header':
 				this.hasHeader = toBool(newValue);
 				break;
@@ -177,11 +176,18 @@ export class HTMLHarmonyPanelElement extends HTMLElement {
 				this.#isDraggable = toBool(newValue);
 				this.#htmlHeader.setAttribute('draggable', newValue);
 				break;
+			case 'hidden-title':
+				if (toBool(newValue)) {
+					this.#htmlHeader.classList.add('hidden');
+				} else {
+					this.#htmlHeader.classList.remove('hidden');
+				}
+				break;
 		}
 	}
 
 	static get observedAttributes(): string[] {
-		return ['panel-direction', 'panel-size', 'is-movable', 'title', 'title-i18n', 'collapsible', 'collapsed', 'has-header', 'draggable'];
+		return ['panel-direction', 'panel-size', 'is-movable', 'title', 'collapsible', 'collapsed', 'has-header', 'draggable', 'hidden-title'];
 	}
 	/*
 		_handleDragStart(event) {
@@ -454,9 +460,17 @@ export class HTMLHarmonyPanelElement extends HTMLElement {
 		*/
 	}
 
-	setTitleI18n(titleI18n: string): void {
+
+	setI18n(i18n: string | I18nDescriptor | null): void {
+		if (typeof i18n === 'string') {
+			this.#setTitleI18n(i18n);
+		} else {
+			errorOnce('unhandled type ' + typeof i18n + i18n);
+		}
+	}
+
+	#setTitleI18n(titleI18n: string): void {
 		addI18nElement(this.#htmlHeader, titleI18n);
-		this.title = titleI18n;
 	}
 
 	#toggleCollapse(): void {

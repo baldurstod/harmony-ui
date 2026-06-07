@@ -1,5 +1,6 @@
 import { HTMLHarmonyToggleButtonElement } from './browser';
 import { AddI18nElement, I18nDescriptor } from './harmony-i18n';
+import { HasI18n } from './interfaces/hasi18n';
 import { ET } from './utils/create';
 import { getHelp } from './utils/help';
 
@@ -124,7 +125,11 @@ function createElementOptions(element: HTMLElement, options?: CreateElementOptio
 					element.classList.add(...(optionValue as string).split(' ').filter((n: string) => n));
 					break;
 				case 'i18n':
-					AddI18nElement(element, optionValue as string | I18nDescriptor | null);
+					if ((element as unknown as HasI18n).setI18n) {
+						(element as unknown as HasI18n).setI18n(optionValue as string | I18nDescriptor | null);
+					} else {
+						AddI18nElement(element, optionValue as string | I18nDescriptor | null);
+					}
 					break;
 				case 'parent':
 					(optionValue as Element | ShadowRoot).append(element);
