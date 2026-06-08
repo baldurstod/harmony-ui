@@ -37,6 +37,8 @@ export class HTMLHarmonyPanelElement extends HTMLElement implements HasI18n {
 	#hasHeader = true;
 	#isDraggable = true;
 	#floating = false;
+	#floatingWidth?: number;
+	#floatingHeight?: number;
 	static #dragMode = DragMode.None;
 	static #resizeX = 0;
 	static #resizeY = 0;
@@ -66,6 +68,7 @@ export class HTMLHarmonyPanelElement extends HTMLElement implements HasI18n {
 		this.#htmlHeader = createElement('div', {
 			class: 'header',
 			parent: this.#shadowRoot,
+			hidden: true,
 			$dblclick: () => this.#toggleCollapse(),
 			$mousedown: (event: Event) => this.#handleMouseDown(event as MouseEvent),
 		});
@@ -450,6 +453,7 @@ export class HTMLHarmonyPanelElement extends HTMLElement implements HasI18n {
 
 	setTitle(title: string): void {
 		this.#htmlHeader.innerText = title;
+		show(this.#htmlHeader);
 		/*
 		if (title) {
 			//this.#htmlTitle = this.#htmlTitle ?? document.createElement('div');
@@ -467,6 +471,7 @@ export class HTMLHarmonyPanelElement extends HTMLElement implements HasI18n {
 		} else {
 			errorOnce('unhandled type ' + typeof i18n + i18n);
 		}
+		show(this.#htmlHeader);
 	}
 
 	#setTitleI18n(titleI18n: string): void {
@@ -559,10 +564,13 @@ export class HTMLHarmonyPanelElement extends HTMLElement implements HasI18n {
 		document.body.append(this);
 		this.setFloating();
 
+		this.#floatingWidth = this.#floatingWidth ?? rect.width;
+		this.#floatingHeight = this.#floatingHeight ?? rect.height;
+
 		this.style.left = `${rect.x}px`;
 		this.style.top = `${rect.y}px`;
-		this.style.width = `${rect.width}px`;
-		this.style.height = `${rect.height}px`;
+		this.style.width = `${this.#floatingWidth}px`;
+		this.style.height = `${this.#floatingHeight}px`;
 		this.style.position = 'absolute';
 
 		HTMLHarmonyPanelElement.#deltaX = rect.x - HTMLHarmonyPanelElement.#startClientX;
@@ -640,11 +648,14 @@ export class HTMLHarmonyPanelElement extends HTMLElement implements HasI18n {
 				break;
 		}
 
+
+		this.#floatingWidth = rect.width + deltaWidth;
+		this.#floatingHeight = rect.height + deltaHeight;
+
 		this.style.left = `${rect.x + deltaLeft}px`;
 		this.style.top = `${rect.y + deltaTop}px`;
-		this.style.width = `${rect.width + deltaWidth}px`;
-		this.style.height = `${rect.height + deltaHeight}px`;
-
+		this.style.width = `${this.#floatingWidth}px`;
+		this.style.height = `${this.#floatingHeight}px`;
 	}
 
 	#stopResize(): void {
