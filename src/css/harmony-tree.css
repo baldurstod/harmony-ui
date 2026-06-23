@@ -4,6 +4,7 @@
 	--header-bg-color-hover: var(--harmony-tree-header-bg-color-hover, var(--main-bg-color-bright, #41454d));
 	--selected-bg-color: var(--harmony-tree-selected-bg-color, var(--accent-primary, rgb(26, 172, 201)));
 	color: var(--main-text-color-dark2, white);
+	background-color: var(--header-bg-color);
 }
 
 .item {

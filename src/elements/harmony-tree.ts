@@ -591,7 +591,7 @@ export class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
 		}
 		if (!this.#cssLevel.has(level)) {
 			this.#cssLevel.add(level);
-			this.#dynamicSheet.insertRule(`.level${level} .padding{width: ${level}rem}`);
+			this.#dynamicSheet.insertRule(`.level${level} .padding{flex: 0 0 ${level}rem}`);
 		}
 	}
 
