@@ -1,0 +1,25 @@
+:host {
+	overflow: hidden;
+	display: flex;
+	justify-content: center;
+	position: relative;
+	width: 100%;
+
+	--bg-color: var(--harmony-toolbar-bg-color, var(--main-bg-color, black));
+	background-color: var(--bg-color);
+}
+
+.string {
+	width: 100%;
+	display: flex;
+	gap: 0.25rem;
+}
+
+.string>span {
+	flex: 0 0 auto;
+	max-width: 50%;
+}
+
+.string>input {
+	flex: 1 1 auto;
+}

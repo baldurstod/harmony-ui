@@ -72,6 +72,8 @@ export declare function defineHarmonyCopy(): void;
 
 export declare function defineHarmonyFileInput(): void;
 
+export declare function defineHarmonyFilter(): void;
+
 export declare function defineHarmonyInfoBox(): void;
 
 export declare function defineHarmonyItem(): void;
@@ -115,6 +117,61 @@ export declare function documentStyleSync(cssText: string): void;
 export declare function getCustomElementRegistry(): CustomElementRegistry | undefined;
 
 export declare type HarmonyEventListener = ((evt: Event) => void) | ((evt: MouseEvent) => void) | ((evt: WheelEvent) => void) | ((evt: PointerEvent) => void) | ((evt: KeyboardEvent) => void) | ((evt: InputEvent) => void) | ((evt: CustomEvent) => void);
+
+export declare type HarmonyFilter = HarmonyFilterItem[];
+
+export declare type HarmonyFilterEvent = {
+    name: string;
+    value: any;
+};
+
+export declare type HarmonyFilterItem = {
+    /** Filter name. Must be unique among all filters */
+    name: string;
+    /** Filter type */
+    type: HarmonyFilterType;
+    /** Filter title */
+    title?: string;
+    /** Filter placeholder */
+    placeholder?: string;
+    /** Enable internationalization of title and placeholder. Default to true */
+    i18n?: boolean;
+    /** For range or number filters, number of allowed decimals. 0 means integer. Default to 0 */
+    decimals?: number;
+    /** Default filter value */
+    value?: any;
+    /** For list like filters, determine the options type. See HarmonyFilterListType for more details */
+    listType?: HarmonyFilterListType;
+    /** For list like filters, list the default options */
+    options?: HarmonyFilterOption[];
+};
+
+/**
+ * For list like filters, determine the type of options
+ */
+export declare enum HarmonyFilterListType {
+    /** Value can be true or false. Default option value is false */
+    Boolean = 0,
+    /** Value can be true, false or undefined. Default option value is undefined */
+    Ternary = 1
+}
+
+export declare type HarmonyFilterOption = {
+    /** Option name. Must be unique among all options of a filter */
+    name: string;
+    /** Option title */
+    title?: string;
+    /** Enable internationalization of title. Default to true */
+    i18n?: boolean;
+    /** Optional icon */
+    icon?: string;
+    /** Optional color */
+    color?: string;
+    /** Default option value. If not provided the default value will follow the rules of HarmonyFilterListType */
+    value?: boolean | undefined;
+};
+
+export declare type HarmonyFilterType = 'string' | 'number' | 'range' | 'list' | 'select' | 'custom';
 
 export declare type HarmonyMenuItem = {
     i18n?: string;
@@ -252,6 +309,14 @@ export declare class HTMLHarmonyFileInputElement extends HTMLElement {
     adoptStyleSheet(styleSheet: CSSStyleSheet): void;
     attributeChangedCallback(name: string, oldValue: string, newValue: string): void;
     static get observedAttributes(): string[];
+}
+
+export declare class HTMLHarmonyFilterElement extends HTMLHarmonyElement {
+    #private;
+    protected createElement(): void;
+    addItem(item: HTMLElement): void;
+    addFilters(filters: HarmonyFilterItem[]): void;
+    addFilter(filter: HarmonyFilterItem): void;
 }
 
 export declare class HTMLHarmonyInfoBoxElement extends HTMLElement {

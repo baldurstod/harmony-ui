@@ -1,7 +1,4 @@
-function cloneEvent(event) {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-explicit-any
-    return new event.constructor(event.type, event);
-}
+var manipulator2dCSS = ":host {\n\t--handle-radius: var(--harmony-2d-manipulator-radius, 0.5rem);\n\t--harmony-2d-manipulator-shadow-bg-color: var(--harmony-2d-manipulator-bg-color, red);\n\t--harmony-2d-manipulator-shadow-border: var(--harmony-2d-manipulator-border, none);\n\t--handle-bg-color: var(--harmony-2d-manipulator-handle-bg-color, chartreuse);\n\t--corner-bg-color: var(--harmony-2d-manipulator-corner-bg-color, var(--handle-bg-color));\n\t--side-bg-color: var(--harmony-2d-manipulator-side-bg-color, var(--handle-bg-color));\n\t--rotate-bg-color: var(--harmony-2d-manipulator-rotate-bg-color, var(--handle-bg-color));\n\n\twidth: 1rem;\n\theight: 1rem;\n\tdisplay: block;\n\tuser-select: none;\n\tpointer-events: all;\n}\n\n:host-context(.grabbing) {\n\tcursor: grabbing;\n}\n\n.manipulator {\n\tposition: absolute;\n\tbackground-color: var(--harmony-2d-manipulator-shadow-bg-color);\n\tborder: var(--harmony-2d-manipulator-shadow-border);\n\tcursor: move;\n\tpointer-events: all;\n}\n\n.rotator {\n\tscale: var(--rotate);\n\tposition: absolute;\n\twidth: var(--handle-radius);\n\theight: var(--handle-radius);\n\tbackground-color: var(--rotate-bg-color);\n\tborder-radius: calc(var(--handle-radius) * 0.5);\n\ttransform: translate(-50%, -50%);\n\tcursor: grab;\n}\n\n.corner {\n\tscale: var(--scale);\n\tposition: absolute;\n\twidth: var(--handle-radius);\n\theight: var(--handle-radius);\n\tbackground-color: var(--corner-bg-color);\n\tborder-radius: calc(var(--handle-radius) * 0.5);\n\ttransform: translate(-50%, -50%);\n\tcursor: grab;\n}\n\n.side {\n\tposition: absolute;\n\twidth: var(--handle-radius);\n\theight: var(--handle-radius);\n\tbackground-color: var(--side-bg-color);\n\tborder-radius: calc(var(--handle-radius) * 0.5);\n\ttransform: translate(-50%, -50%);\n\tcursor: grab;\n}\n\n.side.x {\n\tscale: var(--resize-x);\n}\n\n.side.y {\n\tscale: var(--resize-y);\n}\n\n.corner.grabbing {\n\tcursor: grabbing;\n}\n";
 
 async function documentStyle(cssText) {
     return await shadowRootStyle(document, cssText);
@@ -415,7 +412,7 @@ function createElementOptions(element, options, shadowRoot) {
                     }
                     break;
                 case 'parent':
-                    optionValue.append(element);
+                    optionValue?.append(element);
                     break;
                 case 'child':
                     append(shadowRoot ?? element, optionValue);
@@ -584,8 +581,6 @@ function defineElement(name, constructor, options) {
     }
     getCustomElementRegistry()?.define(name, constructor, options);
 }
-
-var manipulator2dCSS = ":host {\n\t--handle-radius: var(--harmony-2d-manipulator-radius, 0.5rem);\n\t--harmony-2d-manipulator-shadow-bg-color: var(--harmony-2d-manipulator-bg-color, red);\n\t--harmony-2d-manipulator-shadow-border: var(--harmony-2d-manipulator-border, none);\n\t--handle-bg-color: var(--harmony-2d-manipulator-handle-bg-color, chartreuse);\n\t--corner-bg-color: var(--harmony-2d-manipulator-corner-bg-color, var(--handle-bg-color));\n\t--side-bg-color: var(--harmony-2d-manipulator-side-bg-color, var(--handle-bg-color));\n\t--rotate-bg-color: var(--harmony-2d-manipulator-rotate-bg-color, var(--handle-bg-color));\n\n\twidth: 1rem;\n\theight: 1rem;\n\tdisplay: block;\n\tuser-select: none;\n\tpointer-events: all;\n}\n\n:host-context(.grabbing) {\n\tcursor: grabbing;\n}\n\n.manipulator {\n\tposition: absolute;\n\tbackground-color: var(--harmony-2d-manipulator-shadow-bg-color);\n\tborder: var(--harmony-2d-manipulator-shadow-border);\n\tcursor: move;\n\tpointer-events: all;\n}\n\n.rotator {\n\tscale: var(--rotate);\n\tposition: absolute;\n\twidth: var(--handle-radius);\n\theight: var(--handle-radius);\n\tbackground-color: var(--rotate-bg-color);\n\tborder-radius: calc(var(--handle-radius) * 0.5);\n\ttransform: translate(-50%, -50%);\n\tcursor: grab;\n}\n\n.corner {\n\tscale: var(--scale);\n\tposition: absolute;\n\twidth: var(--handle-radius);\n\theight: var(--handle-radius);\n\tbackground-color: var(--corner-bg-color);\n\tborder-radius: calc(var(--handle-radius) * 0.5);\n\ttransform: translate(-50%, -50%);\n\tcursor: grab;\n}\n\n.side {\n\tposition: absolute;\n\twidth: var(--handle-radius);\n\theight: var(--handle-radius);\n\tbackground-color: var(--side-bg-color);\n\tborder-radius: calc(var(--handle-radius) * 0.5);\n\ttransform: translate(-50%, -50%);\n\tcursor: grab;\n}\n\n.side.x {\n\tscale: var(--resize-x);\n}\n\n.side.y {\n\tscale: var(--resize-y);\n}\n\n.corner.grabbing {\n\tcursor: grabbing;\n}\n";
 
 function toBool(s) {
     return s === '1' || s === 'true';
@@ -1600,6 +1595,129 @@ function defineHarmonyAccordion() {
     }
 }
 
+var circularProgressCSS = ":host {\n\t--track-color: var(--harmony-circular-progress-track-color, #CCC);\n\t--progress-color: var(--harmony-circular-progress-progress-color, #F00);\n\tdisplay: inline-flex;\n}\n\n.track {\n\tcolor: var(--track-color);\n\topacity: 30%;\n\tstroke-width: 10%;\n}\n\n.progress {\n\tcolor: var(--progress-color);\n\tstroke-dasharray: calc(var(--progress) * pi * 100% * 0.8) calc((1 - var(--progress)) * pi * 100% * 0.8);\n\tstroke-width: 10%;\n\tstroke-dashoffset: calc(pi * 100% * 0.8 * 0.25);\n}\n";
+
+class HTMLHarmonyElement extends HTMLElement {
+    initialized = false;
+    initElement() {
+        if (this.initialized) {
+            return;
+        }
+        this.initialized = true;
+        this.createElement();
+    }
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
+    createElement() {
+    }
+    connectedCallback() {
+        this.initElement();
+    }
+    attributeChangedCallback(name, oldValue, newValue) {
+        this.initElement();
+        this.onAttributeChanged(name, oldValue, newValue);
+    }
+    // eslint-disable-next-line @typescript-eslint/no-empty-function, @typescript-eslint/no-unused-vars
+    onAttributeChanged(name, oldValue, newValue) {
+    }
+    static get observedAttributes() {
+        return ['label'];
+    }
+}
+
+class HTMLHarmonyCircularProgressElement extends HTMLHarmonyElement {
+    #shadowRoot;
+    #disabled = false;
+    #htmlLabel;
+    #htmlSVG;
+    #htmlTrack;
+    #htmlProgress;
+    #start = 0;
+    #end = Math.PI * 2;
+    #progress = 0.5;
+    createElement() {
+        this.#shadowRoot = this.attachShadow({ mode: 'closed' });
+        void shadowRootStyle(this.#shadowRoot, circularProgressCSS);
+        I18n.observeElement(this.#shadowRoot);
+        this.#htmlLabel = createElement('div', {
+            parent: this.#shadowRoot,
+            class: 'label',
+        });
+        this.#htmlSVG = createElementNS('http://www.w3.org/2000/svg', 'svg', {
+            style: `--progress:${this.#progress};`,
+            parent: this.#shadowRoot,
+            childs: [
+                this.#htmlTrack = createElementNS('http://www.w3.org/2000/svg', 'circle', {
+                    class: 'track',
+                    attributes: {
+                        cx: '50%',
+                        cy: '50%',
+                        r: '40%',
+                        fill: 'none',
+                        'stroke-width': '10%',
+                        'shape-rendering': 'geometricPrecision',
+                        stroke: 'currentColor',
+                    }
+                }),
+                this.#htmlProgress = createElementNS('http://www.w3.org/2000/svg', 'circle', {
+                    class: 'progress',
+                    attributes: {
+                        cx: '50%',
+                        cy: '50%',
+                        r: '40%',
+                        fill: 'none',
+                        'stroke-width': '10%',
+                        'shape-rendering': 'geometricPrecision',
+                        stroke: 'currentColor',
+                    }
+                }),
+            ],
+        });
+        this.#refresh();
+    }
+    setProgress(progress) {
+        this.#progress = progress;
+        if (this.#htmlSVG) {
+            this.#htmlSVG.style.cssText = `--progress: ${progress}`;
+        }
+    }
+    #refresh() {
+        if (this.#htmlSVG) {
+            this.#htmlSVG.style.cssText = `--progress: ${this.#progress}`;
+        }
+    }
+    onAttributeChanged(name, oldValue, newValue) {
+        switch (name) {
+            case 'data-label':
+                if (this.#htmlLabel) {
+                    this.#htmlLabel.innerHTML = newValue;
+                }
+                this.#htmlLabel?.classList.remove('i18n');
+                break;
+            case 'data-i18n':
+                this.#htmlLabel?.setAttribute('data-i18n', newValue);
+                if (this.#htmlLabel) {
+                    this.#htmlLabel.innerHTML = newValue;
+                }
+                this.#htmlLabel?.classList.add('i18n');
+                break;
+        }
+    }
+    static get observedAttributes() {
+        return ['data-label', 'data-i18n'];
+    }
+}
+let definedCircularProgress = false;
+function defineHarmonyCircularProgress() {
+    if (!definedCircularProgress) {
+        defineElement('harmony-circular-progress', class extends HTMLHarmonyCircularProgressElement {
+        });
+        defineElement('h-cp', class extends HTMLHarmonyCircularProgressElement {
+        });
+        definedCircularProgress = true;
+        injectGlobalCss();
+    }
+}
+
 function rgbToHsl(r, g, b) {
     const max = Math.max(r, g, b), min = Math.min(r, g, b);
     let h = 0, s;
@@ -1827,6 +1945,97 @@ function messageOnce(level, message, max) {
 }
 function errorOnce(message, max = 1) {
     messageOnce('error', message, max);
+}
+
+/**
+ * Set2 holds a key-key pair using an underlying Set
+ * Any value can be used as either keys
+ */
+class Set2 {
+    #map = new Map();
+    clear() {
+        this.#map.clear();
+    }
+    delete(key1, key2) {
+        return this.#map.get(key1)?.delete(key2) ?? false;
+    }
+    forEach(callbackfn, thisArg) {
+        this.#map.forEach((value, key1) => {
+            value.forEach((key2) => callbackfn.call(thisArg, key1, key2, this));
+        });
+    }
+    getMap() {
+        return this.#map;
+    }
+    getSubSet(key1) {
+        return this.#map.get(key1);
+    }
+    has(key1, key2) {
+        return this.#map.get(key1)?.has(key2) ?? false;
+    }
+    add(key1, key2) {
+        if (!this.#map.has(key1)) {
+            this.#map.set(key1, new Set());
+        }
+        this.#map.get(key1).add(key2);
+        return this;
+    }
+    get size() {
+        let size = 0;
+        for (const [, m] of this.#map) {
+            size += m.size;
+        }
+        return size;
+    }
+    [Symbol.iterator] = () => {
+        const iterator1 = this.#map.entries();
+        let iterator2 = null;
+        let current1;
+        const next = () => {
+            if (iterator2 == null) {
+                current1 = iterator1.next();
+                if (current1.done) {
+                    return { done: true };
+                }
+                iterator2 = current1.value[1].keys();
+            }
+            const current2 = iterator2.next();
+            if (current2.done) {
+                iterator2 = null;
+                return next();
+            }
+            return { value: [current1.value[0], current2.value], done: false };
+        };
+        return {
+            next: next,
+            [Symbol.iterator]() {
+                return this;
+            },
+        };
+    };
+}
+
+class BugReporter {
+    static #eventTarget = new EventTarget();
+    static #dispatched = new Set2();
+    static addEventListener(type, callback, options) {
+        this.#eventTarget.addEventListener(type, callback, options);
+    }
+    static removeEventListener(type, callback, options) {
+        this.#eventTarget.removeEventListener(type, callback, options);
+    }
+    static reportBug(severity, message) {
+        if (this.#dispatched.has(severity, message)) {
+            return;
+        }
+        this.#dispatched.add(severity, message);
+        this.#eventTarget.dispatchEvent(new CustomEvent('report', {
+            detail: {
+                severity,
+                message,
+            },
+        }));
+    }
 }
 
 class Item {
@@ -2064,206 +2273,6 @@ function defineHarmonyColorPicker() {
     if (!definedColorPicker) {
         defineElement('harmony-color-picker', HTMLHarmonyColorPickerElement);
         definedColorPicker = true;
-        injectGlobalCss();
-    }
-}
-
-var menuCSS = ":host {\n\tfont-size: 1.5em;\n\tcursor: not-allowed;\n\tcolor: var(--harmony-ui-text-primary);\n\tbackground-color: green;\n\tbackground-color: var(--harmony-ui-menu-bg-color);\n\toverflow: auto;\n\tz-index: 100000;\n}\n\n.harmony-menu-item {\n\tbackground-color: green;\n\tcursor: pointer;\n\tbackground-color: var(--harmony-ui-menu-item-bg-color);\n}\n\n.harmony-menu-item.disabled {\n\tpointer-events: none;\n}\n\n.harmony-menu-item.selected {\n\tbackground-color: blue;\n\tbackground-color: var(--harmony-ui-menu-item-selected-bg-color);\n}\n\n\n.harmony-menu-item.separator {\n\theight: 5px;\n\tbackground-color: black;\n}\n\n.harmony-menu-item>.harmony-menu-item-title:hover {\n\tbackground-color: var(--harmony-ui-menu-item-hover-bg-color);\n}\n\n.harmony-menu-item.selected>.harmony-menu-item-title::after {\n\tcontent: \"✔\";\n}\n\n.harmony-menu-item>.harmony-menu-item-title::after {\n\ttransition: all 0.2s ease 0s;\n\twidth: 32px;\n\theight: 32px;\n}\n\n.harmony-menu-item.closed>.harmony-menu-item-title,\n.harmony-menu-item.opened>.harmony-menu-item-title {\n\tpadding-right: 32px;\n}\n\n.harmony-menu-item.closed>.harmony-menu-item-title::after {\n\tcontent: \"➤\";\n}\n\n.harmony-menu-item.opened>.harmony-menu-item-title::after {\n\tcontent: \"➤\";\n\ttransform: rotate(90deg);\n}\n\n.harmony-menu-item .submenu {\n\tbackground-color: var(--harmony-ui-menu-submenu-bg-color);\n\tpadding-left: 10px;\n\tmargin-left: 2px;\n\tdisplay: none;\n\toverflow: hidden;\n\tposition: relative;\n\tbackground-color: var(--harmony-ui-menu-submenu-fg-color);\n}\n\n.harmony-menu-item.opened>.submenu {\n\tdisplay: block;\n}\n";
-
-class HTMLHarmonyMenuElement extends HTMLElement {
-    #doOnce = true;
-    #subMenus = new Map();
-    #shadowRoot;
-    #contextual = false;
-    constructor() {
-        super();
-        this.#shadowRoot = this.attachShadow({ mode: 'closed' });
-        document.addEventListener('click', (event) => {
-            if (this.#contextual && !this.contains(event.target)) {
-                this.close();
-            }
-        });
-    }
-    #show(items, userData) {
-        this.#setItems(items, userData);
-        this.#checkSize();
-    }
-    show(items, userData) {
-        this.#show(items, userData);
-        this.setContextual(false);
-    }
-    showContextual(items, clientX, clientY, userData) {
-        document.body.append(this);
-        this.style.left = clientX + 'px';
-        this.style.top = clientY + 'px';
-        this.setContextual(true);
-        this.#show(items, userData);
-    }
-    setContextual(contextual) {
-        this.style.position = contextual ? 'absolute' : '';
-        this.#contextual = contextual;
-    }
-    #checkSize() {
-        const bodyRect = document.body.getBoundingClientRect();
-        const elemRect = this.getBoundingClientRect();
-        this.style.maxWidth = bodyRect.width + 'px';
-        this.style.maxHeight = bodyRect.height + 'px';
-        if (elemRect.right > bodyRect.right) {
-            this.style.left = Math.max((bodyRect.width - elemRect.width), 0) + 'px';
-            /*if (elemRect.width > bodyRect.width) {
-                this.style.maxWidth = bodyRect.width + 'px';
-            } else {
-                this.style.maxWidth = '';
-            }*/
-        }
-        if (elemRect.bottom > bodyRect.bottom) {
-            this.style.top = Math.max((bodyRect.height - elemRect.height), 0) + 'px';
-            /*if (elemRect.height > bodyRect.height) {
-                this.style.maxHeight = bodyRect.height + 'px';
-            } else {
-                this.style.maxHeight = '';
-            }*/
-        }
-        if (elemRect.left < 0) {
-            this.style.left = '0px';
-        }
-        if (elemRect.top < 0) {
-            this.style.top = '0px';
-        }
-    }
-    close() {
-        if (this.#contextual) {
-            this.remove();
-        }
-    }
-    connectedCallback() {
-        if (this.#doOnce) {
-            I18n.observeElement(this.#shadowRoot);
-            void shadowRootStyle(this.#shadowRoot, menuCSS);
-            const callback = (entries) => {
-                entries.forEach(() => {
-                    this.#checkSize();
-                });
-            };
-            const resizeObserver = new ResizeObserver(callback);
-            resizeObserver.observe(this);
-            resizeObserver.observe(document.body);
-            this.#doOnce = false;
-        }
-    }
-    #setItems(items, userData) {
-        this.#shadowRoot.replaceChildren();
-        if (items instanceof Array) {
-            for (const item of items) {
-                this.#shadowRoot.append(this.addItem(item, userData));
-            }
-        }
-        else {
-            for (const itemId in items) {
-                const item = items[itemId];
-                this.#shadowRoot.append(this.addItem(item, userData));
-            }
-        }
-    }
-    #openSubMenu(htmlSubMenu) {
-        for (const [htmlItem, sub] of this.#subMenus) {
-            if (sub == htmlSubMenu || sub.contains(htmlSubMenu)) {
-                htmlItem.classList.add('opened');
-                htmlItem.classList.remove('closed');
-            }
-            else {
-                htmlItem.classList.remove('opened');
-                htmlItem.classList.add('closed');
-            }
-        }
-        this.#checkSize();
-    }
-    addItem(item, userData) {
-        const htmlItem = createElement('div', {
-            class: 'harmony-menu-item',
-        });
-        if (!item) {
-            htmlItem.classList.add('separator');
-        }
-        else {
-            const htmlItemTitle = createElement('div', {
-                class: 'harmony-menu-item-title',
-            });
-            if (item.i18n) {
-                htmlItemTitle.classList.add('i18n');
-                htmlItemTitle.setAttribute('data-i18n', item.i18n);
-                htmlItemTitle.innerText = item.i18n;
-            }
-            else {
-                htmlItemTitle.innerText = item.name ?? '';
-            }
-            htmlItem.append(htmlItemTitle);
-            if (item.selected) {
-                htmlItem.classList.add('selected');
-            }
-            if (item.disabled) {
-                htmlItem.classList.add('disabled');
-            }
-            if (item.submenu) {
-                const htmlSubMenu = createElement('div', {
-                    class: 'submenu',
-                });
-                this.#subMenus.set(htmlItem, htmlSubMenu);
-                let subItems = 0;
-                if (item.submenu instanceof Array) {
-                    for (const subItem of item.submenu) {
-                        htmlSubMenu.append(this.addItem(subItem, userData));
-                        ++subItems;
-                    }
-                }
-                else {
-                    for (const subItemName in item.submenu) {
-                        const subItem = item.submenu[subItemName];
-                        htmlSubMenu.append(this.addItem(subItem, userData));
-                        ++subItems;
-                    }
-                }
-                htmlItem.append(htmlSubMenu);
-                //htmlSubMenu.style.display = 'none';
-                htmlItem.classList.add('closed');
-                if (item.opened) {
-                    this.#openSubMenu(htmlSubMenu);
-                }
-                htmlItem.addEventListener('click', event => {
-                    this.#openSubMenu(htmlSubMenu);
-                    if (item.cmd) {
-                        this.dispatchEvent(new CustomEvent(item.cmd));
-                    }
-                    if (item.f) {
-                        void item.f(userData);
-                    }
-                    event.stopPropagation();
-                });
-                if (subItems == 0) {
-                    hide(htmlItem);
-                }
-            }
-            else {
-                htmlItem.addEventListener('click', (event) => {
-                    if (item.cmd) {
-                        this.dispatchEvent(new CustomEvent(item.cmd));
-                    }
-                    if (item.f) {
-                        void item.f(userData);
-                    }
-                    event.stopPropagation();
-                });
-                htmlItem.addEventListener('click', () => this.close());
-            }
-        }
-        return htmlItem;
-    }
-}
-let definedMenu = false;
-function defineHarmonyMenu() {
-    if (!definedMenu) {
-        defineElement('harmony-menu', HTMLHarmonyMenuElement);
-        definedMenu = true;
         injectGlobalCss();
     }
 }
@@ -2548,129 +2557,134 @@ const zoomInSVG = '<svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="
 const zoomOutSVG = '<svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24" fill="currentColor"><path d="M784-120 532-372q-30 24-69 38t-83 14q-109 0-184.5-75.5T120-580q0-109 75.5-184.5T380-840q109 0 184.5 75.5T640-580q0 44-14 83t-38 69l252 252-56 56ZM380-400q75 0 127.5-52.5T560-580q0-75-52.5-127.5T380-760q-75 0-127.5 52.5T200-580q0 75 52.5 127.5T380-400ZM280-540v-80h200v80H280Z"/></svg>';
 
 var index = /*#__PURE__*/Object.freeze({
-    __proto__: null,
-    addTaskSVG: addTaskSVG,
-    addToQueueSVG: addToQueueSVG,
-    arrowDownwardAltSVG: arrowDownwardAltSVG,
-    arrowLeftAltSVG: arrowLeftAltSVG,
-    arrowRightAltSVG: arrowRightAltSVG,
-    arrowUpwardAltSVG: arrowUpwardAltSVG,
-    assignmentAddSVG: assignmentAddSVG,
-    audioFileSVG: audioFileSVG,
-    backgroundReplaceSVG: backgroundReplaceSVG,
-    blockSVG: blockSVG,
-    bookmarksPlainSVG: bookmarksPlainSVG,
-    borderClearSVG: borderClearSVG,
-    brickLayoutSVG: brickLayoutSVG,
-    bugReportSVG: bugReportSVG,
-    cameraswitchSVG: cameraswitchSVG,
-    cancelSVG: cancelSVG,
-    checkCircleSVG: checkCircleSVG,
-    checkOutlineSVG: checkOutlineSVG,
-    checkSVG: checkSVG,
-    closeSVG: closeSVG,
-    contentCopySVG: contentCopySVG,
-    controlCameraSVG: controlCameraSVG,
-    cropPortraitSVG: cropPortraitSVG,
-    cycleSVG: cycleSVG,
-    dangerousSVG: dangerousSVG,
-    dashboardSVG: dashboardSVG,
-    doneAllSVG: doneAllSVG,
-    downloadSVG: downloadSVG,
-    dragPanSVG: dragPanSVG,
-    earthquakeSVG: earthquakeSVG,
-    equalizerSVG: equalizerSVG,
-    errorSVG: errorSVG,
-    extensionOffSVG: extensionOffSVG,
-    extensionSVG: extensionSVG,
-    favoriteSVG: favoriteSVG,
-    fileExportSVG: fileExportSVG,
-    filterCenterFocusSVG: filterCenterFocusSVG,
-    fireSVG: fireSVG,
-    flexWrapSVG: flexWrapSVG,
-    folderOpenSVG: folderOpenSVG,
-    folderSVG: folderSVG,
-    formatShapesSVG: formatShapesSVG,
-    fullscreenExitSVG: fullscreenExitSVG,
-    fullscreenSVG: fullscreenSVG,
-    graphicEqSVG: graphicEqSVG,
-    gridOffSVG: gridOffSVG,
-    gridOffsetSVG: gridOffsetSVG,
-    gridOnSVG: gridOnSVG,
-    gridRegularSVG: gridRegularSVG,
-    helpSVG: helpSVG,
-    highlightSVG: highlightSVG,
-    infoSVG: infoSVG,
-    lapsSVG: lapsSVG,
-    listAltAddSVG: listAltAddSVG,
-    lockOpenRightSVG: lockOpenRightSVG,
-    lockOpenSVG: lockOpenSVG,
-    lockSVG: lockSVG,
-    lowPrioritySVG: lowPrioritySVG,
-    mailSVG: mailSVG,
-    manageAccountsSVG: manageAccountsSVG,
-    manufacturingSVG: manufacturingSVG,
-    mediationSVG: mediationSVG,
-    monochromePhotosSVG: monochromePhotosSVG,
-    moreHorizSVG: moreHorizSVG,
-    openInNewSVG: openInNewSVG,
-    openWithSVG: openWithSVG,
-    overscanSVG: overscanSVG,
-    panZoomSVG: panZoomSVG,
-    patreonLogoSVG: patreonLogoSVG,
-    pauseSVG: pauseSVG,
-    personRemoveSVG: personRemoveSVG,
-    personSVG: personSVG,
-    photoCameraSVG: photoCameraSVG,
-    playSVG: playSVG,
-    playlistAddSVG: playlistAddSVG,
-    print3dSVG: print3dSVG,
-    questionMarkSVG: questionMarkSVG,
-    repeatOnSVG: repeatOnSVG,
-    repeatOneOnSVG: repeatOneOnSVG,
-    repeatOneSVG: repeatOneSVG,
-    repeatSVG: repeatSVG,
-    resetCameraSVG: resetCameraSVG,
-    resetFocusSVG: resetFocusSVG,
-    restartSVG: restartSVG,
-    rotate360SVG: rotate360SVG,
-    rotateLeftSVG: rotateLeftSVG,
-    rotateRightSVG: rotateRightSVG,
-    rotateSVG: rotateSVG,
-    runSVG: runSVG,
-    screenshotFrameSVG: screenshotFrameSVG,
-    sentimentExcitedSVG: sentimentExcitedSVG,
-    settingsPhotoCameraSVG: settingsPhotoCameraSVG,
-    settingsSVG: settingsSVG,
-    sfmLogoSVG: sfmLogoSVG,
-    shareSVG: shareSVG,
-    shoppingCartSVG: shoppingCartSVG,
-    skeletonSVG: skeletonSVG,
-    sortAlphabeticalReverseSVG: sortAlphabeticalReverseSVG,
-    sortAlphabeticalSVG: sortAlphabeticalSVG,
-    speedCameraSVG: speedCameraSVG,
-    sprintSVG: sprintSVG,
-    tableRowsSVG: tableRowsSVG,
-    textDecreaseSVG: textDecreaseSVG,
-    textIncreaseSVG: textIncreaseSVG,
-    textureSVG: textureSVG,
-    uploadSVG: uploadSVG,
-    viewColumnSVG: viewColumnSVG,
-    viewInArSVG: viewInArSVG,
-    viewTimelineSVG: viewTimelineSVG,
-    visibilityOffSVG: visibilityOffSVG,
-    visibilityOnSVG: visibilityOnSVG,
-    volumeDownSVG: volumeDownSVG,
-    volumeOffSVG: volumeOffSVG,
-    volumeUpSVG: volumeUpSVG,
-    walkSVG: walkSVG,
-    wallpaperSVG: wallpaperSVG,
-    warningSVG: warningSVG,
-    zoomInSVG: zoomInSVG,
-    zoomOutSVG: zoomOutSVG
+	__proto__: null,
+	addTaskSVG: addTaskSVG,
+	addToQueueSVG: addToQueueSVG,
+	arrowDownwardAltSVG: arrowDownwardAltSVG,
+	arrowLeftAltSVG: arrowLeftAltSVG,
+	arrowRightAltSVG: arrowRightAltSVG,
+	arrowUpwardAltSVG: arrowUpwardAltSVG,
+	assignmentAddSVG: assignmentAddSVG,
+	audioFileSVG: audioFileSVG,
+	backgroundReplaceSVG: backgroundReplaceSVG,
+	blockSVG: blockSVG,
+	bookmarksPlainSVG: bookmarksPlainSVG,
+	borderClearSVG: borderClearSVG,
+	brickLayoutSVG: brickLayoutSVG,
+	bugReportSVG: bugReportSVG,
+	cameraswitchSVG: cameraswitchSVG,
+	cancelSVG: cancelSVG,
+	checkCircleSVG: checkCircleSVG,
+	checkOutlineSVG: checkOutlineSVG,
+	checkSVG: checkSVG,
+	closeSVG: closeSVG,
+	contentCopySVG: contentCopySVG,
+	controlCameraSVG: controlCameraSVG,
+	cropPortraitSVG: cropPortraitSVG,
+	cycleSVG: cycleSVG,
+	dangerousSVG: dangerousSVG,
+	dashboardSVG: dashboardSVG,
+	doneAllSVG: doneAllSVG,
+	downloadSVG: downloadSVG,
+	dragPanSVG: dragPanSVG,
+	earthquakeSVG: earthquakeSVG,
+	equalizerSVG: equalizerSVG,
+	errorSVG: errorSVG,
+	extensionOffSVG: extensionOffSVG,
+	extensionSVG: extensionSVG,
+	favoriteSVG: favoriteSVG,
+	fileExportSVG: fileExportSVG,
+	filterCenterFocusSVG: filterCenterFocusSVG,
+	fireSVG: fireSVG,
+	flexWrapSVG: flexWrapSVG,
+	folderOpenSVG: folderOpenSVG,
+	folderSVG: folderSVG,
+	formatShapesSVG: formatShapesSVG,
+	fullscreenExitSVG: fullscreenExitSVG,
+	fullscreenSVG: fullscreenSVG,
+	graphicEqSVG: graphicEqSVG,
+	gridOffSVG: gridOffSVG,
+	gridOffsetSVG: gridOffsetSVG,
+	gridOnSVG: gridOnSVG,
+	gridRegularSVG: gridRegularSVG,
+	helpSVG: helpSVG,
+	highlightSVG: highlightSVG,
+	infoSVG: infoSVG,
+	lapsSVG: lapsSVG,
+	listAltAddSVG: listAltAddSVG,
+	lockOpenRightSVG: lockOpenRightSVG,
+	lockOpenSVG: lockOpenSVG,
+	lockSVG: lockSVG,
+	lowPrioritySVG: lowPrioritySVG,
+	mailSVG: mailSVG,
+	manageAccountsSVG: manageAccountsSVG,
+	manufacturingSVG: manufacturingSVG,
+	mediationSVG: mediationSVG,
+	monochromePhotosSVG: monochromePhotosSVG,
+	moreHorizSVG: moreHorizSVG,
+	openInNewSVG: openInNewSVG,
+	openWithSVG: openWithSVG,
+	overscanSVG: overscanSVG,
+	panZoomSVG: panZoomSVG,
+	patreonLogoSVG: patreonLogoSVG,
+	pauseSVG: pauseSVG,
+	personRemoveSVG: personRemoveSVG,
+	personSVG: personSVG,
+	photoCameraSVG: photoCameraSVG,
+	playSVG: playSVG,
+	playlistAddSVG: playlistAddSVG,
+	print3dSVG: print3dSVG,
+	questionMarkSVG: questionMarkSVG,
+	repeatOnSVG: repeatOnSVG,
+	repeatOneOnSVG: repeatOneOnSVG,
+	repeatOneSVG: repeatOneSVG,
+	repeatSVG: repeatSVG,
+	resetCameraSVG: resetCameraSVG,
+	resetFocusSVG: resetFocusSVG,
+	restartSVG: restartSVG,
+	rotate360SVG: rotate360SVG,
+	rotateLeftSVG: rotateLeftSVG,
+	rotateRightSVG: rotateRightSVG,
+	rotateSVG: rotateSVG,
+	runSVG: runSVG,
+	screenshotFrameSVG: screenshotFrameSVG,
+	sentimentExcitedSVG: sentimentExcitedSVG,
+	settingsPhotoCameraSVG: settingsPhotoCameraSVG,
+	settingsSVG: settingsSVG,
+	sfmLogoSVG: sfmLogoSVG,
+	shareSVG: shareSVG,
+	shoppingCartSVG: shoppingCartSVG,
+	skeletonSVG: skeletonSVG,
+	sortAlphabeticalReverseSVG: sortAlphabeticalReverseSVG,
+	sortAlphabeticalSVG: sortAlphabeticalSVG,
+	speedCameraSVG: speedCameraSVG,
+	sprintSVG: sprintSVG,
+	tableRowsSVG: tableRowsSVG,
+	textDecreaseSVG: textDecreaseSVG,
+	textIncreaseSVG: textIncreaseSVG,
+	textureSVG: textureSVG,
+	uploadSVG: uploadSVG,
+	viewColumnSVG: viewColumnSVG,
+	viewInArSVG: viewInArSVG,
+	viewTimelineSVG: viewTimelineSVG,
+	visibilityOffSVG: visibilityOffSVG,
+	visibilityOnSVG: visibilityOnSVG,
+	volumeDownSVG: volumeDownSVG,
+	volumeOffSVG: volumeOffSVG,
+	volumeUpSVG: volumeUpSVG,
+	walkSVG: walkSVG,
+	wallpaperSVG: wallpaperSVG,
+	warningSVG: warningSVG,
+	zoomInSVG: zoomInSVG,
+	zoomOutSVG: zoomOutSVG
 });
 
 var fileInputCSS = "label {\n\tcursor: pointer;\n\tdisplay: flex;\n\tuser-select: none;\n}\n\nlabel>span {\n\tmargin: auto;\n}\n\n.tooltip {\n\tposition: relative;\n}\n\n.text {\n\tflex: 1;\n\tfont-size: 2rem;\n}\n\n.icon,\n.info {\n\tzoom: 2;\n}\n";
+
+function cloneEvent(event) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-explicit-any
+    return new event.constructor(event.type, event);
+}
 
 var tooltipCSS = ":host {\n\tdisplay: grid;\n\tposition: absolute;\n\twidth: 100%;\n\theight: 100%;\n\ttop: 0;\n\tanchor-name: --anchor-el;\n}\n\n:host(:hover) {\n\t--harmony-tooltip-hover: 1;\n}\n\n.tooltip {\n\t--bottom-tip: conic-gradient(from -30deg at bottom, rgba(0, 0, 0, 0), #000 1deg 60deg, rgba(0, 0, 0, 0) 61deg) bottom / 100% 50% no-repeat;\n\t--top-tip: conic-gradient(from 150deg at top, rgba(0, 0, 0, 0), #000 1deg 60deg, rgba(0, 0, 0, 0) 61deg) top / 100% 50% no-repeat;\n\t--right-tip: conic-gradient(from -120deg at right, rgba(0, 0, 0, 0), #000 1deg 60deg, rgba(0, 0, 0, 0) 61deg) right / 50% 100% no-repeat;\n\t--left-tip: conic-gradient(from 60deg at left, rgba(0, 0, 0, 0), #000 1deg 60deg, rgba(0, 0, 0, 0) 61deg) left / 50% 100% no-repeat;\n\n\t--p-inline: 1.5ch;\n\t--p-block: .75ch;\n\t--triangle-size: 0.5rem;\n\t--bg: hsl(0 0% 20%);\n\n\n\n\tpointer-events: none;\n\tuser-select: none;\n\topacity: var(--harmony-tooltip-hover, 0);\n\tposition: fixed;\n\tposition-anchor: --anchor-el;\n\t/*top: anchor(bottom);*/\n\t/*justify-self: anchor-center;*/\n\tjustify-self: var(--justify);\n\tbottom: var(--bottom);\n\tleft: var(--left);\n\tright: var(--right);\n\ttop: var(--top);\n\n\tmax-width: 10rem;\n\tbackground-color: var(--bg);\n\tcolor: #fff;\n\ttext-align: center;\n\tborder-radius: 6px;\n\tpadding: 0.3rem 0.3rem;\n\tz-index: 1;\n\ttransition: opacity 0.3s;\n}\n\n.tooltip::after {\n\tcontent: \"\";\n\tbackground: var(--bg);\n\tposition: absolute;\n\tz-index: -1;\n\tinset: 0;\n\tmask: var(--tip);\n\tinset-block-start: var(--inset-block-start-tip, 0);\n\tinset-block-end: var(--inset-block-end-tip, 0);\n\tborder-block-start: var(--border-block-start-tip, 0);\n\tborder-block-end: var(--border-block-end-tip, 0);\n\tinset-inline-start: var(--inset-inline-start-tip, 0);\n\tinset-inline-end: var(--inset-inline-end-tip, 0);\n\tborder-inline-start: var(--border-inline-start-tip, 0);\n\tborder-inline-end: var(--border-inline-end-tip, 0);\n}\n\n.tooltip:is([data-position=\"top\"], :not([data-position])) {\n\t--bottom: anchor(top);\n\t--justify: anchor-center;\n\t--tip: var(--bottom-tip);\n\t--inset-block-end-tip: calc(var(--triangle-size) * -1);\n\t--border-block-end-tip: var(--triangle-size) solid transparent;\n}\n\n.tooltip[data-position=\"left\"] {\n\t--right: anchor(left);\n\t--tip: var(--right-tip);\n\t--inset-inline-end-tip: calc(var(--triangle-size) * -1);\n\t--border-inline-end-tip: var(--triangle-size) solid transparent;\n}\n\n.tooltip[data-position=\"right\"] {\n\t--left: anchor(right);\n\t--tip: var(--left-tip);\n\t--inset-inline-start-tip: calc(var(--triangle-size) * -1);\n\t--border-inline-start-tip: var(--triangle-size) solid transparent;\n}\n\n.tooltip[data-position=\"bottom\"] {\n\t--top: anchor(bottom);\n\t--justify: anchor-center;\n\t--tip: var(--top-tip);\n\t--inset-block-start-tip: calc(var(--triangle-size) * -1);\n\t--border-block-start-tip: var(--triangle-size) solid transparent;\n}\n";
 
@@ -2818,6 +2832,162 @@ function defineHarmonyFileInput() {
     }
 }
 
+var filterCSS = ":host {\n\toverflow: hidden;\n\tdisplay: flex;\n\tjustify-content: center;\n\tposition: relative;\n\twidth: 100%;\n\n\t--bg-color: var(--harmony-toolbar-bg-color, var(--main-bg-color, black));\n\tbackground-color: var(--bg-color);\n}\n\n.string {\n\twidth: 100%;\n\tdisplay: flex;\n\tgap: 0.25rem;\n}\n\n.string>span {\n\tflex: 0 0 auto;\n\tmax-width: 50%;\n}\n\n.string>input {\n\tflex: 1 1 auto;\n}\n";
+
+/**
+ * For list like filters, determine the type of options
+ */
+var HarmonyFilterListType;
+(function (HarmonyFilterListType) {
+    /** Value can be true or false. Default option value is false */
+    HarmonyFilterListType[HarmonyFilterListType["Boolean"] = 0] = "Boolean";
+    /** Value can be true, false or undefined. Default option value is undefined */
+    HarmonyFilterListType[HarmonyFilterListType["Ternary"] = 1] = "Ternary";
+})(HarmonyFilterListType || (HarmonyFilterListType = {}));
+class HTMLHarmonyFilterElement extends HTMLHarmonyElement {
+    #shadowRoot;
+    #items = new WeakSet();
+    createElement() {
+        this.#shadowRoot = this.attachShadow({ mode: 'closed' });
+        void shadowRootStyle(this.#shadowRoot, filterCSS);
+        this.#initObserver();
+        this.#processChilds();
+    }
+    #initObserver() {
+        const config = { childList: true, subtree: true };
+        const mutationCallback = (mutationsList) => {
+            for (const mutation of mutationsList) {
+                for (const addedNode of mutation.addedNodes) {
+                    if (addedNode.parentNode == this) {
+                        this.addItem(addedNode);
+                    }
+                }
+            }
+        };
+        const observer = new MutationObserver(mutationCallback);
+        observer.observe(this, config);
+    }
+    #processChilds() {
+        for (const child of this.children) {
+            this.addItem(child);
+        }
+    }
+    addItem(item) {
+        if (this.#items.has(item)) {
+            return;
+        }
+        this.initElement();
+        this.#shadowRoot.append(item);
+        /*
+        const htmlSlot: HTMLSlotElement = createElement('slot', {
+            parent: this.#shadowRoot,
+        }) as HTMLSlotElement;
+        htmlSlot.assign(item);
+        */
+        this.#items.add(item);
+    }
+    /*
+    addItem(item: HTMLElement): void {
+        if (this.#items.has(item)) {
+            return;
+        }
+        this.initElement();
+        this.append(item);
+
+        const htmlSlot: HTMLSlotElement = createElement('slot', {
+            parent: this.#shadowRoot,
+        }) as HTMLSlotElement;
+        htmlSlot.assign(item);
+        this.#items.add(item);
+    }
+    */
+    addFilters(filters) {
+        for (const filter of filters) {
+            const element = this.#createFilterElement(filter);
+            if (element) {
+                this.addItem(element);
+            }
+        }
+    }
+    addFilter(filter) {
+        const element = this.#createFilterElement(filter);
+        if (element) {
+            this.addItem(element);
+        }
+    }
+    #createFilterElement(filter) {
+        switch (filter.type) {
+            /*
+            export enum HarmonyFilterType {
+                String,
+                Number,
+                Range,
+                List,
+                Select,
+                Custom,
+            }*/
+            case 'string':
+                return createElement('label', {
+                    class: 'string',
+                    childs: [
+                        createElement('span', {
+                            ...(filter.i18n !== false) && {
+                                i18n: filter.title,
+                            },
+                            ...(filter.i18n === false) && {
+                                innerText: filter.title,
+                            },
+                        }),
+                        createElement('input', {
+                            ...(filter.i18n !== false) && {
+                                i18n: {
+                                    placeholder: filter.placeholder ?? '',
+                                },
+                            },
+                            ...(filter.i18n === false) && {
+                                placeholder: filter.placeholder ?? '',
+                            },
+                            $input: (event) => {
+                                this.#dispatchEvent(filter.name, event.target.value);
+                                event.stopPropagation();
+                            }
+                        }),
+                    ],
+                });
+            case 'number':
+                return createElement('input', { type: 'number', });
+            case 'range':
+                return createElement('div', {
+                    childs: [
+                        createElement('input', { type: 'number', }),
+                        createElement('input', { type: 'number', }),
+                    ],
+                });
+            default:
+                BugReporter.reportBug('error', `missing filter type ${filter.type}`);
+                break;
+        }
+        return null;
+    }
+    #dispatchEvent(name, value) {
+        this.dispatchEvent(new CustomEvent('filter', {
+            detail: {
+                name,
+                value,
+            },
+        }));
+    }
+}
+let definedFilter = false;
+function defineHarmonyFilter() {
+    if (!definedFilter) {
+        defineHarmonyItem();
+        defineElement('harmony-filter', HTMLHarmonyFilterElement);
+        definedFilter = true;
+        injectGlobalCss();
+    }
+}
+
 var infoBoxCSS = ":host {\n\tdisplay: flex;\n\tpadding: 0.5rem;\n}\n\n:host-context(.ok) {\n\tbackground-color: green;\n\tcolor: white;\n}\n\n:host-context(.warning) {\n\tbackground-color: #413c26;\n\tcolor: #D3A247;\n}\n\n:host-context(.error) {\n\tbackground-color: #4E3534;\n\tcolor: red;\n}\n";
 
 var HTMLHarmonyInfoBoxElementType;
@@ -2923,6 +3093,206 @@ function defineHarmonyLabelProperty() {
     if (!definedLabelProperty) {
         defineElement('harmony-label-property', HTMLHarmonyLabelPropertyElement);
         definedLabelProperty = true;
+        injectGlobalCss();
+    }
+}
+
+var menuCSS = ":host {\n\tfont-size: 1.5em;\n\tcursor: not-allowed;\n\tcolor: var(--harmony-ui-text-primary);\n\tbackground-color: green;\n\tbackground-color: var(--harmony-ui-menu-bg-color);\n\toverflow: auto;\n\tz-index: 100000;\n}\n\n.harmony-menu-item {\n\tbackground-color: green;\n\tcursor: pointer;\n\tbackground-color: var(--harmony-ui-menu-item-bg-color);\n}\n\n.harmony-menu-item.disabled {\n\tpointer-events: none;\n}\n\n.harmony-menu-item.selected {\n\tbackground-color: blue;\n\tbackground-color: var(--harmony-ui-menu-item-selected-bg-color);\n}\n\n\n.harmony-menu-item.separator {\n\theight: 5px;\n\tbackground-color: black;\n}\n\n.harmony-menu-item>.harmony-menu-item-title:hover {\n\tbackground-color: var(--harmony-ui-menu-item-hover-bg-color);\n}\n\n.harmony-menu-item.selected>.harmony-menu-item-title::after {\n\tcontent: \"✔\";\n}\n\n.harmony-menu-item>.harmony-menu-item-title::after {\n\ttransition: all 0.2s ease 0s;\n\twidth: 32px;\n\theight: 32px;\n}\n\n.harmony-menu-item.closed>.harmony-menu-item-title,\n.harmony-menu-item.opened>.harmony-menu-item-title {\n\tpadding-right: 32px;\n}\n\n.harmony-menu-item.closed>.harmony-menu-item-title::after {\n\tcontent: \"➤\";\n}\n\n.harmony-menu-item.opened>.harmony-menu-item-title::after {\n\tcontent: \"➤\";\n\ttransform: rotate(90deg);\n}\n\n.harmony-menu-item .submenu {\n\tbackground-color: var(--harmony-ui-menu-submenu-bg-color);\n\tpadding-left: 10px;\n\tmargin-left: 2px;\n\tdisplay: none;\n\toverflow: hidden;\n\tposition: relative;\n\tbackground-color: var(--harmony-ui-menu-submenu-fg-color);\n}\n\n.harmony-menu-item.opened>.submenu {\n\tdisplay: block;\n}\n";
+
+class HTMLHarmonyMenuElement extends HTMLElement {
+    #doOnce = true;
+    #subMenus = new Map();
+    #shadowRoot;
+    #contextual = false;
+    constructor() {
+        super();
+        this.#shadowRoot = this.attachShadow({ mode: 'closed' });
+        document.addEventListener('click', (event) => {
+            if (this.#contextual && !this.contains(event.target)) {
+                this.close();
+            }
+        });
+    }
+    #show(items, userData) {
+        this.#setItems(items, userData);
+        this.#checkSize();
+    }
+    show(items, userData) {
+        this.#show(items, userData);
+        this.setContextual(false);
+    }
+    showContextual(items, clientX, clientY, userData) {
+        document.body.append(this);
+        this.style.left = clientX + 'px';
+        this.style.top = clientY + 'px';
+        this.setContextual(true);
+        this.#show(items, userData);
+    }
+    setContextual(contextual) {
+        this.style.position = contextual ? 'absolute' : '';
+        this.#contextual = contextual;
+    }
+    #checkSize() {
+        const bodyRect = document.body.getBoundingClientRect();
+        const elemRect = this.getBoundingClientRect();
+        this.style.maxWidth = bodyRect.width + 'px';
+        this.style.maxHeight = bodyRect.height + 'px';
+        if (elemRect.right > bodyRect.right) {
+            this.style.left = Math.max((bodyRect.width - elemRect.width), 0) + 'px';
+            /*if (elemRect.width > bodyRect.width) {
+                this.style.maxWidth = bodyRect.width + 'px';
+            } else {
+                this.style.maxWidth = '';
+            }*/
+        }
+        if (elemRect.bottom > bodyRect.bottom) {
+            this.style.top = Math.max((bodyRect.height - elemRect.height), 0) + 'px';
+            /*if (elemRect.height > bodyRect.height) {
+                this.style.maxHeight = bodyRect.height + 'px';
+            } else {
+                this.style.maxHeight = '';
+            }*/
+        }
+        if (elemRect.left < 0) {
+            this.style.left = '0px';
+        }
+        if (elemRect.top < 0) {
+            this.style.top = '0px';
+        }
+    }
+    close() {
+        if (this.#contextual) {
+            this.remove();
+        }
+    }
+    connectedCallback() {
+        if (this.#doOnce) {
+            I18n.observeElement(this.#shadowRoot);
+            void shadowRootStyle(this.#shadowRoot, menuCSS);
+            const callback = (entries) => {
+                entries.forEach(() => {
+                    this.#checkSize();
+                });
+            };
+            const resizeObserver = new ResizeObserver(callback);
+            resizeObserver.observe(this);
+            resizeObserver.observe(document.body);
+            this.#doOnce = false;
+        }
+    }
+    #setItems(items, userData) {
+        this.#shadowRoot.replaceChildren();
+        if (items instanceof Array) {
+            for (const item of items) {
+                this.#shadowRoot.append(this.addItem(item, userData));
+            }
+        }
+        else {
+            for (const itemId in items) {
+                const item = items[itemId];
+                this.#shadowRoot.append(this.addItem(item, userData));
+            }
+        }
+    }
+    #openSubMenu(htmlSubMenu) {
+        for (const [htmlItem, sub] of this.#subMenus) {
+            if (sub == htmlSubMenu || sub.contains(htmlSubMenu)) {
+                htmlItem.classList.add('opened');
+                htmlItem.classList.remove('closed');
+            }
+            else {
+                htmlItem.classList.remove('opened');
+                htmlItem.classList.add('closed');
+            }
+        }
+        this.#checkSize();
+    }
+    addItem(item, userData) {
+        const htmlItem = createElement('div', {
+            class: 'harmony-menu-item',
+        });
+        if (!item) {
+            htmlItem.classList.add('separator');
+        }
+        else {
+            const htmlItemTitle = createElement('div', {
+                class: 'harmony-menu-item-title',
+            });
+            if (item.i18n) {
+                htmlItemTitle.classList.add('i18n');
+                htmlItemTitle.setAttribute('data-i18n', item.i18n);
+                htmlItemTitle.innerText = item.i18n;
+            }
+            else {
+                htmlItemTitle.innerText = item.name ?? '';
+            }
+            htmlItem.append(htmlItemTitle);
+            if (item.selected) {
+                htmlItem.classList.add('selected');
+            }
+            if (item.disabled) {
+                htmlItem.classList.add('disabled');
+            }
+            if (item.submenu) {
+                const htmlSubMenu = createElement('div', {
+                    class: 'submenu',
+                });
+                this.#subMenus.set(htmlItem, htmlSubMenu);
+                let subItems = 0;
+                if (item.submenu instanceof Array) {
+                    for (const subItem of item.submenu) {
+                        htmlSubMenu.append(this.addItem(subItem, userData));
+                        ++subItems;
+                    }
+                }
+                else {
+                    for (const subItemName in item.submenu) {
+                        const subItem = item.submenu[subItemName];
+                        htmlSubMenu.append(this.addItem(subItem, userData));
+                        ++subItems;
+                    }
+                }
+                htmlItem.append(htmlSubMenu);
+                //htmlSubMenu.style.display = 'none';
+                htmlItem.classList.add('closed');
+                if (item.opened) {
+                    this.#openSubMenu(htmlSubMenu);
+                }
+                htmlItem.addEventListener('click', event => {
+                    this.#openSubMenu(htmlSubMenu);
+                    if (item.cmd) {
+                        this.dispatchEvent(new CustomEvent(item.cmd));
+                    }
+                    if (item.f) {
+                        void item.f(userData);
+                    }
+                    event.stopPropagation();
+                });
+                if (subItems == 0) {
+                    hide(htmlItem);
+                }
+            }
+            else {
+                htmlItem.addEventListener('click', (event) => {
+                    if (item.cmd) {
+                        this.dispatchEvent(new CustomEvent(item.cmd));
+                    }
+                    if (item.f) {
+                        void item.f(userData);
+                    }
+                    event.stopPropagation();
+                });
+                htmlItem.addEventListener('click', () => this.close());
+            }
+        }
+        return htmlItem;
+    }
+}
+let definedMenu = false;
+function defineHarmonyMenu() {
+    if (!definedMenu) {
+        defineElement('harmony-menu', HTMLHarmonyMenuElement);
+        definedMenu = true;
         injectGlobalCss();
     }
 }
@@ -3781,129 +4151,6 @@ function defineHarmonyPanel() {
     }
 }
 
-var circularProgressCSS = ":host {\n\t--track-color: var(--harmony-circular-progress-track-color, #CCC);\n\t--progress-color: var(--harmony-circular-progress-progress-color, #F00);\n\tdisplay: inline-flex;\n}\n\n.track {\n\tcolor: var(--track-color);\n\topacity: 30%;\n\tstroke-width: 10%;\n}\n\n.progress {\n\tcolor: var(--progress-color);\n\tstroke-dasharray: calc(var(--progress) * pi * 100% * 0.8) calc((1 - var(--progress)) * pi * 100% * 0.8);\n\tstroke-width: 10%;\n\tstroke-dashoffset: calc(pi * 100% * 0.8 * 0.25);\n}\n";
-
-class HTMLHarmonyElement extends HTMLElement {
-    initialized = false;
-    initElement() {
-        if (this.initialized) {
-            return;
-        }
-        this.initialized = true;
-        this.createElement();
-    }
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
-    createElement() {
-    }
-    connectedCallback() {
-        this.initElement();
-    }
-    attributeChangedCallback(name, oldValue, newValue) {
-        this.initElement();
-        this.onAttributeChanged(name, oldValue, newValue);
-    }
-    // eslint-disable-next-line @typescript-eslint/no-empty-function, @typescript-eslint/no-unused-vars
-    onAttributeChanged(name, oldValue, newValue) {
-    }
-    static get observedAttributes() {
-        return ['label'];
-    }
-}
-
-class HTMLHarmonyCircularProgressElement extends HTMLHarmonyElement {
-    #shadowRoot;
-    #disabled = false;
-    #htmlLabel;
-    #htmlSVG;
-    #htmlTrack;
-    #htmlProgress;
-    #start = 0;
-    #end = Math.PI * 2;
-    #progress = 0.5;
-    createElement() {
-        this.#shadowRoot = this.attachShadow({ mode: 'closed' });
-        void shadowRootStyle(this.#shadowRoot, circularProgressCSS);
-        I18n.observeElement(this.#shadowRoot);
-        this.#htmlLabel = createElement('div', {
-            parent: this.#shadowRoot,
-            class: 'label',
-        });
-        this.#htmlSVG = createElementNS('http://www.w3.org/2000/svg', 'svg', {
-            style: `--progress:${this.#progress};`,
-            parent: this.#shadowRoot,
-            childs: [
-                this.#htmlTrack = createElementNS('http://www.w3.org/2000/svg', 'circle', {
-                    class: 'track',
-                    attributes: {
-                        cx: '50%',
-                        cy: '50%',
-                        r: '40%',
-                        fill: 'none',
-                        'stroke-width': '10%',
-                        'shape-rendering': 'geometricPrecision',
-                        stroke: 'currentColor',
-                    }
-                }),
-                this.#htmlProgress = createElementNS('http://www.w3.org/2000/svg', 'circle', {
-                    class: 'progress',
-                    attributes: {
-                        cx: '50%',
-                        cy: '50%',
-                        r: '40%',
-                        fill: 'none',
-                        'stroke-width': '10%',
-                        'shape-rendering': 'geometricPrecision',
-                        stroke: 'currentColor',
-                    }
-                }),
-            ],
-        });
-        this.#refresh();
-    }
-    setProgress(progress) {
-        this.#progress = progress;
-        if (this.#htmlSVG) {
-            this.#htmlSVG.style.cssText = `--progress: ${progress}`;
-        }
-    }
-    #refresh() {
-        if (this.#htmlSVG) {
-            this.#htmlSVG.style.cssText = `--progress: ${this.#progress}`;
-        }
-    }
-    onAttributeChanged(name, oldValue, newValue) {
-        switch (name) {
-            case 'data-label':
-                if (this.#htmlLabel) {
-                    this.#htmlLabel.innerHTML = newValue;
-                }
-                this.#htmlLabel?.classList.remove('i18n');
-                break;
-            case 'data-i18n':
-                this.#htmlLabel?.setAttribute('data-i18n', newValue);
-                if (this.#htmlLabel) {
-                    this.#htmlLabel.innerHTML = newValue;
-                }
-                this.#htmlLabel?.classList.add('i18n');
-                break;
-        }
-    }
-    static get observedAttributes() {
-        return ['data-label', 'data-i18n'];
-    }
-}
-let definedCircularProgress = false;
-function defineHarmonyCircularProgress() {
-    if (!definedCircularProgress) {
-        defineElement('harmony-circular-progress', class extends HTMLHarmonyCircularProgressElement {
-        });
-        defineElement('h-cp', class extends HTMLHarmonyCircularProgressElement {
-        });
-        definedCircularProgress = true;
-        injectGlobalCss();
-    }
-}
-
 var radioCSS = ":host {\n\t--harmony-radio-shadow-button-border-radius: var(--harmony-radio-button-border-radius, 0.5rem);\n\tdisplay: inline-flex;\n\toverflow: hidden;\n\tuser-select: none;\n}\n\n.label {\n\tmargin: auto 0;\n\tfont-weight: bold;\n\tmargin-right: 0.25rem;\n}\n\n::slotted(button) {\n\tpadding: 0.5rem;\n\tcolor: var(--harmony-ui-text-primary);\n\tflex: auto;\n\tcursor: pointer;\n\tappearance: none;\n\tborder-style: solid;\n\tborder-width: 0.0625rem;\n\tborder-color: var(--harmony-ui-border-primary);\n\tborder-right-style: none;\n\tbackground-color: var(--harmony-ui-input-background-primary);\n\ttransition: background-color 0.2s linear;\n\tfont-size: 1rem;\n\toverflow: hidden;\n}\n\n::slotted(button:hover) {\n\tbackground-color: var(--harmony-ui-input-background-secondary);\n}\n\n::slotted(button[selected]) {\n\tbackground-color: var(--harmony-ui-accent-primary);\n}\n\n::slotted(button[selected]:hover) {\n\tbackground-color: var(--harmony-ui-accent-secondary);\n}\n\n::slotted(button:first-of-type) {\n\tborder-radius: var(--harmony-radio-shadow-button-border-radius) 0 0 var(--harmony-radio-shadow-button-border-radius);\n}\n\n::slotted(button:last-child) {\n\tborder-right-style: solid;\n\tborder-radius: 0 var(--harmony-radio-shadow-button-border-radius) var(--harmony-radio-shadow-button-border-radius) 0;\n}\n";
 
 class HTMLHarmonyRadioElement extends HTMLElement {
@@ -4056,6 +4303,300 @@ function defineHarmonyRadio() {
     if (!definedRadio) {
         defineElement('harmony-radio', HTMLHarmonyRadioElement);
         definedRadio = true;
+        injectGlobalCss();
+    }
+}
+
+var selectCSS = "";
+
+class HTMLHarmonySelectElement extends HTMLElement {
+    #htmlSelect;
+    #shadowRoot;
+    constructor() {
+        super();
+        this.#shadowRoot = this.attachShadow({ mode: 'closed' });
+        this.#htmlSelect = createElement('select', { parent: this.#shadowRoot });
+    }
+    connectedCallback() {
+        void shadowRootStyle(this.#shadowRoot, selectCSS);
+        this.#shadowRoot.append(this.#htmlSelect);
+    }
+    attributeChangedCallback(name, oldValue, newValue) {
+        if (name == 'multiple') {
+            this.#htmlSelect.setAttribute('multiple', newValue);
+        }
+    }
+    addEventListener(type, listener) {
+        this.#htmlSelect.addEventListener(type, listener);
+    }
+    /*
+        onChange(event: Event) {
+            let newEvent = new event.constructor(event.type, event);
+            this.dispatchEvent(newEvent);
+        }
+    */
+    addOption(value, text) {
+        text = text ?? value;
+        const option = document.createElement('option');
+        option.value = value;
+        option.innerHTML = text;
+        this.#htmlSelect.append(option);
+    }
+    addOptions(values) {
+        if (values && values.entries) {
+            for (const [value, text] of values.entries()) {
+                this.addOption(value, text);
+            }
+        }
+    }
+    setOptions(values) {
+        this.removeAllOptions();
+        this.addOptions(values);
+    }
+    removeOption(value) {
+        for (const option of this.#htmlSelect.children) {
+            if (option.value === value) {
+                option.remove();
+            }
+        }
+    }
+    removeAllOptions() {
+        const list = this.#htmlSelect.children;
+        while (list[0]) {
+            list[0].remove();
+        }
+    }
+    select(value) {
+        for (const option of this.#htmlSelect.children) {
+            if (option.value === value) {
+                option.selected = true;
+            }
+        }
+    }
+    selectFirst() {
+        if (this.#htmlSelect.children[0]) {
+            this.#htmlSelect.children[0].selected = true;
+            this.#htmlSelect.dispatchEvent(new Event('input'));
+        }
+    }
+    unselect(value) {
+        for (const option of this.#htmlSelect.children) {
+            if (option.value === value) {
+                option.selected = false;
+            }
+        }
+    }
+    unselectAll() {
+        for (const option of this.#htmlSelect.children) {
+            option.selected = false;
+        }
+    }
+    static get observedAttributes() {
+        return ['multiple'];
+    }
+}
+let definedSelect = false;
+function defineHarmonySelect() {
+    if (!definedSelect) {
+        defineElement('harmony-select', HTMLHarmonySelectElement);
+        definedSelect = true;
+        injectGlobalCss();
+    }
+}
+
+var sliderCSS = ":host {\n\tdisplay: flex;\n}\n\nlabel {\n\twidth: var(--h-slider-label-width, auto);\n}\n\ninput[type=range] {\n\tflex: auto;\n}\n\ninput[type=number] {\n\tflex: 0 0 var(--h-slider-input-width, 4rem);\n\tfont-size: var(--h-slider-input-font-size, 1.2rem);\n\tmin-width: 0;\n\ttext-align: center;\n}\n";
+
+class HTMLHarmonySliderElement extends HTMLHarmonyElement {
+    #shadowRoot;
+    #htmlLabel;
+    #htmlSlider;
+    #htmlInput;
+    #htmlPrependSlot;
+    #htmlAppendSlot;
+    #htmlPrependIcon;
+    #htmlAppendIcon;
+    #min = 0;
+    #max = 100;
+    #value = [50, 50];
+    #isRange = false;
+    createElement() {
+        this.#shadowRoot = this.attachShadow({ mode: 'closed' });
+        void shadowRootStyle(this.#shadowRoot, sliderCSS);
+        I18n.observeElement(this.#shadowRoot);
+        this.#htmlLabel = createElement('label', {
+            parent: this.#shadowRoot,
+            hidden: true,
+        });
+        this.#htmlPrependSlot = createElement('slot', {
+            parent: this.#shadowRoot,
+            name: 'prepend',
+        });
+        this.#htmlPrependIcon = createElement('img', {
+            parent: this.#shadowRoot,
+        });
+        this.#htmlSlider = createElement('input', {
+            type: 'range',
+            parent: this.#shadowRoot,
+            step: 'any',
+            $change: (event) => this.#setValue(Number(event.target.value), undefined, event.target),
+            $input: (event) => this.#setValue(Number(event.target.value), undefined, event.target),
+        });
+        this.#htmlAppendIcon = createElement('img', {
+            parent: this.#shadowRoot,
+        });
+        this.#htmlAppendSlot = createElement('slot', {
+            parent: this.#shadowRoot,
+            name: 'append',
+        });
+        this.#htmlInput = createElement('input', {
+            type: 'number',
+            hidden: true,
+            parent: this.#shadowRoot,
+            value: String(50),
+            step: 'any',
+            min: 0,
+            max: 1000,
+            $change: (event) => this.#setValue(Number(event.target.value), undefined, event.target),
+            $input: (event) => this.#setValue(Number(event.target.value), undefined, event.target),
+        });
+    }
+    #checkMin(value) {
+        if (value < this.#min) {
+            return this.#min;
+        }
+        return value;
+    }
+    #checkMax(max) {
+        if (max > this.#max) {
+            return this.#max;
+        }
+        return max;
+    }
+    #setValue(min, max, initiator) {
+        //	 TODO: swap min/max
+        if (min !== undefined) {
+            this.#value[0] = this.#checkMin(min);
+        }
+        if (max !== undefined) {
+            this.#value[1] = this.#checkMax(max);
+        }
+        if (initiator != this.#htmlSlider) {
+            this.#htmlSlider.value = String(min ?? this.#value[0]);
+        }
+        if (initiator != this.#htmlInput) {
+            this.#htmlInput.value = String((min ?? this.#value[0]).toFixed(2));
+        }
+        this.dispatchEvent(new CustomEvent('input', {
+            detail: {
+                value: this.#isRange ? this.#value : this.#value[0],
+            }
+        }));
+    }
+    get value() {
+        return this.#isRange ? this.#value : this.#value[0];
+    }
+    isRange() {
+        return this.#isRange;
+    }
+    setValue(value) {
+        if (Array.isArray(value)) {
+            this.#setValue(value[0], value[1]);
+        }
+        else {
+            if (this.#isRange) {
+                console.error('value must be an array');
+            }
+            else {
+                this.#setValue(value);
+            }
+        }
+    }
+    onAttributeChanged(name, oldValue, newValue) {
+        let step;
+        switch (name) {
+            case 'label':
+                this.#htmlLabel.innerHTML = newValue;
+                updateElement(this.#htmlLabel, { i18n: newValue, });
+                show(this.#htmlLabel);
+                break;
+            case 'min':
+                this.#min = Number(newValue);
+                this.#htmlSlider.setAttribute('min', String(this.#min));
+                this.#htmlInput.setAttribute('min', String(this.#min));
+                break;
+            case 'max':
+                this.#max = Number(newValue);
+                this.#htmlSlider.setAttribute('max', String(this.#max));
+                this.#htmlInput.setAttribute('max', String(this.#max));
+                break;
+            case 'value':
+                if (newValue === null) {
+                    break;
+                }
+                const value = JSON.parse(newValue);
+                if (Array.isArray(value)) {
+                    this.setValue(value);
+                }
+                else {
+                    const n = Number(value);
+                    if (!Number.isNaN(n)) {
+                        this.setValue(n);
+                    }
+                }
+                break;
+            case 'step':
+                step = Number(newValue);
+                if (Number.isNaN(step)) {
+                    step = undefined;
+                }
+                else {
+                    step = step;
+                }
+                this.#htmlSlider.setAttribute('step', step ? String(step) : 'any');
+                break;
+            case 'input-step':
+                step = Number(newValue);
+                if (Number.isNaN(step)) {
+                    step = undefined;
+                }
+                else {
+                    step = step;
+                }
+                this.#htmlInput.setAttribute('step', step ? String(step) : 'any');
+                break;
+            case 'has-input':
+                if (newValue === null) {
+                    hide(this.#htmlInput);
+                }
+                else {
+                    show(this.#htmlInput);
+                }
+                break;
+            /*
+            case 'data-label':
+                this.#htmlText.innerHTML = newValue;
+                this.#htmlText.classList.remove('i18n');
+                break;
+            case 'data-i18n':
+                this.#htmlText.setAttribute('data-i18n', newValue);
+                this.#htmlText.innerHTML = newValue;
+                this.#htmlText.classList.add('i18n');
+                break;
+            case 'data-position':
+                this.#htmlText.setAttribute('data-position', newValue);
+                break;
+                */
+        }
+    }
+    static get observedAttributes() {
+        return super.observedAttributes.concat(['label', 'min', 'max', 'input-step', 'has-input', 'append-icon', 'prepend-icon', 'value']);
+    }
+}
+let definedSlider = false;
+function defineHarmonySlider() {
+    if (!definedSlider) {
+        defineElement('harmony-slider', HTMLHarmonySliderElement);
+        definedSlider = true;
         injectGlobalCss();
     }
 }
@@ -4395,300 +4936,6 @@ function defineHarmonySlideshow() {
     if (!definedSlideshow) {
         defineElement('harmony-slideshow', HTMLHarmonySlideshowElement);
         definedSlideshow = true;
-        injectGlobalCss();
-    }
-}
-
-var selectCSS = "";
-
-class HTMLHarmonySelectElement extends HTMLElement {
-    #htmlSelect;
-    #shadowRoot;
-    constructor() {
-        super();
-        this.#shadowRoot = this.attachShadow({ mode: 'closed' });
-        this.#htmlSelect = createElement('select', { parent: this.#shadowRoot });
-    }
-    connectedCallback() {
-        void shadowRootStyle(this.#shadowRoot, selectCSS);
-        this.#shadowRoot.append(this.#htmlSelect);
-    }
-    attributeChangedCallback(name, oldValue, newValue) {
-        if (name == 'multiple') {
-            this.#htmlSelect.setAttribute('multiple', newValue);
-        }
-    }
-    addEventListener(type, listener) {
-        this.#htmlSelect.addEventListener(type, listener);
-    }
-    /*
-        onChange(event: Event) {
-            let newEvent = new event.constructor(event.type, event);
-            this.dispatchEvent(newEvent);
-        }
-    */
-    addOption(value, text) {
-        text = text ?? value;
-        const option = document.createElement('option');
-        option.value = value;
-        option.innerHTML = text;
-        this.#htmlSelect.append(option);
-    }
-    addOptions(values) {
-        if (values && values.entries) {
-            for (const [value, text] of values.entries()) {
-                this.addOption(value, text);
-            }
-        }
-    }
-    setOptions(values) {
-        this.removeAllOptions();
-        this.addOptions(values);
-    }
-    removeOption(value) {
-        for (const option of this.#htmlSelect.children) {
-            if (option.value === value) {
-                option.remove();
-            }
-        }
-    }
-    removeAllOptions() {
-        const list = this.#htmlSelect.children;
-        while (list[0]) {
-            list[0].remove();
-        }
-    }
-    select(value) {
-        for (const option of this.#htmlSelect.children) {
-            if (option.value === value) {
-                option.selected = true;
-            }
-        }
-    }
-    selectFirst() {
-        if (this.#htmlSelect.children[0]) {
-            this.#htmlSelect.children[0].selected = true;
-            this.#htmlSelect.dispatchEvent(new Event('input'));
-        }
-    }
-    unselect(value) {
-        for (const option of this.#htmlSelect.children) {
-            if (option.value === value) {
-                option.selected = false;
-            }
-        }
-    }
-    unselectAll() {
-        for (const option of this.#htmlSelect.children) {
-            option.selected = false;
-        }
-    }
-    static get observedAttributes() {
-        return ['multiple'];
-    }
-}
-let definedSelect = false;
-function defineHarmonySelect() {
-    if (!definedSelect) {
-        defineElement('harmony-select', HTMLHarmonySelectElement);
-        definedSelect = true;
-        injectGlobalCss();
-    }
-}
-
-var sliderCSS = ":host {\n\tdisplay: flex;\n}\n\nlabel {\n\twidth: var(--h-slider-label-width, auto);\n}\n\ninput[type=range] {\n\tflex: auto;\n}\n\ninput[type=number] {\n\tflex: 0 0 var(--h-slider-input-width, 4rem);\n\tfont-size: var(--h-slider-input-font-size, 1.2rem);\n\tmin-width: 0;\n\ttext-align: center;\n}\n";
-
-class HTMLHarmonySliderElement extends HTMLHarmonyElement {
-    #shadowRoot;
-    #htmlLabel;
-    #htmlSlider;
-    #htmlInput;
-    #htmlPrependSlot;
-    #htmlAppendSlot;
-    #htmlPrependIcon;
-    #htmlAppendIcon;
-    #min = 0;
-    #max = 100;
-    #value = [50, 50];
-    #isRange = false;
-    createElement() {
-        this.#shadowRoot = this.attachShadow({ mode: 'closed' });
-        void shadowRootStyle(this.#shadowRoot, sliderCSS);
-        I18n.observeElement(this.#shadowRoot);
-        this.#htmlLabel = createElement('label', {
-            parent: this.#shadowRoot,
-            hidden: true,
-        });
-        this.#htmlPrependSlot = createElement('slot', {
-            parent: this.#shadowRoot,
-            name: 'prepend',
-        });
-        this.#htmlPrependIcon = createElement('img', {
-            parent: this.#shadowRoot,
-        });
-        this.#htmlSlider = createElement('input', {
-            type: 'range',
-            parent: this.#shadowRoot,
-            step: 'any',
-            $change: (event) => this.#setValue(Number(event.target.value), undefined, event.target),
-            $input: (event) => this.#setValue(Number(event.target.value), undefined, event.target),
-        });
-        this.#htmlAppendIcon = createElement('img', {
-            parent: this.#shadowRoot,
-        });
-        this.#htmlAppendSlot = createElement('slot', {
-            parent: this.#shadowRoot,
-            name: 'append',
-        });
-        this.#htmlInput = createElement('input', {
-            type: 'number',
-            hidden: true,
-            parent: this.#shadowRoot,
-            value: String(50),
-            step: 'any',
-            min: 0,
-            max: 1000,
-            $change: (event) => this.#setValue(Number(event.target.value), undefined, event.target),
-            $input: (event) => this.#setValue(Number(event.target.value), undefined, event.target),
-        });
-    }
-    #checkMin(value) {
-        if (value < this.#min) {
-            return this.#min;
-        }
-        return value;
-    }
-    #checkMax(max) {
-        if (max > this.#max) {
-            return this.#max;
-        }
-        return max;
-    }
-    #setValue(min, max, initiator) {
-        //	 TODO: swap min/max
-        if (min !== undefined) {
-            this.#value[0] = this.#checkMin(min);
-        }
-        if (max !== undefined) {
-            this.#value[1] = this.#checkMax(max);
-        }
-        if (initiator != this.#htmlSlider) {
-            this.#htmlSlider.value = String(min ?? this.#value[0]);
-        }
-        if (initiator != this.#htmlInput) {
-            this.#htmlInput.value = String((min ?? this.#value[0]).toFixed(2));
-        }
-        this.dispatchEvent(new CustomEvent('input', {
-            detail: {
-                value: this.#isRange ? this.#value : this.#value[0],
-            }
-        }));
-    }
-    get value() {
-        return this.#isRange ? this.#value : this.#value[0];
-    }
-    isRange() {
-        return this.#isRange;
-    }
-    setValue(value) {
-        if (Array.isArray(value)) {
-            this.#setValue(value[0], value[1]);
-        }
-        else {
-            if (this.#isRange) {
-                console.error('value must be an array');
-            }
-            else {
-                this.#setValue(value);
-            }
-        }
-    }
-    onAttributeChanged(name, oldValue, newValue) {
-        let step;
-        switch (name) {
-            case 'label':
-                this.#htmlLabel.innerHTML = newValue;
-                updateElement(this.#htmlLabel, { i18n: newValue, });
-                show(this.#htmlLabel);
-                break;
-            case 'min':
-                this.#min = Number(newValue);
-                this.#htmlSlider.setAttribute('min', String(this.#min));
-                this.#htmlInput.setAttribute('min', String(this.#min));
-                break;
-            case 'max':
-                this.#max = Number(newValue);
-                this.#htmlSlider.setAttribute('max', String(this.#max));
-                this.#htmlInput.setAttribute('max', String(this.#max));
-                break;
-            case 'value':
-                if (newValue === null) {
-                    break;
-                }
-                const value = JSON.parse(newValue);
-                if (Array.isArray(value)) {
-                    this.setValue(value);
-                }
-                else {
-                    const n = Number(value);
-                    if (!Number.isNaN(n)) {
-                        this.setValue(n);
-                    }
-                }
-                break;
-            case 'step':
-                step = Number(newValue);
-                if (Number.isNaN(step)) {
-                    step = undefined;
-                }
-                else {
-                    step = step;
-                }
-                this.#htmlSlider.setAttribute('step', step ? String(step) : 'any');
-                break;
-            case 'input-step':
-                step = Number(newValue);
-                if (Number.isNaN(step)) {
-                    step = undefined;
-                }
-                else {
-                    step = step;
-                }
-                this.#htmlInput.setAttribute('step', step ? String(step) : 'any');
-                break;
-            case 'has-input':
-                if (newValue === null) {
-                    hide(this.#htmlInput);
-                }
-                else {
-                    show(this.#htmlInput);
-                }
-                break;
-            /*
-            case 'data-label':
-                this.#htmlText.innerHTML = newValue;
-                this.#htmlText.classList.remove('i18n');
-                break;
-            case 'data-i18n':
-                this.#htmlText.setAttribute('data-i18n', newValue);
-                this.#htmlText.innerHTML = newValue;
-                this.#htmlText.classList.add('i18n');
-                break;
-            case 'data-position':
-                this.#htmlText.setAttribute('data-position', newValue);
-                break;
-                */
-        }
-    }
-    static get observedAttributes() {
-        return super.observedAttributes.concat(['label', 'min', 'max', 'input-step', 'has-input', 'append-icon', 'prepend-icon', 'value']);
-    }
-}
-let definedSlider = false;
-function defineHarmonySlider() {
-    if (!definedSlider) {
-        defineElement('harmony-slider', HTMLHarmonySliderElement);
-        definedSlider = true;
         injectGlobalCss();
     }
 }
@@ -5765,4 +6012,4 @@ function defineHarmonyTree() {
     }
 }
 
-export { AddI18nElement, HTMLHarmony2dManipulatorElement, HTMLHarmonyAccordionElement, HTMLHarmonyCircularProgressElement, HTMLHarmonyColorPickerElement, HTMLHarmonyCopyElement, HTMLHarmonyFileInputElement, HTMLHarmonyInfoBoxElement, HTMLHarmonyInfoBoxElementType, HTMLHarmonyItemElement, HTMLHarmonyLabelPropertyElement, HTMLHarmonyMenuElement, HTMLHarmonyPaletteElement, HTMLHarmonyPanelElement, HTMLHarmonyRadioElement, HTMLHarmonySelectElement, HTMLHarmonySliderElement, HTMLHarmonySlideshowElement, HTMLHarmonySplitterElement, HTMLHarmonySwitchElement, HTMLHarmonyTabElement, HTMLHarmonyTabGroupElement, HTMLHarmonyToggleButtonElement, HTMLHarmonyTooltipElement, HTMLHarmonyTreeElement, index as HarmonySVG, I18n, I18nElements, I18nEvents, ManipulatorCorner, ManipulatorDirection, ManipulatorResizeOrigin, ManipulatorSide, ManipulatorUpdatedEventType, TreeItem, TreeItemKind, cloneEvent, createElement, createElementNS, createShadowRoot, defineElement, defineHarmony2dManipulator, defineHarmonyAccordion, defineHarmonyCircularProgress, defineHarmonyColorPicker, defineHarmonyCopy, defineHarmonyFileInput, defineHarmonyInfoBox, defineHarmonyItem, defineHarmonyLabelProperty, defineHarmonyMenu, defineHarmonyPalette, defineHarmonyPanel, defineHarmonyRadio, defineHarmonySelect, defineHarmonySlider, defineHarmonySlideshow, defineHarmonySplitter, defineHarmonySwitch, defineHarmonyTab, defineHarmonyTabGroup, defineHarmonyToggleButton, defineHarmonyTooltip, defineHarmonyTree, display, documentStyle, documentStyleSync, getCustomElementRegistry, hide, isVisible, shadowRootStyle, shadowRootStyleSync, show, styleInject, svgNamespace, toggle, updateElement, visible };
+export { AddI18nElement, HTMLHarmony2dManipulatorElement, HTMLHarmonyAccordionElement, HTMLHarmonyCircularProgressElement, HTMLHarmonyColorPickerElement, HTMLHarmonyCopyElement, HTMLHarmonyFileInputElement, HTMLHarmonyFilterElement, HTMLHarmonyInfoBoxElement, HTMLHarmonyInfoBoxElementType, HTMLHarmonyItemElement, HTMLHarmonyLabelPropertyElement, HTMLHarmonyMenuElement, HTMLHarmonyPaletteElement, HTMLHarmonyPanelElement, HTMLHarmonyRadioElement, HTMLHarmonySelectElement, HTMLHarmonySliderElement, HTMLHarmonySlideshowElement, HTMLHarmonySplitterElement, HTMLHarmonySwitchElement, HTMLHarmonyTabElement, HTMLHarmonyTabGroupElement, HTMLHarmonyToggleButtonElement, HTMLHarmonyTooltipElement, HTMLHarmonyTreeElement, HarmonyFilterListType, index as HarmonySVG, I18n, I18nElements, I18nEvents, ManipulatorCorner, ManipulatorDirection, ManipulatorResizeOrigin, ManipulatorSide, ManipulatorUpdatedEventType, TreeItem, TreeItemKind, cloneEvent, createElement, createElementNS, createShadowRoot, defineElement, defineHarmony2dManipulator, defineHarmonyAccordion, defineHarmonyCircularProgress, defineHarmonyColorPicker, defineHarmonyCopy, defineHarmonyFileInput, defineHarmonyFilter, defineHarmonyInfoBox, defineHarmonyItem, defineHarmonyLabelProperty, defineHarmonyMenu, defineHarmonyPalette, defineHarmonyPanel, defineHarmonyRadio, defineHarmonySelect, defineHarmonySlider, defineHarmonySlideshow, defineHarmonySplitter, defineHarmonySwitch, defineHarmonyTab, defineHarmonyTabGroup, defineHarmonyToggleButton, defineHarmonyTooltip, defineHarmonyTree, display, documentStyle, documentStyleSync, getCustomElementRegistry, hide, isVisible, shadowRootStyle, shadowRootStyleSync, show, styleInject, svgNamespace, toggle, updateElement, visible };
