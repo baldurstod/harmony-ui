@@ -132,7 +132,7 @@ function createElementOptions(element: HTMLElement, options?: CreateElementOptio
 					}
 					break;
 				case 'parent':
-					(optionValue as Element | ShadowRoot).append(element);
+					(optionValue as Element | ShadowRoot | undefined)?.append(element);
 					break;
 				case 'child':
 					append(shadowRoot ?? element, optionValue as CreateElementChildOption);
