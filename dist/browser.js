@@ -5251,6 +5251,7 @@ class HTMLHarmonyTabElement extends HTMLElement {
                 break;
             case 'disabled':
                 this.disabled = toBool(newValue);
+                break;
             case 'data-closable':
                 display(this.#htmlClose, toBool(newValue));
                 break;
