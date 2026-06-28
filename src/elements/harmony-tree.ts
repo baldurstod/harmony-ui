@@ -20,6 +20,9 @@ export type TreeItemFilter = {
 	name?: string;
 	kind?: TreeItemKind;
 	kinds?: TreeItemKind[];
+	/** User provided function that return true to keep the item or false to reject it. */
+	customFilter?: (item: TreeItem) => boolean;
+	extensions?: string[];
 }
 
 export enum TreeItemKind {
@@ -161,8 +164,9 @@ export class TreeItem {
 			return true;
 		}
 
+		const lowerName = this.name.toLowerCase();
 		if (filter.name) {
-			if (!this.name.toLowerCase().includes(filter.name.toLowerCase())) {
+			if (!lowerName.includes(filter.name.toLowerCase())) {
 				return false;
 			}
 
@@ -189,6 +193,23 @@ export class TreeItem {
 			if (filter.kind !== this.kind) {
 				return false;
 			}
+		}
+
+		if (filter.extensions) {
+			let found = false;
+			for (const extension of filter.extensions) {
+				if (lowerName.endsWith(extension)) {
+					found = true;
+					break;
+				}
+			}
+			if (!found) {
+				return false;
+			}
+		}
+
+		if (filter.customFilter) {
+			return filter.customFilter(this);
 		}
 
 		return true;
