@@ -1,10 +1,12 @@
 import { BugReporter } from 'harmony-utils';
 import filterCSS from '../css/harmony-filter.css';
+import filter2CSS from '../css/harmony-filter2.css';
 import { shadowRootStyle } from '../harmony-css';
-import { createElement, defineElement } from '../harmony-html';
+import { createElement, defineElement, show } from '../harmony-html';
 import { injectGlobalCss } from '../utils/globalcss';
 import { HTMLHarmonyElement } from './harmony-element';
 import { defineHarmonyItem } from './harmony-item';
+import { defineHarmonySwitch, HarmonySwitchChange, HTMLHarmonySwitchElement } from './harmony-switch';
 
 export type HarmonyFilterType = 'string' | 'number' | 'range' | 'list' | 'select' | 'custom';
 
@@ -22,7 +24,7 @@ export type HarmonyFilterOption = {
 	/** Option name. Must be unique among all options of a filter */
 	name: string;
 	/** Option title */
-	title?: string;
+	title: string;
 	/** Enable internationalization of title. Default to true */
 	i18n?: boolean;
 	/** Optional icon */
@@ -48,7 +50,7 @@ export type HarmonyFilterItem = {
 	decimals?: number;
 	/** Default filter value */
 	value?: any;
-	/** For list like filters, determine the options type. See HarmonyFilterListType for more details */
+	/** For list like filters, determine the options type. See HarmonyFilterListType for more details. Default value is Boolean */
 	listType?: HarmonyFilterListType;
 	/** For list like filters, list the default options */
 	options?: HarmonyFilterOption[];
@@ -56,18 +58,23 @@ export type HarmonyFilterItem = {
 
 export type HarmonyFilter = HarmonyFilterItem[];
 
-export type HarmonyFilterEvent = {
+export type HarmonyFilterEvent<T> = {
 	name: string;
-	value: any;
+	value: T;
 };
 
 export class HTMLHarmonyFilterElement extends HTMLHarmonyElement {
 	#shadowRoot?: ShadowRoot;
+	#bodyShadowRoot?: ShadowRoot;
 	readonly #items = new WeakSet<HTMLElement>();
 
 	protected createElement(): void {
 		this.#shadowRoot = this.attachShadow({ mode: 'closed' });
 		void shadowRootStyle(this.#shadowRoot, filterCSS);
+
+		const div = createElement('div', { parent: document.body, });
+		this.#bodyShadowRoot = div.attachShadow({ mode: 'closed' });
+		void shadowRootStyle(this.#bodyShadowRoot, filter2CSS);
 
 		this.#initObserver();
 		this.#processChilds();
@@ -192,6 +199,48 @@ export class HTMLHarmonyFilterElement extends HTMLHarmonyElement {
 						createElement('input', { type: 'number', }),
 					],
 				});
+			case 'list':
+				const htmlList = createElement('div', {
+					class: 'list',
+					popover: 'auto',
+					hidden: true,
+					parent: this.#bodyShadowRoot,
+				});
+				defineHarmonySwitch();
+
+				const html = new Map<string, HTMLHarmonySwitchElement>();
+				const handleChange = () => {
+					const values = new Map<string, boolean | undefined>();
+					for (const [name, sw] of html) {
+						values.set(name, sw.state);
+					}
+					this.#dispatchEvent(filter.name, values);
+				}
+
+				for (const option of filter.options ?? []) {
+					html.set(option.name, createElement('harmony-switch', {
+						parent: htmlList,
+						'data-i18n': option.title,
+						...(filter.listType === HarmonyFilterListType.Ternary) && {
+							ternary: 1,
+						},
+						state: option.value,
+						$change: (event: CustomEvent<HarmonySwitchChange>) => handleChange(),
+					}) as HTMLHarmonySwitchElement);
+				}
+
+				return createElement('button', {
+					...(filter.i18n !== false) && {
+						i18n: filter.title,
+					},
+					$click: (event: MouseEvent) => {
+						htmlList.style.left = event.pageX + 'px';
+						htmlList.style.top = event.pageY + 'px';
+
+						show(htmlList);
+						htmlList.showPopover();
+					},
+				});
 			default:
 				BugReporter.reportBug('error', `missing filter type ${filter.type}`);
 				break;
@@ -200,8 +249,8 @@ export class HTMLHarmonyFilterElement extends HTMLHarmonyElement {
 		return null;
 	}
 
-	#dispatchEvent(name: string, value: any): void {
-		this.dispatchEvent(new CustomEvent<HarmonyFilterEvent>('filter', {
+	#dispatchEvent<T>(name: string, value: T): void {
+		this.dispatchEvent(new CustomEvent<HarmonyFilterEvent<T>>('filter', {
 			detail: {
 				name,
 				value,

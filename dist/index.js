@@ -2130,7 +2130,152 @@ function defineHarmonyFileInput() {
     }
 }
 
-var filterCSS = ":host {\n\toverflow: hidden;\n\tdisplay: flex;\n\tjustify-content: center;\n\tposition: relative;\n\twidth: 100%;\n\n\t--bg-color: var(--harmony-toolbar-bg-color, var(--main-bg-color, black));\n\tbackground-color: var(--bg-color);\n}\n\n.string {\n\twidth: 100%;\n\tdisplay: flex;\n\tgap: 0.25rem;\n}\n\n.string>span {\n\tflex: 0 0 auto;\n\tmax-width: 50%;\n}\n\n.string>input {\n\tflex: 1 1 auto;\n}\n";
+var filterCSS = ":host {\n\toverflow: hidden;\n\tdisplay: flex;\n\tjustify-content: center;\n\tposition: relative;\n\twidth: 100%;\n\n\t--bg-color: var(--harmony-toolbar-bg-color, var(--main-bg-color, black));\n\tbackground-color: var(--bg-color);\n}\n\n.string {\n\twidth: 100%;\n\tdisplay: flex;\n\tgap: 0.25rem;\n}\n\n.string>span {\n\tflex: 0 0 auto;\n\tmax-width: 50%;\n}\n\n.string>input {\n\tflex: 1 1 auto;\n}\n\nbutton {\n\ttext-wrap: nowrap;\n}\n";
+
+var filter2CSS = ":host {\n\tposition: absolute;\n\ttop: 0;\n\tleft: 0;\n\twidth: 100%;\n\theight: 100%;\n\tpointer-events: none;\n}\n\n.list {\n\tpointer-events: all;\n\tposition: absolute;\n\tmax-height: 100%;\n\t/*width: 100px;*/\n\toverflow: auto;\n\tbackground-color: red;\n\tmargin: 0;\n\tdisplay: flex;\n\tflex-direction: column;\n}\n\n.list:where(:not(:popover-open)) {\n\tdisplay: none;\n}\n";
+
+var switchCSS = ":host {\n\t--harmony-switch-shadow-width: var(--harmony-switch-width, 4rem);\n\t--harmony-switch-shadow-height: var(--harmony-switch-height, 2rem);\n\t--harmony-switch-shadow-on-background-color: var(--harmony-switch-on-background-color, #1072eb);\n\t--harmony-switch-shadow-on-background-color-hover: var(--harmony-switch-on-background-color-hover, #1040c1);\n\t--harmony-switch-shadow-slider-width: var(--harmony-switch-slider-width, 1.4rem);\n\t--harmony-switch-shadow-slider-height: var(--harmony-switch-slider-height, 1.4rem);\n\t--harmony-switch-shadow-slider-margin: var(--harmony-switch-slider-margin, 0.3rem);\n\t--harmony-switch-shadow-slider-border-width: var(--harmony-switch-slider-border-width, 0rem);\n\t--slot-width: var(--harmony-switch-slot-width, auto);\n\t--prepend-width: var(--harmony-switch-prepend-width, var(--slot-width));\n\t--append-width: var(--harmony-switch-append-width, var(--slot-width));\n\n\tdisplay: inline-flex;\n\tuser-select: none;\n\tcursor: pointer;\n\tjustify-content: space-between;\n}\n\n:host>* {\n\tflex-grow: 0;\n}\n\n.label {\n\tmargin: auto 0;\n\tfont-weight: bold;\n\tflex: 1;\n}\n\nslot{\n\tdisplay: inline-block;\n}\n\nslot[name=\"prepend\"] {\n\twidth: var(--prepend-width);\n}\n\nslot[name=\"append\"] {\n\twidth: var(--append-width);\n}\n\n.harmony-switch-outer {\n\tdisplay: flex;\n\theight: var(--harmony-switch-shadow-height);\n\tborder-radius: calc(var(--harmony-switch-shadow-height) * 0.5);\n\talign-items: center;\n\tmargin-left: 0.25rem;\n\ttransition: background-color 0.25s linear;\n\twidth: var(--harmony-switch-shadow-width);\n}\n\n.harmony-switch-outer {\n\tbackground-color: var(--harmony-ui-input-background-primary);\n}\n\n.harmony-switch-outer:hover {\n\tbackground-color: var(--harmony-ui-input-background-secondary);\n}\n\n.harmony-switch-outer.on {\n\tbackground-color: var(--harmony-ui-accent-primary);\n}\n\n.harmony-switch-outer.on:hover {\n\tbackground-color: var(--harmony-ui-accent-secondary);\n}\n\n.harmony-switch-inner {\n\tdisplay: inline-block;\n\theight: var(--harmony-switch-shadow-slider-height);\n\twidth: var(--harmony-switch-shadow-slider-width);\n\tborder-radius: calc(var(--harmony-switch-shadow-slider-height) * 0.5);\n\ttransition: all 0.25s;\n\tposition: relative;\n\tleft: var(--harmony-switch-shadow-slider-margin);\n\tborder: var(--harmony-switch-shadow-slider-border-width) solid;\n\tbox-sizing: border-box;\n\tborder-color: var(--harmony-ui-input-border-primary);\n\tbackground-color: var(--harmony-ui-input-background-tertiary);\n}\n\n.harmony-switch-outer.ternary .harmony-switch-inner {\n\tleft: calc(50% - var(--harmony-switch-shadow-slider-width) * 0.5);\n}\n\n.harmony-switch-outer.off .harmony-switch-inner {\n\tleft: var(--harmony-switch-shadow-slider-margin);\n}\n\n.harmony-switch-outer.on .harmony-switch-inner {\n\tleft: calc(100% - var(--harmony-switch-shadow-slider-width) - var(--harmony-switch-shadow-slider-margin));\n}\n\n.harmony-switch-outer.ternary.off {\n\tbackground-color: red;\n}\n\n.harmony-switch-outer.ternary.off:hover {\n\tbackground-color: red;\n}\n\n.harmony-switch-outer.ternary.on {\n\tbackground-color: green;\n}\n\n.harmony-switch-outer.ternary.on:hover {\n\tbackground-color: green;\n}\n";
+
+class HTMLHarmonySwitchElement extends HTMLHarmonyElement {
+    #shadowRoot;
+    #disabled = false;
+    #htmlLabel;
+    #htmlSwitchOuter;
+    #state = false;
+    #ternary = false;
+    createElement() {
+        this.#shadowRoot = this.attachShadow({ mode: 'closed' });
+        void shadowRootStyle(this.#shadowRoot, switchCSS);
+        I18n.observeElement(this.#shadowRoot);
+        this.#htmlLabel = createElement('div', {
+            parent: this.#shadowRoot,
+            class: 'label',
+        });
+        createElement('slot', {
+            parent: this.#shadowRoot,
+            name: 'prepend',
+            $click: () => this.state = false,
+        });
+        this.#htmlSwitchOuter = createElement('span', {
+            parent: this.#shadowRoot,
+            class: 'harmony-switch-outer',
+            child: createElement('span', { class: 'harmony-switch-inner' }),
+            $click: () => this.toggle(),
+        });
+        createElement('slot', {
+            parent: this.#shadowRoot,
+            name: 'append',
+            $click: () => this.state = true,
+        });
+        this.#refresh();
+    }
+    set disabled(disabled) {
+        this.#disabled = disabled ? true : false;
+        this.classList[this.#disabled ? 'add' : 'remove']('disabled');
+    }
+    get disabled() {
+        return this.#disabled;
+    }
+    set state(state) {
+        if (this.#state != state) {
+            this.#state = state;
+            this.dispatchEvent(new CustomEvent('change', { detail: { state: state, value: state } }));
+        }
+        else {
+            this.#state = state;
+        }
+        this.#refresh();
+    }
+    get state() {
+        return this.#state;
+    }
+    set checked(checked) {
+        this.state = checked;
+    }
+    get checked() {
+        return this.#state;
+    }
+    set ternary(ternary) {
+        this.#ternary = ternary;
+        this.#refresh();
+    }
+    get ternary() {
+        return this.#ternary;
+    }
+    toggle() {
+        if (this.#ternary) {
+            if (this.#state === false) {
+                this.state = undefined;
+            }
+            else if (this.#state === undefined) {
+                this.state = true;
+            }
+            else {
+                this.state = false;
+            }
+        }
+        else {
+            this.state = !this.#state;
+        }
+        this.#refresh();
+    }
+    #refresh() {
+        this.#htmlSwitchOuter?.classList.remove('on', 'off', 'ternary');
+        if (this.#ternary) {
+            this.#htmlSwitchOuter?.classList.add('ternary');
+        }
+        if (this.#state === undefined) {
+            return;
+        }
+        this.#htmlSwitchOuter?.classList.add(this.#state ? 'on' : 'off');
+    }
+    onAttributeChanged(name, oldValue, newValue) {
+        switch (name) {
+            case 'data-label':
+                if (this.#htmlLabel) {
+                    this.#htmlLabel.innerHTML = newValue;
+                }
+                this.#htmlLabel?.classList.remove('i18n');
+                break;
+            case 'data-i18n':
+                this.#htmlLabel?.setAttribute('data-i18n', newValue);
+                if (this.#htmlLabel) {
+                    this.#htmlLabel.innerHTML = newValue;
+                }
+                this.#htmlLabel?.classList.add('i18n');
+                break;
+            case 'disabled':
+                this.disabled = toBool(newValue);
+                break;
+            case 'ternary':
+                this.ternary = true;
+            case 'state':
+                if (newValue == '' || newValue == 'undefined') {
+                    this.state = undefined;
+                }
+                else {
+                    if (newValue == 'true' || newValue == '1') {
+                        this.state = true;
+                    }
+                    else {
+                        this.state = false;
+                    }
+                }
+                break;
+        }
+    }
+    static get observedAttributes() {
+        return ['data-label', 'data-i18n', 'disabled', 'ternary', 'state'];
+    }
+}
+let definedSwitch = false;
+function defineHarmonySwitch() {
+    if (!definedSwitch) {
+        defineElement('harmony-switch', HTMLHarmonySwitchElement);
+        definedSwitch = true;
+        injectGlobalCss();
+    }
+}
 
 /**
  * For list like filters, determine the type of options
@@ -2144,10 +2289,14 @@ var HarmonyFilterListType;
 })(HarmonyFilterListType || (HarmonyFilterListType = {}));
 class HTMLHarmonyFilterElement extends HTMLHarmonyElement {
     #shadowRoot;
+    #bodyShadowRoot;
     #items = new WeakSet();
     createElement() {
         this.#shadowRoot = this.attachShadow({ mode: 'closed' });
         void shadowRootStyle(this.#shadowRoot, filterCSS);
+        const div = createElement('div', { parent: document.body, });
+        this.#bodyShadowRoot = div.attachShadow({ mode: 'closed' });
+        void shadowRootStyle(this.#bodyShadowRoot, filter2CSS);
         this.#initObserver();
         this.#processChilds();
     }
@@ -2260,6 +2409,44 @@ class HTMLHarmonyFilterElement extends HTMLHarmonyElement {
                         createElement('input', { type: 'number', }),
                         createElement('input', { type: 'number', }),
                     ],
+                });
+            case 'list':
+                const htmlList = createElement('div', {
+                    class: 'list',
+                    popover: 'auto',
+                    hidden: true,
+                    parent: this.#bodyShadowRoot,
+                });
+                defineHarmonySwitch();
+                const html = new Map();
+                const handleChange = () => {
+                    const values = new Map();
+                    for (const [name, sw] of html) {
+                        values.set(name, sw.state);
+                    }
+                    this.#dispatchEvent(filter.name, values);
+                };
+                for (const option of filter.options ?? []) {
+                    html.set(option.name, createElement('harmony-switch', {
+                        parent: htmlList,
+                        'data-i18n': option.title,
+                        ...(filter.listType === HarmonyFilterListType.Ternary) && {
+                            ternary: 1,
+                        },
+                        state: option.value,
+                        $change: (event) => handleChange(),
+                    }));
+                }
+                return createElement('button', {
+                    ...(filter.i18n !== false) && {
+                        i18n: filter.title,
+                    },
+                    $click: (event) => {
+                        htmlList.style.left = event.pageX + 'px';
+                        htmlList.style.top = event.pageY + 'px';
+                        show(htmlList);
+                        htmlList.showPopover();
+                    },
                 });
             default:
                 BugReporter.reportBug('error', `missing filter type ${filter.type}`);
@@ -4353,149 +4540,6 @@ function defineHarmonySplitter() {
     }
 }
 
-var switchCSS = ":host {\n\t--harmony-switch-shadow-width: var(--harmony-switch-width, 4rem);\n\t--harmony-switch-shadow-height: var(--harmony-switch-height, 2rem);\n\t--harmony-switch-shadow-on-background-color: var(--harmony-switch-on-background-color, #1072eb);\n\t--harmony-switch-shadow-on-background-color-hover: var(--harmony-switch-on-background-color-hover, #1040c1);\n\t--harmony-switch-shadow-slider-width: var(--harmony-switch-slider-width, 1.4rem);\n\t--harmony-switch-shadow-slider-height: var(--harmony-switch-slider-height, 1.4rem);\n\t--harmony-switch-shadow-slider-margin: var(--harmony-switch-slider-margin, 0.3rem);\n\t--harmony-switch-shadow-slider-border-width: var(--harmony-switch-slider-border-width, 0rem);\n\t--slot-width: var(--harmony-switch-slot-width, auto);\n\t--prepend-width: var(--harmony-switch-prepend-width, var(--slot-width));\n\t--append-width: var(--harmony-switch-append-width, var(--slot-width));\n\n\tdisplay: inline-flex;\n\tuser-select: none;\n\tcursor: pointer;\n\tjustify-content: space-between;\n}\n\n:host>* {\n\tflex-grow: 0;\n}\n\n.label {\n\tmargin: auto 0;\n\tfont-weight: bold;\n\tflex: 1;\n}\n\nslot{\n\tdisplay: inline-block;\n}\n\nslot[name=\"prepend\"] {\n\twidth: var(--prepend-width);\n}\n\nslot[name=\"append\"] {\n\twidth: var(--append-width);\n}\n\n.harmony-switch-outer {\n\tdisplay: flex;\n\theight: var(--harmony-switch-shadow-height);\n\tborder-radius: calc(var(--harmony-switch-shadow-height) * 0.5);\n\talign-items: center;\n\tmargin-left: 0.25rem;\n\ttransition: background-color 0.25s linear;\n\twidth: var(--harmony-switch-shadow-width);\n}\n\n.harmony-switch-outer {\n\tbackground-color: var(--harmony-ui-input-background-primary);\n}\n\n.harmony-switch-outer:hover {\n\tbackground-color: var(--harmony-ui-input-background-secondary);\n}\n\n.harmony-switch-outer.on {\n\tbackground-color: var(--harmony-ui-accent-primary);\n}\n\n.harmony-switch-outer.on:hover {\n\tbackground-color: var(--harmony-ui-accent-secondary);\n}\n\n.harmony-switch-inner {\n\tdisplay: inline-block;\n\theight: var(--harmony-switch-shadow-slider-height);\n\twidth: var(--harmony-switch-shadow-slider-width);\n\tborder-radius: calc(var(--harmony-switch-shadow-slider-height) * 0.5);\n\ttransition: all 0.25s;\n\tposition: relative;\n\tleft: var(--harmony-switch-shadow-slider-margin);\n\tborder: var(--harmony-switch-shadow-slider-border-width) solid;\n\tbox-sizing: border-box;\n\tborder-color: var(--harmony-ui-input-border-primary);\n\tbackground-color: var(--harmony-ui-input-background-tertiary);\n}\n\n.harmony-switch-outer.ternary .harmony-switch-inner {\n\tleft: calc(50% - var(--harmony-switch-shadow-slider-width) * 0.5);\n}\n\n.harmony-switch-outer.off .harmony-switch-inner {\n\tleft: var(--harmony-switch-shadow-slider-margin);\n}\n\n.harmony-switch-outer.on .harmony-switch-inner {\n\tleft: calc(100% - var(--harmony-switch-shadow-slider-width) - var(--harmony-switch-shadow-slider-margin));\n}\n\n.harmony-switch-outer.ternary.off {\n\tbackground-color: red;\n}\n\n.harmony-switch-outer.ternary.off:hover {\n\tbackground-color: red;\n}\n\n.harmony-switch-outer.ternary.on {\n\tbackground-color: green;\n}\n\n.harmony-switch-outer.ternary.on:hover {\n\tbackground-color: green;\n}\n";
-
-class HTMLHarmonySwitchElement extends HTMLHarmonyElement {
-    #shadowRoot;
-    #disabled = false;
-    #htmlLabel;
-    #htmlSwitchOuter;
-    #state = false;
-    #ternary = false;
-    createElement() {
-        this.#shadowRoot = this.attachShadow({ mode: 'closed' });
-        void shadowRootStyle(this.#shadowRoot, switchCSS);
-        I18n.observeElement(this.#shadowRoot);
-        this.#htmlLabel = createElement('div', {
-            parent: this.#shadowRoot,
-            class: 'label',
-        });
-        createElement('slot', {
-            parent: this.#shadowRoot,
-            name: 'prepend',
-            $click: () => this.state = false,
-        });
-        this.#htmlSwitchOuter = createElement('span', {
-            parent: this.#shadowRoot,
-            class: 'harmony-switch-outer',
-            child: createElement('span', { class: 'harmony-switch-inner' }),
-            $click: () => this.toggle(),
-        });
-        createElement('slot', {
-            parent: this.#shadowRoot,
-            name: 'append',
-            $click: () => this.state = true,
-        });
-        this.#refresh();
-    }
-    set disabled(disabled) {
-        this.#disabled = disabled ? true : false;
-        this.classList[this.#disabled ? 'add' : 'remove']('disabled');
-    }
-    get disabled() {
-        return this.#disabled;
-    }
-    set state(state) {
-        if (this.#state != state) {
-            this.#state = state;
-            this.dispatchEvent(new CustomEvent('change', { detail: { state: state, value: state } }));
-        }
-        else {
-            this.#state = state;
-        }
-        this.#refresh();
-    }
-    get state() {
-        return this.#state;
-    }
-    set checked(checked) {
-        this.state = checked;
-    }
-    get checked() {
-        return this.#state;
-    }
-    set ternary(ternary) {
-        this.#ternary = ternary;
-        this.#refresh();
-    }
-    get ternary() {
-        return this.#ternary;
-    }
-    toggle() {
-        if (this.#ternary) {
-            if (this.#state === false) {
-                this.state = undefined;
-            }
-            else if (this.#state === undefined) {
-                this.state = true;
-            }
-            else {
-                this.state = false;
-            }
-        }
-        else {
-            this.state = !this.#state;
-        }
-        this.#refresh();
-    }
-    #refresh() {
-        this.#htmlSwitchOuter?.classList.remove('on', 'off', 'ternary');
-        if (this.#ternary) {
-            this.#htmlSwitchOuter?.classList.add('ternary');
-        }
-        if (this.#state === undefined) {
-            return;
-        }
-        this.#htmlSwitchOuter?.classList.add(this.#state ? 'on' : 'off');
-    }
-    onAttributeChanged(name, oldValue, newValue) {
-        switch (name) {
-            case 'data-label':
-                if (this.#htmlLabel) {
-                    this.#htmlLabel.innerHTML = newValue;
-                }
-                this.#htmlLabel?.classList.remove('i18n');
-                break;
-            case 'data-i18n':
-                this.#htmlLabel?.setAttribute('data-i18n', newValue);
-                if (this.#htmlLabel) {
-                    this.#htmlLabel.innerHTML = newValue;
-                }
-                this.#htmlLabel?.classList.add('i18n');
-                break;
-            case 'disabled':
-                this.disabled = toBool(newValue);
-                break;
-            case 'ternary':
-                this.ternary = true;
-            case 'state':
-                if (newValue == '' || newValue == 'undefined') {
-                    this.state = undefined;
-                }
-                else {
-                    if (newValue == 'true' || newValue == '1') {
-                        this.state = true;
-                    }
-                    else {
-                        this.state = false;
-                    }
-                }
-                break;
-        }
-    }
-    static get observedAttributes() {
-        return ['data-label', 'data-i18n', 'disabled', 'ternary', 'state'];
-    }
-}
-let definedSwitch = false;
-function defineHarmonySwitch() {
-    if (!definedSwitch) {
-        defineElement('harmony-switch', HTMLHarmonySwitchElement);
-        definedSwitch = true;
-        injectGlobalCss();
-    }
-}
-
 class HTMLHarmonyTabElement extends HTMLElement {
     #disabled = false;
     #active = false;
@@ -4930,8 +4974,9 @@ class TreeItem {
         if (!filter) {
             return true;
         }
+        const lowerName = this.name.toLowerCase();
         if (filter.name) {
-            if (!this.name.toLowerCase().includes(filter.name.toLowerCase())) {
+            if (!lowerName.includes(filter.name.toLowerCase())) {
                 return false;
             }
             if (this.kind != TreeItemKind.File) {
@@ -4954,6 +4999,21 @@ class TreeItem {
             if (filter.kind !== this.kind) {
                 return false;
             }
+        }
+        if (filter.extensions) {
+            let found = false;
+            for (const extension of filter.extensions) {
+                if (lowerName.endsWith(extension)) {
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                return false;
+            }
+        }
+        if (filter.customFilter) {
+            return filter.customFilter(this);
         }
         return true;
     }

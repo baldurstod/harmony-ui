@@ -120,9 +120,9 @@ export declare type HarmonyEventListener = ((evt: Event) => void) | ((evt: Mouse
 
 export declare type HarmonyFilter = HarmonyFilterItem[];
 
-export declare type HarmonyFilterEvent = {
+export declare type HarmonyFilterEvent<T> = {
     name: string;
-    value: any;
+    value: T;
 };
 
 export declare type HarmonyFilterItem = {
@@ -140,7 +140,7 @@ export declare type HarmonyFilterItem = {
     decimals?: number;
     /** Default filter value */
     value?: any;
-    /** For list like filters, determine the options type. See HarmonyFilterListType for more details */
+    /** For list like filters, determine the options type. See HarmonyFilterListType for more details. Default value is Boolean */
     listType?: HarmonyFilterListType;
     /** For list like filters, list the default options */
     options?: HarmonyFilterOption[];
@@ -160,7 +160,7 @@ export declare type HarmonyFilterOption = {
     /** Option name. Must be unique among all options of a filter */
     name: string;
     /** Option title */
-    title?: string;
+    title: string;
     /** Enable internationalization of title. Default to true */
     i18n?: boolean;
     /** Optional icon */
@@ -750,6 +750,9 @@ export declare type TreeItemFilter = {
     name?: string;
     kind?: TreeItemKind;
     kinds?: TreeItemKind[];
+    /** User provided function that return true to keep the item or false to reject it. */
+    customFilter?: (item: TreeItem) => boolean;
+    extensions?: string[];
 };
 
 export declare enum TreeItemKind {
