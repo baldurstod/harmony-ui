@@ -33,6 +33,8 @@ export type HarmonyFilterOption = {
 	color?: string;
 	/** Default option value. If not provided the default value will follow the rules of HarmonyFilterListType */
 	value?: boolean | undefined;
+	/** Option type. See HarmonyFilterListType for more details. Defaults to the property listType of the list this option is part of. */
+	optionType?: HarmonyFilterListType;
 };
 
 export type HarmonyFilterItem = {
@@ -50,7 +52,8 @@ export type HarmonyFilterItem = {
 	decimals?: number;
 	/** Default filter value */
 	value?: any;
-	/** For list like filters, determine the options type. See HarmonyFilterListType for more details. Default value is Boolean */
+	/** For list like filters, determine the options type. See HarmonyFilterListType for more details. Default value is Boolean.
+	 * Individual options can override this setting. */
 	listType?: HarmonyFilterListType;
 	/** For list like filters, list the default options */
 	options?: HarmonyFilterOption[];
@@ -221,7 +224,7 @@ export class HTMLHarmonyFilterElement extends HTMLHarmonyElement {
 					html.set(option.name, createElement('harmony-switch', {
 						parent: htmlList,
 						'data-i18n': option.title,
-						...(filter.listType === HarmonyFilterListType.Ternary) && {
+						...((option.optionType ?? filter.listType) === HarmonyFilterListType.Ternary) && {
 							ternary: 1,
 						},
 						state: option.value,
