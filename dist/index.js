@@ -2290,7 +2290,7 @@ var HarmonyFilterListType;
 class HTMLHarmonyFilterElement extends HTMLHarmonyElement {
     #shadowRoot;
     #bodyShadowRoot;
-    #items = new WeakSet();
+    #items = new Set();
     createElement() {
         this.#shadowRoot = this.attachShadow({ mode: 'closed' });
         void shadowRootStyle(this.#shadowRoot, filterCSS);
@@ -2348,18 +2348,32 @@ class HTMLHarmonyFilterElement extends HTMLHarmonyElement {
         this.#items.add(item);
     }
     */
+    clearFilter() {
+        for (const item of this.#items) {
+            item.remove();
+        }
+        this.#items.clear();
+    }
     addFilters(filters) {
         for (const filter of filters) {
-            const element = this.#createFilterElement(filter);
-            if (element) {
-                this.addItem(element);
-            }
+            this.addFilter(filter);
         }
     }
     addFilter(filter) {
         const element = this.#createFilterElement(filter);
         if (element) {
             this.addItem(element);
+        }
+        switch (filter.type) {
+            case 'list':
+                if (filter.options) {
+                    const values = new Map();
+                    for (const option of filter.options) {
+                        values.set(option.name, option.value);
+                    }
+                    this.#dispatchEvent(filter.name, values);
+                }
+                break;
         }
     }
     #createFilterElement(filter) {
@@ -5098,7 +5112,7 @@ class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
     setRoot(root) {
         this.#root = root;
         this.#shadowRoot?.replaceChildren();
-        this.#refresh();
+        this.#filterItems();
     }
     #buildContextMenu(contextMenu, x, y) {
         if (!this.#htmlContextMenu) {
@@ -5302,6 +5316,9 @@ class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
     }
     setFilter(filter) {
         this.#filter = filter;
+        this.#filterItems();
+    }
+    #filterItems() {
         this.#isVisible.clear();
         if (this.#filter && this.#root) {
             for (const item of this.#root.walk(this.#filter)) {

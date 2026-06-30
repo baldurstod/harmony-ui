@@ -69,7 +69,7 @@ export type HarmonyFilterEvent<T> = {
 export class HTMLHarmonyFilterElement extends HTMLHarmonyElement {
 	#shadowRoot?: ShadowRoot;
 	#bodyShadowRoot?: ShadowRoot;
-	readonly #items = new WeakSet<HTMLElement>();
+	readonly #items = new Set<HTMLElement>();
 
 	protected createElement(): void {
 		this.#shadowRoot = this.attachShadow({ mode: 'closed' });
@@ -136,13 +136,17 @@ export class HTMLHarmonyFilterElement extends HTMLHarmonyElement {
 		this.#items.add(item);
 	}
 	*/
+	clearFilter(): void {
+		for (const item of this.#items) {
+			item.remove();
+		}
+
+		this.#items.clear();
+	}
 
 	addFilters(filters: HarmonyFilterItem[]): void {
 		for (const filter of filters) {
-			const element = this.#createFilterElement(filter);
-			if (element) {
-				this.addItem(element);
-			}
+			this.addFilter(filter);
 		}
 	}
 
@@ -150,6 +154,21 @@ export class HTMLHarmonyFilterElement extends HTMLHarmonyElement {
 		const element = this.#createFilterElement(filter);
 		if (element) {
 			this.addItem(element);
+		}
+
+		switch (filter.type) {
+			case 'list':
+				if (filter.options) {
+					const values = new Map<string, boolean | undefined>();
+					for (const option of filter.options) {
+						values.set(option.name, option.value);
+					}
+					this.#dispatchEvent(filter.name, values);
+				}
+				break;
+
+			default:
+				break;
 		}
 	}
 

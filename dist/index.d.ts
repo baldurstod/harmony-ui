@@ -318,6 +318,7 @@ export declare class HTMLHarmonyFilterElement extends HTMLHarmonyElement {
     #private;
     protected createElement(): void;
     addItem(item: HTMLElement): void;
+    clearFilter(): void;
     addFilters(filters: HarmonyFilterItem[]): void;
     addFilter(filter: HarmonyFilterItem): void;
 }
