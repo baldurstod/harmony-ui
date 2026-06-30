@@ -324,8 +324,7 @@ export class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
 		this.#root = root;
 
 		this.#shadowRoot?.replaceChildren();
-
-		this.#refresh();
+		this.#filterItems();
 	}
 
 	#buildContextMenu(contextMenu: HarmonyMenuItems, x: number, y: number): void {
@@ -562,7 +561,10 @@ export class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
 
 	setFilter(filter?: TreeItemFilter): void {
 		this.#filter = filter;
+		this.#filterItems();
+	}
 
+	#filterItems(): void {
 		this.#isVisible.clear();
 		if (this.#filter && this.#root) {
 			for (const item of this.#root.walk(this.#filter)) {
@@ -574,7 +576,6 @@ export class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
 				} while (current)
 			}
 		}
-
 		this.#refresh();
 	}
 
