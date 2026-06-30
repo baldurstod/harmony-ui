@@ -2430,7 +2430,7 @@ class HTMLHarmonyFilterElement extends HTMLHarmonyElement {
                     html.set(option.name, createElement('harmony-switch', {
                         parent: htmlList,
                         'data-i18n': option.title,
-                        ...(filter.listType === HarmonyFilterListType.Ternary) && {
+                        ...((option.optionType ?? filter.listType) === HarmonyFilterListType.Ternary) && {
                             ternary: 1,
                         },
                         state: option.value,
@@ -5001,15 +5001,16 @@ class TreeItem {
             }
         }
         if (filter.extensions) {
-            let found = false;
-            for (const extension of filter.extensions) {
-                if (lowerName.endsWith(extension)) {
-                    found = true;
-                    break;
+            const extension = lowerName.split('.').pop() ?? '';
+            if (!filter.extensions.has(extension)) {
+                if (filter.extensions.get('^') === false) {
+                    return false;
                 }
             }
-            if (!found) {
-                return false;
+            else {
+                if ((filter.extensions.get(extension) ?? filter.extensions.get('*')) === false) {
+                    return false;
+                }
             }
         }
         if (filter.customFilter) {

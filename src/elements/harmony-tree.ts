@@ -22,7 +22,7 @@ export type TreeItemFilter = {
 	kinds?: TreeItemKind[];
 	/** User provided function that return true to keep the item or false to reject it. */
 	customFilter?: (item: TreeItem) => boolean;
-	extensions?: string[];
+	extensions?: Map<string, boolean | undefined>;
 }
 
 export enum TreeItemKind {
@@ -196,15 +196,16 @@ export class TreeItem {
 		}
 
 		if (filter.extensions) {
-			let found = false;
-			for (const extension of filter.extensions) {
-				if (lowerName.endsWith(extension)) {
-					found = true;
-					break;
+			const extension = lowerName.split('.').pop() ?? '';
+
+			if (!filter.extensions.has(extension)) {
+				if (filter.extensions.get('^') === false) {
+					return false;
 				}
-			}
-			if (!found) {
-				return false;
+			} else {
+				if ((filter.extensions.get(extension) ?? filter.extensions.get('*')) === false) {
+					return false;
+				}
 			}
 		}
 

@@ -140,7 +140,8 @@ export declare type HarmonyFilterItem = {
     decimals?: number;
     /** Default filter value */
     value?: any;
-    /** For list like filters, determine the options type. See HarmonyFilterListType for more details. Default value is Boolean */
+    /** For list like filters, determine the options type. See HarmonyFilterListType for more details. Default value is Boolean.
+     * Individual options can override this setting. */
     listType?: HarmonyFilterListType;
     /** For list like filters, list the default options */
     options?: HarmonyFilterOption[];
@@ -169,6 +170,8 @@ export declare type HarmonyFilterOption = {
     color?: string;
     /** Default option value. If not provided the default value will follow the rules of HarmonyFilterListType */
     value?: boolean | undefined;
+    /** Option type. See HarmonyFilterListType for more details. Defaults to the property listType of the list this option is part of. */
+    optionType?: HarmonyFilterListType;
 };
 
 export declare type HarmonyFilterType = 'string' | 'number' | 'range' | 'list' | 'select' | 'custom';
@@ -752,7 +755,7 @@ export declare type TreeItemFilter = {
     kinds?: TreeItemKind[];
     /** User provided function that return true to keep the item or false to reject it. */
     customFilter?: (item: TreeItem) => boolean;
-    extensions?: string[];
+    extensions?: Map<string, boolean | undefined>;
 };
 
 export declare enum TreeItemKind {
