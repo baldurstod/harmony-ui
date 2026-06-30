@@ -5703,6 +5703,9 @@ class TreeItem {
             }
         }
         if (filter.extensions) {
+            if (this.kind != TreeItemKind.File) {
+                return false;
+            }
             const extension = lowerName.split('.').pop() ?? '';
             if (!filter.extensions.has(extension)) {
                 if (filter.extensions.get('^') === false) {
