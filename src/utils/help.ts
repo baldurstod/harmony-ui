@@ -1,9 +1,8 @@
 import helpCSS from '../css/help.css';
 import { shadowRootStyle } from "../harmony-css";
-import { createElement, createShadowRoot, display, hide, show, updateElement } from "../harmony-html";
+import { createElement, createShadowRoot, hide, show, updateElement } from "../harmony-html";
 
 export class Help {
-	static #display = false;
 	static #html: HTMLElement;
 	static #shadowRoot: ShadowRoot;
 	static #elements = new Map<Element, string>();
@@ -29,14 +28,12 @@ export class Help {
 		if (event.key == 'F1' && !event.repeat) {
 			event.preventDefault();
 			show(this.#shadowRoot);
-			this.#display = true;
 		}
 	}
 
 	static #handleKeyUp(event: KeyboardEvent): void {
 		if (event.key == 'F1') {
 			hide(this.#shadowRoot);
-			this.#display = false;
 		}
 	}
 
@@ -46,14 +43,14 @@ export class Help {
 			updateElement(this.#html, {
 				i18n: i18n,
 			});
-			display(this.#shadowRoot, this.#display);
+			show(this.#html);
 		} else {
-			hide(this.#shadowRoot);
+			hide(this.#html);
 		}
 	}
 
 	static #handleMouseOut(): void {
-		hide(this.#shadowRoot);
+		hide(this.#html);
 	}
 
 	static addElement(element: HTMLElement, i18n: string): void {

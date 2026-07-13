@@ -280,7 +280,6 @@ function shadowRootStyleSync(shadowRoot, cssText) {
 }
 
 class Help {
-    static #display = false;
     static #html;
     static #shadowRoot;
     static #elements = new Map();
@@ -303,13 +302,11 @@ class Help {
         if (event.key == 'F1' && !event.repeat) {
             event.preventDefault();
             show(this.#shadowRoot);
-            this.#display = true;
         }
     }
     static #handleKeyUp(event) {
         if (event.key == 'F1') {
             hide(this.#shadowRoot);
-            this.#display = false;
         }
     }
     static #handleMouseOver(element) {
@@ -318,14 +315,14 @@ class Help {
             updateElement(this.#html, {
                 i18n: i18n,
             });
-            display(this.#shadowRoot, this.#display);
+            show(this.#html);
         }
         else {
-            hide(this.#shadowRoot);
+            hide(this.#html);
         }
     }
     static #handleMouseOut() {
-        hide(this.#shadowRoot);
+        hide(this.#html);
     }
     static addElement(element, i18n) {
         if (!this.#elements.has(element)) {
