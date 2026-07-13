@@ -2,25 +2,15 @@ import helpCSS from '../css/help.css';
 import { shadowRootStyle } from "../harmony-css";
 import { createElement, createShadowRoot, display, hide, show, updateElement } from "../harmony-html";
 
-let helpInstance: Help | null = null;
+export class Help {
+	static #display = false;
+	static #html: HTMLElement;
+	static #shadowRoot: ShadowRoot;
+	static #elements = new Map<Element, string>();
 
-export function getHelp(): Help {
-	if (!helpInstance) {
-		helpInstance = new Help();
-	}
-	return helpInstance;
-}
-
-class Help {
-	#display = false;
-	#html: HTMLElement;
-	#shadowRoot: ShadowRoot;
-	#elements = new Map<Element, string>();
-
-	constructor() {
+	static {
 		document.body.addEventListener('keydown', (event: KeyboardEvent) => this.#handleKeyDown(event));
 		document.body.addEventListener('keyup', (event: KeyboardEvent) => this.#handleKeyUp(event));
-		document.body.addEventListener('mousemove', (event: MouseEvent) => this.#handleMouseMove(event));
 		this.#shadowRoot = createShadowRoot('div', {
 			parent: document.body,
 			hidden: true,
@@ -35,26 +25,22 @@ class Help {
 		void shadowRootStyle(this.#shadowRoot, helpCSS);
 	}
 
-	#handleKeyDown(event: KeyboardEvent): void {
-		if (event.key == 'F1') {
+	static #handleKeyDown(event: KeyboardEvent): void {
+		if (event.key == 'F1' && !event.repeat) {
 			event.preventDefault();
 			show(this.#shadowRoot);
 			this.#display = true;
 		}
 	}
 
-	#handleKeyUp(event: KeyboardEvent): void {
+	static #handleKeyUp(event: KeyboardEvent): void {
 		if (event.key == 'F1') {
 			hide(this.#shadowRoot);
 			this.#display = false;
 		}
 	}
 
-	#handleMouseMove(event: MouseEvent): void {
-		const element = document.elementFromPoint(event.clientX, event.clientY);
-		if (!element) {
-			return;
-		}
+	static #handleMouseOver(element: Element): void {
 		const i18n = this.#elements.get(element);
 		if (i18n) {
 			updateElement(this.#html, {
@@ -66,7 +52,16 @@ class Help {
 		}
 	}
 
-	addElement(element: HTMLElement, i18n: string): void {
+	static #handleMouseOut(): void {
+		hide(this.#shadowRoot);
+	}
+
+	static addElement(element: HTMLElement, i18n: string): void {
+		if (!this.#elements.has(element)) {
+			element.addEventListener('mouseover', () => Help.#handleMouseOver(element));
+			element.addEventListener('mouseout', () => Help.#handleMouseOut());
+
+		}
 		this.#elements.set(element, i18n);
 	}
 }

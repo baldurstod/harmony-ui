@@ -2,7 +2,7 @@ import { HTMLHarmonyToggleButtonElement } from './browser';
 import { AddI18nElement, I18nDescriptor } from './harmony-i18n';
 import { HasI18n } from './interfaces/hasi18n';
 import { ET } from './utils/create';
-import { getHelp } from './utils/help';
+import { Help } from './utils/help';
 
 export const svgNamespace = 'http://www.w3.org/2000/svg';
 
@@ -197,7 +197,7 @@ function createElementOptions(element: HTMLElement, options?: CreateElementOptio
 					(element as HTMLInputElement).checked = optionValue as boolean;
 					break;
 				case 'help':
-					getHelp().addElement(element, optionValue as string);
+					Help.addElement(element, optionValue as string);
 					break;
 				case 'elementCreated':
 					break;

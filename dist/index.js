@@ -1,25 +1,6 @@
 import { Color, BugReporter, errorOnce } from 'harmony-utils';
 import { folderOpenSVG, infoSVG, checkOutlineSVG, closeSVG } from 'harmony-svg';
 
-var manipulator2dCSS = ":host {\n\t--handle-radius: var(--harmony-2d-manipulator-radius, 0.5rem);\n\t--harmony-2d-manipulator-shadow-bg-color: var(--harmony-2d-manipulator-bg-color, red);\n\t--harmony-2d-manipulator-shadow-border: var(--harmony-2d-manipulator-border, none);\n\t--handle-bg-color: var(--harmony-2d-manipulator-handle-bg-color, chartreuse);\n\t--corner-bg-color: var(--harmony-2d-manipulator-corner-bg-color, var(--handle-bg-color));\n\t--side-bg-color: var(--harmony-2d-manipulator-side-bg-color, var(--handle-bg-color));\n\t--rotate-bg-color: var(--harmony-2d-manipulator-rotate-bg-color, var(--handle-bg-color));\n\n\twidth: 1rem;\n\theight: 1rem;\n\tdisplay: block;\n\tuser-select: none;\n\tpointer-events: all;\n}\n\n:host-context(.grabbing) {\n\tcursor: grabbing;\n}\n\n.manipulator {\n\tposition: absolute;\n\tbackground-color: var(--harmony-2d-manipulator-shadow-bg-color);\n\tborder: var(--harmony-2d-manipulator-shadow-border);\n\tcursor: move;\n\tpointer-events: all;\n}\n\n.rotator {\n\tscale: var(--rotate);\n\tposition: absolute;\n\twidth: var(--handle-radius);\n\theight: var(--handle-radius);\n\tbackground-color: var(--rotate-bg-color);\n\tborder-radius: calc(var(--handle-radius) * 0.5);\n\ttransform: translate(-50%, -50%);\n\tcursor: grab;\n}\n\n.corner {\n\tscale: var(--scale);\n\tposition: absolute;\n\twidth: var(--handle-radius);\n\theight: var(--handle-radius);\n\tbackground-color: var(--corner-bg-color);\n\tborder-radius: calc(var(--handle-radius) * 0.5);\n\ttransform: translate(-50%, -50%);\n\tcursor: grab;\n}\n\n.side {\n\tposition: absolute;\n\twidth: var(--handle-radius);\n\theight: var(--handle-radius);\n\tbackground-color: var(--side-bg-color);\n\tborder-radius: calc(var(--handle-radius) * 0.5);\n\ttransform: translate(-50%, -50%);\n\tcursor: grab;\n}\n\n.side.x {\n\tscale: var(--resize-x);\n}\n\n.side.y {\n\tscale: var(--resize-y);\n}\n\n.corner.grabbing {\n\tcursor: grabbing;\n}\n";
-
-async function documentStyle(cssText) {
-    return await shadowRootStyle(document, cssText);
-}
-function documentStyleSync(cssText) {
-    return shadowRootStyleSync(document, cssText);
-}
-async function shadowRootStyle(shadowRoot, cssText) {
-    const sheet = new CSSStyleSheet;
-    await sheet.replace(cssText);
-    shadowRoot.adoptedStyleSheets.push(sheet);
-}
-function shadowRootStyleSync(shadowRoot, cssText) {
-    const sheet = new CSSStyleSheet;
-    sheet.replaceSync(cssText);
-    shadowRoot.adoptedStyleSheets.push(sheet);
-}
-
 const ET = new EventTarget();
 
 const I18N_DELAY_BEFORE_REFRESH = 100;
@@ -282,24 +263,33 @@ class I18n {
     }
 }
 
-var helpCSS = "div {\n\tposition: fixed;\n\tleft: 20%;\n\ttop: 5%;\n\tmax-height: 30%;\n\twidth: 60%;\n\ttext-align: center;\n\tbackground-color: #772222;\n\tborder-radius: 1em;\n\toverflow: auto;\n\tz-index: 10;\n\tfont-family: tf2build, Verdana, sans-serif;\n\tpadding: 0.2rem;\n}\n";
+var helpCSS = ":host {\n\tposition: absolute;\n\theight: 100%;\n\twidth: 100%;\n\ttop: 0;\n\tleft: 0;\n\tpointer-events: none;\n\tz-index: 10000;\n\tfont-size: var(--harmony-help-font-size, 2rem);\n}\n\ndiv {\n\tposition: fixed;\n\tleft: 20%;\n\ttop: 5%;\n\tmax-height: 30%;\n\twidth: 60%;\n\ttext-align: center;\n\tbackground-color: #772222;\n\tborder-radius: 1em;\n\toverflow: auto;\n\tz-index: 10;\n\tfont-family: tf2build, Verdana, sans-serif;\n\tpadding: 0.2rem;\n}\n";
 
-let helpInstance = null;
-function getHelp() {
-    if (!helpInstance) {
-        helpInstance = new Help();
-    }
-    return helpInstance;
+async function documentStyle(cssText) {
+    return await shadowRootStyle(document, cssText);
 }
+function documentStyleSync(cssText) {
+    return shadowRootStyleSync(document, cssText);
+}
+async function shadowRootStyle(shadowRoot, cssText) {
+    const sheet = new CSSStyleSheet;
+    await sheet.replace(cssText);
+    shadowRoot.adoptedStyleSheets.push(sheet);
+}
+function shadowRootStyleSync(shadowRoot, cssText) {
+    const sheet = new CSSStyleSheet;
+    sheet.replaceSync(cssText);
+    shadowRoot.adoptedStyleSheets.push(sheet);
+}
+
 class Help {
-    #display = false;
-    #html;
-    #shadowRoot;
-    #elements = new Map();
-    constructor() {
+    static #display = false;
+    static #html;
+    static #shadowRoot;
+    static #elements = new Map();
+    static {
         document.body.addEventListener('keydown', (event) => this.#handleKeyDown(event));
         document.body.addEventListener('keyup', (event) => this.#handleKeyUp(event));
-        document.body.addEventListener('mousemove', (event) => this.#handleMouseMove(event));
         this.#shadowRoot = createShadowRoot('div', {
             parent: document.body,
             hidden: true,
@@ -312,24 +302,20 @@ class Help {
         });
         void shadowRootStyle(this.#shadowRoot, helpCSS);
     }
-    #handleKeyDown(event) {
-        if (event.key == 'F1') {
+    static #handleKeyDown(event) {
+        if (event.key == 'F1' && !event.repeat) {
             event.preventDefault();
             show(this.#shadowRoot);
             this.#display = true;
         }
     }
-    #handleKeyUp(event) {
+    static #handleKeyUp(event) {
         if (event.key == 'F1') {
             hide(this.#shadowRoot);
             this.#display = false;
         }
     }
-    #handleMouseMove(event) {
-        const element = document.elementFromPoint(event.clientX, event.clientY);
-        if (!element) {
-            return;
-        }
+    static #handleMouseOver(element) {
         const i18n = this.#elements.get(element);
         if (i18n) {
             updateElement(this.#html, {
@@ -341,7 +327,14 @@ class Help {
             hide(this.#shadowRoot);
         }
     }
-    addElement(element, i18n) {
+    static #handleMouseOut() {
+        hide(this.#shadowRoot);
+    }
+    static addElement(element, i18n) {
+        if (!this.#elements.has(element)) {
+            element.addEventListener('mouseover', () => Help.#handleMouseOver(element));
+            element.addEventListener('mouseout', () => Help.#handleMouseOut());
+        }
         this.#elements.set(element, i18n);
     }
 }
@@ -480,7 +473,7 @@ function createElementOptions(element, options, shadowRoot) {
                     element.checked = optionValue;
                     break;
                 case 'help':
-                    getHelp().addElement(element, optionValue);
+                    Help.addElement(element, optionValue);
                     break;
                 case 'elementCreated':
                     break;
@@ -584,6 +577,26 @@ function defineElement(name, constructor, options) {
     }
     getCustomElementRegistry()?.define(name, constructor, options);
 }
+
+var tooltipCSS$1 = "/*\nSource - https://stackoverflow.com/a/60488901\nPosted by Timur Baysal, modified by community. See post 'Timeline' for change history\nRetrieved 2026-07-10, License - CC BY-SA 4.0\n*/\n\n/* Tooltip container */\n\n.tooltip {\n\tposition: relative;\n\tdisplay: inline-block;\n}\n\n\n/* Tooltip text */\n\n.tooltip {\n\tposition: relative;\n\tdisplay: inline-block;\n}\n\n.tooltip .tooltiptext {\n\tvisibility: hidden;\n\twidth: 120px;\n\tbackground-color: #444;\n\tcolor: #fff;\n\ttext-align: center;\n\tborder-radius: 6px;\n\tpadding: 5px 0;\n\t/* Position the tooltip */\n\tposition: absolute;\n\tz-index: 1;\n\ttop: 0;\n\tleft: 105%;\n\topacity: 1;\n\ttransition: opacity 1s;\n}\n\n.tooltip .tooltiptext::after {\n\tcontent: \" \";\n\tposition: absolute;\n\ttop: 50%;\n\tright: 100%;\n\t/* To the left of the tooltip */\n\tmargin-top: -5px;\n\tborder-width: 5px;\n\tborder-style: solid;\n\tborder-color: transparent #545 transparent transparent;\n}\n\n\n/*this is the IMPORTANT bit: hover with animation*/\n\n.tooltip:hover .tooltiptext {\n\tvisibility: visible;\n\tanimation: tooltipkeys 1s 1;\n\t/*here just change the 1s to you desired delay time!*/\n\topacity: 1;\n}\n\n@-webkit-keyframes tooltipkeys {\n\t0% {\n\t\topacity: 0;\n\t}\n\n\t75% {\n\t\topacity: 0;\n\t}\n\n\t100% {\n\t\topacity: 1;\n\t}\n}\n\n@-moz-keyframes tooltipkeys {\n\t0% {\n\t\topacity: 0;\n\t}\n\n\t75% {\n\t\topacity: 0;\n\t}\n\n\t100% {\n\t\topacity: 1;\n\t}\n}\n\n@-o-keyframes tooltipkeys {\n\t0% {\n\t\topacity: 0;\n\t}\n\n\t75% {\n\t\topacity: 0;\n\t}\n\n\t100% {\n\t\topacity: 1;\n\t}\n}\n\n@keyframes tooltipkeys {\n\t0% {\n\t\topacity: 0;\n\t}\n\n\t75% {\n\t\topacity: 0;\n\t}\n\n\t100% {\n\t\topacity: 1;\n\t}\n}\n";
+
+class ToolTip {
+    //#shadowRoot?: ShadowRoot;
+    #shadowRoot = createShadowRoot('div', { parent: document.body, adoptStyle: tooltipCSS$1 });
+    constructor(params) {
+        params.target.getBoundingClientRect();
+        switch (params.position) {
+                    }
+    }
+}
+function createToolTip(params) {
+    const tooltip = new ToolTip(params);
+    //const element = tooltip.getHTMLElement();
+    //show(element);
+    return tooltip;
+}
+
+var manipulator2dCSS = ":host {\n\t--handle-radius: var(--harmony-2d-manipulator-radius, 0.5rem);\n\t--harmony-2d-manipulator-shadow-bg-color: var(--harmony-2d-manipulator-bg-color, red);\n\t--harmony-2d-manipulator-shadow-border: var(--harmony-2d-manipulator-border, none);\n\t--handle-bg-color: var(--harmony-2d-manipulator-handle-bg-color, chartreuse);\n\t--corner-bg-color: var(--harmony-2d-manipulator-corner-bg-color, var(--handle-bg-color));\n\t--side-bg-color: var(--harmony-2d-manipulator-side-bg-color, var(--handle-bg-color));\n\t--rotate-bg-color: var(--harmony-2d-manipulator-rotate-bg-color, var(--handle-bg-color));\n\n\twidth: 1rem;\n\theight: 1rem;\n\tdisplay: block;\n\tuser-select: none;\n\tpointer-events: all;\n}\n\n:host-context(.grabbing) {\n\tcursor: grabbing;\n}\n\n.manipulator {\n\tposition: absolute;\n\tbackground-color: var(--harmony-2d-manipulator-shadow-bg-color);\n\tborder: var(--harmony-2d-manipulator-shadow-border);\n\tcursor: move;\n\tpointer-events: all;\n}\n\n.rotator {\n\tscale: var(--rotate);\n\tposition: absolute;\n\twidth: var(--handle-radius);\n\theight: var(--handle-radius);\n\tbackground-color: var(--rotate-bg-color);\n\tborder-radius: calc(var(--handle-radius) * 0.5);\n\ttransform: translate(-50%, -50%);\n\tcursor: grab;\n}\n\n.corner {\n\tscale: var(--scale);\n\tposition: absolute;\n\twidth: var(--handle-radius);\n\theight: var(--handle-radius);\n\tbackground-color: var(--corner-bg-color);\n\tborder-radius: calc(var(--handle-radius) * 0.5);\n\ttransform: translate(-50%, -50%);\n\tcursor: grab;\n}\n\n.side {\n\tposition: absolute;\n\twidth: var(--handle-radius);\n\theight: var(--handle-radius);\n\tbackground-color: var(--side-bg-color);\n\tborder-radius: calc(var(--handle-radius) * 0.5);\n\ttransform: translate(-50%, -50%);\n\tcursor: grab;\n}\n\n.side.x {\n\tscale: var(--resize-x);\n}\n\n.side.y {\n\tscale: var(--resize-y);\n}\n\n.corner.grabbing {\n\tcursor: grabbing;\n}\n";
 
 function toBool(s) {
     return s === '1' || s === 'true';
@@ -5392,4 +5405,4 @@ function defineHarmonyTree() {
     }
 }
 
-export { AddI18nElement, HTMLHarmony2dManipulatorElement, HTMLHarmonyAccordionElement, HTMLHarmonyCircularProgressElement, HTMLHarmonyColorPickerElement, HTMLHarmonyCopyElement, HTMLHarmonyFileInputElement, HTMLHarmonyFilterElement, HTMLHarmonyInfoBoxElement, HTMLHarmonyInfoBoxElementType, HTMLHarmonyItemElement, HTMLHarmonyLabelPropertyElement, HTMLHarmonyMenuElement, HTMLHarmonyPaletteElement, HTMLHarmonyPanelElement, HTMLHarmonyRadioElement, HTMLHarmonySelectElement, HTMLHarmonySliderElement, HTMLHarmonySlideshowElement, HTMLHarmonySplitterElement, HTMLHarmonySwitchElement, HTMLHarmonyTabElement, HTMLHarmonyTabGroupElement, HTMLHarmonyToggleButtonElement, HTMLHarmonyTooltipElement, HTMLHarmonyTreeElement, HarmonyFilterListType, I18n, I18nElements, I18nEvents, ManipulatorCorner, ManipulatorDirection, ManipulatorResizeOrigin, ManipulatorSide, ManipulatorUpdatedEventType, TreeItem, TreeItemKind, cloneEvent, createElement, createElementNS, createShadowRoot, defineElement, defineHarmony2dManipulator, defineHarmonyAccordion, defineHarmonyCircularProgress, defineHarmonyColorPicker, defineHarmonyCopy, defineHarmonyFileInput, defineHarmonyFilter, defineHarmonyInfoBox, defineHarmonyItem, defineHarmonyLabelProperty, defineHarmonyMenu, defineHarmonyPalette, defineHarmonyPanel, defineHarmonyRadio, defineHarmonySelect, defineHarmonySlider, defineHarmonySlideshow, defineHarmonySplitter, defineHarmonySwitch, defineHarmonyTab, defineHarmonyTabGroup, defineHarmonyToggleButton, defineHarmonyTooltip, defineHarmonyTree, display, documentStyle, documentStyleSync, getCustomElementRegistry, hide, isVisible, shadowRootStyle, shadowRootStyleSync, show, styleInject, svgNamespace, toggle, updateElement, visible };
+export { AddI18nElement, HTMLHarmony2dManipulatorElement, HTMLHarmonyAccordionElement, HTMLHarmonyCircularProgressElement, HTMLHarmonyColorPickerElement, HTMLHarmonyCopyElement, HTMLHarmonyFileInputElement, HTMLHarmonyFilterElement, HTMLHarmonyInfoBoxElement, HTMLHarmonyInfoBoxElementType, HTMLHarmonyItemElement, HTMLHarmonyLabelPropertyElement, HTMLHarmonyMenuElement, HTMLHarmonyPaletteElement, HTMLHarmonyPanelElement, HTMLHarmonyRadioElement, HTMLHarmonySelectElement, HTMLHarmonySliderElement, HTMLHarmonySlideshowElement, HTMLHarmonySplitterElement, HTMLHarmonySwitchElement, HTMLHarmonyTabElement, HTMLHarmonyTabGroupElement, HTMLHarmonyToggleButtonElement, HTMLHarmonyTooltipElement, HTMLHarmonyTreeElement, HarmonyFilterListType, I18n, I18nElements, I18nEvents, ManipulatorCorner, ManipulatorDirection, ManipulatorResizeOrigin, ManipulatorSide, ManipulatorUpdatedEventType, TreeItem, TreeItemKind, cloneEvent, createElement, createElementNS, createShadowRoot, createToolTip, defineElement, defineHarmony2dManipulator, defineHarmonyAccordion, defineHarmonyCircularProgress, defineHarmonyColorPicker, defineHarmonyCopy, defineHarmonyFileInput, defineHarmonyFilter, defineHarmonyInfoBox, defineHarmonyItem, defineHarmonyLabelProperty, defineHarmonyMenu, defineHarmonyPalette, defineHarmonyPanel, defineHarmonyRadio, defineHarmonySelect, defineHarmonySlider, defineHarmonySlideshow, defineHarmonySplitter, defineHarmonySwitch, defineHarmonyTab, defineHarmonyTabGroup, defineHarmonyToggleButton, defineHarmonyTooltip, defineHarmonyTree, display, documentStyle, documentStyleSync, getCustomElementRegistry, hide, isVisible, shadowRootStyle, shadowRootStyleSync, show, styleInject, svgNamespace, toggle, updateElement, visible };

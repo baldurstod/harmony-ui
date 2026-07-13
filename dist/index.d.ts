@@ -58,6 +58,25 @@ export declare type CreateShadowRootOptions = {
     slotAssignment?: SlotAssignmentMode;
 };
 
+export declare function createToolTip(params: CreateToolTipParams): ToolTip;
+
+export declare type CreateToolTipParams = {
+    /** Element this tooltip is applied to */
+    target: HTMLElement;
+    /** Tooltip position relative to the target. Default to auto */
+    position?: ToolTipPosition;
+    /** Tooltip html content */
+    innerHTML?: string;
+    /** Tooltip text content. Ignored if innerHTML is set */
+    i18n?: string | I18nDescriptor;
+    /** Tooltip text content. Ignored if innerHTML or i18n are set */
+    text?: string;
+    /** Max tooltip width when the tooltip is above or below. Default to 16 rem */
+    maxWidth?: string;
+    /** Max tooltip height when the tooltip is left or right. Default to 16 rem */
+    maxHeight?: string;
+};
+
 export declare function defineElement(name: string, constructor: CustomElementConstructor, options?: ElementDefinitionOptions): void;
 
 export declare function defineHarmony2dManipulator(): void;
@@ -712,6 +731,13 @@ export declare type TabEventData = {
 };
 
 export declare function toggle(htmlElement: HTMLElement | SVGElement | ShadowRoot | undefined | null): void;
+
+declare class ToolTip {
+    #private;
+    constructor(params: CreateToolTipParams);
+}
+
+export declare type ToolTipPosition = 'top' | 'bottom' | 'right' | 'left' | 'auto';
 
 export declare type TreeAction = {
     name: string;

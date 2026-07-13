@@ -1,3 +1,14 @@
+:host {
+	position: absolute;
+	height: 100%;
+	width: 100%;
+	top: 0;
+	left: 0;
+	pointer-events: none;
+	z-index: 10000;
+	font-size: var(--harmony-help-font-size, 2rem);
+}
+
 div {
 	position: fixed;
 	left: 20%;
