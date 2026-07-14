@@ -20,11 +20,17 @@ export type I18nTranslation = {
 };
 
 export type I18nDescriptor = {
+	/** Internationalize property innerHTML. */
 	innerHTML?: string | null,
+	/** Internationalize property innerText. */
 	innerText?: string | null,
+	/** Internationalize property placeholder. */
 	placeholder?: string | null,
+	/** Internationalize property title. */
 	title?: string | null,
+	/** Internationalize property label. */
 	label?: string | null,
+	/** A set of values for i18n strings containing ${varname} tags. */
 	values?: Record<string, I18nValue>,
 }
 
@@ -48,6 +54,10 @@ export function AddI18nElement(element: Element, descriptor: string | I18nDescri
 		if (descriptor === null) {
 			I18nElements.delete(element);
 			return;
+		}
+
+		for (const target of targets) {
+			delete existing[target];
 		}
 
 		for (const target of targets) {

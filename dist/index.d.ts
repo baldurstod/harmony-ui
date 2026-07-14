@@ -19,6 +19,12 @@ export declare function createElementNS(namespaceURI: string, tagName: string, o
 export declare type CreateElementOptions = {
     id?: string;
     class?: string;
+    /**
+     * Internationalization.
+     * If a string is provided, will internationalize element innerText.
+     * If a descriptor is provided, the element will be internationalized according to the properties of the descriptor.
+     * If a null value is provided, internationalization will be removed for this element.
+     */
     i18n?: string | I18nDescriptor | null;
     parent?: Element | ShadowRoot;
     child?: CreateElementChildOption;
@@ -38,7 +44,10 @@ export declare type CreateElementOptions = {
     style?: string;
     checked?: boolean;
     disabled?: boolean;
-    help?: string;
+    /**
+     * Help for this element. See i18n for more details.
+     */
+    help?: string | I18nDescriptor | null;
     value?: string;
     elementCreated?: (element: Element, root?: ShadowRoot) => void;
     [key: string]: unknown;
@@ -613,11 +622,17 @@ export declare class I18n {
 }
 
 export declare type I18nDescriptor = {
+    /** Internationalize property innerHTML. */
     innerHTML?: string | null;
+    /** Internationalize property innerText. */
     innerText?: string | null;
+    /** Internationalize property placeholder. */
     placeholder?: string | null;
+    /** Internationalize property title. */
     title?: string | null;
+    /** Internationalize property label. */
     label?: string | null;
+    /** A set of values for i18n strings containing ${varname} tags. */
     values?: Record<string, I18nValue>;
 };
 

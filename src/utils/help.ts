@@ -1,11 +1,12 @@
 import helpCSS from '../css/help.css';
 import { shadowRootStyle } from "../harmony-css";
 import { createElement, createShadowRoot, hide, show, updateElement } from "../harmony-html";
+import { I18nDescriptor } from '../harmony-i18n';
 
 export class Help {
 	static #html: HTMLElement;
 	static #shadowRoot: ShadowRoot;
-	static #elements = new Map<Element, string>();
+	static #elements = new Map<Element, string | I18nDescriptor>();
 
 	static {
 		document.body.addEventListener('keydown', (event: KeyboardEvent) => this.#handleKeyDown(event));
@@ -53,7 +54,7 @@ export class Help {
 		hide(this.#html);
 	}
 
-	static addElement(element: HTMLElement, i18n: string): void {
+	static addElement(element: HTMLElement, i18n: string | I18nDescriptor): void {
 		if (!this.#elements.has(element)) {
 			element.addEventListener('mouseover', () => Help.#handleMouseOver(element));
 			element.addEventListener('mouseout', () => Help.#handleMouseOut());

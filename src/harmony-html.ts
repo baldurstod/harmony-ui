@@ -19,6 +19,12 @@ export type HarmonyEventListener = ((evt: Event) => void) |
 export type CreateElementOptions = {
 	id?: string,
 	class?: string,
+	/**
+	 * Internationalization.
+	 * If a string is provided, will internationalize element innerText.
+	 * If a descriptor is provided, the element will be internationalized according to the properties of the descriptor.
+	 * If a null value is provided, internationalization will be removed for this element.
+	 */
 	i18n?: string | I18nDescriptor | null,
 	parent?: Element | ShadowRoot,
 	child?: CreateElementChildOption,
@@ -38,7 +44,10 @@ export type CreateElementOptions = {
 	style?: string,
 	checked?: boolean,
 	disabled?: boolean,
-	help?: string,
+	/**
+	 * Help for this element. See i18n for more details.
+	 */
+	help?: string | I18nDescriptor | null,
 	value?: string,
 	elementCreated?: (element: Element, root?: ShadowRoot) => void,
 	[key: string]: unknown,
@@ -197,7 +206,7 @@ function createElementOptions(element: HTMLElement, options?: CreateElementOptio
 					(element as HTMLInputElement).checked = optionValue as boolean;
 					break;
 				case 'help':
-					Help.addElement(element, optionValue as string);
+					Help.addElement(element, optionValue as string | I18nDescriptor);
 					break;
 				case 'elementCreated':
 					break;
