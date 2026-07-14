@@ -16,7 +16,7 @@ export class Help {
 			childs: [
 				this.#html = createElement('div', {
 					class: 'help',
-					i18n: '',
+					hidden: true,
 				}),
 			],
 		});
