@@ -316,7 +316,7 @@ class Help {
         const i18n = this.#elements.get(element);
         if (i18n) {
             this.#html.classList.remove('html');
-            if (i18n && typeof i18n !== 'string') {
+            if (i18n && typeof i18n !== 'string' && i18n.innerHTML) {
                 this.#html.classList.add('html');
             }
             updateElement(this.#html, {
