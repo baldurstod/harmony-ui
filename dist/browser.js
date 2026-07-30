@@ -240,6 +240,7 @@ class I18n {
         let str = this.getString(s);
         for (const key in values) {
             str = str.replace(new RegExp("\\${" + key + "\\}", "gi"), String(values[key]));
+            str = str.replace(new RegExp("\\#{" + key + "\\}", "gi"), this.getString(String(values[key])));
         }
         return str;
     }
