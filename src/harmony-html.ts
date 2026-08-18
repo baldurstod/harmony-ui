@@ -121,8 +121,12 @@ function createElementOptions(element: HTMLElement, options?: CreateElementOptio
 			const optionValue = options[optionName] as CreateElementOptionValue;
 
 			if (optionName.startsWith('$')) {
-				const eventType = optionName.substring(1);
-				element.addEventListener(eventType, optionValue as EventListener);
+				element.addEventListener(optionName.substring(1), optionValue as EventListener);
+				continue;
+			}
+
+			if (optionName.startsWith('@')) {
+				element.setAttribute(optionName.substring(1), optionValue as string);
 				continue;
 			}
 
