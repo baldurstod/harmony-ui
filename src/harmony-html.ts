@@ -94,6 +94,20 @@ export function createShadowRoot(tagName: string, options?: CreateElementOptions
 	return shadowRoot;
 }
 
+export function createShadowRootNS(namespaceURI: string, tagName: string, options?: CreateElementOptions, shadowOptions?: PartialBy<ShadowRootInit, 'mode'>): ShadowRoot {
+	const element = document.createElementNS(namespaceURI, tagName);
+	const shadowRoot = element.attachShadow({
+		clonable: shadowOptions?.clonable,
+		customElementRegistry: shadowOptions?.customElementRegistry,
+		delegatesFocus: shadowOptions?.delegatesFocus,
+		mode: shadowOptions?.mode ?? 'closed',
+		serializable: shadowOptions?.serializable,
+		slotAssignment: shadowOptions?.slotAssignment,
+	});
+	createElementOptions(element as HTMLElement, options, shadowRoot);
+	return shadowRoot;
+}
+
 export function updateElement(element: HTMLElement | undefined, options: CreateElementOptions): HTMLElement | undefined {
 	if (!element) {
 		return;
