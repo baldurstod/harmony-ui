@@ -167,7 +167,7 @@ function createElementOptions(element: HTMLElement, options?: CreateElementOptio
 					}
 					break;
 				case 'innerHTML':
-					element.innerHTML = (optionValue as string) ?? '';
+					(shadowRoot ?? element).innerHTML = (optionValue as string) ?? '';
 					break;
 				case 'innerText':
 					element.innerText = (optionValue as string) ?? '';
