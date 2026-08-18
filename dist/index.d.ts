@@ -3,6 +3,8 @@ import { Radian } from 'harmony-types';
 
 export declare function AddI18nElement(element: Element, descriptor: string | I18nDescriptor | null): void;
 
+export declare function addRemoveClass(element: HTMLElement, clas: string, add: boolean): void;
+
 export declare function cloneEvent(event: Event): Event;
 
 export declare type ColorPickerEventData = {
@@ -58,6 +60,8 @@ export declare type CreateElementOptionValue = null | boolean | string | I18nDes
 
 export declare function createShadowRoot(tagName: string, options?: CreateElementOptions, shadowOptions?: PartialBy<ShadowRootInit, 'mode'>): ShadowRoot;
 
+export declare function createShadowRootNS(namespaceURI: string, tagName: string, options?: CreateElementOptions, shadowOptions?: PartialBy<ShadowRootInit, 'mode'>): ShadowRoot;
+
 export declare type CreateShadowRootOptions = {
     clonable?: boolean;
     customElementRegistry?: CustomElementRegistry;
@@ -65,25 +69,6 @@ export declare type CreateShadowRootOptions = {
     mode: ShadowRootMode;
     serializable?: boolean;
     slotAssignment?: SlotAssignmentMode;
-};
-
-export declare function createToolTip(params: CreateToolTipParams): ToolTip;
-
-export declare type CreateToolTipParams = {
-    /** Element this tooltip is applied to */
-    target: HTMLElement;
-    /** Tooltip position relative to the target. Default to auto */
-    position?: ToolTipPosition;
-    /** Tooltip html content */
-    innerHTML?: string;
-    /** Tooltip text content. Ignored if innerHTML is set */
-    i18n?: string | I18nDescriptor;
-    /** Tooltip text content. Ignored if innerHTML or i18n are set */
-    text?: string;
-    /** Max tooltip width when the tooltip is above or below. Default to 16 rem */
-    maxWidth?: string;
-    /** Max tooltip height when the tooltip is left or right. Default to 16 rem */
-    maxHeight?: string;
 };
 
 export declare function defineElement(name: string, constructor: CustomElementConstructor, options?: ElementDefinitionOptions): void;
@@ -143,6 +128,10 @@ export declare function documentStyle(cssText: string): Promise<void>;
 export declare function documentStyleSync(cssText: string): void;
 
 export declare function getCustomElementRegistry(): CustomElementRegistry | undefined;
+
+declare interface HarmonyComponent {
+    htmlElement: HTMLElement;
+}
 
 export declare type HarmonyEventListener = ((evt: Event) => void) | ((evt: MouseEvent) => void) | ((evt: WheelEvent) => void) | ((evt: PointerEvent) => void) | ((evt: KeyboardEvent) => void) | ((evt: InputEvent) => void) | ((evt: CustomEvent) => void);
 
@@ -224,6 +213,34 @@ export declare type HarmonyMenuItemsDict = Record<string, HarmonyMenuItem | null
 export declare type HarmonyPaletteSelectEventData = {
     hex: string;
 };
+
+export declare class HarmonyPanel implements HarmonyComponent, HasI18n {
+    #private;
+    readonly htmlElement: HTMLElement;
+    isMovable: boolean;
+    customPanelId: number;
+    constructor();
+    append(...nodes: (Node | string | HarmonyComponent)[]): void;
+    prepend(...nodes: (Node | string | HarmonyComponent)[]): void;
+    static set highlitPanel(panel: HTMLElement);
+    setDirection(direction?: HarmonyPanelDirection): void;
+    getDirection(): HarmonyPanelDirection | undefined;
+    setSize(size: number): void;
+    getSize(): number;
+    setCollapsible(collapsible: boolean): void;
+    setCollapsed(collapsed: boolean): void;
+    displayHeader(visible: boolean): void;
+    headerVisible(): boolean;
+    collapse(): void;
+    expand(): void;
+    setTitle(title: string): void;
+    setI18n(i18n: string | I18nDescriptor | null): void;
+    adoptStyleSheet(styleSheet: CSSStyleSheet): void;
+    setFloating(): void;
+    setDocked(): void;
+}
+
+export declare type HarmonyPanelDirection = 'row' | 'column';
 
 export declare type HarmonySlideshowOptions = {
     autoPlay?: boolean;
@@ -746,13 +763,6 @@ export declare type TabEventData = {
 };
 
 export declare function toggle(htmlElement: HTMLElement | SVGElement | ShadowRoot | undefined | null): void;
-
-declare class ToolTip {
-    #private;
-    constructor(params: CreateToolTipParams);
-}
-
-export declare type ToolTipPosition = 'top' | 'bottom' | 'right' | 'left' | 'auto';
 
 export declare type TreeAction = {
     name: string;

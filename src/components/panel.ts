@@ -1,0 +1,762 @@
+import { errorOnce } from 'harmony-utils';
+import panelCSS from '../css/harmony-panel.css';
+import { shadowRootStyle } from '../harmony-css';
+import { addRemoveClass, createElement, display, hide, show } from '../harmony-html';
+import { AddI18nElement as addI18nElement, I18nDescriptor } from '../harmony-i18n';
+import { HasI18n } from '../interfaces/hasi18n';
+import { HarmonyComponent } from './component';
+
+//const dragged = null;
+let nextId = 0;
+//let spliter: HTMLElement = createElement('div', { class: 'harmony-panel-splitter' }) as HTMLElement;
+let highlitPanel: HTMLElement;
+
+const DRAG_THRESHOLD = 15;
+
+enum DragMode {
+	None,
+	Move,
+	Resize,
+}
+export type HarmonyPanelDirection = 'row' | 'column';
+
+export class HarmonyPanel implements HarmonyComponent, HasI18n {
+	readonly htmlElement = createElement('div', { class: 'collapsible', });
+	#doOnce = true;
+	#parent = null;
+	#size = 1;
+	#direction?: HarmonyPanelDirection;
+	isMovable = false;
+	#collapsible = true;
+	#collapsed = false;
+	customPanelId = nextId++;
+	#htmlHeader?: HTMLElement;
+	#htmlContent?: HTMLElement;
+	#htmlResize?: HTMLElement;
+	#isDummy = false;
+	#shadowRoot?: ShadowRoot;
+	#headerVisible = false;
+	#isDraggable = true;
+	#floating = false;
+	#floatingWidth?: number;
+	#floatingHeight?: number;
+	static #dragMode = DragMode.None;
+	static #resizeX = 0;
+	static #resizeY = 0;
+	static #dragging = false;
+	static #draggedPanel?: HarmonyPanel;
+	static #deltaX = 0;
+	static #deltaY = 0;
+	static #startClientX = 0;
+	static #startClientY = 0;
+	static #mouseDown = false;
+	static #panels = new Set<HarmonyPanel>;
+	static #target: HarmonyPanel | null = null;
+	static #startRect?: DOMRect;
+
+	static {
+		document.addEventListener('mousedown', (event: Event) => HarmonyPanel.#handleDocumentMouseDown(event as MouseEvent));
+		document.addEventListener('mousemove', (event: Event) => HarmonyPanel.#handleDocumentMouseMove(event as MouseEvent));
+		document.addEventListener('mouseup', (event: Event) => HarmonyPanel.#handleDocumentMouseUp(event as MouseEvent));
+	}
+
+	constructor() {
+		HarmonyPanel.#panels.add(this);
+	}
+
+	#initHTML(): void {
+		if (this.#shadowRoot) {
+			return;
+		}
+
+		this.#shadowRoot = this.htmlElement.attachShadow({ mode: 'closed' });
+		void shadowRootStyle(this.#shadowRoot, panelCSS);
+		this.#htmlContent = createElement('div', {
+			class: 'content',
+			parent: this.#shadowRoot,
+		});
+		this.#htmlResize = createElement('div', {
+			class: 'resize',
+			parent: this.#shadowRoot,
+			childs: [
+				createElement('div', { class: 'side top', $mousedown: (event: MouseEvent) => this.#startResize(event, 0, -1) }),
+				createElement('div', { class: 'side right', $mousedown: (event: MouseEvent) => this.#startResize(event, 1, 0) }),
+				createElement('div', { class: 'side bottom', $mousedown: (event: MouseEvent) => this.#startResize(event, 0, 1) }),
+				createElement('div', { class: 'side left', $mousedown: (event: MouseEvent) => this.#startResize(event, -1, 0) }),
+
+				createElement('div', { class: 'corner top_right', $mousedown: (event: MouseEvent) => this.#startResize(event, 1, -1) }),
+				createElement('div', { class: 'corner bottom_right', $mousedown: (event: MouseEvent) => this.#startResize(event, 1, 1) }),
+				createElement('div', { class: 'corner bottom_left', $mousedown: (event: MouseEvent) => this.#startResize(event, -1, 1) }),
+				createElement('div', { class: 'corner top_left', $mousedown: (event: MouseEvent) => this.#startResize(event, -1, -1) }),
+			],
+			$mousedown: (event: Event) => this.#handleMouseDown(event as MouseEvent),
+		});
+	}
+
+	#getHeader(): HTMLElement {
+		this.#initHTML();
+
+		if (!this.#htmlHeader) {
+			this.#htmlHeader = createElement('div', {
+				class: 'header',
+				hidden: true,
+				$dblclick: () => this.#toggleCollapse(),
+				$mousedown: (event: Event) => this.#handleMouseDown(event as MouseEvent),
+			});
+		}
+		this.#shadowRoot!.prepend(this.#htmlHeader);
+
+		return this.#htmlHeader;
+	}
+
+	append(...nodes: (Node | string | HarmonyComponent)[]): void {
+		this.#initHTML();
+		for (const node of nodes) {
+
+			const htmlElement = (node as HarmonyComponent).htmlElement;
+			if (htmlElement) {
+				this.#htmlContent!.append(htmlElement);
+			} else {
+				// eslint-disable-next-line prefer-rest-params
+				this.#htmlContent!.append(node as Node | string);
+			}
+		}
+	}
+
+	prepend(...nodes: (Node | string | HarmonyComponent)[]): void {
+		this.#initHTML();
+		for (const node of nodes) {
+
+			const htmlElement = (node as HarmonyComponent).htmlElement;
+			if (htmlElement) {
+				this.#htmlContent!.prepend(htmlElement);
+			} else {
+				// eslint-disable-next-line prefer-rest-params
+				this.#htmlContent!.prepend(node as Node | string);
+			}
+		}
+	}
+	/*
+		appendChild(child: HTMLElement) {
+			this.htmlContent.appendChild(child);
+		}
+	*/
+
+	/*
+	get innerHTML(): string {
+		return this.#htmlContent.innerHTML;
+	}
+
+	set innerHTML(innerHTML) {
+		this.#htmlContent.innerHTML = innerHTML;
+	}
+	*/
+
+	/*
+	attributeChangedCallback(name: string, oldValue: string, newValue: string): void {
+		if (oldValue == newValue) {
+			return;
+		}
+
+		switch (name) {
+			case 'panel-direction':
+				this.#direction = newValue;
+				break;
+			case 'panel-size':
+				this.size = Number(newValue);
+				break;
+			case 'is-movable':
+				this.isMovable = toBool(newValue);
+				break;
+			case 'collapsible':
+				this.collapsible = toBool(newValue);
+				break;
+			case 'collapsed':
+				this.collapsed = toBool(newValue);
+				break;
+			case 'title':
+				this.setTitle(newValue);
+				break;
+			case 'has-header':
+				this.hasHeader = toBool(newValue);
+				break;
+			case 'draggable':
+				this.#isDraggable = toBool(newValue);
+				this.#htmlHeader.setAttribute('draggable', newValue);
+				break;
+			case 'hidden-title':
+				if (toBool(newValue)) {
+					this.#htmlHeader.classList.add('hidden');
+				} else {
+					this.#htmlHeader.classList.remove('hidden');
+				}
+				break;
+		}
+	}
+	*/
+	/*
+	static get observedAttributes(): string[] {
+		return ['panel-direction', 'panel-size', 'is-movable', 'title', 'collapsible', 'collapsed', 'has-header', 'draggable', 'hidden-title'];
+	}
+	*/
+	/*
+		_handleDragStart(event) {
+			if (this._isMovable == false) {
+				event.preventDefault();
+				return;
+			}
+			event.stopPropagation();
+			event.dataTransfer.setData('text/plain', null);
+			dragged = event.target;
+		}
+
+		_handleDragOver(event) {
+			if (this._isContainer != false) {
+				event.preventDefault();
+			}
+			event.stopPropagation();
+		}
+
+		_handleDrop(event) {
+			if (this._isContainer != false) {
+				event.stopPropagation();
+				event.preventDefault();
+				if (dragged) {
+					if (this != dragged) {
+						this._addChild(dragged, event.offsetX, event.offsetY);
+						//OptionsManager.setItem('app.layout.disposition', HTMLHarmonyPanelElement.saveDisposition());
+					}
+				}
+			}
+			dragged = null;
+		}
+
+		_handleMouseEnter(event) {
+			//console.error(this, event);
+			//clearInterval(HTMLHarmonyPanelElement._interval);
+			//HTMLHarmonyPanelElement._interval = setInterval(event => this.style.opacity = (Math.floor(new Date().getTime() / 500) % 2) / 2 + 0.5, 100);
+			//event.stopPropagation();
+		}
+
+		_handleMouseMove(event) {
+			const delta = 5;
+			//console.error(event.offsetX, event.offsetY);
+			//this.style.opacity = (Math.floor(new Date().getTime() / 1000) % 2);
+			//HTMLHarmonyPanelElement.highlitPanel = this;
+			event.stopPropagation();
+			if (event.offsetX < delta || event.offsetY < delta) {
+				HTMLHarmonyPanelElement.highlitPanel = this;
+				this.parentNode.insertBefore(HTMLHarmonyPanelElement._spliter, this);
+			} else if ((this.offsetWidth - event.offsetX) < delta || (this.offsetHeight - event.offsetY) < delta) {
+				HTMLHarmonyPanelElement.highlitPanel = this;
+				this.parentNode.insertBefore(HTMLHarmonyPanelElement._spliter, this.nextSibling);
+			} else {
+				HTMLHarmonyPanelElement.highlitPanel = null;
+			}
+
+		}
+
+		_handleMouseLeave(event) {
+			//console.error(this, event);
+			//clearInterval(HTMLHarmonyPanelElement._interval);
+		}
+			*/
+
+	static set highlitPanel(panel: HTMLElement) {
+		if (highlitPanel) {
+			highlitPanel.style.filter = '';
+		}
+		highlitPanel = panel;
+		if (highlitPanel) {
+			highlitPanel.style.filter = 'grayscale(80%)';///'contrast(200%)';
+		}
+	}
+	/*
+		_addChild(child, x, y) {
+			let percent = 0.2;
+			let percent2 = 0.8;
+			let height = this.clientHeight;
+			let width = this.clientWidth;
+
+			if (this._direction == undefined) {
+				if (x <= width * percent) {
+					this.prepend(dragged);
+					this.direction = 'row';
+				}
+				if (x >= width * percent2) {
+					this.append(dragged);
+					this.direction = 'row';
+				}
+				if (y <= height * percent) {
+					this.prepend(dragged);
+					this.direction = 'column';
+				}
+				if (y >= height * percent2) {
+					this.append(dragged);
+					this.direction = 'column';
+				}
+			} else if (this._direction == 'row') {
+				if (x <= width * percent) {
+					this.prepend(dragged);
+				}
+				if (x >= width * percent2) {
+					this.append(dragged);
+				}
+				if (y <= height * percent) {
+					this._split(dragged, true, 'column');
+				}
+				if (y >= height * percent2) {
+					this._split(dragged, false, 'column');
+				}
+			} else if (this._direction == 'column') {
+				if (x <= width * percent) {
+					this._split(dragged, true, 'row');
+				}
+				if (x >= width * percent2) {
+					this._split(dragged, false, 'row');
+				}
+				if (y <= height * percent) {
+					this.prepend(dragged);
+				}
+				if (y >= height * percent2) {
+					this.append(dragged);
+				}
+			}
+		}*/
+
+	/*
+		_split(newNode, before, direction) {
+			let panel = HTMLHarmonyPanelElement._createDummy();//document.createElement('harmony-panel');
+			/*panel.id = HTMLHarmonyPanelElement.nextId;
+			panel._isDummy = true;
+			panel.classList.add('dummy');* /
+			panel.size = this.size;
+			this.style.flex = this.style.flex;
+			this.after(panel);
+			if (before) {
+				panel.append(newNode);
+				panel.append(this);
+			} else {
+				panel.append(this);
+				panel.append(newNode);
+			}
+			panel.direction = direction;
+		}
+	*/
+	/*
+		static _createDummy() {
+			let dummy = document.createElement('harmony-panel');
+			dummy.id = HTMLHarmonyPanelElement.#nextId;
+			dummy._isDummy = true;
+			dummy.classList.add('dummy');
+			return dummy;
+		}
+	*/
+	/*
+		_addPanel(panel) {
+			this._panels.add(panel);
+		}
+
+		_removePanel(panel) {
+			this._panels.delete(panel);
+			if (this._isDummy) {
+				if (this._panels.size == 0) {
+					this.remove();
+				} else if (this._panels.size == 1) {
+					this.after(this._panels.values().next().value);
+					this.remove();
+				}
+			}
+		}
+	*/
+	/*
+		set active(active) {
+			if (this._active != active) {
+				this.dispatchEvent(new CustomEvent('activated'));
+			}
+			this._active = active;
+			this.style.display = active ? '' : 'none';
+			if (active) {
+				this._header.classList.add('activated');
+			} else {
+				this._header.classList.remove('activated');
+			}
+		}
+		*/
+	/*
+		_click() {
+			this.active = true;
+			if (this._group) {
+				this._group.active = this;
+			}
+		}
+	*/
+	setDirection(direction?: HarmonyPanelDirection): void {
+		this.#direction = direction;
+		this.htmlElement.classList.remove('harmony-panel-row');
+		this.htmlElement.classList.remove('harmony-panel-column');
+		if (direction == 'row') {
+			this.htmlElement.classList.add('harmony-panel-row');
+		} else if (direction == 'column') {
+			this.htmlElement.classList.add('harmony-panel-column');
+		}
+	}
+
+	getDirection(): HarmonyPanelDirection | undefined {
+		return this.#direction;
+	}
+
+	setSize(size: number): void {
+		/*if (size === undefined) {
+			return;
+		}*/
+		this.#size = size;
+		//this.style.flexBasis = size;
+		this.htmlElement.style.flex = String(size);
+	}
+
+	getSize(): number {
+		return this.#size;
+	}
+
+	setCollapsible(collapsible: boolean): void {
+		this.#collapsible = collapsible;
+		//this.htmlElement.setAttribute('collapsible', String(this.#collapsible ? 1 : 0));
+		addRemoveClass(this.htmlElement, 'collapsible', collapsible);
+	}
+
+	setCollapsed(collapsed: boolean): void {
+		this.#collapsed = collapsed && this.#collapsible;
+		//this.htmlElement.setAttribute('collapsed', String(this.#isCollapsed ? 1 : 0));
+		addRemoveClass(this.htmlElement, 'collapsed', this.#collapsed);
+		if (this.#collapsed) {
+			this.collapse();
+		} else {
+			this.expand();
+		}
+	}
+
+	displayHeader(visible: boolean) {
+		this.#headerVisible = visible;
+
+		display(this.#htmlHeader, visible);
+	}
+
+	headerVisible(): boolean {
+		return this.#headerVisible;
+	}
+
+	collapse(): void {
+		hide(this.#htmlContent);
+		this.#collapsed = true;
+	}
+
+	expand(): void {
+		show(this.#htmlContent);
+		this.#collapsed = false;
+	}
+
+	setTitle(title: string): void {
+		const header = this.#getHeader();
+		header.innerText = title;
+		show(header);
+		/*
+		if (title) {
+			//this.#htmlTitle = this.#htmlTitle ?? document.createElement('div');
+			super.prepend(this.#htmlTitle);
+		} else {
+			this.#htmlTitle.remove();
+		}
+		*/
+	}
+
+	setI18n(i18n: string | I18nDescriptor | null): void {
+		if (typeof i18n === 'string') {
+			this.#setTitleI18n(i18n);
+		} else {
+			errorOnce('unhandled type ' + typeof i18n + i18n);
+		}
+		show(this.#htmlHeader);
+	}
+
+	#setTitleI18n(titleI18n: string): void {
+		addI18nElement(this.#getHeader(), titleI18n);
+	}
+
+	#toggleCollapse(): void {
+		this.setCollapsed(!this.#collapsed);
+	}
+
+	/*
+	static getNextId(): string {
+		return `harmony-panel-dummy-${++nextId}`;
+	}
+	*/
+
+	/*
+	static saveDisposition(): JSONObject {
+		const list = document.getElementsByTagName('harmony-panel');
+		const json: { panels: Record<string, any>, dummies: any[] } = { panels: {}, dummies: [] };
+		for (const panel of list) {
+			if (panel.id && panel.parentElement && panel.parentElement.id && panel.parentElement.tagName == 'HARMONY-PANEL') {
+				json.panels[(panel as any).id] = { parent: panel.parentElement.id, size: (panel as any).size, direction: (panel as any).direction };
+				if ((panel as HTMLHarmonyPanelElement).#isDummy) {
+					json.dummies.push((panel as any).id);
+				}
+			}
+		}
+		return json;
+	}
+	*/
+
+	/*
+	static restoreDisposition(json: Record<string, any>): void {
+		return;
+		/*
+		if (!json || !json.dummies || !json.panels) { return; }
+
+		let dummiesList = new Map();
+		for (let oldDummy of json.dummies) {
+			let newDummy = HTMLHarmonyPanelElement._createDummy();
+			document.body.append(newDummy);
+			dummiesList.set(oldDummy, newDummy.id);
+		}
+
+		let list = document.getElementsByTagName('harmony-panel');
+		for (let panel of list) {
+			if (panel.id) {
+				let p = json.panels[panel.id];
+				if (p) {
+					if (p.size != 1 || panel._isDummy) {
+						panel.size = p.size;
+					}
+					panel.direction = p.direction;
+					let newParentId = dummiesList.get(p.parent) || p.parent;
+					if (p && newParentId) {
+						let parent = document.getElementById(newParentId);
+						/*if (!parent && p.dummy) {
+							parent = document.createElement('harmony-panel');
+						}* /
+						if (parent) {
+							parent.append(panel);
+						} else {
+							console.error('no parent', panel, newParentId);
+						}
+					}
+				}
+			}
+		}* /
+	}
+	*/
+
+	adoptStyleSheet(styleSheet: CSSStyleSheet): void {
+		this.#initHTML();
+		this.#shadowRoot!.adoptedStyleSheets.push(styleSheet);
+	}
+
+	#handleMouseDown(event: MouseEvent): void {
+		if (this.#isDraggable && event.button === 0) {
+			HarmonyPanel.#draggedPanel = this;
+		}
+	}
+
+	#startDrag(): void {
+		if (HarmonyPanel.#dragging) {
+			return;
+		}
+		HarmonyPanel.#dragging = true;
+		HarmonyPanel.#dragMode = DragMode.Move;
+
+		const rect = this.htmlElement.getBoundingClientRect();
+		document.body.append(this.htmlElement);
+		this.setFloating();
+
+		this.#floatingWidth = this.#floatingWidth ?? rect.width;
+		this.#floatingHeight = this.#floatingHeight ?? rect.height;
+
+		this.htmlElement.style.left = `${rect.x}px`;
+		this.htmlElement.style.top = `${rect.y}px`;
+		this.htmlElement.style.width = `${this.#floatingWidth}px`;
+		this.htmlElement.style.height = `${this.#floatingHeight}px`;
+		this.htmlElement.style.position = 'absolute';
+
+		HarmonyPanel.#deltaX = rect.x - HarmonyPanel.#startClientX;
+		HarmonyPanel.#deltaY = rect.y - HarmonyPanel.#startClientY;
+	}
+
+	setFloating(): void {
+		this.#floating = true;
+		this.htmlElement.classList.add('floating');
+		this.htmlElement.classList.remove('docked');
+	}
+
+	setDocked(): void {
+		this.#floating = false;
+		this.htmlElement.classList.remove('floating');
+		this.htmlElement.classList.add('docked');
+	}
+
+	#drag(event: MouseEvent): void {
+		if (!HarmonyPanel.#dragging) {
+			return;
+		}
+
+		this.htmlElement.style.left = `${(event as MouseEvent).clientX + HarmonyPanel.#deltaX}px`;
+		this.htmlElement.style.top = `${(event as MouseEvent).clientY + HarmonyPanel.#deltaY}px`;
+
+		if (event.ctrlKey) {
+			HarmonyPanel.#setTarget(null);
+		} else {
+			const panel = this.#getPanelAtMousePosition(event);
+			HarmonyPanel.#setTarget(panel);
+		}
+	}
+
+	#stopDrag(): void {
+		HarmonyPanel.#dragging = false;
+		HarmonyPanel.#dragMode = DragMode.None;
+		if (HarmonyPanel.#target) {
+			HarmonyPanel.#target.append(this.htmlElement);
+			this.setDocked();
+			this.htmlElement.style = '';
+		}
+	}
+
+	#resize(event: MouseEvent): void {
+		if (HarmonyPanel.#dragMode !== DragMode.Resize || !HarmonyPanel.#startRect) {
+			return;
+		}
+
+		const deltaX = (event as MouseEvent).clientX - HarmonyPanel.#startClientX;
+		const deltaY = (event as MouseEvent).clientY - HarmonyPanel.#startClientY;
+
+		const rect = HarmonyPanel.#startRect;
+
+		let deltaTop = 0, deltaWidth = 0, deltaHeight = 0, deltaLeft = 0;
+
+		switch (HarmonyPanel.#resizeX) {
+			case -1:
+				deltaLeft += deltaX;
+				deltaWidth -= deltaX;
+
+				break;
+			case 1:
+				deltaWidth += deltaX;
+				break;
+		}
+
+		switch (HarmonyPanel.#resizeY) {
+			case -1:
+				deltaTop += deltaY;
+				deltaHeight -= deltaY;
+				break;
+			case 1:
+				deltaHeight += deltaY;
+				break;
+		}
+
+
+		this.#floatingWidth = rect.width + deltaWidth;
+		this.#floatingHeight = rect.height + deltaHeight;
+
+		this.htmlElement.style.left = `${rect.x + deltaLeft}px`;
+		this.htmlElement.style.top = `${rect.y + deltaTop}px`;
+		this.htmlElement.style.width = `${this.#floatingWidth}px`;
+		this.htmlElement.style.height = `${this.#floatingHeight}px`;
+	}
+
+	#stopResize(): void {
+		HarmonyPanel.#dragging = false;
+		HarmonyPanel.#dragMode = DragMode.None;
+	}
+
+	static #setTarget(target: HarmonyPanel | null): void {
+		if (this.#target) {
+			this.#target.#htmlHeader?.classList.remove('target');
+			this.#target.#htmlContent?.classList.remove('target');
+		}
+
+		if (target) {
+			target.#htmlHeader?.classList.add('target');
+			target.#htmlContent?.classList.add('target');
+		}
+		this.#target = target;
+	}
+
+	static #handleDocumentMouseMove(event: MouseEvent): void {
+		if (!this.#mouseDown || !this.#draggedPanel) {
+			return;
+		}
+
+		switch (HarmonyPanel.#dragMode) {
+			case DragMode.None:
+
+				const deltaX = (event as MouseEvent).clientX - this.#startClientX;
+				const deltaY = (event as MouseEvent).clientY - this.#startClientY;
+
+				if (deltaX * deltaX + deltaY * deltaY > DRAG_THRESHOLD) {
+					this.#draggedPanel.#startDrag();
+				}
+
+				break;
+			case DragMode.Move:
+				this.#draggedPanel.#drag(event);
+				break;
+			case DragMode.Resize:
+				this.#draggedPanel.#resize(event);
+				break;
+		}
+
+	}
+
+	static #handleDocumentMouseDown(event: MouseEvent): void {
+		this.#mouseDown = true;
+
+		this.#startClientX = (event as MouseEvent).clientX;
+		this.#startClientY = (event as MouseEvent).clientY;
+	}
+
+	static #handleDocumentMouseUp(event: MouseEvent): void {
+		this.#mouseDown = false;
+		HarmonyPanel.#dragging = false;
+		HarmonyPanel.#dragMode = DragMode.None;
+
+		if (this.#draggedPanel) {
+			this.#draggedPanel.#stopDrag();
+			this.#draggedPanel.#stopResize();
+		}
+
+		this.#draggedPanel = undefined;
+		this.#setTarget(null);
+	}
+
+	#getPanelAtMousePosition(event: MouseEvent): HarmonyPanel | null {
+		for (const panel of HarmonyPanel.#panels) {
+			if (panel === this || !panel.htmlElement.isConnected) {
+				continue;
+			}
+
+			const rect = panel.htmlElement.getBoundingClientRect();
+			if (event.clientX >= rect.left
+				&& event.clientX < rect.right
+				&& event.clientY >= rect.top
+				&& event.clientY < rect.bottom
+			) {
+				return panel;
+			}
+		}
+		return null;
+	}
+
+	#startResize(event: MouseEvent, x: number, y: number): void {
+		if (HarmonyPanel.#dragMode !== DragMode.None) {
+			return;
+		}
+
+		HarmonyPanel.#dragMode = DragMode.Resize;
+		HarmonyPanel.#resizeX = x;
+		HarmonyPanel.#resizeY = y;
+
+		HarmonyPanel.#startRect = this.htmlElement.getBoundingClientRect();
+	}
+}

@@ -18,6 +18,10 @@
 	--resize-bar-size: 0.5rem;
 }
 
+:host(.collapsed) {
+	flex: 0 0 auto;
+}
+
 .harmony-panel-row {
 	flex-direction: row;
 }
@@ -74,13 +78,15 @@
 	background: blue;
 }
 
-[collapsible='1']>.title::after {
+[collapsible='1']>.title::after,
+:host(.collapsible)>.title::after {
 	content: "-";
 	right: 0.25rem;
 	position: absolute;
 }
 
-[collapsed='1']>.title::after {
+[collapsed='1']>.title::after,
+:host(.collapsed)>.title::after {
 	content: "+";
 }
 

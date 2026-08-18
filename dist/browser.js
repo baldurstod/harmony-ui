@@ -1,3 +1,366 @@
+function rgbToHsl(r, g, b) {
+    const max = Math.max(r, g, b), min = Math.min(r, g, b);
+    let h = 0, s;
+    const l = (max + min) / 2;
+    if (max == min) {
+        h = s = 0; // achromatic
+    }
+    else {
+        const d = max - min;
+        s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+        switch (max) {
+            case r:
+                h = (g - b) / d + (g < b ? 6 : 0);
+                break;
+            case g:
+                h = (b - r) / d + 2;
+                break;
+            case b:
+                h = (r - g) / d + 4;
+                break;
+        }
+        h /= 6;
+    }
+    return [h, s, l];
+}
+function hslToRgb(h, s, l) {
+    let r, g, b;
+    if (s == 0) {
+        r = g = b = l; // achromatic
+    }
+    else {
+        function hue2rgb(p, q, t) {
+            if (t < 0)
+                t += 1;
+            if (t > 1)
+                t -= 1;
+            if (t < 1 / 6)
+                return p + (q - p) * 6 * t;
+            if (t < 1 / 2)
+                return q;
+            if (t < 2 / 3)
+                return p + (q - p) * (2 / 3 - t) * 6;
+            return p;
+        }
+        const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+        const p = 2 * l - q;
+        r = hue2rgb(p, q, h + 1 / 3);
+        g = hue2rgb(p, q, h);
+        b = hue2rgb(p, q, h - 1 / 3);
+    }
+    return [r, g, b];
+}
+class Color {
+    #rgba;
+    constructor({ red = 0, green = 0, blue = 0, alpha = 1, hex = '' } = {}) {
+        this.#rgba = [red, green, blue, alpha];
+        if (hex) {
+            this.setHex(hex);
+        }
+    }
+    setHue(hue) {
+        const hsl = rgbToHsl(this.#rgba[0], this.#rgba[1], this.#rgba[2]);
+        const rgb = hslToRgb(hue, hsl[1], hsl[2]);
+        this.#rgba[0] = rgb[0];
+        this.#rgba[1] = rgb[1];
+        this.#rgba[2] = rgb[2];
+    }
+    setSatLum(sat, lum) {
+        const hsl = rgbToHsl(this.#rgba[0], this.#rgba[1], this.#rgba[2]);
+        const rgb = hslToRgb(hsl[0], sat, lum);
+        this.#rgba[0] = rgb[0];
+        this.#rgba[1] = rgb[1];
+        this.#rgba[2] = rgb[2];
+    }
+    setHex(hex) {
+        hex = (hex.startsWith('#') ? hex.slice(1) : hex)
+            .replace(/^(\w{3})$/, '$1F') //987      -> 987F
+            .replace(/^(\w)(\w)(\w)(\w)$/, '$1$1$2$2$3$3$4$4') //9876     -> 99887766
+            .replace(/^(\w{6})$/, '$1FF'); //987654   -> 987654FF
+        if (!hex.match(/^([0-9a-fA-F]{8})$/)) {
+            throw new Error('Unknown hex color; ' + hex);
+        }
+        const rgba = hex
+            .match(/^(\w\w)(\w\w)(\w\w)(\w\w)$/)?.slice(1) //98765432 -> 98 76 54 32
+            .map(x => parseInt(x, 16)); //Hex to decimal
+        if (rgba) {
+            this.#rgba[0] = rgba[0] / 255;
+            this.#rgba[1] = rgba[1] / 255;
+            this.#rgba[2] = rgba[2] / 255;
+            this.#rgba[3] = rgba[3] / 255;
+        }
+    }
+    getHex() {
+        const hex = this.#rgba.map(x => Math.round(x * 255).toString(16));
+        return '#' + hex.map(x => x.padStart(2, '0')).join('');
+    }
+    getHue() {
+        return rgbToHsl(this.#rgba[0], this.#rgba[1], this.#rgba[2])[0];
+    }
+    getHsl() {
+        return rgbToHsl(this.#rgba[0], this.#rgba[1], this.#rgba[2]);
+    }
+    getRgba() {
+        return this.#rgba;
+    }
+    setRgba(rgba) {
+        this.#rgba[0] = rgba[0];
+        this.#rgba[1] = rgba[1];
+        this.#rgba[2] = rgba[2];
+        this.#rgba[3] = rgba[3];
+    }
+    set red(red) {
+        this.#rgba[0] = red;
+    }
+    get red() {
+        return this.#rgba[0];
+    }
+    set green(green) {
+        this.#rgba[1] = green;
+    }
+    get green() {
+        return this.#rgba[1];
+    }
+    set blue(blue) {
+        this.#rgba[2] = blue;
+    }
+    get blue() {
+        return this.#rgba[2];
+    }
+    set alpha(alpha) {
+        this.#rgba[3] = alpha;
+    }
+    get alpha() {
+        return this.#rgba[3];
+    }
+    getLuminance() {
+        return 0.2126 * this.#rgba[0] + 0.7152 * this.#rgba[1] + 0.0722 * this.#rgba[2];
+    }
+}
+
+/**
+ * Map2 holds a key-key-value triplet using an underlying Map
+ * Any value can be used as either keys or value
+ */
+class Map2 {
+    #map = new Map();
+    clear() {
+        this.#map.clear();
+    }
+    delete(key1, key2) {
+        return this.#map.get(key1)?.delete(key2) ?? false;
+    }
+    forEach(callbackfn, thisArg) {
+        this.#map.forEach((value, key1) => {
+            value.forEach((value, key2) => callbackfn.call(thisArg, value, key1, key2, this));
+        });
+    }
+    get(key1, key2) {
+        return this.#map.get(key1)?.get(key2);
+    }
+    getMap() {
+        return this.#map;
+    }
+    getSubMap(key1) {
+        return this.#map.get(key1);
+    }
+    has(key1, key2) {
+        return this.#map.get(key1)?.has(key2) ?? false;
+    }
+    set(key1, key2, value) {
+        if (!this.#map.has(key1)) {
+            this.#map.set(key1, new Map());
+        }
+        this.#map.get(key1).set(key2, value);
+        return this;
+    }
+    get size() {
+        let size = 0;
+        for (const [, m] of this.#map) {
+            size += m.size;
+        }
+        return size;
+    }
+    [Symbol.iterator] = () => {
+        const iterator1 = this.#map.entries();
+        let iterator2 = null;
+        let current1;
+        const next = () => {
+            if (iterator2 == null) {
+                current1 = iterator1.next();
+                if (current1.done) {
+                    return { done: true };
+                }
+                iterator2 = current1.value[1].entries();
+            }
+            const current2 = iterator2.next();
+            if (current2.done) {
+                iterator2 = null;
+                return next();
+            }
+            return { value: [current1.value[0], current2.value[0], current2.value[1]], done: false };
+        };
+        return {
+            next: next,
+            [Symbol.iterator]() {
+                return this;
+            },
+        };
+    };
+}
+
+let messages;
+function messageOnce(level, message, max) {
+    if (!messages) {
+        messages = new Map2();
+    }
+    if (!messages.has(level, message)) {
+        messages.set(level, message, 0);
+    }
+    const newCount = messages.get(level, message) + 1;
+    messages.set(level, message, newCount);
+    if (newCount <= max) {
+        console[level](message);
+    }
+}
+function errorOnce(message, max = 1) {
+    messageOnce('error', message, max);
+}
+
+/**
+ * Set2 holds a key-key pair using an underlying Set
+ * Any value can be used as either keys
+ */
+class Set2 {
+    #map = new Map();
+    clear() {
+        this.#map.clear();
+    }
+    delete(key1, key2) {
+        return this.#map.get(key1)?.delete(key2) ?? false;
+    }
+    forEach(callbackfn, thisArg) {
+        this.#map.forEach((value, key1) => {
+            value.forEach((key2) => callbackfn.call(thisArg, key1, key2, this));
+        });
+    }
+    getMap() {
+        return this.#map;
+    }
+    getSubSet(key1) {
+        return this.#map.get(key1);
+    }
+    has(key1, key2) {
+        return this.#map.get(key1)?.has(key2) ?? false;
+    }
+    add(key1, key2) {
+        if (!this.#map.has(key1)) {
+            this.#map.set(key1, new Set());
+        }
+        this.#map.get(key1).add(key2);
+        return this;
+    }
+    get size() {
+        let size = 0;
+        for (const [, m] of this.#map) {
+            size += m.size;
+        }
+        return size;
+    }
+    [Symbol.iterator] = () => {
+        const iterator1 = this.#map.entries();
+        let iterator2 = null;
+        let current1;
+        const next = () => {
+            if (iterator2 == null) {
+                current1 = iterator1.next();
+                if (current1.done) {
+                    return { done: true };
+                }
+                iterator2 = current1.value[1].keys();
+            }
+            const current2 = iterator2.next();
+            if (current2.done) {
+                iterator2 = null;
+                return next();
+            }
+            return { value: [current1.value[0], current2.value], done: false };
+        };
+        return {
+            next: next,
+            [Symbol.iterator]() {
+                return this;
+            },
+        };
+    };
+}
+
+class BugReporter {
+    static #eventTarget = new EventTarget();
+    static #dispatched = new Set2();
+    static addEventListener(type, callback, options) {
+        this.#eventTarget.addEventListener(type, callback, options);
+    }
+    static removeEventListener(type, callback, options) {
+        this.#eventTarget.removeEventListener(type, callback, options);
+    }
+    static reportBug(severity, message) {
+        if (this.#dispatched.has(severity, message)) {
+            return;
+        }
+        this.#dispatched.add(severity, message);
+        this.#eventTarget.dispatchEvent(new CustomEvent('report', {
+            detail: {
+                severity,
+                message,
+            },
+        }));
+    }
+}
+
+class Item {
+    data;
+    next = null;
+    constructor(data) {
+        this.data = data;
+    }
+}
+
+/**
+ * Static version of MyEventTarget
+ */
+class StaticEventTarget {
+    static eventTarget = new EventTarget();
+    static addEventListener(type, callback, options) {
+        this.eventTarget.addEventListener(type, callback, options);
+    }
+    static dispatchEvent(event) {
+        return this.eventTarget.dispatchEvent(event);
+    }
+    static removeEventListener(type, callback, options) {
+        this.eventTarget.removeEventListener(type, callback, options);
+    }
+}
+
+var panelCSS = ":host {\n\tdisplay: flex;\n\tflex: 1;\n\tflex-direction: column;\n\t/*flex: 0 0 auto;*/\n\tbox-sizing: border-box;\n\tpointer-events: all;\n\tposition: relative;\n\tflex-direction: column;\n\tbox-sizing: border-box;\n\n\tmax-width: 100%;\n\tmax-height: 100%;\n\n\t--header-bg-color: var(--harmony-panel-header-bg-color, var(--main-bg-color-dark, black));\n\t--content-bg-color: var(--harmony-panel-content-bg-color, var(--main-bg-color-dark, black));\n\n\t--resize-bar-size: 0.5rem;\n}\n\n:host(.collapsed) {\n\tflex: 0 0 auto;\n}\n\n.harmony-panel-row {\n\tflex-direction: row;\n}\n\n.harmony-panel-row>harmony-panel {\n\theight: 100%;\n}\n\n.harmony-panel-column {\n\tflex-direction: column;\n}\n\n.harmony-panel-column>harmony-panel {\n\twidth: 100%;\n}\n\n.harmony-panel-splitter {\n\tdisplay: none;\n\tflex: 0 0 10px;\n\tbackground-color: red;\n}\n\n.header {\n\tcursor: pointer;\n\tfont-size: 1.5em;\n\tpadding: 0.25rem;\n\toverflow: hidden;\n\tflex: 0 0 2rem;\n\tbackground-color: var(--header-bg-color);\n\tdisplay: flex;\n\talign-items: center;\n}\n\n.header.hidden {\n\tdisplay: var(--harmony-panel-display-headers, none);\n}\n\n.content {\n\twidth: 100%;\n\tbox-sizing: border-box;\n\tbackground-color: var(--content-bg-color);\n\tflex: 1;\n\toverflow: hidden;\n\tdisplay: flex;\n\tposition: relative;\n\tflex-direction: column;\n}\n\n.header.target {\n\tbackground: blue;\n}\n\n.content.target {\n\tbackground: blue;\n}\n\n[collapsible='1']>.title::after,\n:host(.collapsible)>.title::after {\n\tcontent: \"-\";\n\tright: 0.25rem;\n\tposition: absolute;\n}\n\n[collapsed='1']>.title::after,\n:host(.collapsed)>.title::after {\n\tcontent: \"+\";\n}\n\n.resize {\n\tpointer-events: none;\n\tdisplay: none;\n\ttop: 0;\n\tleft: 0;\n\twidth: 100%;\n\theight: 100%;\n\tposition: absolute;\n}\n\n.resize>* {\n\tpointer-events: all;\n\tposition: absolute;\n}\n\n.resize>.side {\n\tinset: calc(var(--resize-bar-size) * 0.5);\n}\n\n.resize>.corner {\n\theight: var(--resize-bar-size);\n\twidth: var(--resize-bar-size);\n}\n\n.resize>.top,\n.resize>.bottom {\n\theight: var(--resize-bar-size);\n\twidth: auto;\n\tcursor: ns-resize;\n}\n\n.resize>.right,\n.resize>.left {\n\twidth: var(--resize-bar-size);\n\theight: auto;\n\tcursor: ew-resize;\n}\n\n.resize>.top {\n\ttop: calc(var(--resize-bar-size) * -0.5);\n\tbottom: unset;\n}\n\n.resize>.bottom {\n\ttop: unset;\n\tbottom: calc(var(--resize-bar-size) * -0.5);\n}\n\n.resize>.left {\n\tleft: calc(var(--resize-bar-size) * -0.5);\n\tright: unset;\n}\n\n.resize>.right {\n\tleft: unset;\n\tright: calc(var(--resize-bar-size) * -0.5);\n}\n\n.resize>.top_right {\n\ttop: calc(var(--resize-bar-size) * -0.5);\n\tright: calc(var(--resize-bar-size) * -0.5);\n\tcursor: ne-resize;\n}\n\n.resize>.bottom_right {\n\tbottom: calc(var(--resize-bar-size) * -0.5);\n\tright: calc(var(--resize-bar-size) * -0.5);\n\tcursor: se-resize;\n}\n\n.resize>.top_left {\n\ttop: calc(var(--resize-bar-size) * -0.5);\n\tleft: calc(var(--resize-bar-size) * -0.5);\n\tcursor: nw-resize;\n}\n\n.resize>.bottom_left {\n\tbottom: calc(var(--resize-bar-size) * -0.5);\n\tleft: calc(var(--resize-bar-size) * -0.5);\n\tcursor: sw-resize;\n}\n\n:host(.floating) {\n\tz-index: 10000;\n}\n\n:host(.floating) .resize {\n\tdisplay: initial;\n}\n";
+
+async function documentStyle(cssText) {
+    return await shadowRootStyle(document, cssText);
+}
+function documentStyleSync(cssText) {
+    return shadowRootStyleSync(document, cssText);
+}
+async function shadowRootStyle(shadowRoot, cssText) {
+    const sheet = new CSSStyleSheet;
+    await sheet.replace(cssText);
+    shadowRoot.adoptedStyleSheets.push(sheet);
+}
+function shadowRootStyleSync(shadowRoot, cssText) {
+    const sheet = new CSSStyleSheet;
+    sheet.replaceSync(cssText);
+    shadowRoot.adoptedStyleSheets.push(sheet);
+}
+
 const ET = new EventTarget();
 
 const I18N_DELAY_BEFORE_REFRESH = 100;
@@ -266,23 +629,6 @@ class I18n {
 
 var helpCSS = ":host {\n\tposition: absolute;\n\theight: 100%;\n\twidth: 100%;\n\ttop: 0;\n\tleft: 0;\n\tpointer-events: none;\n\tz-index: 10000;\n\tfont-size: var(--harmony-help-font-size, 2rem);\n}\n\ndiv {\n\tposition: fixed;\n\tleft: 20%;\n\ttop: 5%;\n\tmax-height: 30%;\n\twidth: 60%;\n\ttext-align: center;\n\tbackground-color: #772222;\n\tborder-radius: 1rem;\n\toverflow: auto;\n\tz-index: 10;\n\tfont-family: tf2build, Verdana, sans-serif;\n\tpadding: 1rem;\n\tbox-sizing: border-box;\n}\n\n.help.html {\n\ttext-align: unset;\n\tmax-height: 90%;\n}\n";
 
-async function documentStyle(cssText) {
-    return await shadowRootStyle(document, cssText);
-}
-function documentStyleSync(cssText) {
-    return shadowRootStyleSync(document, cssText);
-}
-async function shadowRootStyle(shadowRoot, cssText) {
-    const sheet = new CSSStyleSheet;
-    await sheet.replace(cssText);
-    shadowRoot.adoptedStyleSheets.push(sheet);
-}
-function shadowRootStyleSync(shadowRoot, cssText) {
-    const sheet = new CSSStyleSheet;
-    sheet.replaceSync(cssText);
-    shadowRoot.adoptedStyleSheets.push(sheet);
-}
-
 class Help {
     static #html;
     static #shadowRoot;
@@ -366,6 +712,19 @@ function createShadowRoot(tagName, options, shadowOptions) {
     createElementOptions(element, options, shadowRoot);
     return shadowRoot;
 }
+function createShadowRootNS(namespaceURI, tagName, options, shadowOptions) {
+    const element = document.createElementNS(namespaceURI, tagName);
+    const shadowRoot = element.attachShadow({
+        clonable: shadowOptions?.clonable,
+        customElementRegistry: shadowOptions?.customElementRegistry,
+        delegatesFocus: shadowOptions?.delegatesFocus,
+        mode: shadowOptions?.mode ?? 'closed',
+        serializable: shadowOptions?.serializable,
+        slotAssignment: shadowOptions?.slotAssignment,
+    });
+    createElementOptions(element, options, shadowRoot);
+    return shadowRoot;
+}
 function updateElement(element, options) {
     if (!element) {
         return;
@@ -390,8 +749,11 @@ function createElementOptions(element, options, shadowRoot) {
         for (const optionName in options) {
             const optionValue = options[optionName];
             if (optionName.startsWith('$')) {
-                const eventType = optionName.substring(1);
-                element.addEventListener(eventType, optionValue);
+                element.addEventListener(optionName.substring(1), optionValue);
+                continue;
+            }
+            if (optionName.startsWith('@')) {
+                element.setAttribute(optionName.substring(1), optionValue);
                 continue;
             }
             switch (optionName) {
@@ -436,7 +798,7 @@ function createElementOptions(element, options, shadowRoot) {
                     }
                     break;
                 case 'innerHTML':
-                    element.innerHTML = optionValue ?? '';
+                    (shadowRoot ?? element).innerHTML = optionValue ?? '';
                     break;
                 case 'innerText':
                     element.innerText = optionValue ?? '';
@@ -579,24 +941,698 @@ function defineElement(name, constructor, options) {
     }
     getCustomElementRegistry()?.define(name, constructor, options);
 }
-
-var tooltipCSS$1 = "/*\nSource - https://stackoverflow.com/a/60488901\nPosted by Timur Baysal, modified by community. See post 'Timeline' for change history\nRetrieved 2026-07-10, License - CC BY-SA 4.0\n*/\n\n/* Tooltip container */\n\n.tooltip {\n\tposition: relative;\n\tdisplay: inline-block;\n}\n\n\n/* Tooltip text */\n\n.tooltip {\n\tposition: relative;\n\tdisplay: inline-block;\n}\n\n.tooltip .tooltiptext {\n\tvisibility: hidden;\n\twidth: 120px;\n\tbackground-color: #444;\n\tcolor: #fff;\n\ttext-align: center;\n\tborder-radius: 6px;\n\tpadding: 5px 0;\n\t/* Position the tooltip */\n\tposition: absolute;\n\tz-index: 1;\n\ttop: 0;\n\tleft: 105%;\n\topacity: 1;\n\ttransition: opacity 1s;\n}\n\n.tooltip .tooltiptext::after {\n\tcontent: \" \";\n\tposition: absolute;\n\ttop: 50%;\n\tright: 100%;\n\t/* To the left of the tooltip */\n\tmargin-top: -5px;\n\tborder-width: 5px;\n\tborder-style: solid;\n\tborder-color: transparent #545 transparent transparent;\n}\n\n\n/*this is the IMPORTANT bit: hover with animation*/\n\n.tooltip:hover .tooltiptext {\n\tvisibility: visible;\n\tanimation: tooltipkeys 1s 1;\n\t/*here just change the 1s to you desired delay time!*/\n\topacity: 1;\n}\n\n@-webkit-keyframes tooltipkeys {\n\t0% {\n\t\topacity: 0;\n\t}\n\n\t75% {\n\t\topacity: 0;\n\t}\n\n\t100% {\n\t\topacity: 1;\n\t}\n}\n\n@-moz-keyframes tooltipkeys {\n\t0% {\n\t\topacity: 0;\n\t}\n\n\t75% {\n\t\topacity: 0;\n\t}\n\n\t100% {\n\t\topacity: 1;\n\t}\n}\n\n@-o-keyframes tooltipkeys {\n\t0% {\n\t\topacity: 0;\n\t}\n\n\t75% {\n\t\topacity: 0;\n\t}\n\n\t100% {\n\t\topacity: 1;\n\t}\n}\n\n@keyframes tooltipkeys {\n\t0% {\n\t\topacity: 0;\n\t}\n\n\t75% {\n\t\topacity: 0;\n\t}\n\n\t100% {\n\t\topacity: 1;\n\t}\n}\n";
-
-class ToolTip {
-    //#shadowRoot?: ShadowRoot;
-    #shadowRoot = createShadowRoot('div', { parent: document.body, adoptStyle: tooltipCSS$1 });
-    constructor(params) {
-        params.target.getBoundingClientRect();
-        switch (params.position) {
-                    }
+function addRemoveClass(element, clas, add) {
+    if (add) {
+        element.classList.add(clas);
+    }
+    else {
+        element.classList.remove(clas);
     }
 }
-function createToolTip(params) {
-    const tooltip = new ToolTip(params);
-    //const element = tooltip.getHTMLElement();
-    //show(element);
-    return tooltip;
+
+var _a$1;
+//const dragged = null;
+let nextId$1 = 0;
+//let spliter: HTMLElement = createElement('div', { class: 'harmony-panel-splitter' }) as HTMLElement;
+let highlitPanel$1;
+const DRAG_THRESHOLD$1 = 15;
+var DragMode$1;
+(function (DragMode) {
+    DragMode[DragMode["None"] = 0] = "None";
+    DragMode[DragMode["Move"] = 1] = "Move";
+    DragMode[DragMode["Resize"] = 2] = "Resize";
+})(DragMode$1 || (DragMode$1 = {}));
+class HarmonyPanel {
+    htmlElement = createElement('div', { class: 'collapsible', });
+    #doOnce = true;
+    #parent = null;
+    #size = 1;
+    #direction;
+    isMovable = false;
+    #collapsible = true;
+    #collapsed = false;
+    customPanelId = nextId$1++;
+    #htmlHeader;
+    #htmlContent;
+    #htmlResize;
+    #isDummy = false;
+    #shadowRoot;
+    #headerVisible = false;
+    #isDraggable = true;
+    #floating = false;
+    #floatingWidth;
+    #floatingHeight;
+    static #dragMode = DragMode$1.None;
+    static #resizeX = 0;
+    static #resizeY = 0;
+    static #dragging = false;
+    static #draggedPanel;
+    static #deltaX = 0;
+    static #deltaY = 0;
+    static #startClientX = 0;
+    static #startClientY = 0;
+    static #mouseDown = false;
+    static #panels = new Set;
+    static #target = null;
+    static #startRect;
+    static {
+        document.addEventListener('mousedown', (event) => _a$1.#handleDocumentMouseDown(event));
+        document.addEventListener('mousemove', (event) => _a$1.#handleDocumentMouseMove(event));
+        document.addEventListener('mouseup', (event) => _a$1.#handleDocumentMouseUp(event));
+    }
+    constructor() {
+        _a$1.#panels.add(this);
+    }
+    #initHTML() {
+        if (this.#shadowRoot) {
+            return;
+        }
+        this.#shadowRoot = this.htmlElement.attachShadow({ mode: 'closed' });
+        void shadowRootStyle(this.#shadowRoot, panelCSS);
+        this.#htmlContent = createElement('div', {
+            class: 'content',
+            parent: this.#shadowRoot,
+        });
+        this.#htmlResize = createElement('div', {
+            class: 'resize',
+            parent: this.#shadowRoot,
+            childs: [
+                createElement('div', { class: 'side top', $mousedown: (event) => this.#startResize(event, 0, -1) }),
+                createElement('div', { class: 'side right', $mousedown: (event) => this.#startResize(event, 1, 0) }),
+                createElement('div', { class: 'side bottom', $mousedown: (event) => this.#startResize(event, 0, 1) }),
+                createElement('div', { class: 'side left', $mousedown: (event) => this.#startResize(event, -1, 0) }),
+                createElement('div', { class: 'corner top_right', $mousedown: (event) => this.#startResize(event, 1, -1) }),
+                createElement('div', { class: 'corner bottom_right', $mousedown: (event) => this.#startResize(event, 1, 1) }),
+                createElement('div', { class: 'corner bottom_left', $mousedown: (event) => this.#startResize(event, -1, 1) }),
+                createElement('div', { class: 'corner top_left', $mousedown: (event) => this.#startResize(event, -1, -1) }),
+            ],
+            $mousedown: (event) => this.#handleMouseDown(event),
+        });
+    }
+    #getHeader() {
+        this.#initHTML();
+        if (!this.#htmlHeader) {
+            this.#htmlHeader = createElement('div', {
+                class: 'header',
+                hidden: true,
+                $dblclick: () => this.#toggleCollapse(),
+                $mousedown: (event) => this.#handleMouseDown(event),
+            });
+        }
+        this.#shadowRoot.prepend(this.#htmlHeader);
+        return this.#htmlHeader;
+    }
+    append(...nodes) {
+        this.#initHTML();
+        for (const node of nodes) {
+            const htmlElement = node.htmlElement;
+            if (htmlElement) {
+                this.#htmlContent.append(htmlElement);
+            }
+            else {
+                // eslint-disable-next-line prefer-rest-params
+                this.#htmlContent.append(node);
+            }
+        }
+    }
+    prepend(...nodes) {
+        this.#initHTML();
+        for (const node of nodes) {
+            const htmlElement = node.htmlElement;
+            if (htmlElement) {
+                this.#htmlContent.prepend(htmlElement);
+            }
+            else {
+                // eslint-disable-next-line prefer-rest-params
+                this.#htmlContent.prepend(node);
+            }
+        }
+    }
+    /*
+        appendChild(child: HTMLElement) {
+            this.htmlContent.appendChild(child);
+        }
+    */
+    /*
+    get innerHTML(): string {
+        return this.#htmlContent.innerHTML;
+    }
+
+    set innerHTML(innerHTML) {
+        this.#htmlContent.innerHTML = innerHTML;
+    }
+    */
+    /*
+    attributeChangedCallback(name: string, oldValue: string, newValue: string): void {
+        if (oldValue == newValue) {
+            return;
+        }
+
+        switch (name) {
+            case 'panel-direction':
+                this.#direction = newValue;
+                break;
+            case 'panel-size':
+                this.size = Number(newValue);
+                break;
+            case 'is-movable':
+                this.isMovable = toBool(newValue);
+                break;
+            case 'collapsible':
+                this.collapsible = toBool(newValue);
+                break;
+            case 'collapsed':
+                this.collapsed = toBool(newValue);
+                break;
+            case 'title':
+                this.setTitle(newValue);
+                break;
+            case 'has-header':
+                this.hasHeader = toBool(newValue);
+                break;
+            case 'draggable':
+                this.#isDraggable = toBool(newValue);
+                this.#htmlHeader.setAttribute('draggable', newValue);
+                break;
+            case 'hidden-title':
+                if (toBool(newValue)) {
+                    this.#htmlHeader.classList.add('hidden');
+                } else {
+                    this.#htmlHeader.classList.remove('hidden');
+                }
+                break;
+        }
+    }
+    */
+    /*
+    static get observedAttributes(): string[] {
+        return ['panel-direction', 'panel-size', 'is-movable', 'title', 'collapsible', 'collapsed', 'has-header', 'draggable', 'hidden-title'];
+    }
+    */
+    /*
+        _handleDragStart(event) {
+            if (this._isMovable == false) {
+                event.preventDefault();
+                return;
+            }
+            event.stopPropagation();
+            event.dataTransfer.setData('text/plain', null);
+            dragged = event.target;
+        }
+
+        _handleDragOver(event) {
+            if (this._isContainer != false) {
+                event.preventDefault();
+            }
+            event.stopPropagation();
+        }
+
+        _handleDrop(event) {
+            if (this._isContainer != false) {
+                event.stopPropagation();
+                event.preventDefault();
+                if (dragged) {
+                    if (this != dragged) {
+                        this._addChild(dragged, event.offsetX, event.offsetY);
+                        //OptionsManager.setItem('app.layout.disposition', HTMLHarmonyPanelElement.saveDisposition());
+                    }
+                }
+            }
+            dragged = null;
+        }
+
+        _handleMouseEnter(event) {
+            //console.error(this, event);
+            //clearInterval(HTMLHarmonyPanelElement._interval);
+            //HTMLHarmonyPanelElement._interval = setInterval(event => this.style.opacity = (Math.floor(new Date().getTime() / 500) % 2) / 2 + 0.5, 100);
+            //event.stopPropagation();
+        }
+
+        _handleMouseMove(event) {
+            const delta = 5;
+            //console.error(event.offsetX, event.offsetY);
+            //this.style.opacity = (Math.floor(new Date().getTime() / 1000) % 2);
+            //HTMLHarmonyPanelElement.highlitPanel = this;
+            event.stopPropagation();
+            if (event.offsetX < delta || event.offsetY < delta) {
+                HTMLHarmonyPanelElement.highlitPanel = this;
+                this.parentNode.insertBefore(HTMLHarmonyPanelElement._spliter, this);
+            } else if ((this.offsetWidth - event.offsetX) < delta || (this.offsetHeight - event.offsetY) < delta) {
+                HTMLHarmonyPanelElement.highlitPanel = this;
+                this.parentNode.insertBefore(HTMLHarmonyPanelElement._spliter, this.nextSibling);
+            } else {
+                HTMLHarmonyPanelElement.highlitPanel = null;
+            }
+
+        }
+
+        _handleMouseLeave(event) {
+            //console.error(this, event);
+            //clearInterval(HTMLHarmonyPanelElement._interval);
+        }
+            */
+    static set highlitPanel(panel) {
+        if (highlitPanel$1) {
+            highlitPanel$1.style.filter = '';
+        }
+        highlitPanel$1 = panel;
+        if (highlitPanel$1) {
+            highlitPanel$1.style.filter = 'grayscale(80%)'; ///'contrast(200%)';
+        }
+    }
+    /*
+        _addChild(child, x, y) {
+            let percent = 0.2;
+            let percent2 = 0.8;
+            let height = this.clientHeight;
+            let width = this.clientWidth;
+
+            if (this._direction == undefined) {
+                if (x <= width * percent) {
+                    this.prepend(dragged);
+                    this.direction = 'row';
+                }
+                if (x >= width * percent2) {
+                    this.append(dragged);
+                    this.direction = 'row';
+                }
+                if (y <= height * percent) {
+                    this.prepend(dragged);
+                    this.direction = 'column';
+                }
+                if (y >= height * percent2) {
+                    this.append(dragged);
+                    this.direction = 'column';
+                }
+            } else if (this._direction == 'row') {
+                if (x <= width * percent) {
+                    this.prepend(dragged);
+                }
+                if (x >= width * percent2) {
+                    this.append(dragged);
+                }
+                if (y <= height * percent) {
+                    this._split(dragged, true, 'column');
+                }
+                if (y >= height * percent2) {
+                    this._split(dragged, false, 'column');
+                }
+            } else if (this._direction == 'column') {
+                if (x <= width * percent) {
+                    this._split(dragged, true, 'row');
+                }
+                if (x >= width * percent2) {
+                    this._split(dragged, false, 'row');
+                }
+                if (y <= height * percent) {
+                    this.prepend(dragged);
+                }
+                if (y >= height * percent2) {
+                    this.append(dragged);
+                }
+            }
+        }*/
+    /*
+        _split(newNode, before, direction) {
+            let panel = HTMLHarmonyPanelElement._createDummy();//document.createElement('harmony-panel');
+            /*panel.id = HTMLHarmonyPanelElement.nextId;
+            panel._isDummy = true;
+            panel.classList.add('dummy');* /
+            panel.size = this.size;
+            this.style.flex = this.style.flex;
+            this.after(panel);
+            if (before) {
+                panel.append(newNode);
+                panel.append(this);
+            } else {
+                panel.append(this);
+                panel.append(newNode);
+            }
+            panel.direction = direction;
+        }
+    */
+    /*
+        static _createDummy() {
+            let dummy = document.createElement('harmony-panel');
+            dummy.id = HTMLHarmonyPanelElement.#nextId;
+            dummy._isDummy = true;
+            dummy.classList.add('dummy');
+            return dummy;
+        }
+    */
+    /*
+        _addPanel(panel) {
+            this._panels.add(panel);
+        }
+
+        _removePanel(panel) {
+            this._panels.delete(panel);
+            if (this._isDummy) {
+                if (this._panels.size == 0) {
+                    this.remove();
+                } else if (this._panels.size == 1) {
+                    this.after(this._panels.values().next().value);
+                    this.remove();
+                }
+            }
+        }
+    */
+    /*
+        set active(active) {
+            if (this._active != active) {
+                this.dispatchEvent(new CustomEvent('activated'));
+            }
+            this._active = active;
+            this.style.display = active ? '' : 'none';
+            if (active) {
+                this._header.classList.add('activated');
+            } else {
+                this._header.classList.remove('activated');
+            }
+        }
+        */
+    /*
+        _click() {
+            this.active = true;
+            if (this._group) {
+                this._group.active = this;
+            }
+        }
+    */
+    setDirection(direction) {
+        this.#direction = direction;
+        this.htmlElement.classList.remove('harmony-panel-row');
+        this.htmlElement.classList.remove('harmony-panel-column');
+        if (direction == 'row') {
+            this.htmlElement.classList.add('harmony-panel-row');
+        }
+        else if (direction == 'column') {
+            this.htmlElement.classList.add('harmony-panel-column');
+        }
+    }
+    getDirection() {
+        return this.#direction;
+    }
+    setSize(size) {
+        /*if (size === undefined) {
+            return;
+        }*/
+        this.#size = size;
+        //this.style.flexBasis = size;
+        this.htmlElement.style.flex = String(size);
+    }
+    getSize() {
+        return this.#size;
+    }
+    setCollapsible(collapsible) {
+        this.#collapsible = collapsible;
+        //this.htmlElement.setAttribute('collapsible', String(this.#collapsible ? 1 : 0));
+        addRemoveClass(this.htmlElement, 'collapsible', collapsible);
+    }
+    setCollapsed(collapsed) {
+        this.#collapsed = collapsed && this.#collapsible;
+        //this.htmlElement.setAttribute('collapsed', String(this.#isCollapsed ? 1 : 0));
+        addRemoveClass(this.htmlElement, 'collapsed', this.#collapsed);
+        if (this.#collapsed) {
+            this.collapse();
+        }
+        else {
+            this.expand();
+        }
+    }
+    displayHeader(visible) {
+        this.#headerVisible = visible;
+        display(this.#htmlHeader, visible);
+    }
+    headerVisible() {
+        return this.#headerVisible;
+    }
+    collapse() {
+        hide(this.#htmlContent);
+        this.#collapsed = true;
+    }
+    expand() {
+        show(this.#htmlContent);
+        this.#collapsed = false;
+    }
+    setTitle(title) {
+        const header = this.#getHeader();
+        header.innerText = title;
+        show(header);
+        /*
+        if (title) {
+            //this.#htmlTitle = this.#htmlTitle ?? document.createElement('div');
+            super.prepend(this.#htmlTitle);
+        } else {
+            this.#htmlTitle.remove();
+        }
+        */
+    }
+    setI18n(i18n) {
+        if (typeof i18n === 'string') {
+            this.#setTitleI18n(i18n);
+        }
+        else {
+            errorOnce('unhandled type ' + typeof i18n + i18n);
+        }
+        show(this.#htmlHeader);
+    }
+    #setTitleI18n(titleI18n) {
+        AddI18nElement(this.#getHeader(), titleI18n);
+    }
+    #toggleCollapse() {
+        this.setCollapsed(!this.#collapsed);
+    }
+    /*
+    static getNextId(): string {
+        return `harmony-panel-dummy-${++nextId}`;
+    }
+    */
+    /*
+    static saveDisposition(): JSONObject {
+        const list = document.getElementsByTagName('harmony-panel');
+        const json: { panels: Record<string, any>, dummies: any[] } = { panels: {}, dummies: [] };
+        for (const panel of list) {
+            if (panel.id && panel.parentElement && panel.parentElement.id && panel.parentElement.tagName == 'HARMONY-PANEL') {
+                json.panels[(panel as any).id] = { parent: panel.parentElement.id, size: (panel as any).size, direction: (panel as any).direction };
+                if ((panel as HTMLHarmonyPanelElement).#isDummy) {
+                    json.dummies.push((panel as any).id);
+                }
+            }
+        }
+        return json;
+    }
+    */
+    /*
+    static restoreDisposition(json: Record<string, any>): void {
+        return;
+        /*
+        if (!json || !json.dummies || !json.panels) { return; }
+
+        let dummiesList = new Map();
+        for (let oldDummy of json.dummies) {
+            let newDummy = HTMLHarmonyPanelElement._createDummy();
+            document.body.append(newDummy);
+            dummiesList.set(oldDummy, newDummy.id);
+        }
+
+        let list = document.getElementsByTagName('harmony-panel');
+        for (let panel of list) {
+            if (panel.id) {
+                let p = json.panels[panel.id];
+                if (p) {
+                    if (p.size != 1 || panel._isDummy) {
+                        panel.size = p.size;
+                    }
+                    panel.direction = p.direction;
+                    let newParentId = dummiesList.get(p.parent) || p.parent;
+                    if (p && newParentId) {
+                        let parent = document.getElementById(newParentId);
+                        /*if (!parent && p.dummy) {
+                            parent = document.createElement('harmony-panel');
+                        }* /
+                        if (parent) {
+                            parent.append(panel);
+                        } else {
+                            console.error('no parent', panel, newParentId);
+                        }
+                    }
+                }
+            }
+        }* /
+    }
+    */
+    adoptStyleSheet(styleSheet) {
+        this.#initHTML();
+        this.#shadowRoot.adoptedStyleSheets.push(styleSheet);
+    }
+    #handleMouseDown(event) {
+        if (this.#isDraggable && event.button === 0) {
+            _a$1.#draggedPanel = this;
+        }
+    }
+    #startDrag() {
+        if (_a$1.#dragging) {
+            return;
+        }
+        _a$1.#dragging = true;
+        _a$1.#dragMode = DragMode$1.Move;
+        const rect = this.htmlElement.getBoundingClientRect();
+        document.body.append(this.htmlElement);
+        this.setFloating();
+        this.#floatingWidth = this.#floatingWidth ?? rect.width;
+        this.#floatingHeight = this.#floatingHeight ?? rect.height;
+        this.htmlElement.style.left = `${rect.x}px`;
+        this.htmlElement.style.top = `${rect.y}px`;
+        this.htmlElement.style.width = `${this.#floatingWidth}px`;
+        this.htmlElement.style.height = `${this.#floatingHeight}px`;
+        this.htmlElement.style.position = 'absolute';
+        _a$1.#deltaX = rect.x - _a$1.#startClientX;
+        _a$1.#deltaY = rect.y - _a$1.#startClientY;
+    }
+    setFloating() {
+        this.#floating = true;
+        this.htmlElement.classList.add('floating');
+        this.htmlElement.classList.remove('docked');
+    }
+    setDocked() {
+        this.#floating = false;
+        this.htmlElement.classList.remove('floating');
+        this.htmlElement.classList.add('docked');
+    }
+    #drag(event) {
+        if (!_a$1.#dragging) {
+            return;
+        }
+        this.htmlElement.style.left = `${event.clientX + _a$1.#deltaX}px`;
+        this.htmlElement.style.top = `${event.clientY + _a$1.#deltaY}px`;
+        if (event.ctrlKey) {
+            _a$1.#setTarget(null);
+        }
+        else {
+            const panel = this.#getPanelAtMousePosition(event);
+            _a$1.#setTarget(panel);
+        }
+    }
+    #stopDrag() {
+        _a$1.#dragging = false;
+        _a$1.#dragMode = DragMode$1.None;
+        if (_a$1.#target) {
+            _a$1.#target.append(this.htmlElement);
+            this.setDocked();
+            this.htmlElement.style = '';
+        }
+    }
+    #resize(event) {
+        if (_a$1.#dragMode !== DragMode$1.Resize || !_a$1.#startRect) {
+            return;
+        }
+        const deltaX = event.clientX - _a$1.#startClientX;
+        const deltaY = event.clientY - _a$1.#startClientY;
+        const rect = _a$1.#startRect;
+        let deltaTop = 0, deltaWidth = 0, deltaHeight = 0, deltaLeft = 0;
+        switch (_a$1.#resizeX) {
+            case -1:
+                deltaLeft += deltaX;
+                deltaWidth -= deltaX;
+                break;
+            case 1:
+                deltaWidth += deltaX;
+                break;
+        }
+        switch (_a$1.#resizeY) {
+            case -1:
+                deltaTop += deltaY;
+                deltaHeight -= deltaY;
+                break;
+            case 1:
+                deltaHeight += deltaY;
+                break;
+        }
+        this.#floatingWidth = rect.width + deltaWidth;
+        this.#floatingHeight = rect.height + deltaHeight;
+        this.htmlElement.style.left = `${rect.x + deltaLeft}px`;
+        this.htmlElement.style.top = `${rect.y + deltaTop}px`;
+        this.htmlElement.style.width = `${this.#floatingWidth}px`;
+        this.htmlElement.style.height = `${this.#floatingHeight}px`;
+    }
+    #stopResize() {
+        _a$1.#dragging = false;
+        _a$1.#dragMode = DragMode$1.None;
+    }
+    static #setTarget(target) {
+        if (this.#target) {
+            this.#target.#htmlHeader?.classList.remove('target');
+            this.#target.#htmlContent?.classList.remove('target');
+        }
+        if (target) {
+            target.#htmlHeader?.classList.add('target');
+            target.#htmlContent?.classList.add('target');
+        }
+        this.#target = target;
+    }
+    static #handleDocumentMouseMove(event) {
+        if (!this.#mouseDown || !this.#draggedPanel) {
+            return;
+        }
+        switch (_a$1.#dragMode) {
+            case DragMode$1.None:
+                const deltaX = event.clientX - this.#startClientX;
+                const deltaY = event.clientY - this.#startClientY;
+                if (deltaX * deltaX + deltaY * deltaY > DRAG_THRESHOLD$1) {
+                    this.#draggedPanel.#startDrag();
+                }
+                break;
+            case DragMode$1.Move:
+                this.#draggedPanel.#drag(event);
+                break;
+            case DragMode$1.Resize:
+                this.#draggedPanel.#resize(event);
+                break;
+        }
+    }
+    static #handleDocumentMouseDown(event) {
+        this.#mouseDown = true;
+        this.#startClientX = event.clientX;
+        this.#startClientY = event.clientY;
+    }
+    static #handleDocumentMouseUp(event) {
+        this.#mouseDown = false;
+        _a$1.#dragging = false;
+        _a$1.#dragMode = DragMode$1.None;
+        if (this.#draggedPanel) {
+            this.#draggedPanel.#stopDrag();
+            this.#draggedPanel.#stopResize();
+        }
+        this.#draggedPanel = undefined;
+        this.#setTarget(null);
+    }
+    #getPanelAtMousePosition(event) {
+        for (const panel of _a$1.#panels) {
+            if (panel === this || !panel.htmlElement.isConnected) {
+                continue;
+            }
+            const rect = panel.htmlElement.getBoundingClientRect();
+            if (event.clientX >= rect.left
+                && event.clientX < rect.right
+                && event.clientY >= rect.top
+                && event.clientY < rect.bottom) {
+                return panel;
+            }
+        }
+        return null;
+    }
+    #startResize(event, x, y) {
+        if (_a$1.#dragMode !== DragMode$1.None) {
+            return;
+        }
+        _a$1.#dragMode = DragMode$1.Resize;
+        _a$1.#resizeX = x;
+        _a$1.#resizeY = y;
+        _a$1.#startRect = this.htmlElement.getBoundingClientRect();
+    }
 }
+_a$1 = HarmonyPanel;
 
 var manipulator2dCSS = ":host {\n\t--handle-radius: var(--harmony-2d-manipulator-radius, 0.5rem);\n\t--harmony-2d-manipulator-shadow-bg-color: var(--harmony-2d-manipulator-bg-color, red);\n\t--harmony-2d-manipulator-shadow-border: var(--harmony-2d-manipulator-border, none);\n\t--handle-bg-color: var(--harmony-2d-manipulator-handle-bg-color, chartreuse);\n\t--corner-bg-color: var(--harmony-2d-manipulator-corner-bg-color, var(--handle-bg-color));\n\t--side-bg-color: var(--harmony-2d-manipulator-side-bg-color, var(--handle-bg-color));\n\t--rotate-bg-color: var(--harmony-2d-manipulator-rotate-bg-color, var(--handle-bg-color));\n\n\twidth: 1rem;\n\theight: 1rem;\n\tdisplay: block;\n\tuser-select: none;\n\tpointer-events: all;\n}\n\n:host-context(.grabbing) {\n\tcursor: grabbing;\n}\n\n.manipulator {\n\tposition: absolute;\n\tbackground-color: var(--harmony-2d-manipulator-shadow-bg-color);\n\tborder: var(--harmony-2d-manipulator-shadow-border);\n\tcursor: move;\n\tpointer-events: all;\n}\n\n.rotator {\n\tscale: var(--rotate);\n\tposition: absolute;\n\twidth: var(--handle-radius);\n\theight: var(--handle-radius);\n\tbackground-color: var(--rotate-bg-color);\n\tborder-radius: calc(var(--handle-radius) * 0.5);\n\ttransform: translate(-50%, -50%);\n\tcursor: grab;\n}\n\n.corner {\n\tscale: var(--scale);\n\tposition: absolute;\n\twidth: var(--handle-radius);\n\theight: var(--handle-radius);\n\tbackground-color: var(--corner-bg-color);\n\tborder-radius: calc(var(--handle-radius) * 0.5);\n\ttransform: translate(-50%, -50%);\n\tcursor: grab;\n}\n\n.side {\n\tposition: absolute;\n\twidth: var(--handle-radius);\n\theight: var(--handle-radius);\n\tbackground-color: var(--side-bg-color);\n\tborder-radius: calc(var(--handle-radius) * 0.5);\n\ttransform: translate(-50%, -50%);\n\tcursor: grab;\n}\n\n.side.x {\n\tscale: var(--resize-x);\n}\n\n.side.y {\n\tscale: var(--resize-y);\n}\n\n.corner.grabbing {\n\tcursor: grabbing;\n}\n";
 
@@ -1733,350 +2769,6 @@ function defineHarmonyCircularProgress() {
         });
         definedCircularProgress = true;
         injectGlobalCss();
-    }
-}
-
-function rgbToHsl(r, g, b) {
-    const max = Math.max(r, g, b), min = Math.min(r, g, b);
-    let h = 0, s;
-    const l = (max + min) / 2;
-    if (max == min) {
-        h = s = 0; // achromatic
-    }
-    else {
-        const d = max - min;
-        s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
-        switch (max) {
-            case r:
-                h = (g - b) / d + (g < b ? 6 : 0);
-                break;
-            case g:
-                h = (b - r) / d + 2;
-                break;
-            case b:
-                h = (r - g) / d + 4;
-                break;
-        }
-        h /= 6;
-    }
-    return [h, s, l];
-}
-function hslToRgb(h, s, l) {
-    let r, g, b;
-    if (s == 0) {
-        r = g = b = l; // achromatic
-    }
-    else {
-        function hue2rgb(p, q, t) {
-            if (t < 0)
-                t += 1;
-            if (t > 1)
-                t -= 1;
-            if (t < 1 / 6)
-                return p + (q - p) * 6 * t;
-            if (t < 1 / 2)
-                return q;
-            if (t < 2 / 3)
-                return p + (q - p) * (2 / 3 - t) * 6;
-            return p;
-        }
-        const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
-        const p = 2 * l - q;
-        r = hue2rgb(p, q, h + 1 / 3);
-        g = hue2rgb(p, q, h);
-        b = hue2rgb(p, q, h - 1 / 3);
-    }
-    return [r, g, b];
-}
-class Color {
-    #rgba;
-    constructor({ red = 0, green = 0, blue = 0, alpha = 1, hex = '' } = {}) {
-        this.#rgba = [red, green, blue, alpha];
-        if (hex) {
-            this.setHex(hex);
-        }
-    }
-    setHue(hue) {
-        const hsl = rgbToHsl(this.#rgba[0], this.#rgba[1], this.#rgba[2]);
-        const rgb = hslToRgb(hue, hsl[1], hsl[2]);
-        this.#rgba[0] = rgb[0];
-        this.#rgba[1] = rgb[1];
-        this.#rgba[2] = rgb[2];
-    }
-    setSatLum(sat, lum) {
-        const hsl = rgbToHsl(this.#rgba[0], this.#rgba[1], this.#rgba[2]);
-        const rgb = hslToRgb(hsl[0], sat, lum);
-        this.#rgba[0] = rgb[0];
-        this.#rgba[1] = rgb[1];
-        this.#rgba[2] = rgb[2];
-    }
-    setHex(hex) {
-        hex = (hex.startsWith('#') ? hex.slice(1) : hex)
-            .replace(/^(\w{3})$/, '$1F') //987      -> 987F
-            .replace(/^(\w)(\w)(\w)(\w)$/, '$1$1$2$2$3$3$4$4') //9876     -> 99887766
-            .replace(/^(\w{6})$/, '$1FF'); //987654   -> 987654FF
-        if (!hex.match(/^([0-9a-fA-F]{8})$/)) {
-            throw new Error('Unknown hex color; ' + hex);
-        }
-        const rgba = hex
-            .match(/^(\w\w)(\w\w)(\w\w)(\w\w)$/)?.slice(1) //98765432 -> 98 76 54 32
-            .map(x => parseInt(x, 16)); //Hex to decimal
-        if (rgba) {
-            this.#rgba[0] = rgba[0] / 255;
-            this.#rgba[1] = rgba[1] / 255;
-            this.#rgba[2] = rgba[2] / 255;
-            this.#rgba[3] = rgba[3] / 255;
-        }
-    }
-    getHex() {
-        const hex = this.#rgba.map(x => Math.round(x * 255).toString(16));
-        return '#' + hex.map(x => x.padStart(2, '0')).join('');
-    }
-    getHue() {
-        return rgbToHsl(this.#rgba[0], this.#rgba[1], this.#rgba[2])[0];
-    }
-    getHsl() {
-        return rgbToHsl(this.#rgba[0], this.#rgba[1], this.#rgba[2]);
-    }
-    getRgba() {
-        return this.#rgba;
-    }
-    setRgba(rgba) {
-        this.#rgba[0] = rgba[0];
-        this.#rgba[1] = rgba[1];
-        this.#rgba[2] = rgba[2];
-        this.#rgba[3] = rgba[3];
-    }
-    set red(red) {
-        this.#rgba[0] = red;
-    }
-    get red() {
-        return this.#rgba[0];
-    }
-    set green(green) {
-        this.#rgba[1] = green;
-    }
-    get green() {
-        return this.#rgba[1];
-    }
-    set blue(blue) {
-        this.#rgba[2] = blue;
-    }
-    get blue() {
-        return this.#rgba[2];
-    }
-    set alpha(alpha) {
-        this.#rgba[3] = alpha;
-    }
-    get alpha() {
-        return this.#rgba[3];
-    }
-    getLuminance() {
-        return 0.2126 * this.#rgba[0] + 0.7152 * this.#rgba[1] + 0.0722 * this.#rgba[2];
-    }
-}
-
-/**
- * Map2 holds a key-key-value triplet using an underlying Map
- * Any value can be used as either keys or value
- */
-class Map2 {
-    #map = new Map();
-    clear() {
-        this.#map.clear();
-    }
-    delete(key1, key2) {
-        return this.#map.get(key1)?.delete(key2) ?? false;
-    }
-    forEach(callbackfn, thisArg) {
-        this.#map.forEach((value, key1) => {
-            value.forEach((value, key2) => callbackfn.call(thisArg, value, key1, key2, this));
-        });
-    }
-    get(key1, key2) {
-        return this.#map.get(key1)?.get(key2);
-    }
-    getMap() {
-        return this.#map;
-    }
-    getSubMap(key1) {
-        return this.#map.get(key1);
-    }
-    has(key1, key2) {
-        return this.#map.get(key1)?.has(key2) ?? false;
-    }
-    set(key1, key2, value) {
-        if (!this.#map.has(key1)) {
-            this.#map.set(key1, new Map());
-        }
-        this.#map.get(key1).set(key2, value);
-        return this;
-    }
-    get size() {
-        let size = 0;
-        for (const [, m] of this.#map) {
-            size += m.size;
-        }
-        return size;
-    }
-    [Symbol.iterator] = () => {
-        const iterator1 = this.#map.entries();
-        let iterator2 = null;
-        let current1;
-        const next = () => {
-            if (iterator2 == null) {
-                current1 = iterator1.next();
-                if (current1.done) {
-                    return { done: true };
-                }
-                iterator2 = current1.value[1].entries();
-            }
-            const current2 = iterator2.next();
-            if (current2.done) {
-                iterator2 = null;
-                return next();
-            }
-            return { value: [current1.value[0], current2.value[0], current2.value[1]], done: false };
-        };
-        return {
-            next: next,
-            [Symbol.iterator]() {
-                return this;
-            },
-        };
-    };
-}
-
-let messages;
-function messageOnce(level, message, max) {
-    if (!messages) {
-        messages = new Map2();
-    }
-    if (!messages.has(level, message)) {
-        messages.set(level, message, 0);
-    }
-    const newCount = messages.get(level, message) + 1;
-    messages.set(level, message, newCount);
-    if (newCount <= max) {
-        console[level](message);
-    }
-}
-function errorOnce(message, max = 1) {
-    messageOnce('error', message, max);
-}
-
-/**
- * Set2 holds a key-key pair using an underlying Set
- * Any value can be used as either keys
- */
-class Set2 {
-    #map = new Map();
-    clear() {
-        this.#map.clear();
-    }
-    delete(key1, key2) {
-        return this.#map.get(key1)?.delete(key2) ?? false;
-    }
-    forEach(callbackfn, thisArg) {
-        this.#map.forEach((value, key1) => {
-            value.forEach((key2) => callbackfn.call(thisArg, key1, key2, this));
-        });
-    }
-    getMap() {
-        return this.#map;
-    }
-    getSubSet(key1) {
-        return this.#map.get(key1);
-    }
-    has(key1, key2) {
-        return this.#map.get(key1)?.has(key2) ?? false;
-    }
-    add(key1, key2) {
-        if (!this.#map.has(key1)) {
-            this.#map.set(key1, new Set());
-        }
-        this.#map.get(key1).add(key2);
-        return this;
-    }
-    get size() {
-        let size = 0;
-        for (const [, m] of this.#map) {
-            size += m.size;
-        }
-        return size;
-    }
-    [Symbol.iterator] = () => {
-        const iterator1 = this.#map.entries();
-        let iterator2 = null;
-        let current1;
-        const next = () => {
-            if (iterator2 == null) {
-                current1 = iterator1.next();
-                if (current1.done) {
-                    return { done: true };
-                }
-                iterator2 = current1.value[1].keys();
-            }
-            const current2 = iterator2.next();
-            if (current2.done) {
-                iterator2 = null;
-                return next();
-            }
-            return { value: [current1.value[0], current2.value], done: false };
-        };
-        return {
-            next: next,
-            [Symbol.iterator]() {
-                return this;
-            },
-        };
-    };
-}
-
-class BugReporter {
-    static #eventTarget = new EventTarget();
-    static #dispatched = new Set2();
-    static addEventListener(type, callback, options) {
-        this.#eventTarget.addEventListener(type, callback, options);
-    }
-    static removeEventListener(type, callback, options) {
-        this.#eventTarget.removeEventListener(type, callback, options);
-    }
-    static reportBug(severity, message) {
-        if (this.#dispatched.has(severity, message)) {
-            return;
-        }
-        this.#dispatched.add(severity, message);
-        this.#eventTarget.dispatchEvent(new CustomEvent('report', {
-            detail: {
-                severity,
-                message,
-            },
-        }));
-    }
-}
-
-class Item {
-    data;
-    next = null;
-    constructor(data) {
-        this.data = data;
-    }
-}
-
-/**
- * Static version of MyEventTarget
- */
-class StaticEventTarget {
-    static eventTarget = new EventTarget();
-    static addEventListener(type, callback, options) {
-        this.eventTarget.addEventListener(type, callback, options);
-    }
-    static dispatchEvent(event) {
-        return this.eventTarget.dispatchEvent(event);
-    }
-    static removeEventListener(type, callback, options) {
-        this.eventTarget.removeEventListener(type, callback, options);
     }
 }
 
@@ -3688,8 +4380,6 @@ function defineHarmonyPalette() {
         injectGlobalCss();
     }
 }
-
-var panelCSS = ":host {\n\tdisplay: flex;\n\tflex: 1;\n\tflex-direction: column;\n\t/*flex: 0 0 auto;*/\n\tbox-sizing: border-box;\n\tpointer-events: all;\n\tposition: relative;\n\tflex-direction: column;\n\tbox-sizing: border-box;\n\n\tmax-width: 100%;\n\tmax-height: 100%;\n\n\t--header-bg-color: var(--harmony-panel-header-bg-color, var(--main-bg-color-dark, black));\n\t--content-bg-color: var(--harmony-panel-content-bg-color, var(--main-bg-color-dark, black));\n\n\t--resize-bar-size: 0.5rem;\n}\n\n.harmony-panel-row {\n\tflex-direction: row;\n}\n\n.harmony-panel-row>harmony-panel {\n\theight: 100%;\n}\n\n.harmony-panel-column {\n\tflex-direction: column;\n}\n\n.harmony-panel-column>harmony-panel {\n\twidth: 100%;\n}\n\n.harmony-panel-splitter {\n\tdisplay: none;\n\tflex: 0 0 10px;\n\tbackground-color: red;\n}\n\n.header {\n\tcursor: pointer;\n\tfont-size: 1.5em;\n\tpadding: 0.25rem;\n\toverflow: hidden;\n\tflex: 0 0 2rem;\n\tbackground-color: var(--header-bg-color);\n\tdisplay: flex;\n\talign-items: center;\n}\n\n.header.hidden {\n\tdisplay: var(--harmony-panel-display-headers, none);\n}\n\n.content {\n\twidth: 100%;\n\tbox-sizing: border-box;\n\tbackground-color: var(--content-bg-color);\n\tflex: 1;\n\toverflow: hidden;\n\tdisplay: flex;\n\tposition: relative;\n\tflex-direction: column;\n}\n\n.header.target {\n\tbackground: blue;\n}\n\n.content.target {\n\tbackground: blue;\n}\n\n[collapsible='1']>.title::after {\n\tcontent: \"-\";\n\tright: 0.25rem;\n\tposition: absolute;\n}\n\n[collapsed='1']>.title::after {\n\tcontent: \"+\";\n}\n\n.resize {\n\tpointer-events: none;\n\tdisplay: none;\n\ttop: 0;\n\tleft: 0;\n\twidth: 100%;\n\theight: 100%;\n\tposition: absolute;\n}\n\n.resize>* {\n\tpointer-events: all;\n\tposition: absolute;\n}\n\n.resize>.side {\n\tinset: calc(var(--resize-bar-size) * 0.5);\n}\n\n.resize>.corner {\n\theight: var(--resize-bar-size);\n\twidth: var(--resize-bar-size);\n}\n\n.resize>.top,\n.resize>.bottom {\n\theight: var(--resize-bar-size);\n\twidth: auto;\n\tcursor: ns-resize;\n}\n\n.resize>.right,\n.resize>.left {\n\twidth: var(--resize-bar-size);\n\theight: auto;\n\tcursor: ew-resize;\n}\n\n.resize>.top {\n\ttop: calc(var(--resize-bar-size) * -0.5);\n\tbottom: unset;\n}\n\n.resize>.bottom {\n\ttop: unset;\n\tbottom: calc(var(--resize-bar-size) * -0.5);\n}\n\n.resize>.left {\n\tleft: calc(var(--resize-bar-size) * -0.5);\n\tright: unset;\n}\n\n.resize>.right {\n\tleft: unset;\n\tright: calc(var(--resize-bar-size) * -0.5);\n}\n\n.resize>.top_right {\n\ttop: calc(var(--resize-bar-size) * -0.5);\n\tright: calc(var(--resize-bar-size) * -0.5);\n\tcursor: ne-resize;\n}\n\n.resize>.bottom_right {\n\tbottom: calc(var(--resize-bar-size) * -0.5);\n\tright: calc(var(--resize-bar-size) * -0.5);\n\tcursor: se-resize;\n}\n\n.resize>.top_left {\n\ttop: calc(var(--resize-bar-size) * -0.5);\n\tleft: calc(var(--resize-bar-size) * -0.5);\n\tcursor: nw-resize;\n}\n\n.resize>.bottom_left {\n\tbottom: calc(var(--resize-bar-size) * -0.5);\n\tleft: calc(var(--resize-bar-size) * -0.5);\n\tcursor: sw-resize;\n}\n\n:host(.floating) {\n\tz-index: 10000;\n}\n\n:host(.floating) .resize {\n\tdisplay: initial;\n}\n";
 
 var _a;
 //const dragged = null;
@@ -6112,4 +6802,4 @@ function defineHarmonyTree() {
     }
 }
 
-export { AddI18nElement, HTMLHarmony2dManipulatorElement, HTMLHarmonyAccordionElement, HTMLHarmonyCircularProgressElement, HTMLHarmonyColorPickerElement, HTMLHarmonyCopyElement, HTMLHarmonyFileInputElement, HTMLHarmonyFilterElement, HTMLHarmonyInfoBoxElement, HTMLHarmonyInfoBoxElementType, HTMLHarmonyItemElement, HTMLHarmonyLabelPropertyElement, HTMLHarmonyMenuElement, HTMLHarmonyPaletteElement, HTMLHarmonyPanelElement, HTMLHarmonyRadioElement, HTMLHarmonySelectElement, HTMLHarmonySliderElement, HTMLHarmonySlideshowElement, HTMLHarmonySplitterElement, HTMLHarmonySwitchElement, HTMLHarmonyTabElement, HTMLHarmonyTabGroupElement, HTMLHarmonyToggleButtonElement, HTMLHarmonyTooltipElement, HTMLHarmonyTreeElement, HarmonyFilterListType, index as HarmonySVG, I18n, I18nElements, I18nEvents, ManipulatorCorner, ManipulatorDirection, ManipulatorResizeOrigin, ManipulatorSide, ManipulatorUpdatedEventType, TreeItem, TreeItemKind, cloneEvent, createElement, createElementNS, createShadowRoot, createToolTip, defineElement, defineHarmony2dManipulator, defineHarmonyAccordion, defineHarmonyCircularProgress, defineHarmonyColorPicker, defineHarmonyCopy, defineHarmonyFileInput, defineHarmonyFilter, defineHarmonyInfoBox, defineHarmonyItem, defineHarmonyLabelProperty, defineHarmonyMenu, defineHarmonyPalette, defineHarmonyPanel, defineHarmonyRadio, defineHarmonySelect, defineHarmonySlider, defineHarmonySlideshow, defineHarmonySplitter, defineHarmonySwitch, defineHarmonyTab, defineHarmonyTabGroup, defineHarmonyToggleButton, defineHarmonyTooltip, defineHarmonyTree, display, documentStyle, documentStyleSync, getCustomElementRegistry, hide, isVisible, shadowRootStyle, shadowRootStyleSync, show, styleInject, svgNamespace, toggle, updateElement, visible };
+export { AddI18nElement, HTMLHarmony2dManipulatorElement, HTMLHarmonyAccordionElement, HTMLHarmonyCircularProgressElement, HTMLHarmonyColorPickerElement, HTMLHarmonyCopyElement, HTMLHarmonyFileInputElement, HTMLHarmonyFilterElement, HTMLHarmonyInfoBoxElement, HTMLHarmonyInfoBoxElementType, HTMLHarmonyItemElement, HTMLHarmonyLabelPropertyElement, HTMLHarmonyMenuElement, HTMLHarmonyPaletteElement, HTMLHarmonyPanelElement, HTMLHarmonyRadioElement, HTMLHarmonySelectElement, HTMLHarmonySliderElement, HTMLHarmonySlideshowElement, HTMLHarmonySplitterElement, HTMLHarmonySwitchElement, HTMLHarmonyTabElement, HTMLHarmonyTabGroupElement, HTMLHarmonyToggleButtonElement, HTMLHarmonyTooltipElement, HTMLHarmonyTreeElement, HarmonyFilterListType, HarmonyPanel, index as HarmonySVG, I18n, I18nElements, I18nEvents, ManipulatorCorner, ManipulatorDirection, ManipulatorResizeOrigin, ManipulatorSide, ManipulatorUpdatedEventType, TreeItem, TreeItemKind, addRemoveClass, cloneEvent, createElement, createElementNS, createShadowRoot, createShadowRootNS, defineElement, defineHarmony2dManipulator, defineHarmonyAccordion, defineHarmonyCircularProgress, defineHarmonyColorPicker, defineHarmonyCopy, defineHarmonyFileInput, defineHarmonyFilter, defineHarmonyInfoBox, defineHarmonyItem, defineHarmonyLabelProperty, defineHarmonyMenu, defineHarmonyPalette, defineHarmonyPanel, defineHarmonyRadio, defineHarmonySelect, defineHarmonySlider, defineHarmonySlideshow, defineHarmonySplitter, defineHarmonySwitch, defineHarmonyTab, defineHarmonyTabGroup, defineHarmonyToggleButton, defineHarmonyTooltip, defineHarmonyTree, display, documentStyle, documentStyleSync, getCustomElementRegistry, hide, isVisible, shadowRootStyle, shadowRootStyleSync, show, styleInject, svgNamespace, toggle, updateElement, visible };

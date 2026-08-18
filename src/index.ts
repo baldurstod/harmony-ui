@@ -1,3 +1,4 @@
+export * from './components/export';
 export * from './elements/harmony-2d-manipulator';
 export * from './elements/harmony-accordion';
 export * from './elements/harmony-circular-progress';
