@@ -219,12 +219,14 @@ export declare class HarmonyPanel implements HarmonyComponent, HasI18n {
     readonly htmlElement: HTMLElement;
     isMovable: boolean;
     customPanelId: number;
-    constructor();
+    constructor(params?: HarmonyPanelParams);
+    setParams(params: HarmonyPanelParams): void;
+    getContent(): HTMLElement;
     append(...nodes: (Node | string | HarmonyComponent)[]): void;
     prepend(...nodes: (Node | string | HarmonyComponent)[]): void;
     static set highlitPanel(panel: HTMLElement);
-    setDirection(direction?: HarmonyPanelDirection): void;
-    getDirection(): HarmonyPanelDirection | undefined;
+    setLayout(layout?: HarmonyPanelLayout): void;
+    getLayout(): HarmonyPanelLayout | undefined;
     setSize(size: number): void;
     getSize(): number;
     setCollapsible(collapsible: boolean): void;
@@ -234,13 +236,27 @@ export declare class HarmonyPanel implements HarmonyComponent, HasI18n {
     collapse(): void;
     expand(): void;
     setTitle(title: string): void;
-    setI18n(i18n: string | I18nDescriptor | null): void;
+    setTitleI18n(i18n: string | I18nDescriptor | null): void;
     adoptStyleSheet(styleSheet: CSSStyleSheet): void;
     setFloating(): void;
     setDocked(): void;
 }
 
-export declare type HarmonyPanelDirection = 'row' | 'column';
+export declare type HarmonyPanelLayout = 'row' | 'column' | 'tabs';
+
+export declare type HarmonyPanelParams = {
+    collapsible?: boolean;
+    collapsed?: boolean;
+    movable?: boolean;
+    layout?: HarmonyPanelLayout;
+    title?: string;
+    titleI18n?: string;
+    size?: number;
+    adoptStyleSheet?: CSSStyleSheet;
+    adoptStyleSheets?: CSSStyleSheet[];
+    adoptStyle?: string;
+    adoptStyles?: string[];
+};
 
 export declare type HarmonySlideshowOptions = {
     autoPlay?: boolean;
@@ -260,7 +276,7 @@ export declare type HarmonySwitchChange = {
 };
 
 declare interface HasI18n {
-    setI18n(i18n: string | I18nDescriptor | null): void;
+    setTitleI18n(i18n: string | I18nDescriptor | null): void;
 }
 
 export declare function hide(htmlElement: HTMLElement | SVGElement | ShadowRoot | (HTMLElement | SVGElement | ShadowRoot)[] | undefined | null): void;
@@ -448,7 +464,7 @@ export declare class HTMLHarmonyPanelElement extends HTMLElement implements HasI
     collapse(): void;
     expand(): void;
     setTitle(title: string): void;
-    setI18n(i18n: string | I18nDescriptor | null): void;
+    setTitleI18n(i18n: string | I18nDescriptor | null): void;
     static get nextId(): string;
     adoptStyleSheet(styleSheet: CSSStyleSheet): void;
     setFloating(): void;
@@ -826,6 +842,8 @@ export declare type TreeItemOptions = {
 };
 
 export declare function updateElement(element: HTMLElement | undefined, options: CreateElementOptions): HTMLElement | undefined;
+
+export declare function updateShadowRoot(shadowRoot: ShadowRoot | undefined, options: CreateElementOptions): ShadowRoot | undefined;
 
 declare type v2 = {
     x: number;

@@ -6,7 +6,6 @@
 	box-sizing: border-box;
 	pointer-events: all;
 	position: relative;
-	flex-direction: column;
 	box-sizing: border-box;
 
 	max-width: 100%;
@@ -16,22 +15,27 @@
 	--content-bg-color: var(--harmony-panel-content-bg-color, var(--main-bg-color-dark, black));
 
 	--resize-bar-size: 0.5rem;
+	--layout: column;
 }
 
 :host(.collapsed) {
 	flex: 0 0 auto;
 }
 
-.harmony-panel-row {
-	flex-direction: row;
+.harmony-panel-row,
+:host(.harmony-panel-row) {
+	/*flex-direction: row;*/
+	--layout: row;
 }
 
 .harmony-panel-row>harmony-panel {
 	height: 100%;
 }
 
-.harmony-panel-column {
-	flex-direction: column;
+.harmony-panel-column,
+:host(.harmony-panel-column) {
+	/*flex-direction: column;*/
+	--layout: column;
 }
 
 .harmony-panel-column>harmony-panel {
@@ -67,7 +71,7 @@
 	overflow: hidden;
 	display: flex;
 	position: relative;
-	flex-direction: column;
+	flex-direction: var(--layout, column);
 }
 
 .header.target {

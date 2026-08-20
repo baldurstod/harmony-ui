@@ -117,6 +117,15 @@ export function updateElement(element: HTMLElement | undefined, options: CreateE
 	return element;
 }
 
+export function updateShadowRoot(shadowRoot: ShadowRoot | undefined, options: CreateElementOptions): ShadowRoot | undefined {
+	if (!shadowRoot) {
+		return;
+	}
+	createElementOptions(shadowRoot.host as HTMLElement, options, shadowRoot);
+	ET.dispatchEvent(new CustomEvent<ShadowRoot>('updated', { detail: shadowRoot }));
+	return shadowRoot;
+}
+
 function append(element: Element | ShadowRoot, child: CreateElementChildOption): void {
 	if (child === null || child === undefined) {
 		return;
@@ -152,8 +161,8 @@ function createElementOptions(element: HTMLElement, options?: CreateElementOptio
 					element.classList.add(...(optionValue as string).split(' ').filter((n: string) => n));
 					break;
 				case 'i18n':
-					if ((element as unknown as HasI18n).setI18n) {
-						(element as unknown as HasI18n).setI18n(optionValue as string | I18nDescriptor | null);
+					if ((element as unknown as HasI18n).setTitleI18n) {
+						(element as unknown as HasI18n).setTitleI18n(optionValue as string | I18nDescriptor | null);
 					} else {
 						AddI18nElement(element, optionValue as string | I18nDescriptor | null);
 					}
@@ -202,7 +211,9 @@ function createElementOptions(element: HTMLElement, options?: CreateElementOptio
 					(element as HTMLLabelElement).htmlFor = optionValue as string;
 					break;
 				case 'adoptStyle':
-					void adoptStyle(shadowRoot ?? element, optionValue as string);
+					if (optionValue) {
+						void adoptStyle(shadowRoot ?? element, optionValue as string);
+					}
 					break;
 				case 'adoptStyles':
 					((optionValue as string[]) ?? []).forEach((entry: string) => {
@@ -210,7 +221,9 @@ function createElementOptions(element: HTMLElement, options?: CreateElementOptio
 					});
 					break;
 				case 'adoptStyleSheet':
-					adoptStyleSheet(shadowRoot ?? element, optionValue as CSSStyleSheet);
+					if (optionValue) {
+						adoptStyleSheet(shadowRoot ?? element, optionValue as CSSStyleSheet);
+					}
 					break;
 				case 'adoptStyleSheets':
 					((optionValue as CSSStyleSheet[]) ?? []).forEach((entry: CSSStyleSheet) => {

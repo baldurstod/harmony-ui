@@ -1,7 +1,7 @@
 import { errorOnce } from 'harmony-utils';
 import panelCSS from '../css/harmony-panel.css';
 import { shadowRootStyle } from '../harmony-css';
-import { addRemoveClass, createElement, display, hide, show } from '../harmony-html';
+import { addRemoveClass, createElement, display, hide, show, updateElement, updateShadowRoot } from '../harmony-html';
 import { AddI18nElement as addI18nElement, I18nDescriptor } from '../harmony-i18n';
 import { HasI18n } from '../interfaces/hasi18n';
 import { HarmonyComponent } from './component';
@@ -18,14 +18,28 @@ enum DragMode {
 	Move,
 	Resize,
 }
-export type HarmonyPanelDirection = 'row' | 'column';
+export type HarmonyPanelLayout = 'row' | 'column' | 'tabs';
+
+export type HarmonyPanelParams = {
+	collapsible?: boolean;
+	collapsed?: boolean;
+	movable?: boolean;
+	layout?: HarmonyPanelLayout;
+	title?: string;
+	titleI18n?: string;
+	size?: number;
+	adoptStyleSheet?: CSSStyleSheet,
+	adoptStyleSheets?: CSSStyleSheet[],
+	adoptStyle?: string;
+	adoptStyles?: string[];
+}
 
 export class HarmonyPanel implements HarmonyComponent, HasI18n {
-	readonly htmlElement = createElement('div', { class: 'collapsible', });
+	readonly htmlElement = createElement('div');
 	#doOnce = true;
 	#parent = null;
 	#size = 1;
-	#direction?: HarmonyPanelDirection;
+	#layout?: HarmonyPanelLayout;
 	isMovable = false;
 	#collapsible = true;
 	#collapsed = false;
@@ -60,8 +74,38 @@ export class HarmonyPanel implements HarmonyComponent, HasI18n {
 		document.addEventListener('mouseup', (event: Event) => HarmonyPanel.#handleDocumentMouseUp(event as MouseEvent));
 	}
 
-	constructor() {
+	constructor(params: HarmonyPanelParams = {}) {
 		HarmonyPanel.#panels.add(this);
+		this.setParams(params);
+	}
+
+	setParams(params: HarmonyPanelParams): void {
+		this.setCollapsible(params.collapsible ?? true);
+		this.setCollapsed(params.collapsed ?? false);
+		this.isMovable = params.movable ?? false;
+		this.setLayout(params.layout ?? 'row');
+
+		if (params.size !== undefined) {
+			this.setSize(params.size);
+		}
+
+		if (params.title !== undefined) {
+			this.setTitle(params.title);
+		}
+
+		if (params.titleI18n !== undefined) {
+			this.setTitleI18n(params.titleI18n);
+		}
+
+		if (params.adoptStyle || params.adoptStyles || params.adoptStyleSheet || params.adoptStyleSheets) {
+			this.#initHTML();
+			updateShadowRoot(this.#shadowRoot!, {
+				adoptStyle: params.adoptStyle,
+				adoptStyles: params.adoptStyles,
+				adoptStyleSheet: params.adoptStyleSheet,
+				adoptStyleSheets: params.adoptStyleSheets,
+			});
+		}
 	}
 
 	#initHTML(): void {
@@ -107,6 +151,11 @@ export class HarmonyPanel implements HarmonyComponent, HasI18n {
 		this.#shadowRoot!.prepend(this.#htmlHeader);
 
 		return this.#htmlHeader;
+	}
+
+	getContent(): HTMLElement {
+		this.#initHTML();
+		return this.#htmlContent!;
 	}
 
 	append(...nodes: (Node | string | HarmonyComponent)[]): void {
@@ -391,19 +440,19 @@ export class HarmonyPanel implements HarmonyComponent, HasI18n {
 			}
 		}
 	*/
-	setDirection(direction?: HarmonyPanelDirection): void {
-		this.#direction = direction;
+	setLayout(layout?: HarmonyPanelLayout): void {
+		this.#layout = layout;
 		this.htmlElement.classList.remove('harmony-panel-row');
 		this.htmlElement.classList.remove('harmony-panel-column');
-		if (direction == 'row') {
+		if (layout == 'row') {
 			this.htmlElement.classList.add('harmony-panel-row');
-		} else if (direction == 'column') {
+		} else if (layout == 'column') {
 			this.htmlElement.classList.add('harmony-panel-column');
 		}
 	}
 
-	getDirection(): HarmonyPanelDirection | undefined {
-		return this.#direction;
+	getLayout(): HarmonyPanelLayout | undefined {
+		return this.#layout;
 	}
 
 	setSize(size: number): void {
@@ -470,7 +519,7 @@ export class HarmonyPanel implements HarmonyComponent, HasI18n {
 		*/
 	}
 
-	setI18n(i18n: string | I18nDescriptor | null): void {
+	setTitleI18n(i18n: string | I18nDescriptor | null): void {
 		if (typeof i18n === 'string') {
 			this.#setTitleI18n(i18n);
 		} else {
