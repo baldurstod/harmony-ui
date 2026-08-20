@@ -27,6 +27,8 @@ export type CreateElementOptions = {
 	 */
 	i18n?: string | I18nDescriptor | null,
 	parent?: Element | ShadowRoot,
+	after?: Element,
+	before?: Element,
 	child?: CreateElementChildOption,
 	childs?: CreateElementChildOption[],
 	events?: Record<string, HarmonyEventListener>,
@@ -169,6 +171,12 @@ function createElementOptions(element: HTMLElement, options?: CreateElementOptio
 					break;
 				case 'parent':
 					(optionValue as Element | ShadowRoot | undefined)?.append(element);
+					break;
+				case 'after':
+					(optionValue as Element | undefined)?.after(element);
+					break;
+				case 'before':
+					(optionValue as Element | undefined)?.before(element);
 					break;
 				case 'child':
 					append(shadowRoot ?? element, optionValue as CreateElementChildOption);
