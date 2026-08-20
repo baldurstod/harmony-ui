@@ -13,11 +13,8 @@ let highlitPanel: HTMLElement;
 
 const DRAG_THRESHOLD = 15;
 
-enum DragMode {
-	None,
-	Move,
-	Resize,
-}
+type DragMode = 'none' | 'move' | 'resize';
+
 export type HarmonyPanelLayout = 'row' | 'column' | 'tabs';
 
 export type HarmonyPanelParams = {
@@ -54,7 +51,7 @@ export class HarmonyPanel implements HarmonyComponent, HasI18n {
 	#floating = false;
 	#floatingWidth?: number;
 	#floatingHeight?: number;
-	static #dragMode = DragMode.None;
+	static #dragMode = 'none';
 	static #resizeX = 0;
 	static #resizeY = 0;
 	static #dragging = false;
@@ -614,7 +611,7 @@ export class HarmonyPanel implements HarmonyComponent, HasI18n {
 			return;
 		}
 		HarmonyPanel.#dragging = true;
-		HarmonyPanel.#dragMode = DragMode.Move;
+		HarmonyPanel.#dragMode = 'move';
 
 		const rect = this.htmlElement.getBoundingClientRect();
 		document.body.append(this.htmlElement);
@@ -663,7 +660,7 @@ export class HarmonyPanel implements HarmonyComponent, HasI18n {
 
 	#stopDrag(): void {
 		HarmonyPanel.#dragging = false;
-		HarmonyPanel.#dragMode = DragMode.None;
+		HarmonyPanel.#dragMode = 'none';
 		if (HarmonyPanel.#target) {
 			HarmonyPanel.#target.append(this.htmlElement);
 			this.setDocked();
@@ -672,7 +669,7 @@ export class HarmonyPanel implements HarmonyComponent, HasI18n {
 	}
 
 	#resize(event: MouseEvent): void {
-		if (HarmonyPanel.#dragMode !== DragMode.Resize || !HarmonyPanel.#startRect) {
+		if (HarmonyPanel.#dragMode !== 'resize' || !HarmonyPanel.#startRect) {
 			return;
 		}
 
@@ -716,7 +713,7 @@ export class HarmonyPanel implements HarmonyComponent, HasI18n {
 
 	#stopResize(): void {
 		HarmonyPanel.#dragging = false;
-		HarmonyPanel.#dragMode = DragMode.None;
+		HarmonyPanel.#dragMode = 'none';
 	}
 
 	static #setTarget(target: HarmonyPanel | null): void {
@@ -738,7 +735,7 @@ export class HarmonyPanel implements HarmonyComponent, HasI18n {
 		}
 
 		switch (HarmonyPanel.#dragMode) {
-			case DragMode.None:
+			case 'none':
 
 				const deltaX = (event as MouseEvent).clientX - this.#startClientX;
 				const deltaY = (event as MouseEvent).clientY - this.#startClientY;
@@ -748,10 +745,10 @@ export class HarmonyPanel implements HarmonyComponent, HasI18n {
 				}
 
 				break;
-			case DragMode.Move:
+			case 'move':
 				this.#draggedPanel.#drag(event);
 				break;
-			case DragMode.Resize:
+			case 'resize':
 				this.#draggedPanel.#resize(event);
 				break;
 		}
@@ -768,7 +765,7 @@ export class HarmonyPanel implements HarmonyComponent, HasI18n {
 	static #handleDocumentMouseUp(event: MouseEvent): void {
 		this.#mouseDown = false;
 		HarmonyPanel.#dragging = false;
-		HarmonyPanel.#dragMode = DragMode.None;
+		HarmonyPanel.#dragMode = 'none';
 
 		if (this.#draggedPanel) {
 			this.#draggedPanel.#stopDrag();
@@ -798,11 +795,11 @@ export class HarmonyPanel implements HarmonyComponent, HasI18n {
 	}
 
 	#startResize(event: MouseEvent, x: number, y: number): void {
-		if (HarmonyPanel.#dragMode !== DragMode.None) {
+		if (HarmonyPanel.#dragMode !== 'none') {
 			return;
 		}
 
-		HarmonyPanel.#dragMode = DragMode.Resize;
+		HarmonyPanel.#dragMode = 'resize';
 		HarmonyPanel.#resizeX = x;
 		HarmonyPanel.#resizeY = y;
 
