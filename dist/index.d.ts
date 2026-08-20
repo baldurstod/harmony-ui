@@ -248,6 +248,7 @@ export declare type HarmonyPanelParams = {
     collapsible?: boolean;
     collapsed?: boolean;
     movable?: boolean;
+    dropTarget?: boolean;
     layout?: HarmonyPanelLayout;
     title?: string;
     titleI18n?: string;

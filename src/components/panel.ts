@@ -1,7 +1,7 @@
 import { errorOnce } from 'harmony-utils';
 import panelCSS from '../css/harmony-panel.css';
 import { shadowRootStyle } from '../harmony-css';
-import { addRemoveClass, createElement, display, hide, show, updateElement, updateShadowRoot } from '../harmony-html';
+import { addRemoveClass, createElement, display, hide, show, updateShadowRoot } from '../harmony-html';
 import { AddI18nElement as addI18nElement, I18nDescriptor } from '../harmony-i18n';
 import { HasI18n } from '../interfaces/hasi18n';
 import { HarmonyComponent } from './component';
@@ -21,6 +21,7 @@ export type HarmonyPanelParams = {
 	collapsible?: boolean;
 	collapsed?: boolean;
 	movable?: boolean;
+	dropTarget?: boolean;
 	layout?: HarmonyPanelLayout;
 	title?: string;
 	titleI18n?: string;
@@ -40,6 +41,7 @@ export class HarmonyPanel implements HarmonyComponent, HasI18n {
 	isMovable = false;
 	#collapsible = true;
 	#collapsed = false;
+	#dropTarget!: boolean;
 	customPanelId = nextId++;
 	#htmlHeader?: HTMLElement;
 	#htmlContent?: HTMLElement;
@@ -80,6 +82,7 @@ export class HarmonyPanel implements HarmonyComponent, HasI18n {
 		this.setCollapsible(params.collapsible ?? true);
 		this.setCollapsed(params.collapsed ?? false);
 		this.isMovable = params.movable ?? false;
+		this.#dropTarget = params.dropTarget ?? false;
 		this.setLayout(params.layout ?? 'row');
 
 		if (params.size !== undefined) {
@@ -653,7 +656,7 @@ export class HarmonyPanel implements HarmonyComponent, HasI18n {
 		if (event.ctrlKey) {
 			HarmonyPanel.#setTarget(null);
 		} else {
-			const panel = this.#getPanelAtMousePosition(event);
+			const panel = this.#getDropTargetAtMousePosition(event);
 			HarmonyPanel.#setTarget(panel);
 		}
 	}
@@ -776,9 +779,11 @@ export class HarmonyPanel implements HarmonyComponent, HasI18n {
 		this.#setTarget(null);
 	}
 
-	#getPanelAtMousePosition(event: MouseEvent): HarmonyPanel | null {
+	#getDropTargetAtMousePosition(event: MouseEvent): HarmonyPanel | null {
+		let best: HarmonyPanel | null = null;
+		let bestRect: DOMRect | undefined;
 		for (const panel of HarmonyPanel.#panels) {
-			if (panel === this || !panel.htmlElement.isConnected) {
+			if (panel === this || !panel.htmlElement.isConnected || !panel.#dropTarget) {
 				continue;
 			}
 
@@ -788,10 +793,19 @@ export class HarmonyPanel implements HarmonyComponent, HasI18n {
 				&& event.clientY >= rect.top
 				&& event.clientY < rect.bottom
 			) {
-				return panel;
+				if (!best ||
+					(bestRect!.left <= rect.left
+						&& bestRect!.right >= rect.right
+						&& bestRect!.top <= rect.top
+						&& bestRect!.bottom >= rect.bottom
+					)
+				) {
+					best = panel;
+					bestRect = rect;
+				}
 			}
 		}
-		return null;
+		return best;
 	}
 
 	#startResize(event: MouseEvent, x: number, y: number): void {
