@@ -1,4 +1,4 @@
-import { errorOnce, MyEventTarget, Color, BugReporter } from 'harmony-utils';
+import { MyEventTarget, errorOnce, Color, BugReporter } from 'harmony-utils';
 import { closeSVG, folderOpenSVG, infoSVG, checkOutlineSVG } from 'harmony-svg';
 
 var panelCSS = ":host {\n\tdisplay: flex;\n\tflex: 1;\n\tflex-direction: column;\n\t/*flex: 0 0 auto;*/\n\tbox-sizing: border-box;\n\tpointer-events: all;\n\tposition: relative;\n\tbox-sizing: border-box;\n\n\tmax-width: 100%;\n\tmax-height: 100%;\n\n\t--header-bg-color: var(--harmony-panel-header-bg-color, var(--main-bg-color-dark, black));\n\t--content-bg-color: var(--harmony-panel-content-bg-color, var(--main-bg-color-dark, black));\n\n\t--resize-bar-size: 0.5rem;\n\t--layout: column;\n}\n\n/* Prevent child panel header to appear for tabs layout */\n@container style(--layout: tabs) {\n\t:host {\n\t\t--display-header: none;\n\t}\n}\n\n:host(.collapsed) {\n\tflex: 0 0 auto;\n}\n\n.harmony-panel-row,\n:host(.harmony-panel-row) {\n\t--layout: row;\n}\n\n.harmony-panel-row>harmony-panel {\n\theight: 100%;\n}\n\n.harmony-panel-column,\n:host(.harmony-panel-column) {\n\t--layout: column;\n}\n\n.harmony-panel-tabs,\n:host(.harmony-panel-tabs) {\n\t--layout: tabs;\n}\n\n.harmony-panel-column>harmony-panel {\n\twidth: 100%;\n}\n\n.harmony-panel-splitter {\n\tdisplay: none;\n\tflex: 0 0 10px;\n\tbackground-color: red;\n}\n\n.header {\n\tcursor: pointer;\n\tfont-size: 1.5em;\n\tpadding: 0.25rem;\n\toverflow: hidden;\n\tflex: 0 0 2rem;\n\tbackground-color: var(--header-bg-color);\n\tdisplay: var(--display-header, flex);\n\talign-items: center;\n}\n\n.header.hidden {\n\tdisplay: var(--harmony-panel-display-headers, none);\n}\n\n.content {\n\twidth: 100%;\n\tbox-sizing: border-box;\n\tbackground-color: var(--content-bg-color);\n\tflex: 1;\n\toverflow: hidden;\n\tdisplay: flex;\n\tposition: relative;\n\tflex-direction: var(--layout, column);\n}\n\n.header.target {\n\tbackground: blue;\n}\n\n.content.target {\n\tbackground: blue;\n}\n\n[collapsible='1']>.title::after,\n:host(.collapsible)>.title::after {\n\tcontent: \"-\";\n\tright: 0.25rem;\n\tposition: absolute;\n}\n\n[collapsed='1']>.title::after,\n:host(.collapsed)>.title::after {\n\tcontent: \"+\";\n}\n\n.resize {\n\tpointer-events: none;\n\tdisplay: none;\n\ttop: 0;\n\tleft: 0;\n\twidth: 100%;\n\theight: 100%;\n\tposition: absolute;\n}\n\n.resize>* {\n\tpointer-events: all;\n\tposition: absolute;\n}\n\n.resize>.side {\n\tinset: calc(var(--resize-bar-size) * 0.5);\n}\n\n.resize>.corner {\n\theight: var(--resize-bar-size);\n\twidth: var(--resize-bar-size);\n}\n\n.resize>.top,\n.resize>.bottom {\n\theight: var(--resize-bar-size);\n\twidth: auto;\n\tcursor: ns-resize;\n}\n\n.resize>.right,\n.resize>.left {\n\twidth: var(--resize-bar-size);\n\theight: auto;\n\tcursor: ew-resize;\n}\n\n.resize>.top {\n\ttop: calc(var(--resize-bar-size) * -0.5);\n\tbottom: unset;\n}\n\n.resize>.bottom {\n\ttop: unset;\n\tbottom: calc(var(--resize-bar-size) * -0.5);\n}\n\n.resize>.left {\n\tleft: calc(var(--resize-bar-size) * -0.5);\n\tright: unset;\n}\n\n.resize>.right {\n\tleft: unset;\n\tright: calc(var(--resize-bar-size) * -0.5);\n}\n\n.resize>.top_right {\n\ttop: calc(var(--resize-bar-size) * -0.5);\n\tright: calc(var(--resize-bar-size) * -0.5);\n\tcursor: ne-resize;\n}\n\n.resize>.bottom_right {\n\tbottom: calc(var(--resize-bar-size) * -0.5);\n\tright: calc(var(--resize-bar-size) * -0.5);\n\tcursor: se-resize;\n}\n\n.resize>.top_left {\n\ttop: calc(var(--resize-bar-size) * -0.5);\n\tleft: calc(var(--resize-bar-size) * -0.5);\n\tcursor: nw-resize;\n}\n\n.resize>.bottom_left {\n\tbottom: calc(var(--resize-bar-size) * -0.5);\n\tleft: calc(var(--resize-bar-size) * -0.5);\n\tcursor: sw-resize;\n}\n\n:host(.floating) {\n\tz-index: 10000;\n}\n\n:host(.floating) .resize {\n\tdisplay: initial;\n}\n";
@@ -627,6 +627,251 @@ function addRemoveClass(element, clas, add) {
     }
 }
 
+var tabCSS$1 = ":host {\n\tdisplay: inline-block;\n\tbackground-color: var(--main-bg-color-bright);\n\t/*padding: 10px;*/\n\tborder: 0.1rem solid var(--harmony-ui-text-primary);\n\tborder-top: 0px;\n\tposition: relative;\n\tcolor: var(--harmony-ui-text-primary);\n\tcursor: pointer;\n\tuser-select: none;\n\tpointer-events: all;\n\tflex: 0 0;\n\ttext-align: center;\n\twhite-space: nowrap;\n\tdisplay: flex;\n\talign-items: center;\n}\n\ndiv {\n\tpadding: 0.2rem;\n}\n";
+
+class HarmonyTab extends MyEventTarget {
+    htmlElement = createElement('div', {
+        $click: () => this.#click(),
+    });
+    #shadowRoot;
+    #disabled = false;
+    #active = false;
+    //#header?: HTMLElement;
+    #htmlHeader;
+    #htmlTitle;
+    #htmlClose;
+    #group;
+    #closable = false;
+    #closed = false;
+    content;
+    constructor(params = {}) {
+        super();
+        this.setParams(params);
+    }
+    setParams(params) {
+        if (params.title !== undefined) {
+            this.setTitle(params.title);
+        }
+        if (params.titleI18n !== undefined) {
+            this.setTitleI18n(params.titleI18n);
+        }
+        this.content = params.content;
+    }
+    #initHTML() {
+        if (this.#shadowRoot) {
+            return;
+        }
+        this.#shadowRoot = this.htmlElement.attachShadow({ mode: 'closed' });
+        void shadowRootStyle(this.#shadowRoot, tabCSS$1);
+        this.#htmlHeader = createElement('div', {
+            class: 'tab',
+            parent: this.#shadowRoot,
+            childs: [
+                this.#htmlTitle = createElement('span'),
+                this.#htmlClose = createElement('span', {
+                    class: 'close',
+                    innerHTML: closeSVG,
+                    hidden: !this.#closable,
+                    $click: (event) => { event.stopPropagation(); this.close(); },
+                }),
+            ],
+            $click: () => this.#click(),
+            $contextmenu: (event) => this.#onContextMenu(event),
+        });
+    }
+    setTitle(title) {
+        this.#initHTML();
+        this.#htmlTitle.innerText = title;
+        show(this.#htmlTitle);
+    }
+    setTitleI18n(i18n) {
+        this.#initHTML();
+        if (typeof i18n === 'string') {
+            AddI18nElement(this.#htmlTitle, i18n);
+        }
+        else {
+            errorOnce('unhandled type ' + typeof i18n + i18n);
+        }
+        show(this.#htmlTitle);
+    }
+    setDisabled(disabled) {
+        this.#disabled = disabled ? true : false;
+        addRemoveClass(this.#htmlHeader, 'disabled', this.#disabled);
+    }
+    getDisabled() {
+        return this.#disabled;
+    }
+    activate() {
+        this.setActive(true);
+    }
+    close() {
+        if (this.#closed) {
+            return false;
+        }
+        if (!this.dispatchEvent(new CustomEvent('close', { cancelable: true, detail: { tab: this } }))) {
+            return false;
+        }
+        this.#group?.closeTab(this);
+        return true;
+    }
+    setActive(active) {
+        if (this.#active != active) {
+            this.#active = active;
+            if (active) {
+                this.dispatchEvent(new CustomEvent('activated', { detail: { tab: this } }));
+            }
+            else {
+                this.dispatchEvent(new CustomEvent('deactivated', { detail: { tab: this } }));
+            }
+        }
+        //display(this.htmlElement, active);
+        this.#initHTML();
+        addRemoveClass(this.#htmlHeader, 'activated', active);
+        if (active && this.#group) {
+            this.#group.activateTab(this);
+        }
+        display(this.content, active);
+    }
+    isActive() {
+        return this.#active;
+    }
+    isClosed() {
+        return this.#closed;
+    }
+    #click() {
+        if (!this.dispatchEvent(new CustomEvent('click', { cancelable: true, detail: { tab: this } }))) {
+            return;
+        }
+        if (!this.#disabled) {
+            this.activate();
+        }
+    }
+    #onContextMenu(event) {
+        this.dispatchEvent(new CustomEvent('contextmenu', { detail: { tab: this, originalEvent: event } }));
+    }
+    scrollIntoView() {
+        this.#initHTML();
+        this.#htmlHeader.scrollIntoView();
+    }
+    setClosable(closable) {
+        this.#closable = closable;
+        display(this.#htmlClose, closable);
+    }
+    setGroup(group) {
+        this.#group = group;
+    }
+}
+
+var tabGroupCSS$1 = ":host>div {\n\twidth: 100%;\n\theight: 100%;\n\tdisplay: flex;\n\tflex-direction: row;\n\tposition: relative;\n\tgap: 0.1rem;\n}\n";
+
+class HarmonyTabGroup {
+    htmlElement = createElement('div');
+    #shadowRoot;
+    #htmlTabs;
+    #tabs = new Set();
+    #activeTab;
+    constructor(params = {}) {
+        this.setParams(params);
+    }
+    setParams(params) {
+        if (params.adoptStyle || params.adoptStyles || params.adoptStyleSheet || params.adoptStyleSheets) {
+            this.#initHTML();
+            updateShadowRoot(this.#shadowRoot, {
+                adoptStyle: params.adoptStyle,
+                adoptStyles: params.adoptStyles,
+                adoptStyleSheet: params.adoptStyleSheet,
+                adoptStyleSheets: params.adoptStyleSheets,
+            });
+        }
+    }
+    #initHTML() {
+        if (this.#shadowRoot) {
+            return;
+        }
+        this.#shadowRoot = this.htmlElement.attachShadow({ mode: 'closed' });
+        void shadowRootStyle(this.#shadowRoot, tabGroupCSS$1);
+        this.#htmlTabs = createElement('div', {
+            parent: this.#shadowRoot,
+        });
+    }
+    /*
+    addTabs(...tabs: HarmonyTab[]): void {
+        for (const tab of tabs) {
+            this.#tabs.add(tab);
+            this.htmlElement.append(tab.htmlElement);
+        }
+    }
+    */
+    append(...tabs) {
+        this.#initHTML();
+        for (const tab of tabs) {
+            this.#tabs.add(tab);
+            this.#htmlTabs.append(tab.htmlElement);
+            tab.setActive(!this.#activeTab || this.#activeTab === tab);
+            tab.setGroup(this);
+        }
+    }
+    prepend(...tabs) {
+        this.#initHTML();
+        for (const tab of tabs) {
+            this.#tabs.add(tab);
+            this.#htmlTabs.prepend(tab.htmlElement);
+            tab.setActive(!this.#activeTab || this.#activeTab === tab);
+            tab.setGroup(this);
+        }
+    }
+    addTab(tab) {
+        this.#tabs.add(tab);
+        if (!this.#activeTab) {
+            this.#activeTab = tab;
+        }
+        tab.setGroup(this);
+        this.#refresh();
+    }
+    getTabs() {
+        return new Set(this.#tabs);
+    }
+    #refresh() {
+        this.#initHTML();
+        //this.#header.replaceChildren();
+        this.#htmlTabs.replaceChildren();
+        for (const tab of this.#tabs) {
+            this.#htmlTabs.append(tab.htmlElement);
+            //this.#content.append(tab);
+            if (tab != this.#activeTab) {
+                tab.setActive(false);
+            }
+        }
+        this.#activeTab?.setActive(true);
+        setTimeout(() => {
+            this.#activeTab?.htmlElement.scrollIntoView();
+        }, 0);
+    }
+    activateTab(tab) {
+        if (this.#activeTab != tab) {
+            this.#activeTab = tab;
+            this.#refresh();
+        }
+    }
+    closeTab(tab) {
+        this.#tabs.delete(tab);
+        if (this.#activeTab == tab) {
+            this.#activeTab = this.#tabs.values().next().value;
+        }
+        this.#refresh();
+    }
+    closeAllTabs() {
+        for (const tab of this.#tabs) {
+            tab.close();
+        }
+    }
+    clear() {
+        this.#tabs.clear();
+        this.#activeTab = undefined;
+        this.#htmlTabs?.replaceChildren();
+    }
+}
+
 var _a$1;
 //const dragged = null;
 let nextId$1 = 0;
@@ -635,6 +880,7 @@ let highlitPanel$1;
 const DRAG_THRESHOLD$1 = 15;
 class HarmonyPanel {
     htmlElement = createElement('div');
+    isHarmonyPanel = true;
     #doOnce = true;
     #parent = null;
     #size = 1;
@@ -655,6 +901,9 @@ class HarmonyPanel {
     #floating = false;
     #floatingWidth;
     #floatingHeight;
+    #childPanels = new Set;
+    #title;
+    #titleI18n;
     static #dragMode = 'none';
     static #resizeX = 0;
     static #resizeY = 0;
@@ -750,6 +999,12 @@ class HarmonyPanel {
         for (const node of nodes) {
             const htmlElement = node.htmlElement;
             if (htmlElement) {
+                if (node.isHarmonyPanel) {
+                    this.#childPanels.add(node);
+                    if (this.#layout === 'tabs') {
+                        this.#addTab(node);
+                    }
+                }
                 this.#htmlContent.append(htmlElement);
             }
             else {
@@ -763,6 +1018,12 @@ class HarmonyPanel {
         for (const node of nodes) {
             const htmlElement = node.htmlElement;
             if (htmlElement) {
+                if (node.isHarmonyPanel) {
+                    this.#childPanels.add(node);
+                    if (this.#layout === 'tabs') {
+                        this.#addTab(node);
+                    }
+                }
                 this.#htmlContent.prepend(htmlElement);
             }
             else {
@@ -1030,17 +1291,25 @@ class HarmonyPanel {
             this.htmlElement.classList.add(`harmony-panel-${layout}`);
         }
         if (layout === 'tabs') {
-            if (!this.#htmlTabGroup) {
-                this.#initHTML();
-                defineHarmonyTabGroup();
-                this.#htmlTabGroup = createElement('harmony-tab-group', {
-                    before: this.#htmlContent,
-                });
+            for (const panel of this.#childPanels) {
+                this.#addTab(panel);
             }
         }
         else {
-            hide(this.#htmlTabGroup);
+            hide(this.#htmlTabGroup?.htmlElement);
         }
+    }
+    #addTab(panel) {
+        if (!this.#htmlTabGroup) {
+            this.#initHTML();
+            this.#htmlTabGroup = new HarmonyTabGroup();
+            this.#htmlContent.before(this.#htmlTabGroup.htmlElement);
+        }
+        this.#htmlTabGroup.addTab(new HarmonyTab({
+            title: panel.#title,
+            titleI18n: panel.#titleI18n,
+            content: panel.htmlElement,
+        }));
     }
     getLayout() {
         return this.#layout;
@@ -1088,6 +1357,7 @@ class HarmonyPanel {
         this.#collapsed = false;
     }
     setTitle(title) {
+        this.#title = title;
         const header = this.#getHeader();
         header.innerText = title;
         show(header);
@@ -1101,6 +1371,7 @@ class HarmonyPanel {
         */
     }
     setTitleI18n(i18n) {
+        this.#titleI18n = i18n;
         if (typeof i18n === 'string') {
             AddI18nElement(this.#getHeader(), i18n);
         }
@@ -1351,247 +1622,6 @@ class HarmonyPanel {
     }
 }
 _a$1 = HarmonyPanel;
-
-var tabCSS$1 = ":host {\n\tdisplay: inline-block;\n\tbackground-color: var(--main-bg-color-bright);\n\t/*padding: 10px;*/\n\tborder: 0.1rem solid var(--harmony-ui-text-primary);\n\tborder-top: 0px;\n\tposition: relative;\n\tcolor: var(--harmony-ui-text-primary);\n\tcursor: pointer;\n\tuser-select: none;\n\tpointer-events: all;\n\tflex: 0 0;\n\ttext-align: center;\n\twhite-space: nowrap;\n\tdisplay: flex;\n\talign-items: center;\n}\n\ndiv {\n\tpadding: 0.2rem;\n}\n";
-
-class HarmonyTab extends MyEventTarget {
-    htmlElement = createElement('div', {
-        $click: () => this.#click(),
-    });
-    #shadowRoot;
-    #disabled = false;
-    #active = false;
-    //#header?: HTMLElement;
-    #htmlHeader;
-    #htmlTitle;
-    #htmlClose;
-    #group;
-    #closable = false;
-    #closed = false;
-    content;
-    constructor(params = {}) {
-        super();
-        this.setParams(params);
-    }
-    setParams(params) {
-        if (params.title !== undefined) {
-            this.setTitle(params.title);
-        }
-        if (params.titleI18n !== undefined) {
-            this.setTitleI18n(params.titleI18n);
-        }
-    }
-    #initHTML() {
-        if (this.#shadowRoot) {
-            return;
-        }
-        this.#shadowRoot = this.htmlElement.attachShadow({ mode: 'closed' });
-        void shadowRootStyle(this.#shadowRoot, tabCSS$1);
-        this.#htmlHeader = createElement('div', {
-            class: 'tab',
-            parent: this.#shadowRoot,
-            childs: [
-                this.#htmlTitle = createElement('span'),
-                this.#htmlClose = createElement('span', {
-                    class: 'close',
-                    innerHTML: closeSVG,
-                    hidden: !this.#closable,
-                    $click: (event) => { event.stopPropagation(); this.close(); },
-                }),
-            ],
-            $click: () => this.#click(),
-            $contextmenu: (event) => this.#onContextMenu(event),
-        });
-    }
-    setTitle(title) {
-        this.#initHTML();
-        this.#htmlTitle.innerText = title;
-        show(this.#htmlTitle);
-    }
-    setTitleI18n(i18n) {
-        this.#initHTML();
-        if (typeof i18n === 'string') {
-            AddI18nElement(this.#htmlTitle, i18n);
-        }
-        else {
-            errorOnce('unhandled type ' + typeof i18n + i18n);
-        }
-        show(this.#htmlTitle);
-    }
-    setDisabled(disabled) {
-        this.#disabled = disabled ? true : false;
-        addRemoveClass(this.#htmlHeader, 'disabled', this.#disabled);
-    }
-    getDisabled() {
-        return this.#disabled;
-    }
-    activate() {
-        this.setActive(true);
-    }
-    close() {
-        if (this.#closed) {
-            return false;
-        }
-        if (!this.dispatchEvent(new CustomEvent('close', { cancelable: true, detail: { tab: this } }))) {
-            return false;
-        }
-        this.#group?.closeTab(this);
-        return true;
-    }
-    setActive(active) {
-        if (this.#active != active) {
-            this.#active = active;
-            if (active) {
-                this.dispatchEvent(new CustomEvent('activated', { detail: { tab: this } }));
-            }
-            else {
-                this.dispatchEvent(new CustomEvent('deactivated', { detail: { tab: this } }));
-            }
-        }
-        //display(this.htmlElement, active);
-        this.#initHTML();
-        addRemoveClass(this.#htmlHeader, 'activated', active);
-        if (active && this.#group) {
-            this.#group.activateTab(this);
-        }
-        display(this.content, active);
-    }
-    isActive() {
-        return this.#active;
-    }
-    isClosed() {
-        return this.#closed;
-    }
-    #click() {
-        if (!this.dispatchEvent(new CustomEvent('click', { cancelable: true, detail: { tab: this } }))) {
-            return;
-        }
-        if (!this.#disabled) {
-            this.activate();
-        }
-    }
-    #onContextMenu(event) {
-        this.dispatchEvent(new CustomEvent('contextmenu', { detail: { tab: this, originalEvent: event } }));
-    }
-    scrollIntoView() {
-        this.#initHTML();
-        this.#htmlHeader.scrollIntoView();
-    }
-    setClosable(closable) {
-        this.#closable = closable;
-        display(this.#htmlClose, closable);
-    }
-    setGroup(group) {
-        this.#group = group;
-    }
-}
-
-var tabGroupCSS$1 = ":host>div {\n\twidth: 100%;\n\theight: 100%;\n\tdisplay: flex;\n\tflex-direction: row;\n\tposition: relative;\n\tgap: 0.1rem;\n}\n";
-
-class HarmonyTabGroup {
-    htmlElement = createElement('div');
-    #shadowRoot;
-    #htmlTabs;
-    #tabs = new Set();
-    #activeTab;
-    constructor(params = {}) {
-        this.setParams(params);
-    }
-    setParams(params) {
-        if (params.adoptStyle || params.adoptStyles || params.adoptStyleSheet || params.adoptStyleSheets) {
-            this.#initHTML();
-            updateShadowRoot(this.#shadowRoot, {
-                adoptStyle: params.adoptStyle,
-                adoptStyles: params.adoptStyles,
-                adoptStyleSheet: params.adoptStyleSheet,
-                adoptStyleSheets: params.adoptStyleSheets,
-            });
-        }
-    }
-    #initHTML() {
-        if (this.#shadowRoot) {
-            return;
-        }
-        this.#shadowRoot = this.htmlElement.attachShadow({ mode: 'closed' });
-        void shadowRootStyle(this.#shadowRoot, tabGroupCSS$1);
-        this.#htmlTabs = createElement('div', {
-            parent: this.#shadowRoot,
-        });
-    }
-    /*
-    addTabs(...tabs: HarmonyTab[]): void {
-        for (const tab of tabs) {
-            this.#tabs.add(tab);
-            this.htmlElement.append(tab.htmlElement);
-        }
-    }
-    */
-    append(...tabs) {
-        this.#initHTML();
-        for (const tab of tabs) {
-            this.#tabs.add(tab);
-            this.#htmlTabs.append(tab.htmlElement);
-            tab.setActive(!this.#activeTab || this.#activeTab === tab);
-            tab.setGroup(this);
-        }
-    }
-    prepend(...tabs) {
-        this.#initHTML();
-        for (const tab of tabs) {
-            this.#tabs.add(tab);
-            this.#htmlTabs.prepend(tab.htmlElement);
-        }
-    }
-    addTab(tab) {
-        this.#tabs.add(tab);
-        if (!this.#activeTab) {
-            this.#activeTab = tab;
-        }
-        this.#refresh();
-    }
-    getTabs() {
-        return new Set(this.#tabs);
-    }
-    #refresh() {
-        this.#initHTML();
-        //this.#header.replaceChildren();
-        this.#htmlTabs.replaceChildren();
-        for (const tab of this.#tabs) {
-            this.#htmlTabs.append(tab.htmlElement);
-            //this.#content.append(tab);
-            if (tab != this.#activeTab) {
-                tab.setActive(false);
-            }
-        }
-        this.#activeTab?.setActive(true);
-        setTimeout(() => {
-            this.#activeTab?.htmlElement.scrollIntoView();
-        }, 0);
-    }
-    activateTab(tab) {
-        if (this.#activeTab != tab) {
-            this.#activeTab = tab;
-            this.#refresh();
-        }
-    }
-    closeTab(tab) {
-        this.#tabs.delete(tab);
-        if (this.#activeTab == tab) {
-            this.#activeTab = this.#tabs.values().next().value;
-        }
-        this.#refresh();
-    }
-    closeAllTabs() {
-        for (const tab of this.#tabs) {
-            tab.close();
-        }
-    }
-    clear() {
-        this.#tabs.clear();
-        this.#activeTab = undefined;
-        this.#htmlTabs?.replaceChildren();
-    }
-}
 
 var manipulator2dCSS = ":host {\n\t--handle-radius: var(--harmony-2d-manipulator-radius, 0.5rem);\n\t--harmony-2d-manipulator-shadow-bg-color: var(--harmony-2d-manipulator-bg-color, red);\n\t--harmony-2d-manipulator-shadow-border: var(--harmony-2d-manipulator-border, none);\n\t--handle-bg-color: var(--harmony-2d-manipulator-handle-bg-color, chartreuse);\n\t--corner-bg-color: var(--harmony-2d-manipulator-corner-bg-color, var(--handle-bg-color));\n\t--side-bg-color: var(--harmony-2d-manipulator-side-bg-color, var(--handle-bg-color));\n\t--rotate-bg-color: var(--harmony-2d-manipulator-rotate-bg-color, var(--handle-bg-color));\n\n\twidth: 1rem;\n\theight: 1rem;\n\tdisplay: block;\n\tuser-select: none;\n\tpointer-events: all;\n}\n\n:host-context(.grabbing) {\n\tcursor: grabbing;\n}\n\n.manipulator {\n\tposition: absolute;\n\tbackground-color: var(--harmony-2d-manipulator-shadow-bg-color);\n\tborder: var(--harmony-2d-manipulator-shadow-border);\n\tcursor: move;\n\tpointer-events: all;\n}\n\n.rotator {\n\tscale: var(--rotate);\n\tposition: absolute;\n\twidth: var(--handle-radius);\n\theight: var(--handle-radius);\n\tbackground-color: var(--rotate-bg-color);\n\tborder-radius: calc(var(--handle-radius) * 0.5);\n\ttransform: translate(-50%, -50%);\n\tcursor: grab;\n}\n\n.corner {\n\tscale: var(--scale);\n\tposition: absolute;\n\twidth: var(--handle-radius);\n\theight: var(--handle-radius);\n\tbackground-color: var(--corner-bg-color);\n\tborder-radius: calc(var(--handle-radius) * 0.5);\n\ttransform: translate(-50%, -50%);\n\tcursor: grab;\n}\n\n.side {\n\tposition: absolute;\n\twidth: var(--handle-radius);\n\theight: var(--handle-radius);\n\tbackground-color: var(--side-bg-color);\n\tborder-radius: calc(var(--handle-radius) * 0.5);\n\ttransform: translate(-50%, -50%);\n\tcursor: grab;\n}\n\n.side.x {\n\tscale: var(--resize-x);\n}\n\n.side.y {\n\tscale: var(--resize-y);\n}\n\n.corner.grabbing {\n\tcursor: grabbing;\n}\n";
 

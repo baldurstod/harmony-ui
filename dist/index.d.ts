@@ -220,6 +220,7 @@ export declare type HarmonyPaletteSelectEventData = {
 export declare class HarmonyPanel implements HarmonyComponent, HasI18n {
     #private;
     readonly htmlElement: HTMLElement;
+    readonly isHarmonyPanel: true;
     isMovable: boolean;
     customPanelId: number;
     constructor(params?: HarmonyPanelParams);
@@ -261,7 +262,7 @@ export declare type HarmonyPanelParams = {
     /** Panel title. */
     title?: string;
     /** Internationalized Panel title. */
-    titleI18n?: string;
+    titleI18n?: string | I18nDescriptor | null;
     /** Panel size. */
     size?: number;
     /** Add a custom style sheet to the panel. */
@@ -323,8 +324,12 @@ export declare class HarmonyTabGroup implements HarmonyComponent {
     setParams(params: HarmonyTabGroupParams): void;
     append(...tabs: HarmonyTab[]): void;
     prepend(...tabs: HarmonyTab[]): void;
+    addTab(tab: HarmonyTab): void;
+    getTabs(): Set<HarmonyTab>;
     activateTab(tab: HarmonyTab): void;
     closeTab(tab: HarmonyTab): void;
+    closeAllTabs(): void;
+    clear(): void;
 }
 
 export declare type HarmonyTabGroupParams = {
@@ -342,11 +347,12 @@ export declare type HarmonyTabParams = {
     /** Tab title. */
     title?: string;
     /** Internationalized Tab title. */
-    titleI18n?: string;
+    titleI18n?: string | I18nDescriptor | null;
     /** Set the tab disabled. Default to false. */
     disabled?: boolean;
     /** Set the tab closable. Default to false. */
     closable?: boolean;
+    content?: HTMLElement;
 };
 
 declare interface HasI18n {

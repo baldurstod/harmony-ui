@@ -989,731 +989,6 @@ function addRemoveClass(element, clas, add) {
     }
 }
 
-var _a$1;
-//const dragged = null;
-let nextId$1 = 0;
-//let spliter: HTMLElement = createElement('div', { class: 'harmony-panel-splitter' }) as HTMLElement;
-let highlitPanel$1;
-const DRAG_THRESHOLD$1 = 15;
-class HarmonyPanel {
-    htmlElement = createElement('div');
-    #doOnce = true;
-    #parent = null;
-    #size = 1;
-    #layout;
-    isMovable = false;
-    #collapsible = true;
-    #collapsed = false;
-    #dropTarget;
-    customPanelId = nextId$1++;
-    #htmlHeader;
-    #htmlTabGroup;
-    #htmlContent;
-    #htmlResize;
-    #isDummy = false;
-    #shadowRoot;
-    #headerVisible = false;
-    #isDraggable = true;
-    #floating = false;
-    #floatingWidth;
-    #floatingHeight;
-    static #dragMode = 'none';
-    static #resizeX = 0;
-    static #resizeY = 0;
-    static #dragging = false;
-    static #draggedPanel;
-    static #deltaX = 0;
-    static #deltaY = 0;
-    static #startClientX = 0;
-    static #startClientY = 0;
-    static #mouseDown = false;
-    static #panels = new Set;
-    static #target = null;
-    static #startRect;
-    static {
-        document.addEventListener('mousedown', (event) => _a$1.#handleDocumentMouseDown(event));
-        document.addEventListener('mousemove', (event) => _a$1.#handleDocumentMouseMove(event));
-        document.addEventListener('mouseup', (event) => _a$1.#handleDocumentMouseUp(event));
-    }
-    constructor(params = {}) {
-        _a$1.#panels.add(this);
-        this.setParams(params);
-    }
-    setParams(params) {
-        this.setCollapsible(params.collapsible ?? true);
-        this.setCollapsed(params.collapsed ?? false);
-        this.isMovable = params.movable ?? false;
-        this.#dropTarget = params.dropTarget ?? false;
-        this.setLayout(params.layout ?? 'row');
-        if (params.size !== undefined) {
-            this.setSize(params.size);
-        }
-        if (params.title !== undefined) {
-            this.setTitle(params.title);
-        }
-        if (params.titleI18n !== undefined) {
-            this.setTitleI18n(params.titleI18n);
-        }
-        if (params.adoptStyle || params.adoptStyles || params.adoptStyleSheet || params.adoptStyleSheets) {
-            this.#initHTML();
-            updateShadowRoot(this.#shadowRoot, {
-                adoptStyle: params.adoptStyle,
-                adoptStyles: params.adoptStyles,
-                adoptStyleSheet: params.adoptStyleSheet,
-                adoptStyleSheets: params.adoptStyleSheets,
-            });
-        }
-    }
-    #initHTML() {
-        if (this.#shadowRoot) {
-            return;
-        }
-        this.#shadowRoot = this.htmlElement.attachShadow({ mode: 'closed' });
-        void shadowRootStyle(this.#shadowRoot, panelCSS);
-        this.#htmlContent = createElement('div', {
-            class: 'content',
-            parent: this.#shadowRoot,
-        });
-        this.#htmlResize = createElement('div', {
-            class: 'resize',
-            parent: this.#shadowRoot,
-            childs: [
-                createElement('div', { class: 'side top', $mousedown: (event) => this.#startResize(event, 0, -1) }),
-                createElement('div', { class: 'side right', $mousedown: (event) => this.#startResize(event, 1, 0) }),
-                createElement('div', { class: 'side bottom', $mousedown: (event) => this.#startResize(event, 0, 1) }),
-                createElement('div', { class: 'side left', $mousedown: (event) => this.#startResize(event, -1, 0) }),
-                createElement('div', { class: 'corner top_right', $mousedown: (event) => this.#startResize(event, 1, -1) }),
-                createElement('div', { class: 'corner bottom_right', $mousedown: (event) => this.#startResize(event, 1, 1) }),
-                createElement('div', { class: 'corner bottom_left', $mousedown: (event) => this.#startResize(event, -1, 1) }),
-                createElement('div', { class: 'corner top_left', $mousedown: (event) => this.#startResize(event, -1, -1) }),
-            ],
-            $mousedown: (event) => this.#handleMouseDown(event),
-        });
-    }
-    #getHeader() {
-        this.#initHTML();
-        if (!this.#htmlHeader) {
-            this.#htmlHeader = createElement('div', {
-                class: 'header',
-                hidden: true,
-                $dblclick: () => this.#toggleCollapse(),
-                $mousedown: (event) => this.#handleMouseDown(event),
-            });
-        }
-        this.#shadowRoot.prepend(this.#htmlHeader);
-        return this.#htmlHeader;
-    }
-    getContent() {
-        this.#initHTML();
-        return this.#htmlContent;
-    }
-    append(...nodes) {
-        this.#initHTML();
-        for (const node of nodes) {
-            const htmlElement = node.htmlElement;
-            if (htmlElement) {
-                this.#htmlContent.append(htmlElement);
-            }
-            else {
-                // eslint-disable-next-line prefer-rest-params
-                this.#htmlContent.append(node);
-            }
-        }
-    }
-    prepend(...nodes) {
-        this.#initHTML();
-        for (const node of nodes) {
-            const htmlElement = node.htmlElement;
-            if (htmlElement) {
-                this.#htmlContent.prepend(htmlElement);
-            }
-            else {
-                // eslint-disable-next-line prefer-rest-params
-                this.#htmlContent.prepend(node);
-            }
-        }
-    }
-    /*
-        appendChild(child: HTMLElement) {
-            this.htmlContent.appendChild(child);
-        }
-    */
-    /*
-    get innerHTML(): string {
-        return this.#htmlContent.innerHTML;
-    }
-
-    set innerHTML(innerHTML) {
-        this.#htmlContent.innerHTML = innerHTML;
-    }
-    */
-    /*
-    attributeChangedCallback(name: string, oldValue: string, newValue: string): void {
-        if (oldValue == newValue) {
-            return;
-        }
-
-        switch (name) {
-            case 'panel-direction':
-                this.#direction = newValue;
-                break;
-            case 'panel-size':
-                this.size = Number(newValue);
-                break;
-            case 'is-movable':
-                this.isMovable = toBool(newValue);
-                break;
-            case 'collapsible':
-                this.collapsible = toBool(newValue);
-                break;
-            case 'collapsed':
-                this.collapsed = toBool(newValue);
-                break;
-            case 'title':
-                this.setTitle(newValue);
-                break;
-            case 'has-header':
-                this.hasHeader = toBool(newValue);
-                break;
-            case 'draggable':
-                this.#isDraggable = toBool(newValue);
-                this.#htmlHeader.setAttribute('draggable', newValue);
-                break;
-            case 'hidden-title':
-                if (toBool(newValue)) {
-                    this.#htmlHeader.classList.add('hidden');
-                } else {
-                    this.#htmlHeader.classList.remove('hidden');
-                }
-                break;
-        }
-    }
-    */
-    /*
-    static get observedAttributes(): string[] {
-        return ['panel-direction', 'panel-size', 'is-movable', 'title', 'collapsible', 'collapsed', 'has-header', 'draggable', 'hidden-title'];
-    }
-    */
-    /*
-        _handleDragStart(event) {
-            if (this._isMovable == false) {
-                event.preventDefault();
-                return;
-            }
-            event.stopPropagation();
-            event.dataTransfer.setData('text/plain', null);
-            dragged = event.target;
-        }
-
-        _handleDragOver(event) {
-            if (this._isContainer != false) {
-                event.preventDefault();
-            }
-            event.stopPropagation();
-        }
-
-        _handleDrop(event) {
-            if (this._isContainer != false) {
-                event.stopPropagation();
-                event.preventDefault();
-                if (dragged) {
-                    if (this != dragged) {
-                        this._addChild(dragged, event.offsetX, event.offsetY);
-                        //OptionsManager.setItem('app.layout.disposition', HTMLHarmonyPanelElement.saveDisposition());
-                    }
-                }
-            }
-            dragged = null;
-        }
-
-        _handleMouseEnter(event) {
-            //console.error(this, event);
-            //clearInterval(HTMLHarmonyPanelElement._interval);
-            //HTMLHarmonyPanelElement._interval = setInterval(event => this.style.opacity = (Math.floor(new Date().getTime() / 500) % 2) / 2 + 0.5, 100);
-            //event.stopPropagation();
-        }
-
-        _handleMouseMove(event) {
-            const delta = 5;
-            //console.error(event.offsetX, event.offsetY);
-            //this.style.opacity = (Math.floor(new Date().getTime() / 1000) % 2);
-            //HTMLHarmonyPanelElement.highlitPanel = this;
-            event.stopPropagation();
-            if (event.offsetX < delta || event.offsetY < delta) {
-                HTMLHarmonyPanelElement.highlitPanel = this;
-                this.parentNode.insertBefore(HTMLHarmonyPanelElement._spliter, this);
-            } else if ((this.offsetWidth - event.offsetX) < delta || (this.offsetHeight - event.offsetY) < delta) {
-                HTMLHarmonyPanelElement.highlitPanel = this;
-                this.parentNode.insertBefore(HTMLHarmonyPanelElement._spliter, this.nextSibling);
-            } else {
-                HTMLHarmonyPanelElement.highlitPanel = null;
-            }
-
-        }
-
-        _handleMouseLeave(event) {
-            //console.error(this, event);
-            //clearInterval(HTMLHarmonyPanelElement._interval);
-        }
-            */
-    static set highlitPanel(panel) {
-        if (highlitPanel$1) {
-            highlitPanel$1.style.filter = '';
-        }
-        highlitPanel$1 = panel;
-        if (highlitPanel$1) {
-            highlitPanel$1.style.filter = 'grayscale(80%)'; ///'contrast(200%)';
-        }
-    }
-    /*
-        _addChild(child, x, y) {
-            let percent = 0.2;
-            let percent2 = 0.8;
-            let height = this.clientHeight;
-            let width = this.clientWidth;
-
-            if (this._direction == undefined) {
-                if (x <= width * percent) {
-                    this.prepend(dragged);
-                    this.direction = 'row';
-                }
-                if (x >= width * percent2) {
-                    this.append(dragged);
-                    this.direction = 'row';
-                }
-                if (y <= height * percent) {
-                    this.prepend(dragged);
-                    this.direction = 'column';
-                }
-                if (y >= height * percent2) {
-                    this.append(dragged);
-                    this.direction = 'column';
-                }
-            } else if (this._direction == 'row') {
-                if (x <= width * percent) {
-                    this.prepend(dragged);
-                }
-                if (x >= width * percent2) {
-                    this.append(dragged);
-                }
-                if (y <= height * percent) {
-                    this._split(dragged, true, 'column');
-                }
-                if (y >= height * percent2) {
-                    this._split(dragged, false, 'column');
-                }
-            } else if (this._direction == 'column') {
-                if (x <= width * percent) {
-                    this._split(dragged, true, 'row');
-                }
-                if (x >= width * percent2) {
-                    this._split(dragged, false, 'row');
-                }
-                if (y <= height * percent) {
-                    this.prepend(dragged);
-                }
-                if (y >= height * percent2) {
-                    this.append(dragged);
-                }
-            }
-        }*/
-    /*
-        _split(newNode, before, direction) {
-            let panel = HTMLHarmonyPanelElement._createDummy();//document.createElement('harmony-panel');
-            /*panel.id = HTMLHarmonyPanelElement.nextId;
-            panel._isDummy = true;
-            panel.classList.add('dummy');* /
-            panel.size = this.size;
-            this.style.flex = this.style.flex;
-            this.after(panel);
-            if (before) {
-                panel.append(newNode);
-                panel.append(this);
-            } else {
-                panel.append(this);
-                panel.append(newNode);
-            }
-            panel.direction = direction;
-        }
-    */
-    /*
-        static _createDummy() {
-            let dummy = document.createElement('harmony-panel');
-            dummy.id = HTMLHarmonyPanelElement.#nextId;
-            dummy._isDummy = true;
-            dummy.classList.add('dummy');
-            return dummy;
-        }
-    */
-    /*
-        _addPanel(panel) {
-            this._panels.add(panel);
-        }
-
-        _removePanel(panel) {
-            this._panels.delete(panel);
-            if (this._isDummy) {
-                if (this._panels.size == 0) {
-                    this.remove();
-                } else if (this._panels.size == 1) {
-                    this.after(this._panels.values().next().value);
-                    this.remove();
-                }
-            }
-        }
-    */
-    /*
-        set active(active) {
-            if (this._active != active) {
-                this.dispatchEvent(new CustomEvent('activated'));
-            }
-            this._active = active;
-            this.style.display = active ? '' : 'none';
-            if (active) {
-                this._header.classList.add('activated');
-            } else {
-                this._header.classList.remove('activated');
-            }
-        }
-        */
-    /*
-        _click() {
-            this.active = true;
-            if (this._group) {
-                this._group.active = this;
-            }
-        }
-    */
-    setLayout(layout) {
-        this.#layout = layout;
-        this.htmlElement.classList.remove('harmony-panel-row');
-        this.htmlElement.classList.remove('harmony-panel-column');
-        if (layout) {
-            this.htmlElement.classList.add(`harmony-panel-${layout}`);
-        }
-        if (layout === 'tabs') {
-            if (!this.#htmlTabGroup) {
-                this.#initHTML();
-                defineHarmonyTabGroup();
-                this.#htmlTabGroup = createElement('harmony-tab-group', {
-                    before: this.#htmlContent,
-                });
-            }
-        }
-        else {
-            hide(this.#htmlTabGroup);
-        }
-    }
-    getLayout() {
-        return this.#layout;
-    }
-    setSize(size) {
-        /*if (size === undefined) {
-            return;
-        }*/
-        this.#size = size;
-        //this.style.flexBasis = size;
-        this.htmlElement.style.flex = String(size);
-    }
-    getSize() {
-        return this.#size;
-    }
-    setCollapsible(collapsible) {
-        this.#collapsible = collapsible;
-        //this.htmlElement.setAttribute('collapsible', String(this.#collapsible ? 1 : 0));
-        addRemoveClass(this.htmlElement, 'collapsible', collapsible);
-    }
-    setCollapsed(collapsed) {
-        this.#collapsed = collapsed && this.#collapsible;
-        //this.htmlElement.setAttribute('collapsed', String(this.#isCollapsed ? 1 : 0));
-        addRemoveClass(this.htmlElement, 'collapsed', this.#collapsed);
-        if (this.#collapsed) {
-            this.collapse();
-        }
-        else {
-            this.expand();
-        }
-    }
-    displayHeader(visible) {
-        this.#headerVisible = visible;
-        display(this.#htmlHeader, visible);
-    }
-    headerVisible() {
-        return this.#headerVisible;
-    }
-    collapse() {
-        hide(this.#htmlContent);
-        this.#collapsed = true;
-    }
-    expand() {
-        show(this.#htmlContent);
-        this.#collapsed = false;
-    }
-    setTitle(title) {
-        const header = this.#getHeader();
-        header.innerText = title;
-        show(header);
-        /*
-        if (title) {
-            //this.#htmlTitle = this.#htmlTitle ?? document.createElement('div');
-            super.prepend(this.#htmlTitle);
-        } else {
-            this.#htmlTitle.remove();
-        }
-        */
-    }
-    setTitleI18n(i18n) {
-        if (typeof i18n === 'string') {
-            AddI18nElement(this.#getHeader(), i18n);
-        }
-        else {
-            errorOnce('unhandled type ' + typeof i18n + i18n);
-        }
-        show(this.#htmlHeader);
-    }
-    #toggleCollapse() {
-        this.setCollapsed(!this.#collapsed);
-    }
-    /*
-    static getNextId(): string {
-        return `harmony-panel-dummy-${++nextId}`;
-    }
-    */
-    /*
-    static saveDisposition(): JSONObject {
-        const list = document.getElementsByTagName('harmony-panel');
-        const json: { panels: Record<string, any>, dummies: any[] } = { panels: {}, dummies: [] };
-        for (const panel of list) {
-            if (panel.id && panel.parentElement && panel.parentElement.id && panel.parentElement.tagName == 'HARMONY-PANEL') {
-                json.panels[(panel as any).id] = { parent: panel.parentElement.id, size: (panel as any).size, direction: (panel as any).direction };
-                if ((panel as HTMLHarmonyPanelElement).#isDummy) {
-                    json.dummies.push((panel as any).id);
-                }
-            }
-        }
-        return json;
-    }
-    */
-    /*
-    static restoreDisposition(json: Record<string, any>): void {
-        return;
-        /*
-        if (!json || !json.dummies || !json.panels) { return; }
-
-        let dummiesList = new Map();
-        for (let oldDummy of json.dummies) {
-            let newDummy = HTMLHarmonyPanelElement._createDummy();
-            document.body.append(newDummy);
-            dummiesList.set(oldDummy, newDummy.id);
-        }
-
-        let list = document.getElementsByTagName('harmony-panel');
-        for (let panel of list) {
-            if (panel.id) {
-                let p = json.panels[panel.id];
-                if (p) {
-                    if (p.size != 1 || panel._isDummy) {
-                        panel.size = p.size;
-                    }
-                    panel.direction = p.direction;
-                    let newParentId = dummiesList.get(p.parent) || p.parent;
-                    if (p && newParentId) {
-                        let parent = document.getElementById(newParentId);
-                        /*if (!parent && p.dummy) {
-                            parent = document.createElement('harmony-panel');
-                        }* /
-                        if (parent) {
-                            parent.append(panel);
-                        } else {
-                            console.error('no parent', panel, newParentId);
-                        }
-                    }
-                }
-            }
-        }* /
-    }
-    */
-    adoptStyleSheet(styleSheet) {
-        this.#initHTML();
-        this.#shadowRoot.adoptedStyleSheets.push(styleSheet);
-    }
-    #handleMouseDown(event) {
-        if (this.#isDraggable && event.button === 0) {
-            _a$1.#draggedPanel = this;
-        }
-    }
-    #startDrag() {
-        if (_a$1.#dragging) {
-            return;
-        }
-        _a$1.#dragging = true;
-        _a$1.#dragMode = 'move';
-        const rect = this.htmlElement.getBoundingClientRect();
-        document.body.append(this.htmlElement);
-        this.setFloating();
-        this.#floatingWidth = this.#floatingWidth ?? rect.width;
-        this.#floatingHeight = this.#floatingHeight ?? rect.height;
-        this.htmlElement.style.left = `${rect.x}px`;
-        this.htmlElement.style.top = `${rect.y}px`;
-        this.htmlElement.style.width = `${this.#floatingWidth}px`;
-        this.htmlElement.style.height = `${this.#floatingHeight}px`;
-        this.htmlElement.style.position = 'absolute';
-        _a$1.#deltaX = rect.x - _a$1.#startClientX;
-        _a$1.#deltaY = rect.y - _a$1.#startClientY;
-    }
-    setFloating() {
-        this.#floating = true;
-        this.htmlElement.classList.add('floating');
-        this.htmlElement.classList.remove('docked');
-    }
-    setDocked() {
-        this.#floating = false;
-        this.htmlElement.classList.remove('floating');
-        this.htmlElement.classList.add('docked');
-    }
-    #drag(event) {
-        if (!_a$1.#dragging) {
-            return;
-        }
-        this.htmlElement.style.left = `${event.clientX + _a$1.#deltaX}px`;
-        this.htmlElement.style.top = `${event.clientY + _a$1.#deltaY}px`;
-        if (event.ctrlKey) {
-            _a$1.#setTarget(null);
-        }
-        else {
-            const panel = this.#getDropTargetAtMousePosition(event);
-            _a$1.#setTarget(panel);
-        }
-    }
-    #stopDrag() {
-        _a$1.#dragging = false;
-        _a$1.#dragMode = 'none';
-        if (_a$1.#target) {
-            _a$1.#target.append(this.htmlElement);
-            this.setDocked();
-            this.htmlElement.style = '';
-        }
-    }
-    #resize(event) {
-        if (_a$1.#dragMode !== 'resize' || !_a$1.#startRect) {
-            return;
-        }
-        const deltaX = event.clientX - _a$1.#startClientX;
-        const deltaY = event.clientY - _a$1.#startClientY;
-        const rect = _a$1.#startRect;
-        let deltaTop = 0, deltaWidth = 0, deltaHeight = 0, deltaLeft = 0;
-        switch (_a$1.#resizeX) {
-            case -1:
-                deltaLeft += deltaX;
-                deltaWidth -= deltaX;
-                break;
-            case 1:
-                deltaWidth += deltaX;
-                break;
-        }
-        switch (_a$1.#resizeY) {
-            case -1:
-                deltaTop += deltaY;
-                deltaHeight -= deltaY;
-                break;
-            case 1:
-                deltaHeight += deltaY;
-                break;
-        }
-        this.#floatingWidth = rect.width + deltaWidth;
-        this.#floatingHeight = rect.height + deltaHeight;
-        this.htmlElement.style.left = `${rect.x + deltaLeft}px`;
-        this.htmlElement.style.top = `${rect.y + deltaTop}px`;
-        this.htmlElement.style.width = `${this.#floatingWidth}px`;
-        this.htmlElement.style.height = `${this.#floatingHeight}px`;
-    }
-    #stopResize() {
-        _a$1.#dragging = false;
-        _a$1.#dragMode = 'none';
-    }
-    static #setTarget(target) {
-        if (this.#target) {
-            this.#target.#htmlHeader?.classList.remove('target');
-            this.#target.#htmlContent?.classList.remove('target');
-        }
-        if (target) {
-            target.#htmlHeader?.classList.add('target');
-            target.#htmlContent?.classList.add('target');
-        }
-        this.#target = target;
-    }
-    static #handleDocumentMouseMove(event) {
-        if (!this.#mouseDown || !this.#draggedPanel) {
-            return;
-        }
-        switch (_a$1.#dragMode) {
-            case 'none':
-                const deltaX = event.clientX - this.#startClientX;
-                const deltaY = event.clientY - this.#startClientY;
-                if (deltaX * deltaX + deltaY * deltaY > DRAG_THRESHOLD$1) {
-                    this.#draggedPanel.#startDrag();
-                }
-                break;
-            case 'move':
-                this.#draggedPanel.#drag(event);
-                break;
-            case 'resize':
-                this.#draggedPanel.#resize(event);
-                break;
-        }
-    }
-    static #handleDocumentMouseDown(event) {
-        this.#mouseDown = true;
-        this.#startClientX = event.clientX;
-        this.#startClientY = event.clientY;
-    }
-    static #handleDocumentMouseUp(event) {
-        this.#mouseDown = false;
-        _a$1.#dragging = false;
-        _a$1.#dragMode = 'none';
-        if (this.#draggedPanel) {
-            this.#draggedPanel.#stopDrag();
-            this.#draggedPanel.#stopResize();
-        }
-        this.#draggedPanel = undefined;
-        this.#setTarget(null);
-    }
-    #getDropTargetAtMousePosition(event) {
-        let best = null;
-        let bestRect;
-        for (const panel of _a$1.#panels) {
-            if (panel === this || !panel.htmlElement.isConnected || !panel.#dropTarget) {
-                continue;
-            }
-            const rect = panel.htmlElement.getBoundingClientRect();
-            if (event.clientX >= rect.left
-                && event.clientX < rect.right
-                && event.clientY >= rect.top
-                && event.clientY < rect.bottom) {
-                if (!best ||
-                    (bestRect.left <= rect.left
-                        && bestRect.right >= rect.right
-                        && bestRect.top <= rect.top
-                        && bestRect.bottom >= rect.bottom)) {
-                    best = panel;
-                    bestRect = rect;
-                }
-            }
-        }
-        return best;
-    }
-    #startResize(event, x, y) {
-        if (_a$1.#dragMode !== 'none') {
-            return;
-        }
-        _a$1.#dragMode = 'resize';
-        _a$1.#resizeX = x;
-        _a$1.#resizeY = y;
-        _a$1.#startRect = this.htmlElement.getBoundingClientRect();
-    }
-}
-_a$1 = HarmonyPanel;
-
 const addTaskSVG = '<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor"><path d="M480-80q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q65 0 123 19t107 53l-58 59q-38-24-81-37.5T480-800q-133 0-226.5 93.5T160-480q0 133 93.5 226.5T480-160q32 0 62-6t58-17l60 61q-41 20-86 31t-94 11Zm280-80v-120H640v-80h120v-120h80v120h120v80H840v120h-80ZM424-296 254-466l56-56 114 114 400-401 56 56-456 457Z"/></svg>';
 
 const addToQueueSVG = '<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor"><path d="M440-360h80v-120h120v-80H520v-120h-80v120H320v80h120v120ZM320-120v-80H160q-33 0-56.5-23.5T80-280v-480q0-33 23.5-56.5T160-840h640q33 0 56.5 23.5T880-760v480q0 33-23.5 56.5T800-200H640v80H320ZM160-280h640v-480H160v480Zm0 0v-480 480Z"/></svg>';
@@ -2103,6 +1378,7 @@ class HarmonyTab extends MyEventTarget {
         if (params.titleI18n !== undefined) {
             this.setTitleI18n(params.titleI18n);
         }
+        this.content = params.content;
     }
     #initHTML() {
         if (this.#shadowRoot) {
@@ -2263,20 +1539,20 @@ class HarmonyTabGroup {
         for (const tab of tabs) {
             this.#tabs.add(tab);
             this.#htmlTabs.prepend(tab.htmlElement);
+            tab.setActive(!this.#activeTab || this.#activeTab === tab);
+            tab.setGroup(this);
         }
     }
-    activateTab(tab) {
-        if (this.#activeTab != tab) {
+    addTab(tab) {
+        this.#tabs.add(tab);
+        if (!this.#activeTab) {
             this.#activeTab = tab;
-            this.#refresh();
         }
-    }
-    closeTab(tab) {
-        this.#tabs.delete(tab);
-        if (this.#activeTab == tab) {
-            this.#activeTab = this.#tabs.values().next().value;
-        }
+        tab.setGroup(this);
         this.#refresh();
+    }
+    getTabs() {
+        return new Set(this.#tabs);
     }
     #refresh() {
         this.#initHTML();
@@ -2294,7 +1570,781 @@ class HarmonyTabGroup {
             this.#activeTab?.htmlElement.scrollIntoView();
         }, 0);
     }
+    activateTab(tab) {
+        if (this.#activeTab != tab) {
+            this.#activeTab = tab;
+            this.#refresh();
+        }
+    }
+    closeTab(tab) {
+        this.#tabs.delete(tab);
+        if (this.#activeTab == tab) {
+            this.#activeTab = this.#tabs.values().next().value;
+        }
+        this.#refresh();
+    }
+    closeAllTabs() {
+        for (const tab of this.#tabs) {
+            tab.close();
+        }
+    }
+    clear() {
+        this.#tabs.clear();
+        this.#activeTab = undefined;
+        this.#htmlTabs?.replaceChildren();
+    }
 }
+
+var _a$1;
+//const dragged = null;
+let nextId$1 = 0;
+//let spliter: HTMLElement = createElement('div', { class: 'harmony-panel-splitter' }) as HTMLElement;
+let highlitPanel$1;
+const DRAG_THRESHOLD$1 = 15;
+class HarmonyPanel {
+    htmlElement = createElement('div');
+    isHarmonyPanel = true;
+    #doOnce = true;
+    #parent = null;
+    #size = 1;
+    #layout;
+    isMovable = false;
+    #collapsible = true;
+    #collapsed = false;
+    #dropTarget;
+    customPanelId = nextId$1++;
+    #htmlHeader;
+    #htmlTabGroup;
+    #htmlContent;
+    #htmlResize;
+    #isDummy = false;
+    #shadowRoot;
+    #headerVisible = false;
+    #isDraggable = true;
+    #floating = false;
+    #floatingWidth;
+    #floatingHeight;
+    #childPanels = new Set;
+    #title;
+    #titleI18n;
+    static #dragMode = 'none';
+    static #resizeX = 0;
+    static #resizeY = 0;
+    static #dragging = false;
+    static #draggedPanel;
+    static #deltaX = 0;
+    static #deltaY = 0;
+    static #startClientX = 0;
+    static #startClientY = 0;
+    static #mouseDown = false;
+    static #panels = new Set;
+    static #target = null;
+    static #startRect;
+    static {
+        document.addEventListener('mousedown', (event) => _a$1.#handleDocumentMouseDown(event));
+        document.addEventListener('mousemove', (event) => _a$1.#handleDocumentMouseMove(event));
+        document.addEventListener('mouseup', (event) => _a$1.#handleDocumentMouseUp(event));
+    }
+    constructor(params = {}) {
+        _a$1.#panels.add(this);
+        this.setParams(params);
+    }
+    setParams(params) {
+        this.setCollapsible(params.collapsible ?? true);
+        this.setCollapsed(params.collapsed ?? false);
+        this.isMovable = params.movable ?? false;
+        this.#dropTarget = params.dropTarget ?? false;
+        this.setLayout(params.layout ?? 'row');
+        if (params.size !== undefined) {
+            this.setSize(params.size);
+        }
+        if (params.title !== undefined) {
+            this.setTitle(params.title);
+        }
+        if (params.titleI18n !== undefined) {
+            this.setTitleI18n(params.titleI18n);
+        }
+        if (params.adoptStyle || params.adoptStyles || params.adoptStyleSheet || params.adoptStyleSheets) {
+            this.#initHTML();
+            updateShadowRoot(this.#shadowRoot, {
+                adoptStyle: params.adoptStyle,
+                adoptStyles: params.adoptStyles,
+                adoptStyleSheet: params.adoptStyleSheet,
+                adoptStyleSheets: params.adoptStyleSheets,
+            });
+        }
+    }
+    #initHTML() {
+        if (this.#shadowRoot) {
+            return;
+        }
+        this.#shadowRoot = this.htmlElement.attachShadow({ mode: 'closed' });
+        void shadowRootStyle(this.#shadowRoot, panelCSS);
+        this.#htmlContent = createElement('div', {
+            class: 'content',
+            parent: this.#shadowRoot,
+        });
+        this.#htmlResize = createElement('div', {
+            class: 'resize',
+            parent: this.#shadowRoot,
+            childs: [
+                createElement('div', { class: 'side top', $mousedown: (event) => this.#startResize(event, 0, -1) }),
+                createElement('div', { class: 'side right', $mousedown: (event) => this.#startResize(event, 1, 0) }),
+                createElement('div', { class: 'side bottom', $mousedown: (event) => this.#startResize(event, 0, 1) }),
+                createElement('div', { class: 'side left', $mousedown: (event) => this.#startResize(event, -1, 0) }),
+                createElement('div', { class: 'corner top_right', $mousedown: (event) => this.#startResize(event, 1, -1) }),
+                createElement('div', { class: 'corner bottom_right', $mousedown: (event) => this.#startResize(event, 1, 1) }),
+                createElement('div', { class: 'corner bottom_left', $mousedown: (event) => this.#startResize(event, -1, 1) }),
+                createElement('div', { class: 'corner top_left', $mousedown: (event) => this.#startResize(event, -1, -1) }),
+            ],
+            $mousedown: (event) => this.#handleMouseDown(event),
+        });
+    }
+    #getHeader() {
+        this.#initHTML();
+        if (!this.#htmlHeader) {
+            this.#htmlHeader = createElement('div', {
+                class: 'header',
+                hidden: true,
+                $dblclick: () => this.#toggleCollapse(),
+                $mousedown: (event) => this.#handleMouseDown(event),
+            });
+        }
+        this.#shadowRoot.prepend(this.#htmlHeader);
+        return this.#htmlHeader;
+    }
+    getContent() {
+        this.#initHTML();
+        return this.#htmlContent;
+    }
+    append(...nodes) {
+        this.#initHTML();
+        for (const node of nodes) {
+            const htmlElement = node.htmlElement;
+            if (htmlElement) {
+                if (node.isHarmonyPanel) {
+                    this.#childPanels.add(node);
+                    if (this.#layout === 'tabs') {
+                        this.#addTab(node);
+                    }
+                }
+                this.#htmlContent.append(htmlElement);
+            }
+            else {
+                // eslint-disable-next-line prefer-rest-params
+                this.#htmlContent.append(node);
+            }
+        }
+    }
+    prepend(...nodes) {
+        this.#initHTML();
+        for (const node of nodes) {
+            const htmlElement = node.htmlElement;
+            if (htmlElement) {
+                if (node.isHarmonyPanel) {
+                    this.#childPanels.add(node);
+                    if (this.#layout === 'tabs') {
+                        this.#addTab(node);
+                    }
+                }
+                this.#htmlContent.prepend(htmlElement);
+            }
+            else {
+                // eslint-disable-next-line prefer-rest-params
+                this.#htmlContent.prepend(node);
+            }
+        }
+    }
+    /*
+        appendChild(child: HTMLElement) {
+            this.htmlContent.appendChild(child);
+        }
+    */
+    /*
+    get innerHTML(): string {
+        return this.#htmlContent.innerHTML;
+    }
+
+    set innerHTML(innerHTML) {
+        this.#htmlContent.innerHTML = innerHTML;
+    }
+    */
+    /*
+    attributeChangedCallback(name: string, oldValue: string, newValue: string): void {
+        if (oldValue == newValue) {
+            return;
+        }
+
+        switch (name) {
+            case 'panel-direction':
+                this.#direction = newValue;
+                break;
+            case 'panel-size':
+                this.size = Number(newValue);
+                break;
+            case 'is-movable':
+                this.isMovable = toBool(newValue);
+                break;
+            case 'collapsible':
+                this.collapsible = toBool(newValue);
+                break;
+            case 'collapsed':
+                this.collapsed = toBool(newValue);
+                break;
+            case 'title':
+                this.setTitle(newValue);
+                break;
+            case 'has-header':
+                this.hasHeader = toBool(newValue);
+                break;
+            case 'draggable':
+                this.#isDraggable = toBool(newValue);
+                this.#htmlHeader.setAttribute('draggable', newValue);
+                break;
+            case 'hidden-title':
+                if (toBool(newValue)) {
+                    this.#htmlHeader.classList.add('hidden');
+                } else {
+                    this.#htmlHeader.classList.remove('hidden');
+                }
+                break;
+        }
+    }
+    */
+    /*
+    static get observedAttributes(): string[] {
+        return ['panel-direction', 'panel-size', 'is-movable', 'title', 'collapsible', 'collapsed', 'has-header', 'draggable', 'hidden-title'];
+    }
+    */
+    /*
+        _handleDragStart(event) {
+            if (this._isMovable == false) {
+                event.preventDefault();
+                return;
+            }
+            event.stopPropagation();
+            event.dataTransfer.setData('text/plain', null);
+            dragged = event.target;
+        }
+
+        _handleDragOver(event) {
+            if (this._isContainer != false) {
+                event.preventDefault();
+            }
+            event.stopPropagation();
+        }
+
+        _handleDrop(event) {
+            if (this._isContainer != false) {
+                event.stopPropagation();
+                event.preventDefault();
+                if (dragged) {
+                    if (this != dragged) {
+                        this._addChild(dragged, event.offsetX, event.offsetY);
+                        //OptionsManager.setItem('app.layout.disposition', HTMLHarmonyPanelElement.saveDisposition());
+                    }
+                }
+            }
+            dragged = null;
+        }
+
+        _handleMouseEnter(event) {
+            //console.error(this, event);
+            //clearInterval(HTMLHarmonyPanelElement._interval);
+            //HTMLHarmonyPanelElement._interval = setInterval(event => this.style.opacity = (Math.floor(new Date().getTime() / 500) % 2) / 2 + 0.5, 100);
+            //event.stopPropagation();
+        }
+
+        _handleMouseMove(event) {
+            const delta = 5;
+            //console.error(event.offsetX, event.offsetY);
+            //this.style.opacity = (Math.floor(new Date().getTime() / 1000) % 2);
+            //HTMLHarmonyPanelElement.highlitPanel = this;
+            event.stopPropagation();
+            if (event.offsetX < delta || event.offsetY < delta) {
+                HTMLHarmonyPanelElement.highlitPanel = this;
+                this.parentNode.insertBefore(HTMLHarmonyPanelElement._spliter, this);
+            } else if ((this.offsetWidth - event.offsetX) < delta || (this.offsetHeight - event.offsetY) < delta) {
+                HTMLHarmonyPanelElement.highlitPanel = this;
+                this.parentNode.insertBefore(HTMLHarmonyPanelElement._spliter, this.nextSibling);
+            } else {
+                HTMLHarmonyPanelElement.highlitPanel = null;
+            }
+
+        }
+
+        _handleMouseLeave(event) {
+            //console.error(this, event);
+            //clearInterval(HTMLHarmonyPanelElement._interval);
+        }
+            */
+    static set highlitPanel(panel) {
+        if (highlitPanel$1) {
+            highlitPanel$1.style.filter = '';
+        }
+        highlitPanel$1 = panel;
+        if (highlitPanel$1) {
+            highlitPanel$1.style.filter = 'grayscale(80%)'; ///'contrast(200%)';
+        }
+    }
+    /*
+        _addChild(child, x, y) {
+            let percent = 0.2;
+            let percent2 = 0.8;
+            let height = this.clientHeight;
+            let width = this.clientWidth;
+
+            if (this._direction == undefined) {
+                if (x <= width * percent) {
+                    this.prepend(dragged);
+                    this.direction = 'row';
+                }
+                if (x >= width * percent2) {
+                    this.append(dragged);
+                    this.direction = 'row';
+                }
+                if (y <= height * percent) {
+                    this.prepend(dragged);
+                    this.direction = 'column';
+                }
+                if (y >= height * percent2) {
+                    this.append(dragged);
+                    this.direction = 'column';
+                }
+            } else if (this._direction == 'row') {
+                if (x <= width * percent) {
+                    this.prepend(dragged);
+                }
+                if (x >= width * percent2) {
+                    this.append(dragged);
+                }
+                if (y <= height * percent) {
+                    this._split(dragged, true, 'column');
+                }
+                if (y >= height * percent2) {
+                    this._split(dragged, false, 'column');
+                }
+            } else if (this._direction == 'column') {
+                if (x <= width * percent) {
+                    this._split(dragged, true, 'row');
+                }
+                if (x >= width * percent2) {
+                    this._split(dragged, false, 'row');
+                }
+                if (y <= height * percent) {
+                    this.prepend(dragged);
+                }
+                if (y >= height * percent2) {
+                    this.append(dragged);
+                }
+            }
+        }*/
+    /*
+        _split(newNode, before, direction) {
+            let panel = HTMLHarmonyPanelElement._createDummy();//document.createElement('harmony-panel');
+            /*panel.id = HTMLHarmonyPanelElement.nextId;
+            panel._isDummy = true;
+            panel.classList.add('dummy');* /
+            panel.size = this.size;
+            this.style.flex = this.style.flex;
+            this.after(panel);
+            if (before) {
+                panel.append(newNode);
+                panel.append(this);
+            } else {
+                panel.append(this);
+                panel.append(newNode);
+            }
+            panel.direction = direction;
+        }
+    */
+    /*
+        static _createDummy() {
+            let dummy = document.createElement('harmony-panel');
+            dummy.id = HTMLHarmonyPanelElement.#nextId;
+            dummy._isDummy = true;
+            dummy.classList.add('dummy');
+            return dummy;
+        }
+    */
+    /*
+        _addPanel(panel) {
+            this._panels.add(panel);
+        }
+
+        _removePanel(panel) {
+            this._panels.delete(panel);
+            if (this._isDummy) {
+                if (this._panels.size == 0) {
+                    this.remove();
+                } else if (this._panels.size == 1) {
+                    this.after(this._panels.values().next().value);
+                    this.remove();
+                }
+            }
+        }
+    */
+    /*
+        set active(active) {
+            if (this._active != active) {
+                this.dispatchEvent(new CustomEvent('activated'));
+            }
+            this._active = active;
+            this.style.display = active ? '' : 'none';
+            if (active) {
+                this._header.classList.add('activated');
+            } else {
+                this._header.classList.remove('activated');
+            }
+        }
+        */
+    /*
+        _click() {
+            this.active = true;
+            if (this._group) {
+                this._group.active = this;
+            }
+        }
+    */
+    setLayout(layout) {
+        this.#layout = layout;
+        this.htmlElement.classList.remove('harmony-panel-row');
+        this.htmlElement.classList.remove('harmony-panel-column');
+        if (layout) {
+            this.htmlElement.classList.add(`harmony-panel-${layout}`);
+        }
+        if (layout === 'tabs') {
+            for (const panel of this.#childPanels) {
+                this.#addTab(panel);
+            }
+        }
+        else {
+            hide(this.#htmlTabGroup?.htmlElement);
+        }
+    }
+    #addTab(panel) {
+        if (!this.#htmlTabGroup) {
+            this.#initHTML();
+            this.#htmlTabGroup = new HarmonyTabGroup();
+            this.#htmlContent.before(this.#htmlTabGroup.htmlElement);
+        }
+        this.#htmlTabGroup.addTab(new HarmonyTab({
+            title: panel.#title,
+            titleI18n: panel.#titleI18n,
+            content: panel.htmlElement,
+        }));
+    }
+    getLayout() {
+        return this.#layout;
+    }
+    setSize(size) {
+        /*if (size === undefined) {
+            return;
+        }*/
+        this.#size = size;
+        //this.style.flexBasis = size;
+        this.htmlElement.style.flex = String(size);
+    }
+    getSize() {
+        return this.#size;
+    }
+    setCollapsible(collapsible) {
+        this.#collapsible = collapsible;
+        //this.htmlElement.setAttribute('collapsible', String(this.#collapsible ? 1 : 0));
+        addRemoveClass(this.htmlElement, 'collapsible', collapsible);
+    }
+    setCollapsed(collapsed) {
+        this.#collapsed = collapsed && this.#collapsible;
+        //this.htmlElement.setAttribute('collapsed', String(this.#isCollapsed ? 1 : 0));
+        addRemoveClass(this.htmlElement, 'collapsed', this.#collapsed);
+        if (this.#collapsed) {
+            this.collapse();
+        }
+        else {
+            this.expand();
+        }
+    }
+    displayHeader(visible) {
+        this.#headerVisible = visible;
+        display(this.#htmlHeader, visible);
+    }
+    headerVisible() {
+        return this.#headerVisible;
+    }
+    collapse() {
+        hide(this.#htmlContent);
+        this.#collapsed = true;
+    }
+    expand() {
+        show(this.#htmlContent);
+        this.#collapsed = false;
+    }
+    setTitle(title) {
+        this.#title = title;
+        const header = this.#getHeader();
+        header.innerText = title;
+        show(header);
+        /*
+        if (title) {
+            //this.#htmlTitle = this.#htmlTitle ?? document.createElement('div');
+            super.prepend(this.#htmlTitle);
+        } else {
+            this.#htmlTitle.remove();
+        }
+        */
+    }
+    setTitleI18n(i18n) {
+        this.#titleI18n = i18n;
+        if (typeof i18n === 'string') {
+            AddI18nElement(this.#getHeader(), i18n);
+        }
+        else {
+            errorOnce('unhandled type ' + typeof i18n + i18n);
+        }
+        show(this.#htmlHeader);
+    }
+    #toggleCollapse() {
+        this.setCollapsed(!this.#collapsed);
+    }
+    /*
+    static getNextId(): string {
+        return `harmony-panel-dummy-${++nextId}`;
+    }
+    */
+    /*
+    static saveDisposition(): JSONObject {
+        const list = document.getElementsByTagName('harmony-panel');
+        const json: { panels: Record<string, any>, dummies: any[] } = { panels: {}, dummies: [] };
+        for (const panel of list) {
+            if (panel.id && panel.parentElement && panel.parentElement.id && panel.parentElement.tagName == 'HARMONY-PANEL') {
+                json.panels[(panel as any).id] = { parent: panel.parentElement.id, size: (panel as any).size, direction: (panel as any).direction };
+                if ((panel as HTMLHarmonyPanelElement).#isDummy) {
+                    json.dummies.push((panel as any).id);
+                }
+            }
+        }
+        return json;
+    }
+    */
+    /*
+    static restoreDisposition(json: Record<string, any>): void {
+        return;
+        /*
+        if (!json || !json.dummies || !json.panels) { return; }
+
+        let dummiesList = new Map();
+        for (let oldDummy of json.dummies) {
+            let newDummy = HTMLHarmonyPanelElement._createDummy();
+            document.body.append(newDummy);
+            dummiesList.set(oldDummy, newDummy.id);
+        }
+
+        let list = document.getElementsByTagName('harmony-panel');
+        for (let panel of list) {
+            if (panel.id) {
+                let p = json.panels[panel.id];
+                if (p) {
+                    if (p.size != 1 || panel._isDummy) {
+                        panel.size = p.size;
+                    }
+                    panel.direction = p.direction;
+                    let newParentId = dummiesList.get(p.parent) || p.parent;
+                    if (p && newParentId) {
+                        let parent = document.getElementById(newParentId);
+                        /*if (!parent && p.dummy) {
+                            parent = document.createElement('harmony-panel');
+                        }* /
+                        if (parent) {
+                            parent.append(panel);
+                        } else {
+                            console.error('no parent', panel, newParentId);
+                        }
+                    }
+                }
+            }
+        }* /
+    }
+    */
+    adoptStyleSheet(styleSheet) {
+        this.#initHTML();
+        this.#shadowRoot.adoptedStyleSheets.push(styleSheet);
+    }
+    #handleMouseDown(event) {
+        if (this.#isDraggable && event.button === 0) {
+            _a$1.#draggedPanel = this;
+        }
+    }
+    #startDrag() {
+        if (_a$1.#dragging) {
+            return;
+        }
+        _a$1.#dragging = true;
+        _a$1.#dragMode = 'move';
+        const rect = this.htmlElement.getBoundingClientRect();
+        document.body.append(this.htmlElement);
+        this.setFloating();
+        this.#floatingWidth = this.#floatingWidth ?? rect.width;
+        this.#floatingHeight = this.#floatingHeight ?? rect.height;
+        this.htmlElement.style.left = `${rect.x}px`;
+        this.htmlElement.style.top = `${rect.y}px`;
+        this.htmlElement.style.width = `${this.#floatingWidth}px`;
+        this.htmlElement.style.height = `${this.#floatingHeight}px`;
+        this.htmlElement.style.position = 'absolute';
+        _a$1.#deltaX = rect.x - _a$1.#startClientX;
+        _a$1.#deltaY = rect.y - _a$1.#startClientY;
+    }
+    setFloating() {
+        this.#floating = true;
+        this.htmlElement.classList.add('floating');
+        this.htmlElement.classList.remove('docked');
+    }
+    setDocked() {
+        this.#floating = false;
+        this.htmlElement.classList.remove('floating');
+        this.htmlElement.classList.add('docked');
+    }
+    #drag(event) {
+        if (!_a$1.#dragging) {
+            return;
+        }
+        this.htmlElement.style.left = `${event.clientX + _a$1.#deltaX}px`;
+        this.htmlElement.style.top = `${event.clientY + _a$1.#deltaY}px`;
+        if (event.ctrlKey) {
+            _a$1.#setTarget(null);
+        }
+        else {
+            const panel = this.#getDropTargetAtMousePosition(event);
+            _a$1.#setTarget(panel);
+        }
+    }
+    #stopDrag() {
+        _a$1.#dragging = false;
+        _a$1.#dragMode = 'none';
+        if (_a$1.#target) {
+            _a$1.#target.append(this.htmlElement);
+            this.setDocked();
+            this.htmlElement.style = '';
+        }
+    }
+    #resize(event) {
+        if (_a$1.#dragMode !== 'resize' || !_a$1.#startRect) {
+            return;
+        }
+        const deltaX = event.clientX - _a$1.#startClientX;
+        const deltaY = event.clientY - _a$1.#startClientY;
+        const rect = _a$1.#startRect;
+        let deltaTop = 0, deltaWidth = 0, deltaHeight = 0, deltaLeft = 0;
+        switch (_a$1.#resizeX) {
+            case -1:
+                deltaLeft += deltaX;
+                deltaWidth -= deltaX;
+                break;
+            case 1:
+                deltaWidth += deltaX;
+                break;
+        }
+        switch (_a$1.#resizeY) {
+            case -1:
+                deltaTop += deltaY;
+                deltaHeight -= deltaY;
+                break;
+            case 1:
+                deltaHeight += deltaY;
+                break;
+        }
+        this.#floatingWidth = rect.width + deltaWidth;
+        this.#floatingHeight = rect.height + deltaHeight;
+        this.htmlElement.style.left = `${rect.x + deltaLeft}px`;
+        this.htmlElement.style.top = `${rect.y + deltaTop}px`;
+        this.htmlElement.style.width = `${this.#floatingWidth}px`;
+        this.htmlElement.style.height = `${this.#floatingHeight}px`;
+    }
+    #stopResize() {
+        _a$1.#dragging = false;
+        _a$1.#dragMode = 'none';
+    }
+    static #setTarget(target) {
+        if (this.#target) {
+            this.#target.#htmlHeader?.classList.remove('target');
+            this.#target.#htmlContent?.classList.remove('target');
+        }
+        if (target) {
+            target.#htmlHeader?.classList.add('target');
+            target.#htmlContent?.classList.add('target');
+        }
+        this.#target = target;
+    }
+    static #handleDocumentMouseMove(event) {
+        if (!this.#mouseDown || !this.#draggedPanel) {
+            return;
+        }
+        switch (_a$1.#dragMode) {
+            case 'none':
+                const deltaX = event.clientX - this.#startClientX;
+                const deltaY = event.clientY - this.#startClientY;
+                if (deltaX * deltaX + deltaY * deltaY > DRAG_THRESHOLD$1) {
+                    this.#draggedPanel.#startDrag();
+                }
+                break;
+            case 'move':
+                this.#draggedPanel.#drag(event);
+                break;
+            case 'resize':
+                this.#draggedPanel.#resize(event);
+                break;
+        }
+    }
+    static #handleDocumentMouseDown(event) {
+        this.#mouseDown = true;
+        this.#startClientX = event.clientX;
+        this.#startClientY = event.clientY;
+    }
+    static #handleDocumentMouseUp(event) {
+        this.#mouseDown = false;
+        _a$1.#dragging = false;
+        _a$1.#dragMode = 'none';
+        if (this.#draggedPanel) {
+            this.#draggedPanel.#stopDrag();
+            this.#draggedPanel.#stopResize();
+        }
+        this.#draggedPanel = undefined;
+        this.#setTarget(null);
+    }
+    #getDropTargetAtMousePosition(event) {
+        let best = null;
+        let bestRect;
+        for (const panel of _a$1.#panels) {
+            if (panel === this || !panel.htmlElement.isConnected || !panel.#dropTarget) {
+                continue;
+            }
+            const rect = panel.htmlElement.getBoundingClientRect();
+            if (event.clientX >= rect.left
+                && event.clientX < rect.right
+                && event.clientY >= rect.top
+                && event.clientY < rect.bottom) {
+                if (!best ||
+                    (bestRect.left <= rect.left
+                        && bestRect.right >= rect.right
+                        && bestRect.top <= rect.top
+                        && bestRect.bottom >= rect.bottom)) {
+                    best = panel;
+                    bestRect = rect;
+                }
+            }
+        }
+        return best;
+    }
+    #startResize(event, x, y) {
+        if (_a$1.#dragMode !== 'none') {
+            return;
+        }
+        _a$1.#dragMode = 'resize';
+        _a$1.#resizeX = x;
+        _a$1.#resizeY = y;
+        _a$1.#startRect = this.htmlElement.getBoundingClientRect();
+    }
+}
+_a$1 = HarmonyPanel;
 
 var manipulator2dCSS = ":host {\n\t--handle-radius: var(--harmony-2d-manipulator-radius, 0.5rem);\n\t--harmony-2d-manipulator-shadow-bg-color: var(--harmony-2d-manipulator-bg-color, red);\n\t--harmony-2d-manipulator-shadow-border: var(--harmony-2d-manipulator-border, none);\n\t--handle-bg-color: var(--harmony-2d-manipulator-handle-bg-color, chartreuse);\n\t--corner-bg-color: var(--harmony-2d-manipulator-corner-bg-color, var(--handle-bg-color));\n\t--side-bg-color: var(--harmony-2d-manipulator-side-bg-color, var(--handle-bg-color));\n\t--rotate-bg-color: var(--harmony-2d-manipulator-rotate-bg-color, var(--handle-bg-color));\n\n\twidth: 1rem;\n\theight: 1rem;\n\tdisplay: block;\n\tuser-select: none;\n\tpointer-events: all;\n}\n\n:host-context(.grabbing) {\n\tcursor: grabbing;\n}\n\n.manipulator {\n\tposition: absolute;\n\tbackground-color: var(--harmony-2d-manipulator-shadow-bg-color);\n\tborder: var(--harmony-2d-manipulator-shadow-border);\n\tcursor: move;\n\tpointer-events: all;\n}\n\n.rotator {\n\tscale: var(--rotate);\n\tposition: absolute;\n\twidth: var(--handle-radius);\n\theight: var(--handle-radius);\n\tbackground-color: var(--rotate-bg-color);\n\tborder-radius: calc(var(--handle-radius) * 0.5);\n\ttransform: translate(-50%, -50%);\n\tcursor: grab;\n}\n\n.corner {\n\tscale: var(--scale);\n\tposition: absolute;\n\twidth: var(--handle-radius);\n\theight: var(--handle-radius);\n\tbackground-color: var(--corner-bg-color);\n\tborder-radius: calc(var(--handle-radius) * 0.5);\n\ttransform: translate(-50%, -50%);\n\tcursor: grab;\n}\n\n.side {\n\tposition: absolute;\n\twidth: var(--handle-radius);\n\theight: var(--handle-radius);\n\tbackground-color: var(--side-bg-color);\n\tborder-radius: calc(var(--handle-radius) * 0.5);\n\ttransform: translate(-50%, -50%);\n\tcursor: grab;\n}\n\n.side.x {\n\tscale: var(--resize-x);\n}\n\n.side.y {\n\tscale: var(--resize-y);\n}\n\n.corner.grabbing {\n\tcursor: grabbing;\n}\n";
 

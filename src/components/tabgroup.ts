@@ -75,6 +75,8 @@ export class HarmonyTabGroup implements HarmonyComponent {
 		for (const tab of tabs) {
 			this.#tabs.add(tab);
 			this.#htmlTabs!.prepend(tab.htmlElement);
+			tab.setActive(!this.#activeTab || this.#activeTab === tab);
+			tab.setGroup(this);
 		}
 	}
 
@@ -83,6 +85,7 @@ export class HarmonyTabGroup implements HarmonyComponent {
 		if (!this.#activeTab) {
 			this.#activeTab = tab;
 		}
+		tab.setGroup(this);
 		this.#refresh();
 	}
 

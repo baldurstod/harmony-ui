@@ -18,13 +18,19 @@
 	--layout: column;
 }
 
+/* Prevent child panel header to appear for tabs layout */
+@container style(--layout: tabs) {
+	:host {
+		--display-header: none;
+	}
+}
+
 :host(.collapsed) {
 	flex: 0 0 auto;
 }
 
 .harmony-panel-row,
 :host(.harmony-panel-row) {
-	/*flex-direction: row;*/
 	--layout: row;
 }
 
@@ -34,8 +40,12 @@
 
 .harmony-panel-column,
 :host(.harmony-panel-column) {
-	/*flex-direction: column;*/
 	--layout: column;
+}
+
+.harmony-panel-tabs,
+:host(.harmony-panel-tabs) {
+	--layout: tabs;
 }
 
 .harmony-panel-column>harmony-panel {
@@ -55,7 +65,7 @@
 	overflow: hidden;
 	flex: 0 0 2rem;
 	background-color: var(--header-bg-color);
-	display: flex;
+	display: var(--display-header, flex);
 	align-items: center;
 }
 

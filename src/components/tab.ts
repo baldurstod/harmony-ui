@@ -12,11 +12,12 @@ export type HarmonyTabParams = {
 	/** Tab title. */
 	title?: string;
 	/** Internationalized Tab title. */
-	titleI18n?: string;
+	titleI18n?: string | I18nDescriptor | null;
 	/** Set the tab disabled. Default to false. */
 	disabled?: boolean;
 	/** Set the tab closable. Default to false. */
 	closable?: boolean;
+	content?: HTMLElement;
 }
 
 export type HarmonyTabEventData = {
@@ -46,7 +47,6 @@ export class HarmonyTab extends MyEventTarget implements HarmonyComponent, HasI1
 	}
 
 	setParams(params: HarmonyTabParams): void {
-
 		if (params.title !== undefined) {
 			this.setTitle(params.title);
 		}
@@ -54,6 +54,8 @@ export class HarmonyTab extends MyEventTarget implements HarmonyComponent, HasI1
 		if (params.titleI18n !== undefined) {
 			this.setTitleI18n(params.titleI18n);
 		}
+
+		this.content = params.content;
 	}
 
 	#initHTML(): void {

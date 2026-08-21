@@ -18,19 +18,24 @@
 <script type="module">
 	import { HarmonyPanel } from '../../dist/browser.js';
 
-	const panel = new HarmonyPanel();
-	document.body.append(panel.htmlElement);
+	createPanel('row');
+	createPanel('column');
+	createPanel('tabs');
 
-	const panels = [];
-	for (let i = 0; i < 3; i++) {
-		const panel = new HarmonyPanel();
-		panel.setTitle(i);
-		panel.append(i);
-		panels.push(panel)
+	function createPanel(layout) {
+		const panel = new HarmonyPanel({ layout });
+		document.body.append(panel.htmlElement);
+
+		const panels = [];
+		for (let i = 0; i < 3; i++) {
+			const panel = new HarmonyPanel();
+			panel.setTitle(i);
+			panel.append(`content_${layout}_${i}`);
+			panels.push(panel)
+		}
+
+		panel.append(...panels);
 	}
-
-
-	panel.append(...panels);
 
 </script>
 

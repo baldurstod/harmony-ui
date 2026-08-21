@@ -5,6 +5,8 @@ import { addRemoveClass, createElement, display, hide, show, updateShadowRoot } 
 import { AddI18nElement as addI18nElement, I18nDescriptor } from '../harmony-i18n';
 import { HasI18n } from '../interfaces/hasi18n';
 import { HarmonyComponent } from './component';
+import { HarmonyTab } from './tab';
+import { HarmonyTabGroup } from './tabgroup';
 
 //const dragged = null;
 let nextId = 0;
@@ -18,22 +20,35 @@ type DragMode = 'none' | 'move' | 'resize';
 export type HarmonyPanelLayout = 'row' | 'column' | 'tabs';
 
 export type HarmonyPanelParams = {
+	/** Define if this panel can be collapsed. Default to true. */
 	collapsible?: boolean;
+	/** Create this panel collapsed. Default to false. */
 	collapsed?: boolean;
+	/** Can this panel be moved. Default to false. */
 	movable?: boolean;
+	/** Can this panel be a drop target for other panels. Default to false. */
 	dropTarget?: boolean;
+	/** Panel layout. Default to row. */
 	layout?: HarmonyPanelLayout;
+	/** Panel title. */
 	title?: string;
-	titleI18n?: string;
+	/** Internationalized Panel title. */
+	titleI18n?: string | I18nDescriptor | null;
+	/** Panel size. */
 	size?: number;
+	/** Add a custom style sheet to the panel. */
 	adoptStyleSheet?: CSSStyleSheet,
+	/** Add custom style sheets to the panel. */
 	adoptStyleSheets?: CSSStyleSheet[],
+	/** Add a custom style sheet to the panel. */
 	adoptStyle?: string;
+	/** Add custom style sheets to the panel. */
 	adoptStyles?: string[];
 }
 
 export class HarmonyPanel implements HarmonyComponent, HasI18n {
 	readonly htmlElement = createElement('div');
+	readonly isHarmonyPanel = true as const;
 	#doOnce = true;
 	#parent = null;
 	#size = 1;
@@ -44,6 +59,7 @@ export class HarmonyPanel implements HarmonyComponent, HasI18n {
 	#dropTarget!: boolean;
 	customPanelId = nextId++;
 	#htmlHeader?: HTMLElement;
+	#htmlTabGroup?: HarmonyTabGroup;
 	#htmlContent?: HTMLElement;
 	#htmlResize?: HTMLElement;
 	#isDummy = false;
@@ -53,6 +69,9 @@ export class HarmonyPanel implements HarmonyComponent, HasI18n {
 	#floating = false;
 	#floatingWidth?: number;
 	#floatingHeight?: number;
+	#childPanels = new Set<HarmonyPanel>;
+	#title?: string;
+	#titleI18n?: string | I18nDescriptor | null;
 	static #dragMode = 'none';
 	static #resizeX = 0;
 	static #resizeY = 0;
@@ -164,6 +183,12 @@ export class HarmonyPanel implements HarmonyComponent, HasI18n {
 
 			const htmlElement = (node as HarmonyComponent).htmlElement;
 			if (htmlElement) {
+				if ((node as HarmonyPanel).isHarmonyPanel) {
+					this.#childPanels.add((node as HarmonyPanel));
+					if (this.#layout === 'tabs') {
+						this.#addTab((node as HarmonyPanel));
+					}
+				}
 				this.#htmlContent!.append(htmlElement);
 			} else {
 				// eslint-disable-next-line prefer-rest-params
@@ -178,6 +203,12 @@ export class HarmonyPanel implements HarmonyComponent, HasI18n {
 
 			const htmlElement = (node as HarmonyComponent).htmlElement;
 			if (htmlElement) {
+				if ((node as HarmonyPanel).isHarmonyPanel) {
+					this.#childPanels.add((node as HarmonyPanel));
+					if (this.#layout === 'tabs') {
+						this.#addTab((node as HarmonyPanel));
+					}
+				}
 				this.#htmlContent!.prepend(htmlElement);
 			} else {
 				// eslint-disable-next-line prefer-rest-params
@@ -444,11 +475,31 @@ export class HarmonyPanel implements HarmonyComponent, HasI18n {
 		this.#layout = layout;
 		this.htmlElement.classList.remove('harmony-panel-row');
 		this.htmlElement.classList.remove('harmony-panel-column');
-		if (layout == 'row') {
-			this.htmlElement.classList.add('harmony-panel-row');
-		} else if (layout == 'column') {
-			this.htmlElement.classList.add('harmony-panel-column');
+
+		if (layout) {
+			this.htmlElement.classList.add(`harmony-panel-${layout}`);
 		}
+
+		if (layout === 'tabs') {
+			for (const panel of this.#childPanels) {
+				this.#addTab(panel);
+			}
+		} else {
+			hide(this.#htmlTabGroup?.htmlElement);
+		}
+	}
+
+	#addTab(panel: HarmonyPanel): void {
+		if (!this.#htmlTabGroup) {
+			this.#initHTML();
+			this.#htmlTabGroup = new HarmonyTabGroup();
+			this.#htmlContent!.before(this.#htmlTabGroup.htmlElement);
+		}
+		this.#htmlTabGroup!.addTab(new HarmonyTab({
+			title: panel.#title,
+			titleI18n: panel.#titleI18n,
+			content: panel.htmlElement,
+		}));
 	}
 
 	getLayout(): HarmonyPanelLayout | undefined {
@@ -506,6 +557,7 @@ export class HarmonyPanel implements HarmonyComponent, HasI18n {
 	}
 
 	setTitle(title: string): void {
+		this.#title = title;
 		const header = this.#getHeader();
 		header.innerText = title;
 		show(header);
@@ -520,16 +572,13 @@ export class HarmonyPanel implements HarmonyComponent, HasI18n {
 	}
 
 	setTitleI18n(i18n: string | I18nDescriptor | null): void {
+		this.#titleI18n = i18n;
 		if (typeof i18n === 'string') {
-			this.#setTitleI18n(i18n);
+			addI18nElement(this.#getHeader(), i18n);
 		} else {
 			errorOnce('unhandled type ' + typeof i18n + i18n);
 		}
 		show(this.#htmlHeader);
-	}
-
-	#setTitleI18n(titleI18n: string): void {
-		addI18nElement(this.#getHeader(), titleI18n);
 	}
 
 	#toggleCollapse(): void {
