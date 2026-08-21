@@ -84,7 +84,6 @@ export function AddI18nElement(element: Element, descriptor: string | I18nDescri
 			I18nElements.set(element, descriptor);
 		}
 	}
-
 }
 
 export class I18n {

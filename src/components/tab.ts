@@ -2,8 +2,8 @@ import { closeSVG } from 'harmony-svg';
 import { errorOnce, MyEventTarget } from 'harmony-utils';
 import tabCSS from '../css/components/tab.css';
 import { shadowRootStyle } from '../harmony-css';
-import { addRemoveClass, createElement, display, show } from '../harmony-html';
-import { AddI18nElement, I18nDescriptor } from '../harmony-i18n';
+import { addRemoveClass, createElement, display, show, updateElement } from '../harmony-html';
+import { I18n, I18nDescriptor } from '../harmony-i18n';
 import { HasI18n } from '../interfaces/hasi18n';
 import { HarmonyComponent } from './component';
 import { HarmonyTabGroup } from './tabgroup';
@@ -64,6 +64,7 @@ export class HarmonyTab extends MyEventTarget implements HarmonyComponent, HasI1
 		}
 
 		this.#shadowRoot = this.htmlElement.attachShadow({ mode: 'closed' });
+		I18n.observeElement(this.#shadowRoot);
 		void shadowRootStyle(this.#shadowRoot, tabCSS);
 
 		this.#htmlHeader = createElement('div', {
@@ -92,7 +93,9 @@ export class HarmonyTab extends MyEventTarget implements HarmonyComponent, HasI1
 	setTitleI18n(i18n: string | I18nDescriptor | null): void {
 		this.#initHTML();
 		if (typeof i18n === 'string') {
-			AddI18nElement(this.#htmlTitle!, i18n);
+			updateElement(this.#htmlTitle!, {
+				i18n,
+			});
 		} else {
 			errorOnce('unhandled type ' + typeof i18n + i18n);
 		}

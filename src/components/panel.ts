@@ -1,8 +1,8 @@
 import { errorOnce } from 'harmony-utils';
 import panelCSS from '../css/harmony-panel.css';
 import { shadowRootStyle } from '../harmony-css';
-import { addRemoveClass, createElement, display, hide, show, updateShadowRoot } from '../harmony-html';
-import { AddI18nElement as addI18nElement, I18nDescriptor } from '../harmony-i18n';
+import { addRemoveClass, createElement, display, hide, show, updateElement, updateShadowRoot } from '../harmony-html';
+import { I18n, I18nDescriptor } from '../harmony-i18n';
 import { HasI18n } from '../interfaces/hasi18n';
 import { HarmonyComponent } from './component';
 import { HarmonyTab } from './tab';
@@ -133,6 +133,7 @@ export class HarmonyPanel implements HarmonyComponent, HasI18n {
 		}
 
 		this.#shadowRoot = this.htmlElement.attachShadow({ mode: 'closed' });
+		I18n.observeElement(this.#shadowRoot);
 		void shadowRootStyle(this.#shadowRoot, panelCSS);
 		this.#htmlContent = createElement('div', {
 			class: 'content',
@@ -574,7 +575,9 @@ export class HarmonyPanel implements HarmonyComponent, HasI18n {
 	setTitleI18n(i18n: string | I18nDescriptor | null): void {
 		this.#titleI18n = i18n;
 		if (typeof i18n === 'string') {
-			addI18nElement(this.#getHeader(), i18n);
+			updateElement(this.#getHeader(), {
+				i18n,
+			});
 		} else {
 			errorOnce('unhandled type ' + typeof i18n + i18n);
 		}
@@ -714,9 +717,16 @@ export class HarmonyPanel implements HarmonyComponent, HasI18n {
 		HarmonyPanel.#dragging = false;
 		HarmonyPanel.#dragMode = 'none';
 		if (HarmonyPanel.#target) {
-			HarmonyPanel.#target.append(this.htmlElement);
+			HarmonyPanel.#target.append(this);
 			this.setDocked();
-			this.htmlElement.style = '';
+
+			// Reset styles used during drag
+			this.htmlElement.style.left = '';
+			this.htmlElement.style.top = '';
+			this.htmlElement.style.width = '';
+			this.htmlElement.style.height = '';
+			this.htmlElement.style.position = '';
+			this.htmlElement.style.flex = '';
 		}
 	}
 

@@ -1385,6 +1385,7 @@ class HarmonyTab extends MyEventTarget {
             return;
         }
         this.#shadowRoot = this.htmlElement.attachShadow({ mode: 'closed' });
+        I18n.observeElement(this.#shadowRoot);
         void shadowRootStyle(this.#shadowRoot, tabCSS$1);
         this.#htmlHeader = createElement('div', {
             class: 'tab',
@@ -1410,7 +1411,9 @@ class HarmonyTab extends MyEventTarget {
     setTitleI18n(i18n) {
         this.#initHTML();
         if (typeof i18n === 'string') {
-            AddI18nElement(this.#htmlTitle, i18n);
+            updateElement(this.#htmlTitle, {
+                i18n,
+            });
         }
         else {
             errorOnce('unhandled type ' + typeof i18n + i18n);
@@ -1512,6 +1515,7 @@ class HarmonyTabGroup {
             return;
         }
         this.#shadowRoot = this.htmlElement.attachShadow({ mode: 'closed' });
+        I18n.observeElement(this.#shadowRoot);
         void shadowRootStyle(this.#shadowRoot, tabGroupCSS$1);
         this.#htmlTabs = createElement('div', {
             parent: this.#shadowRoot,
@@ -1547,6 +1551,9 @@ class HarmonyTabGroup {
         this.#tabs.add(tab);
         if (!this.#activeTab) {
             this.#activeTab = tab;
+        }
+        else {
+            tab.setActive(false);
         }
         tab.setGroup(this);
         this.#refresh();
@@ -1679,6 +1686,7 @@ class HarmonyPanel {
             return;
         }
         this.#shadowRoot = this.htmlElement.attachShadow({ mode: 'closed' });
+        I18n.observeElement(this.#shadowRoot);
         void shadowRootStyle(this.#shadowRoot, panelCSS);
         this.#htmlContent = createElement('div', {
             class: 'content',
@@ -2096,7 +2104,9 @@ class HarmonyPanel {
     setTitleI18n(i18n) {
         this.#titleI18n = i18n;
         if (typeof i18n === 'string') {
-            AddI18nElement(this.#getHeader(), i18n);
+            updateElement(this.#getHeader(), {
+                i18n,
+            });
         }
         else {
             errorOnce('unhandled type ' + typeof i18n + i18n);
@@ -2221,9 +2231,15 @@ class HarmonyPanel {
         _a$1.#dragging = false;
         _a$1.#dragMode = 'none';
         if (_a$1.#target) {
-            _a$1.#target.append(this.htmlElement);
+            _a$1.#target.append(this);
             this.setDocked();
-            this.htmlElement.style = '';
+            // Reset styles used during drag
+            this.htmlElement.style.left = '';
+            this.htmlElement.style.top = '';
+            this.htmlElement.style.width = '';
+            this.htmlElement.style.height = '';
+            this.htmlElement.style.position = '';
+            this.htmlElement.style.flex = '';
         }
     }
     #resize(event) {

@@ -1,6 +1,7 @@
 import tabGroupCSS from '../css/components/tab-group.css';
 import { shadowRootStyle } from '../harmony-css';
 import { createElement, updateShadowRoot } from '../harmony-html';
+import { I18n } from '../harmony-i18n';
 import { HarmonyComponent } from './component';
 import { HarmonyTab } from './tab';
 
@@ -45,6 +46,7 @@ export class HarmonyTabGroup implements HarmonyComponent {
 		}
 
 		this.#shadowRoot = this.htmlElement.attachShadow({ mode: 'closed' });
+		I18n.observeElement(this.#shadowRoot);
 		void shadowRootStyle(this.#shadowRoot, tabGroupCSS);
 		this.#htmlTabs = createElement('div', {
 			parent: this.#shadowRoot,
@@ -84,6 +86,8 @@ export class HarmonyTabGroup implements HarmonyComponent {
 		this.#tabs.add(tab);
 		if (!this.#activeTab) {
 			this.#activeTab = tab;
+		} else {
+			tab.setActive(false);
 		}
 		tab.setGroup(this);
 		this.#refresh();
