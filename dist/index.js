@@ -643,7 +643,9 @@ class HarmonyTab extends MyEventTarget {
     #group;
     #closable = false;
     #closed = false;
+    #draggable = false;
     content;
+    panel;
     constructor(params = {}) {
         super();
         this.setParams(params);
@@ -655,7 +657,9 @@ class HarmonyTab extends MyEventTarget {
         if (params.titleI18n !== undefined) {
             this.setTitleI18n(params.titleI18n);
         }
+        this.#draggable = params.draggable ?? false;
         this.content = params.content;
+        this.panel = params.panel;
     }
     #initHTML() {
         if (this.#shadowRoot) {
@@ -678,6 +682,7 @@ class HarmonyTab extends MyEventTarget {
             ],
             $click: () => this.#click(),
             $contextmenu: (event) => this.#onContextMenu(event),
+            $mousedown: (event) => this.#handleMouseDown(event),
         });
     }
     setTitle(title) {
@@ -762,6 +767,13 @@ class HarmonyTab extends MyEventTarget {
     }
     setGroup(group) {
         this.#group = group;
+    }
+    #handleMouseDown(event) {
+        if (this.#draggable && event.button === 0 && this.panel) {
+            // Activate this tab before dragging
+            this.activate();
+            this.panel.getHeader().dispatchEvent(cloneEvent(event));
+        }
     }
 }
 
@@ -911,6 +923,7 @@ class HarmonyPanel {
     #childPanels = new Set;
     #title;
     #titleI18n;
+    #parentTab;
     static #dragMode = 'none';
     static #resizeX = 0;
     static #resizeY = 0;
@@ -985,7 +998,7 @@ class HarmonyPanel {
             $mousedown: (event) => this.#handleMouseDown(event),
         });
     }
-    #getHeader() {
+    getHeader() {
         this.#initHTML();
         if (!this.#htmlHeader) {
             this.#htmlHeader = createElement('div', {
@@ -1313,11 +1326,16 @@ class HarmonyPanel {
             this.#htmlTabGroup = new HarmonyTabGroup();
             this.#htmlContent.before(this.#htmlTabGroup.htmlElement);
         }
-        this.#htmlTabGroup.addTab(new HarmonyTab({
+        const tab = new HarmonyTab({
             title: panel.#title,
             titleI18n: panel.#titleI18n,
             content: panel.htmlElement,
-        }));
+            draggable: true,
+            panel,
+        });
+        this.#htmlTabGroup.addTab(tab);
+        tab.activate();
+        panel.#parentTab = tab;
     }
     getLayout() {
         return this.#layout;
@@ -1366,7 +1384,7 @@ class HarmonyPanel {
     }
     setTitle(title) {
         this.#title = title;
-        const header = this.#getHeader();
+        const header = this.getHeader();
         header.innerText = title;
         show(header);
         /*
@@ -1381,7 +1399,7 @@ class HarmonyPanel {
     setTitleI18n(i18n) {
         this.#titleI18n = i18n;
         if (typeof i18n === 'string') {
-            updateElement(this.#getHeader(), {
+            updateElement(this.getHeader(), {
                 i18n,
             });
         }
@@ -1467,6 +1485,10 @@ class HarmonyPanel {
         }
         _a$1.#dragging = true;
         _a$1.#dragMode = 'move';
+        if (this.#parentTab) {
+            this.#parentTab.close();
+            this.#parentTab = undefined;
+        }
         const rect = this.htmlElement.getBoundingClientRect();
         document.body.append(this.htmlElement);
         this.setFloating();

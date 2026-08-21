@@ -225,6 +225,7 @@ export declare class HarmonyPanel implements HarmonyComponent, HasI18n {
     customPanelId: number;
     constructor(params?: HarmonyPanelParams);
     setParams(params: HarmonyPanelParams): void;
+    getHeader(): HTMLElement;
     getContent(): HTMLElement;
     append(...nodes: (Node | string | HarmonyComponent)[]): void;
     prepend(...nodes: (Node | string | HarmonyComponent)[]): void;
@@ -296,6 +297,7 @@ export declare class HarmonyTab extends MyEventTarget implements HarmonyComponen
     #private;
     readonly htmlElement: HTMLElement;
     content?: HTMLElement;
+    panel?: HarmonyPanel;
     constructor(params?: HarmonyTabParams);
     setParams(params: HarmonyTabParams): void;
     setTitle(title: string): void;
@@ -352,7 +354,11 @@ export declare type HarmonyTabParams = {
     disabled?: boolean;
     /** Set the tab closable. Default to false. */
     closable?: boolean;
+    /** Set the tab draggable. Default to false. */
+    draggable?: boolean;
+    /** Set the tab content. Content will be automatically show / hidden depending on the tab state. */
     content?: HTMLElement;
+    panel?: HarmonyPanel;
 };
 
 declare interface HasI18n {

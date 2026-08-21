@@ -1,11 +1,13 @@
 import { closeSVG } from 'harmony-svg';
 import { errorOnce, MyEventTarget } from 'harmony-utils';
+import { cloneEvent } from '../browser';
 import tabCSS from '../css/components/tab.css';
 import { shadowRootStyle } from '../harmony-css';
 import { addRemoveClass, createElement, display, show, updateElement } from '../harmony-html';
 import { I18n, I18nDescriptor } from '../harmony-i18n';
 import { HasI18n } from '../interfaces/hasi18n';
 import { HarmonyComponent } from './component';
+import { HarmonyPanel } from './panel';
 import { HarmonyTabGroup } from './tabgroup';
 
 export type HarmonyTabParams = {
@@ -17,7 +19,11 @@ export type HarmonyTabParams = {
 	disabled?: boolean;
 	/** Set the tab closable. Default to false. */
 	closable?: boolean;
+	/** Set the tab draggable. Default to false. */
+	draggable?: boolean;
+	/** Set the tab content. Content will be automatically show / hidden depending on the tab state. */
 	content?: HTMLElement;
+	panel?: HarmonyPanel;
 }
 
 export type HarmonyTabEventData = {
@@ -39,7 +45,9 @@ export class HarmonyTab extends MyEventTarget implements HarmonyComponent, HasI1
 	#group?: HarmonyTabGroup;
 	#closable = false;
 	#closed = false;
+	#draggable = false;
 	content?: HTMLElement;
+	panel?: HarmonyPanel;
 
 	constructor(params: HarmonyTabParams = {}) {
 		super();
@@ -55,7 +63,10 @@ export class HarmonyTab extends MyEventTarget implements HarmonyComponent, HasI1
 			this.setTitleI18n(params.titleI18n);
 		}
 
+		this.#draggable = params.draggable ?? false;
+
 		this.content = params.content;
+		this.panel = params.panel;
 	}
 
 	#initHTML(): void {
@@ -81,6 +92,7 @@ export class HarmonyTab extends MyEventTarget implements HarmonyComponent, HasI1
 			],
 			$click: () => this.#click(),
 			$contextmenu: (event: PointerEvent) => this.#onContextMenu(event),
+			$mousedown: (event: Event) => this.#handleMouseDown(event as MouseEvent),
 		});
 	}
 
@@ -179,5 +191,13 @@ export class HarmonyTab extends MyEventTarget implements HarmonyComponent, HasI1
 
 	setGroup(group?: HarmonyTabGroup): void {
 		this.#group = group;
+	}
+
+	#handleMouseDown(event: MouseEvent): void {
+		if (this.#draggable && event.button === 0 && this.panel) {
+			// Activate this tab before dragging
+			this.activate();
+			this.panel.getHeader().dispatchEvent(cloneEvent(event));
+		}
 	}
 }

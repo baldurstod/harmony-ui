@@ -72,6 +72,7 @@ export class HarmonyPanel implements HarmonyComponent, HasI18n {
 	#childPanels = new Set<HarmonyPanel>;
 	#title?: string;
 	#titleI18n?: string | I18nDescriptor | null;
+	#parentTab?: HarmonyTab;
 	static #dragMode = 'none';
 	static #resizeX = 0;
 	static #resizeY = 0;
@@ -157,7 +158,7 @@ export class HarmonyPanel implements HarmonyComponent, HasI18n {
 		});
 	}
 
-	#getHeader(): HTMLElement {
+	getHeader(): HTMLElement {
 		this.#initHTML();
 
 		if (!this.#htmlHeader) {
@@ -496,11 +497,16 @@ export class HarmonyPanel implements HarmonyComponent, HasI18n {
 			this.#htmlTabGroup = new HarmonyTabGroup();
 			this.#htmlContent!.before(this.#htmlTabGroup.htmlElement);
 		}
-		this.#htmlTabGroup!.addTab(new HarmonyTab({
+		const tab = new HarmonyTab({
 			title: panel.#title,
 			titleI18n: panel.#titleI18n,
 			content: panel.htmlElement,
-		}));
+			draggable: true,
+			panel,
+		});
+		this.#htmlTabGroup!.addTab(tab);
+		tab.activate();
+		panel.#parentTab = tab;
 	}
 
 	getLayout(): HarmonyPanelLayout | undefined {
@@ -559,7 +565,7 @@ export class HarmonyPanel implements HarmonyComponent, HasI18n {
 
 	setTitle(title: string): void {
 		this.#title = title;
-		const header = this.#getHeader();
+		const header = this.getHeader();
 		header.innerText = title;
 		show(header);
 		/*
@@ -575,7 +581,7 @@ export class HarmonyPanel implements HarmonyComponent, HasI18n {
 	setTitleI18n(i18n: string | I18nDescriptor | null): void {
 		this.#titleI18n = i18n;
 		if (typeof i18n === 'string') {
-			updateElement(this.#getHeader(), {
+			updateElement(this.getHeader(), {
 				i18n,
 			});
 		} else {
@@ -667,6 +673,11 @@ export class HarmonyPanel implements HarmonyComponent, HasI18n {
 		}
 		HarmonyPanel.#dragging = true;
 		HarmonyPanel.#dragMode = 'move';
+
+		if (this.#parentTab) {
+			this.#parentTab.close();
+			this.#parentTab = undefined;
+		}
 
 		const rect = this.htmlElement.getBoundingClientRect();
 		document.body.append(this.htmlElement);
