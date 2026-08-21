@@ -5,9 +5,10 @@
 	<meta charset="utf-8">
 	<title>Test tabs</title>
 	<style>
-		body{
+		body {
 			background-color: var(--harmony-ui-background-primary);
 			overflow: hidden;
+			color: white;
 		}
 	</style>
 </head>
@@ -33,7 +34,7 @@
 			parent: document.body,
 			childs: [
 				createElement('harmony-tab', { 'data-text': 1, innerText: 'Content 1' }),
-				createElement('harmony-tab', { 'data-text': 2, innerText: 'Content 2' }),
+				createElement('harmony-tab', { 'data-text': 2, innerText: 'Content 2', 'disabled': 1 }),
 				createElement('harmony-tab', { 'data-i18n': '#i18n_tab', innerText: 'Content i18n' }),
 			],
 		});

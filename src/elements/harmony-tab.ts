@@ -1,5 +1,5 @@
 import { closeSVG } from 'harmony-svg';
-import { createElement, defineElement, display } from '../harmony-html';
+import { addRemoveClass, createElement, defineElement, display } from '../harmony-html';
 import { toBool } from '../utils/attributes';
 import { injectGlobalCss } from '../utils/globalcss';
 import { HTMLHarmonyTabGroupElement } from './harmony-tab-group';
@@ -76,7 +76,7 @@ export class HTMLHarmonyTabElement extends HTMLElement {
 
 	set disabled(disabled) {
 		this.#disabled = disabled ? true : false;
-		this.#header.classList[this.#disabled ? 'add' : 'remove']('disabled');
+		addRemoveClass(this.#header, 'disabled', this.#disabled);
 	}
 
 	get disabled(): boolean {
@@ -108,11 +108,7 @@ export class HTMLHarmonyTabElement extends HTMLElement {
 			}
 		}
 		display(this, active);
-		if (active) {
-			this.#header.classList.add('activated');
-		} else {
-			this.#header.classList.remove('activated');
-		}
+		addRemoveClass(this.#header, 'activated', active);
 
 		if (active && this.#group) {
 			this.#group.activateTab(this);

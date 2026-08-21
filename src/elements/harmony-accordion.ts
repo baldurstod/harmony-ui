@@ -1,6 +1,6 @@
 import accordionCSS from '../css/harmony-accordion.css';
 import { shadowRootStyle } from '../harmony-css';
-import { createElement, defineElement, hide, show } from '../harmony-html';
+import { addRemoveClass, createElement, defineElement, hide, show } from '../harmony-html';
 import { toBool } from '../utils/attributes';
 import { injectGlobalCss } from '../utils/globalcss';
 import { defineHarmonyItem, HTMLHarmonyItemElement } from './harmony-item';
@@ -176,7 +176,7 @@ export class HTMLHarmonyAccordionElement extends HTMLElement {
 
 	set disabled(disabled) {
 		this.#disabled = disabled ? true : false;
-		this.classList[this.#disabled ? 'add' : 'remove']('disabled');
+		addRemoveClass(this, 'disabled', this.#disabled);
 	}
 
 	get disabled(): boolean {

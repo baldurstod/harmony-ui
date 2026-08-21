@@ -1,0 +1,21 @@
+:host {
+	display: inline-block;
+	background-color: var(--main-bg-color-bright);
+	/*padding: 10px;*/
+	border: 0.1rem solid var(--harmony-ui-text-primary);
+	border-top: 0px;
+	position: relative;
+	color: var(--harmony-ui-text-primary);
+	cursor: pointer;
+	user-select: none;
+	pointer-events: all;
+	flex: 0 0;
+	text-align: center;
+	white-space: nowrap;
+	display: flex;
+	align-items: center;
+}
+
+div {
+	padding: 0.2rem;
+}

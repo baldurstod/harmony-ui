@@ -365,10 +365,10 @@ export function defineElement(name: string, constructor: CustomElementConstructo
 	getCustomElementRegistry()?.define(name, constructor, options);
 }
 
-export function addRemoveClass(element: HTMLElement, clas: string, add: boolean): void {
+export function addRemoveClass(element: HTMLElement | undefined, clas: string, add: boolean): void {
 	if (add) {
-		element.classList.add(clas);
+		element?.classList.add(clas);
 	} else {
-		element.classList.remove(clas);
+		element?.classList.remove(clas);
 	}
 }

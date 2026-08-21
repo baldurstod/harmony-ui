@@ -1,9 +1,10 @@
 import { Color } from 'harmony-utils';
+import { MyEventTarget } from 'harmony-utils';
 import { Radian } from 'harmony-types';
 
 export declare function AddI18nElement(element: Element, descriptor: string | I18nDescriptor | null): void;
 
-export declare function addRemoveClass(element: HTMLElement, clas: string, add: boolean): void;
+export declare function addRemoveClass(element: HTMLElement | undefined, clas: string, add: boolean): void;
 
 export declare function cloneEvent(event: Event): Event;
 
@@ -29,6 +30,8 @@ export declare type CreateElementOptions = {
      */
     i18n?: string | I18nDescriptor | null;
     parent?: Element | ShadowRoot;
+    after?: Element;
+    before?: Element;
     child?: CreateElementChildOption;
     childs?: CreateElementChildOption[];
     events?: Record<string, HarmonyEventListener>;
@@ -245,17 +248,29 @@ export declare class HarmonyPanel implements HarmonyComponent, HasI18n {
 export declare type HarmonyPanelLayout = 'row' | 'column' | 'tabs';
 
 export declare type HarmonyPanelParams = {
+    /** Define if this panel can be collapsed. Default to true. */
     collapsible?: boolean;
+    /** Create this panel collapsed. Default to false. */
     collapsed?: boolean;
+    /** Can this panel be moved. Default to false. */
     movable?: boolean;
+    /** Can this panel be a drop target for other panels. Default to false. */
     dropTarget?: boolean;
+    /** Panel layout. Default to row. */
     layout?: HarmonyPanelLayout;
+    /** Panel title. */
     title?: string;
+    /** Internationalized Panel title. */
     titleI18n?: string;
+    /** Panel size. */
     size?: number;
+    /** Add a custom style sheet to the panel. */
     adoptStyleSheet?: CSSStyleSheet;
+    /** Add custom style sheets to the panel. */
     adoptStyleSheets?: CSSStyleSheet[];
+    /** Add a custom style sheet to the panel. */
     adoptStyle?: string;
+    /** Add custom style sheets to the panel. */
     adoptStyles?: string[];
 };
 
@@ -274,6 +289,64 @@ export declare type HarmonySwitchChange = {
     state: boolean | undefined;
     /** @deprecated use state instead */
     value: boolean | undefined;
+};
+
+export declare class HarmonyTab extends MyEventTarget implements HarmonyComponent, HasI18n {
+    #private;
+    readonly htmlElement: HTMLElement;
+    content?: HTMLElement;
+    constructor(params?: HarmonyTabParams);
+    setParams(params: HarmonyTabParams): void;
+    setTitle(title: string): void;
+    setTitleI18n(i18n: string | I18nDescriptor | null): void;
+    setDisabled(disabled: boolean): void;
+    getDisabled(): boolean;
+    activate(): void;
+    close(): boolean;
+    setActive(active: boolean): void;
+    isActive(): boolean;
+    isClosed(): boolean;
+    scrollIntoView(): void;
+    setClosable(closable: boolean): void;
+    setGroup(group?: HarmonyTabGroup): void;
+}
+
+export declare type HarmonyTabEventData = {
+    tab: HarmonyTab;
+    originalEvent?: Event;
+};
+
+export declare class HarmonyTabGroup implements HarmonyComponent {
+    #private;
+    readonly htmlElement: HTMLElement;
+    constructor(params?: HarmonyTabGroupParams);
+    setParams(params: HarmonyTabGroupParams): void;
+    append(...tabs: HarmonyTab[]): void;
+    prepend(...tabs: HarmonyTab[]): void;
+    activateTab(tab: HarmonyTab): void;
+    closeTab(tab: HarmonyTab): void;
+}
+
+export declare type HarmonyTabGroupParams = {
+    /** Add a custom style sheet to the panel. */
+    adoptStyleSheet?: CSSStyleSheet;
+    /** Add custom style sheets to the panel. */
+    adoptStyleSheets?: CSSStyleSheet[];
+    /** Add a custom style sheet to the panel. */
+    adoptStyle?: string;
+    /** Add custom style sheets to the panel. */
+    adoptStyles?: string[];
+};
+
+export declare type HarmonyTabParams = {
+    /** Tab title. */
+    title?: string;
+    /** Internationalized Tab title. */
+    titleI18n?: string;
+    /** Set the tab disabled. Default to false. */
+    disabled?: boolean;
+    /** Set the tab closable. Default to false. */
+    closable?: boolean;
 };
 
 declare interface HasI18n {

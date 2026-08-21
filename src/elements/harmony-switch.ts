@@ -1,6 +1,6 @@
 import switchCSS from '../css/harmony-switch.css';
 import { shadowRootStyle } from '../harmony-css';
-import { createElement, defineElement } from '../harmony-html';
+import { addRemoveClass, createElement, defineElement } from '../harmony-html';
 import { I18n } from '../harmony-i18n';
 import { toBool } from '../utils/attributes';
 import { injectGlobalCss } from '../utils/globalcss';
@@ -55,7 +55,7 @@ export class HTMLHarmonySwitchElement extends HTMLHarmonyElement {
 
 	set disabled(disabled) {
 		this.#disabled = disabled ? true : false;
-		this.classList[this.#disabled ? 'add' : 'remove']('disabled');
+		addRemoveClass(this, 'disabled', this.#disabled);
 	}
 
 	get disabled(): boolean {

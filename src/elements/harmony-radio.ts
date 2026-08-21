@@ -1,6 +1,6 @@
 import radioCSS from '../css/harmony-radio.css';
 import { shadowRootStyle } from '../harmony-css';
-import { createElement, defineElement, hide, show } from '../harmony-html';
+import { addRemoveClass, createElement, defineElement, hide, show } from '../harmony-html';
 import { I18n } from '../harmony-i18n';
 import { toBool } from '../utils/attributes';
 import { injectGlobalCss } from '../utils/globalcss';
@@ -105,7 +105,7 @@ export class HTMLHarmonyRadioElement extends HTMLElement {
 
 	set disabled(disabled) {
 		this.#disabled = disabled ? true : false;
-		this.classList[this.#disabled ? 'add' : 'remove']('disabled');
+		addRemoveClass(this, 'disabled', this.#disabled);
 	}
 
 	get disabled(): boolean {

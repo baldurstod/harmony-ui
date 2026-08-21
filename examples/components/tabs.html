@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<title>Test tabs component</title>
+	<link href="../assets/css/examples.css" rel="stylesheet">
+	<style>
+		/*
+		body>div {
+			flex: 1;
+		}
+		*/
+	</style>
+</head>
+
+<body style="width:100%;height:100%;position:absolute;">
+	<!--div id="target"></div-->
+</body>
+<script type="module">
+	import { HarmonyTabGroup, HarmonyTab, createElement } from '../../dist/browser.js';
+
+	const tabGroup = new HarmonyTabGroup();
+	document.body.append(tabGroup.htmlElement);
+
+	const tabs = [];
+	for (let i = 0; i < 3; i++) {
+		const tab = new HarmonyTab();
+		tab.setTitle(i);
+		//tab.append(i);
+		tabs.push(tab)
+		tab.content = createElement('div', {
+			innerText: `content${i}`,
+			parent: document.body,
+		})
+	}
+
+
+	tabGroup.append(...tabs);
+	tabs[0].activate();
+
+</script>
+
+</html>
