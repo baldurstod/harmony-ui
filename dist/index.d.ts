@@ -719,7 +719,12 @@ export declare class I18n {
     static setOptions(options: {
         translations: I18nTranslation[];
     }): void;
-    static addTranslation(translation: I18nTranslation): void;
+    /**
+     * Add a translation
+     * @param translation The tranaslation to add
+     * @param overwrite If an existing translation for the same language and the same string, should we keep or overwrite that string
+     */
+    static addTranslation(translation: I18nTranslation, overwrite?: boolean): void;
     static observeElement(element: HTMLElement | ShadowRoot): void;
     static i18n(): void;
     static updateElement(htmlElement: Element | ShadowRoot): void;

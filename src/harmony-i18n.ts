@@ -120,15 +120,40 @@ export class I18n {
 		this.i18n();
 	}
 
-	static addTranslation(translation: I18nTranslation): void {
-		this.#addTranslation(translation);
+	/**
+	 * Add a translation
+	 * @param translation The tranaslation to add
+	 * @param overwrite If an existing translation for the same language and the same string, should we keep or overwrite that string
+	 */
+	static addTranslation(translation: I18nTranslation, overwrite = false): void {
+		this.#addTranslation(translation, overwrite);
 		if (translation.lang == this.#lang) {
 			this.i18n();
 		}
 	}
 
-	static #addTranslation(translation: I18nTranslation): void {
-		this.#translations.set(translation.lang, translation);
+	static #addTranslation(translation: I18nTranslation, overwrite = false): void {
+		const existing = this.#translations.get(translation.lang);
+		if (!existing) {
+			this.#translations.set(translation.lang, translation);
+			return;
+		}
+
+		for (const key in translation.strings) {
+			if (existing.strings[key] === undefined || overwrite) {
+				existing.strings[key] = translation.strings[key]!;
+			}
+		}
+
+		if (translation.authors && !existing.authors) {
+			existing.authors = [];
+		}
+
+		for (const author in translation.authors) {
+			if (!existing.authors?.includes(author)) {
+				existing.authors?.push(author);
+			}
+		}
 	}
 
 	static #initObserver(): void {
