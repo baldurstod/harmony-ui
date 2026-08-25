@@ -505,7 +505,7 @@ export class HarmonyPanel implements HarmonyComponent, HasI18n {
 			panel,
 		});
 		this.#htmlTabGroup!.addTab(tab);
-		tab.activate();
+		//tab.activate();
 		panel.#parentTab = tab;
 	}
 

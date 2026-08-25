@@ -25,6 +25,18 @@
 	}
 }
 
+@container style(--layout: column) {
+	:host {
+		--display-header: initial;
+	}
+}
+
+@container style(--layout: row) {
+	:host {
+		--display-header: initial;
+	}
+}
+
 :host(.collapsed) {
 	flex: 0 0 auto;
 }
