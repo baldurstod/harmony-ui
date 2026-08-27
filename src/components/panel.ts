@@ -889,4 +889,8 @@ export class HarmonyPanel implements HarmonyComponent, HasI18n {
 
 		HarmonyPanel.#startRect = this.htmlElement.getBoundingClientRect();
 	}
+
+	activate(): void {
+		this.#parentTab?.activate();
+	}
 }

@@ -2403,6 +2403,9 @@ class HarmonyPanel {
         _a$1.#resizeY = y;
         _a$1.#startRect = this.htmlElement.getBoundingClientRect();
     }
+    activate() {
+        this.#parentTab?.activate();
+    }
 }
 _a$1 = HarmonyPanel;
 

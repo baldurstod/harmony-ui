@@ -245,6 +245,7 @@ export declare class HarmonyPanel implements HarmonyComponent, HasI18n {
     adoptStyleSheet(styleSheet: CSSStyleSheet): void;
     setFloating(): void;
     setDocked(): void;
+    activate(): void;
 }
 
 export declare type HarmonyPanelLayout = 'row' | 'column' | 'tabs';
