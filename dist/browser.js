@@ -1652,6 +1652,7 @@ class HarmonyPanel {
     isMovable = false;
     #collapsible = true;
     #collapsed = false;
+    #startClosed = false;
     #dropTarget;
     customPanelId = nextId$1++;
     #htmlHeader;
@@ -1692,6 +1693,7 @@ class HarmonyPanel {
         this.setParams(params);
     }
     setParams(params) {
+        this.#startClosed = params.closed ?? false;
         this.setCollapsible(params.collapsible ?? true);
         this.setCollapsed(params.collapsed ?? false);
         this.isMovable = params.movable ?? false;
@@ -1732,6 +1734,7 @@ class HarmonyPanel {
             class: 'content',
             parent: this.#shadowRoot,
         });
+        display(this.#shadowRoot.host, !this.#startClosed);
         this.#htmlResize = createElement('div', {
             class: 'resize',
             parent: this.#shadowRoot,
@@ -2414,6 +2417,14 @@ class HarmonyPanel {
     }
     activate() {
         this.#parentTab?.activate();
+    }
+    open() {
+        show(this.getContent());
+    }
+    close() {
+        if (this.#htmlContent) {
+            hide(this.#htmlContent);
+        }
     }
 }
 _a$1 = HarmonyPanel;

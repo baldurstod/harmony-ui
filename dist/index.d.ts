@@ -246,6 +246,8 @@ export declare class HarmonyPanel implements HarmonyComponent, HasI18n {
     setFloating(): void;
     setDocked(parentPanel: HarmonyPanel): void;
     activate(): void;
+    open(): void;
+    close(): void;
 }
 
 export declare type HarmonyPanelLayout = 'row' | 'column' | 'tabs';
@@ -257,6 +259,8 @@ export declare type HarmonyPanelParams = {
     collapsed?: boolean;
     /** Create this panel floating. Default to false. */
     floating?: boolean;
+    /** Create this panel closed. Only for floating panels. Default to false. */
+    closed?: boolean;
     /** Can this panel be moved. Default to false. */
     movable?: boolean;
     /** Can this panel be a drop target for other panels. Default to false. */

@@ -26,6 +26,8 @@ export type HarmonyPanelParams = {
 	collapsed?: boolean;
 	/** Create this panel floating. Default to false. */
 	floating?: boolean;
+	/** Create this panel closed. Only for floating panels. Default to false. */
+	closed?: boolean;
 	/** Can this panel be moved. Default to false. */
 	movable?: boolean;
 	/** Can this panel be a drop target for other panels. Default to false. */
@@ -58,6 +60,7 @@ export class HarmonyPanel implements HarmonyComponent, HasI18n {
 	isMovable = false;
 	#collapsible = true;
 	#collapsed = false;
+	#startClosed = false;
 	#dropTarget!: boolean;
 	customPanelId = nextId++;
 	#htmlHeader?: HTMLElement;
@@ -101,6 +104,7 @@ export class HarmonyPanel implements HarmonyComponent, HasI18n {
 	}
 
 	setParams(params: HarmonyPanelParams): void {
+		this.#startClosed = params.closed ?? false;
 		this.setCollapsible(params.collapsible ?? true);
 		this.setCollapsed(params.collapsed ?? false);
 		this.isMovable = params.movable ?? false;
@@ -147,6 +151,7 @@ export class HarmonyPanel implements HarmonyComponent, HasI18n {
 			class: 'content',
 			parent: this.#shadowRoot,
 		});
+		display(this.#shadowRoot.host as HTMLElement, !this.#startClosed);
 		this.#htmlResize = createElement('div', {
 			class: 'resize',
 			parent: this.#shadowRoot,
@@ -904,5 +909,15 @@ export class HarmonyPanel implements HarmonyComponent, HasI18n {
 
 	activate(): void {
 		this.#parentTab?.activate();
+	}
+
+	open(): void {
+		show(this.getContent());
+	}
+
+	close(): void {
+		if (this.#htmlContent) {
+			hide(this.#htmlContent);
+		}
 	}
 }
