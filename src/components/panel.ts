@@ -24,6 +24,8 @@ export type HarmonyPanelParams = {
 	collapsible?: boolean;
 	/** Create this panel collapsed. Default to false. */
 	collapsed?: boolean;
+	/** Create this panel floating. Default to false. */
+	floating?: boolean;
 	/** Can this panel be moved. Default to false. */
 	movable?: boolean;
 	/** Can this panel be a drop target for other panels. Default to false. */
@@ -104,6 +106,11 @@ export class HarmonyPanel implements HarmonyComponent, HasI18n {
 		this.isMovable = params.movable ?? false;
 		this.#dropTarget = params.dropTarget ?? false;
 		this.setLayout(params.layout ?? 'row');
+		if (params.floating) {
+			this.setFloating();
+			// If we start in floating mode, force a the presence of a header
+			this.getHeader();
+		}
 
 		if (params.size !== undefined) {
 			this.setSize(params.size);
@@ -164,7 +171,6 @@ export class HarmonyPanel implements HarmonyComponent, HasI18n {
 		if (!this.#htmlHeader) {
 			this.#htmlHeader = createElement('div', {
 				class: 'header',
-				hidden: true,
 				$dblclick: () => this.#toggleCollapse(),
 				$mousedown: (event: Event) => this.#handleMouseDown(event as MouseEvent),
 			});
@@ -680,7 +686,6 @@ export class HarmonyPanel implements HarmonyComponent, HasI18n {
 		}
 
 		const rect = this.htmlElement.getBoundingClientRect();
-		document.body.append(this.htmlElement);
 		this.setFloating();
 
 		this.#floatingWidth = this.#floatingWidth ?? rect.width;
@@ -697,15 +702,31 @@ export class HarmonyPanel implements HarmonyComponent, HasI18n {
 	}
 
 	setFloating(): void {
+		document.body.append(this.htmlElement);
 		this.#floating = true;
 		this.htmlElement.classList.add('floating');
 		this.htmlElement.classList.remove('docked');
+
+		this.htmlElement.style.left = `25%`;
+		this.htmlElement.style.top = `25%`;
+		this.htmlElement.style.width = `50%`;
+		this.htmlElement.style.height = `50%`;
+		this.htmlElement.style.position = 'absolute';
 	}
 
-	setDocked(): void {
+	setDocked(parentPanel: HarmonyPanel): void {
+		parentPanel.append(this);
 		this.#floating = false;
 		this.htmlElement.classList.remove('floating');
 		this.htmlElement.classList.add('docked');
+
+		// Reset styles used during drag
+		this.htmlElement.style.left = '';
+		this.htmlElement.style.top = '';
+		this.htmlElement.style.width = '';
+		this.htmlElement.style.height = '';
+		this.htmlElement.style.position = '';
+		this.htmlElement.style.flex = '';
 	}
 
 	#drag(event: MouseEvent): void {
@@ -728,16 +749,7 @@ export class HarmonyPanel implements HarmonyComponent, HasI18n {
 		HarmonyPanel.#dragging = false;
 		HarmonyPanel.#dragMode = 'none';
 		if (HarmonyPanel.#target) {
-			HarmonyPanel.#target.append(this);
-			this.setDocked();
-
-			// Reset styles used during drag
-			this.htmlElement.style.left = '';
-			this.htmlElement.style.top = '';
-			this.htmlElement.style.width = '';
-			this.htmlElement.style.height = '';
-			this.htmlElement.style.position = '';
-			this.htmlElement.style.flex = '';
+			this.setDocked(HarmonyPanel.#target);
 		}
 	}
 

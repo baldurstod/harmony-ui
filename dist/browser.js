@@ -1697,6 +1697,11 @@ class HarmonyPanel {
         this.isMovable = params.movable ?? false;
         this.#dropTarget = params.dropTarget ?? false;
         this.setLayout(params.layout ?? 'row');
+        if (params.floating) {
+            this.setFloating();
+            // If we start in floating mode, force a the presence of a header
+            this.getHeader();
+        }
         if (params.size !== undefined) {
             this.setSize(params.size);
         }
@@ -1748,7 +1753,6 @@ class HarmonyPanel {
         if (!this.#htmlHeader) {
             this.#htmlHeader = createElement('div', {
                 class: 'header',
-                hidden: true,
                 $dblclick: () => this.#toggleCollapse(),
                 $mousedown: (event) => this.#handleMouseDown(event),
             });
@@ -2235,7 +2239,6 @@ class HarmonyPanel {
             this.#parentTab = undefined;
         }
         const rect = this.htmlElement.getBoundingClientRect();
-        document.body.append(this.htmlElement);
         this.setFloating();
         this.#floatingWidth = this.#floatingWidth ?? rect.width;
         this.#floatingHeight = this.#floatingHeight ?? rect.height;
@@ -2248,14 +2251,28 @@ class HarmonyPanel {
         _a$1.#deltaY = rect.y - _a$1.#startClientY;
     }
     setFloating() {
+        document.body.append(this.htmlElement);
         this.#floating = true;
         this.htmlElement.classList.add('floating');
         this.htmlElement.classList.remove('docked');
+        this.htmlElement.style.left = `25%`;
+        this.htmlElement.style.top = `25%`;
+        this.htmlElement.style.width = `50%`;
+        this.htmlElement.style.height = `50%`;
+        this.htmlElement.style.position = 'absolute';
     }
-    setDocked() {
+    setDocked(parentPanel) {
+        parentPanel.append(this);
         this.#floating = false;
         this.htmlElement.classList.remove('floating');
         this.htmlElement.classList.add('docked');
+        // Reset styles used during drag
+        this.htmlElement.style.left = '';
+        this.htmlElement.style.top = '';
+        this.htmlElement.style.width = '';
+        this.htmlElement.style.height = '';
+        this.htmlElement.style.position = '';
+        this.htmlElement.style.flex = '';
     }
     #drag(event) {
         if (!_a$1.#dragging) {
@@ -2275,15 +2292,7 @@ class HarmonyPanel {
         _a$1.#dragging = false;
         _a$1.#dragMode = 'none';
         if (_a$1.#target) {
-            _a$1.#target.append(this);
-            this.setDocked();
-            // Reset styles used during drag
-            this.htmlElement.style.left = '';
-            this.htmlElement.style.top = '';
-            this.htmlElement.style.width = '';
-            this.htmlElement.style.height = '';
-            this.htmlElement.style.position = '';
-            this.htmlElement.style.flex = '';
+            this.setDocked(_a$1.#target);
         }
     }
     #resize(event) {

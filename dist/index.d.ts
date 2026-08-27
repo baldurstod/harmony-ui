@@ -244,7 +244,7 @@ export declare class HarmonyPanel implements HarmonyComponent, HasI18n {
     setTitleI18n(i18n: string | I18nDescriptor | null): void;
     adoptStyleSheet(styleSheet: CSSStyleSheet): void;
     setFloating(): void;
-    setDocked(): void;
+    setDocked(parentPanel: HarmonyPanel): void;
     activate(): void;
 }
 
@@ -255,6 +255,8 @@ export declare type HarmonyPanelParams = {
     collapsible?: boolean;
     /** Create this panel collapsed. Default to false. */
     collapsed?: boolean;
+    /** Create this panel floating. Default to false. */
+    floating?: boolean;
     /** Can this panel be moved. Default to false. */
     movable?: boolean;
     /** Can this panel be a drop target for other panels. Default to false. */
