@@ -1699,8 +1699,8 @@ class HarmonyPanel {
         show(this.getContent());
     }
     close() {
-        if (this.#htmlContent) {
-            hide(this.#htmlContent);
+        if (this.#shadowRoot) {
+            hide(this.#shadowRoot);
         }
     }
 }

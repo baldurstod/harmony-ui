@@ -916,8 +916,8 @@ export class HarmonyPanel implements HarmonyComponent, HasI18n {
 	}
 
 	close(): void {
-		if (this.#htmlContent) {
-			hide(this.#htmlContent);
+		if (this.#shadowRoot) {
+			hide(this.#shadowRoot);
 		}
 	}
 }
