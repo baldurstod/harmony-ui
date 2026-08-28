@@ -2419,7 +2419,8 @@ class HarmonyPanel {
         this.#parentTab?.activate();
     }
     open() {
-        show(this.getContent());
+        this.#initHTML();
+        show(this.#shadowRoot);
     }
     close() {
         if (this.#shadowRoot) {

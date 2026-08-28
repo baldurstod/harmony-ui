@@ -57,6 +57,7 @@ export declare type CreateElementOptions = {
     elementCreated?: (element: Element, root?: ShadowRoot) => void;
     [key: string]: unknown;
     [key: `$${string}`]: HarmonyEventListener;
+    [key: `@${string}`]: string;
 };
 
 export declare type CreateElementOptionValue = null | boolean | string | I18nDescriptor | EventListenerOrEventListenerObject | [] | Record<string, string>;
