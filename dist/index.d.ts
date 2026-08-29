@@ -369,6 +369,21 @@ export declare type HarmonyTabParams = {
     panel?: HarmonyPanel;
 };
 
+export declare class HarmonyTree extends MyEventTarget implements HarmonyComponent {
+    #private;
+    readonly htmlElement: HTMLElement;
+    adoptStyle(css: string): void;
+    setRoot(root?: TreeItem | null): void;
+    expandItem(item: TreeItem): void;
+    collapseItem(item: TreeItem): void;
+    showItem(item: TreeItem): void;
+    hideItem(item: TreeItem): void;
+    selectItem(item: TreeItem | null, scrollIntoView?: boolean): void;
+    addAction(name: string, img: HTMLElement | string, tooltip?: string): void;
+    refreshActions(item: TreeItem): void;
+    setFilter(filter?: TreeItemFilter): void;
+}
+
 declare interface HasI18n {
     setTitleI18n(i18n: string | I18nDescriptor | null): void;
 }
@@ -915,6 +930,12 @@ export declare class TreeItem {
     }): TreeItem;
     walk(filter?: TreeItemFilter): Generator<TreeItem, void, unknown>;
 }
+
+export declare type TreeItemElement = {
+    element: HTMLElement;
+    header: HTMLElement;
+    actions: HTMLElement;
+};
 
 export declare type TreeItemFilter = {
     name?: string;

@@ -1707,11 +1707,9 @@ class HarmonyPanel {
 }
 _a$1 = HarmonyPanel;
 
-var manipulator2dCSS = ":host {\n\t--handle-radius: var(--harmony-2d-manipulator-radius, 0.5rem);\n\t--harmony-2d-manipulator-shadow-bg-color: var(--harmony-2d-manipulator-bg-color, red);\n\t--harmony-2d-manipulator-shadow-border: var(--harmony-2d-manipulator-border, none);\n\t--handle-bg-color: var(--harmony-2d-manipulator-handle-bg-color, chartreuse);\n\t--corner-bg-color: var(--harmony-2d-manipulator-corner-bg-color, var(--handle-bg-color));\n\t--side-bg-color: var(--harmony-2d-manipulator-side-bg-color, var(--handle-bg-color));\n\t--rotate-bg-color: var(--harmony-2d-manipulator-rotate-bg-color, var(--handle-bg-color));\n\n\twidth: 1rem;\n\theight: 1rem;\n\tdisplay: block;\n\tuser-select: none;\n\tpointer-events: all;\n}\n\n:host-context(.grabbing) {\n\tcursor: grabbing;\n}\n\n.manipulator {\n\tposition: absolute;\n\tbackground-color: var(--harmony-2d-manipulator-shadow-bg-color);\n\tborder: var(--harmony-2d-manipulator-shadow-border);\n\tcursor: move;\n\tpointer-events: all;\n}\n\n.rotator {\n\tscale: var(--rotate);\n\tposition: absolute;\n\twidth: var(--handle-radius);\n\theight: var(--handle-radius);\n\tbackground-color: var(--rotate-bg-color);\n\tborder-radius: calc(var(--handle-radius) * 0.5);\n\ttransform: translate(-50%, -50%);\n\tcursor: grab;\n}\n\n.corner {\n\tscale: var(--scale);\n\tposition: absolute;\n\twidth: var(--handle-radius);\n\theight: var(--handle-radius);\n\tbackground-color: var(--corner-bg-color);\n\tborder-radius: calc(var(--handle-radius) * 0.5);\n\ttransform: translate(-50%, -50%);\n\tcursor: grab;\n}\n\n.side {\n\tposition: absolute;\n\twidth: var(--handle-radius);\n\theight: var(--handle-radius);\n\tbackground-color: var(--side-bg-color);\n\tborder-radius: calc(var(--handle-radius) * 0.5);\n\ttransform: translate(-50%, -50%);\n\tcursor: grab;\n}\n\n.side.x {\n\tscale: var(--resize-x);\n}\n\n.side.y {\n\tscale: var(--resize-y);\n}\n\n.corner.grabbing {\n\tcursor: grabbing;\n}\n";
+var treeCSS = ":host {\n\t--child-margin: var(--harmony-tree-child-margin, 1rem);\n\t--header-bg-color: var(--harmony-tree-header-bg-color, var(--main-bg-color-dark, black));\n\t--header-bg-color-hover: var(--harmony-tree-header-bg-color-hover, var(--main-bg-color-bright, #41454d));\n\t--selected-bg-color: var(--harmony-tree-selected-bg-color, var(--accent-primary, rgb(26, 172, 201)));\n\tcolor: var(--main-text-color-dark2, white);\n\tbackground-color: var(--header-bg-color);\n}\n\n.item {\n\twidth: 100%;\n}\n\n.header {\n\twidth: 100%;\n\theight: 1rem;\n\tbackground-color: var(--header-bg-color);\n\tcursor: pointer;\n\tdisplay: flex;\n\tgap: 0.2rem;\n\talign-items: center;\n}\n\n.header:hover{\n\tbackground-color: var(--header-bg-color-hover);\n}\n\n.title {\n\tflex: 1;\n}\n\n.childs {\n\tmargin-left: var(--child-margin);\n}\n\n.root>.header {\n\tdisplay: var(--harmony-tree-display-root, none);\n}\n\n.root>.childs {\n\tmargin-left: unset;\n}\n\n.actions {\n\tdisplay: flex;\n\tflex: 0;\n\tvisibility: hidden;\n}\n\n.header:hover>.actions {\n\tvisibility: visible;\n}\n\n.header.selected {\n\tbackground-color: var(--selected-bg-color);\n}\n";
 
-function toBool(s) {
-    return s === '1' || s === 'true';
-}
+var menuCSS = ":host {\n\tfont-size: 1.5em;\n\tcursor: not-allowed;\n\tcolor: var(--harmony-ui-text-primary);\n\tbackground-color: var(--harmony-ui-menu-bg-color);\n\toverflow: auto;\n\tz-index: 100000;\n}\n\n.harmony-menu-item {\n\tbackground-color: green;\n\tcursor: pointer;\n\tbackground-color: var(--harmony-ui-menu-item-bg-color);\n}\n\n.harmony-menu-item.disabled {\n\tpointer-events: none;\n}\n\n.harmony-menu-item.selected {\n\tbackground-color: var(--harmony-ui-menu-item-selected-bg-color);\n}\n\n\n.harmony-menu-item.separator {\n\theight: 5px;\n\tbackground-color: black;\n}\n\n.harmony-menu-item>.harmony-menu-item-title:hover {\n\tbackground-color: var(--harmony-ui-menu-item-hover-bg-color);\n}\n\n.harmony-menu-item.selected>.harmony-menu-item-title::after {\n\tcontent: \"✔\";\n}\n\n.harmony-menu-item>.harmony-menu-item-title::after {\n\ttransition: all 0.2s ease 0s;\n\twidth: 32px;\n\theight: 32px;\n}\n\n.harmony-menu-item.closed>.harmony-menu-item-title,\n.harmony-menu-item.opened>.harmony-menu-item-title {\n\tpadding-right: 32px;\n}\n\n.harmony-menu-item.closed>.harmony-menu-item-title::after {\n\tcontent: \"➤\";\n}\n\n.harmony-menu-item.opened>.harmony-menu-item-title::after {\n\tcontent: \"➤\";\n\ttransform: rotate(90deg);\n}\n\n.harmony-menu-item .submenu {\n\tbackground-color: var(--harmony-ui-menu-submenu-bg-color);\n\tpadding-left: 10px;\n\tmargin-left: 2px;\n\tdisplay: none;\n\toverflow: hidden;\n\tposition: relative;\n\tbackground-color: var(--harmony-ui-menu-submenu-fg-color);\n}\n\n.harmony-menu-item.opened>.submenu {\n\tdisplay: block;\n}\n";
 
 var uiCSS = "@media (prefers-color-scheme: light) {\n\t:root:not(.light):not(.dark) {\n\t\t--harmony-ui-background-primary: #ccc;\n\t\t--harmony-ui-background-secondary: #f9f9fb;\n\t\t--harmony-ui-background-tertiary: #fff;\n\n\t\t--harmony-ui-input-background-primary: #aaa;\n\t\t--harmony-ui-input-background-secondary: #ccc;\n\t\t--harmony-ui-input-background-tertiary: #4e4e4e;\n\n\t\t--harmony-ui-border-primary: #222;\n\t\t--harmony-ui-border-secondary: #222;\n\n\t\t--harmony-ui-input-border-primary: #222;\n\t\t--harmony-ui-input-border-secondary: #222;\n\n\t\t--harmony-ui-text-primary: #222;\n\t\t--harmony-ui-text-secondary: #222;\n\t\t--harmony-ui-text-inactive: #9e9e9ea6;\n\t\t--harmony-ui-text-link: #0069c2;\n\t\t--harmony-ui-text-invert: #fff;\n\n\t\t--harmony-ui-accent-primary: #1072eb;\n\t\t--harmony-ui-accent-secondary: #1040c1;\n\n\t\t--harmony-ui-scrollbar-bg: transparent;\n\t\t--harmony-ui-scrollbar-color: rgba(0, 0, 0, 0.25);\n\n\t\t--harmony-ui-menu-bg-color: #ccc;\n\t\t--harmony-ui-menu-item-bg-color: #ccc;\n\t\t--harmony-ui-menu-item-selected-bg-color: #ccc;\n\t\t--harmony-ui-menu-submenu-bg-color: #ccc;\n\t\t--harmony-ui-menu-submenu-fg-color: #777;\n\t\t--harmony-ui-menu-item-hover-bg-color: #fff;\n\t}\n}\n\n@media (prefers-color-scheme: dark) {\n\t:root:not(.light):not(.dark) {\n\t\t--harmony-ui-background-primary: #1b1b1b;\n\t\t--harmony-ui-background-secondary: #464747;\n\t\t--harmony-ui-background-tertiary: #4e4e4e;\n\n\t\t--harmony-ui-input-background-primary: #555;\n\t\t--harmony-ui-input-background-secondary: #333;\n\t\t--harmony-ui-input-background-tertiary: #fff;\n\n\t\t--harmony-ui-border-primary: #858585;\n\t\t--harmony-ui-border-secondary: #696969;\n\n\t\t--harmony-ui-input-border-primary: #aaa;\n\t\t--harmony-ui-input-border-secondary: #696969;\n\n\t\t--harmony-ui-text-primary: #fff;\n\t\t--harmony-ui-text-secondary: #cdcdcd;\n\t\t--harmony-ui-text-inactive: #cdcdcda6;\n\t\t--harmony-ui-text-link: #8cb4ff;\n\t\t--harmony-ui-text-invert: #1b1b1b;\n\n\t\t--harmony-ui-accent-primary: #1072eb;\n\t\t--harmony-ui-accent-secondary: #1040c1;\n\n\t\t--harmony-ui-scrollbar-bg: transparent;\n\t\t--harmony-ui-scrollbar-color: rgba(255, 255, 255, 0.25);\n\n\t\t--harmony-ui-menu-bg-color: #333333;\n\t\t--harmony-ui-menu-item-bg-color: #333333;\n\t\t--harmony-ui-menu-item-selected-bg-color: #333333;\n\t\t--harmony-ui-menu-submenu-bg-color: #333333;\n\t\t--harmony-ui-menu-submenu-fg-color: #888888;\n\t\t--harmony-ui-menu-item-hover-bg-color: #000000;\n\t}\n}\n\n:root.light {\n\t--harmony-ui-background-primary: #ccc;\n\t--harmony-ui-background-secondary: #f9f9fb;\n\t--harmony-ui-background-tertiary: #fff;\n\n\t--harmony-ui-input-background-primary: #aaa;\n\t--harmony-ui-input-background-secondary: #ccc;\n\t--harmony-ui-input-background-tertiary: #4e4e4e;\n\n\t--harmony-ui-border-primary: #222;\n\t--harmony-ui-border-secondary: #222;\n\n\t--harmony-ui-input-border-primary: #222;\n\t--harmony-ui-input-border-secondary: #222;\n\n\t--harmony-ui-text-primary: #222;\n\t--harmony-ui-text-secondary: #222;\n\t--harmony-ui-text-inactive: #9e9e9ea6;\n\t--harmony-ui-text-link: #0069c2;\n\t--harmony-ui-text-invert: #fff;\n\n\t--harmony-ui-accent-primary: #1072eb;\n\t--harmony-ui-accent-secondary: #1040c1;\n\n\t--harmony-ui-scrollbar-bg: transparent;\n\t--harmony-ui-scrollbar-color: rgba(0, 0, 0, 0.25);\n\n\t--harmony-ui-menu-bg-color: #ccc;\n\t--harmony-ui-menu-item-bg-color: #ccc;\n\t--harmony-ui-menu-item-selected-bg-color: #ccc;\n\t--harmony-ui-menu-submenu-bg-color: #ccc;\n\t--harmony-ui-menu-submenu-fg-color: #777;\n\t--harmony-ui-menu-item-hover-bg-color: #fff;\n}\n\n:root.dark {\n\t--harmony-ui-background-primary: #1b1b1b;\n\t--harmony-ui-background-secondary: #464747;\n\t--harmony-ui-background-tertiary: #4e4e4e;\n\n\t--harmony-ui-input-background-primary: #555;\n\t--harmony-ui-input-background-secondary: #333;\n\t--harmony-ui-input-background-tertiary: #fff;\n\n\t--harmony-ui-border-primary: #858585;\n\t--harmony-ui-border-secondary: #696969;\n\n\t--harmony-ui-input-border-primary: #aaa;\n\t--harmony-ui-input-border-secondary: #696969;\n\n\t--harmony-ui-text-primary: #fff;\n\t--harmony-ui-text-secondary: #cdcdcd;\n\t--harmony-ui-text-inactive: #cdcdcda6;\n\t--harmony-ui-text-link: #8cb4ff;\n\t--harmony-ui-text-invert: #1b1b1b;\n\n\t--harmony-ui-accent-primary: #1072eb;\n\t--harmony-ui-accent-secondary: #1040c1;\n\n\t--harmony-ui-scrollbar-bg: transparent;\n\t--harmony-ui-scrollbar-color: rgba(255, 255, 255, 0.25);\n\n\t--harmony-ui-menu-bg-color: #333333;\n\t--harmony-ui-menu-item-bg-color: #333333;\n\t--harmony-ui-menu-item-selected-bg-color: #333333;\n\t--harmony-ui-menu-submenu-bg-color: #333333;\n\t--harmony-ui-menu-submenu-fg-color: #888888;\n\t--harmony-ui-menu-item-hover-bg-color: #000000;\n}\n";
 
@@ -1722,6 +1720,1095 @@ function injectGlobalCss() {
     }
     void documentStyle(uiCSS);
     injected = true;
+}
+
+class HTMLHarmonyMenuElement extends HTMLElement {
+    #doOnce = true;
+    #subMenus = new Map();
+    #shadowRoot;
+    #contextual = false;
+    constructor() {
+        super();
+        this.#shadowRoot = this.attachShadow({ mode: 'closed' });
+        document.addEventListener('click', (event) => {
+            if (this.#contextual && !this.contains(event.target)) {
+                this.close();
+            }
+        });
+    }
+    #show(items, userData) {
+        this.#setItems(items, userData);
+        this.#checkSize();
+    }
+    show(items, userData) {
+        this.#show(items, userData);
+        this.setContextual(false);
+    }
+    showContextual(items, clientX, clientY, userData) {
+        document.body.append(this);
+        this.style.left = clientX + 'px';
+        this.style.top = clientY + 'px';
+        this.setContextual(true);
+        this.#show(items, userData);
+    }
+    setContextual(contextual) {
+        this.style.position = contextual ? 'absolute' : '';
+        this.#contextual = contextual;
+    }
+    #checkSize() {
+        const bodyRect = document.body.getBoundingClientRect();
+        const elemRect = this.getBoundingClientRect();
+        this.style.maxWidth = bodyRect.width + 'px';
+        this.style.maxHeight = bodyRect.height + 'px';
+        if (elemRect.right > bodyRect.right) {
+            this.style.left = Math.max((bodyRect.width - elemRect.width), 0) + 'px';
+            /*if (elemRect.width > bodyRect.width) {
+                this.style.maxWidth = bodyRect.width + 'px';
+            } else {
+                this.style.maxWidth = '';
+            }*/
+        }
+        if (elemRect.bottom > bodyRect.bottom) {
+            this.style.top = Math.max((bodyRect.height - elemRect.height), 0) + 'px';
+            /*if (elemRect.height > bodyRect.height) {
+                this.style.maxHeight = bodyRect.height + 'px';
+            } else {
+                this.style.maxHeight = '';
+            }*/
+        }
+        if (elemRect.left < 0) {
+            this.style.left = '0px';
+        }
+        if (elemRect.top < 0) {
+            this.style.top = '0px';
+        }
+    }
+    close() {
+        if (this.#contextual) {
+            this.remove();
+        }
+    }
+    connectedCallback() {
+        if (this.#doOnce) {
+            I18n.observeElement(this.#shadowRoot);
+            void shadowRootStyle(this.#shadowRoot, menuCSS);
+            const callback = (entries) => {
+                entries.forEach(() => {
+                    this.#checkSize();
+                });
+            };
+            const resizeObserver = new ResizeObserver(callback);
+            resizeObserver.observe(this);
+            resizeObserver.observe(document.body);
+            this.#doOnce = false;
+        }
+    }
+    #setItems(items, userData) {
+        this.#shadowRoot.replaceChildren();
+        if (items instanceof Array) {
+            for (const item of items) {
+                this.#shadowRoot.append(this.addItem(item, userData));
+            }
+        }
+        else {
+            for (const itemId in items) {
+                const item = items[itemId];
+                this.#shadowRoot.append(this.addItem(item, userData));
+            }
+        }
+    }
+    #openSubMenu(htmlSubMenu) {
+        for (const [htmlItem, sub] of this.#subMenus) {
+            if (sub == htmlSubMenu || sub.contains(htmlSubMenu)) {
+                htmlItem.classList.add('opened');
+                htmlItem.classList.remove('closed');
+            }
+            else {
+                htmlItem.classList.remove('opened');
+                htmlItem.classList.add('closed');
+            }
+        }
+        this.#checkSize();
+    }
+    addItem(item, userData) {
+        const htmlItem = createElement('div', {
+            class: 'harmony-menu-item',
+        });
+        if (!item) {
+            htmlItem.classList.add('separator');
+        }
+        else {
+            const htmlItemTitle = createElement('div', {
+                class: 'harmony-menu-item-title',
+            });
+            if (item.i18n) {
+                htmlItemTitle.classList.add('i18n');
+                htmlItemTitle.setAttribute('data-i18n', item.i18n);
+                htmlItemTitle.innerText = item.i18n;
+            }
+            else {
+                htmlItemTitle.innerText = item.name ?? '';
+            }
+            htmlItem.append(htmlItemTitle);
+            if (item.selected) {
+                htmlItem.classList.add('selected');
+            }
+            if (item.disabled) {
+                htmlItem.classList.add('disabled');
+            }
+            if (item.submenu) {
+                const htmlSubMenu = createElement('div', {
+                    class: 'submenu',
+                });
+                this.#subMenus.set(htmlItem, htmlSubMenu);
+                let subItems = 0;
+                if (item.submenu instanceof Array) {
+                    for (const subItem of item.submenu) {
+                        htmlSubMenu.append(this.addItem(subItem, userData));
+                        ++subItems;
+                    }
+                }
+                else {
+                    for (const subItemName in item.submenu) {
+                        const subItem = item.submenu[subItemName];
+                        htmlSubMenu.append(this.addItem(subItem, userData));
+                        ++subItems;
+                    }
+                }
+                htmlItem.append(htmlSubMenu);
+                //htmlSubMenu.style.display = 'none';
+                htmlItem.classList.add('closed');
+                if (item.opened) {
+                    this.#openSubMenu(htmlSubMenu);
+                }
+                htmlItem.addEventListener('click', event => {
+                    this.#openSubMenu(htmlSubMenu);
+                    if (item.cmd) {
+                        this.dispatchEvent(new CustomEvent(item.cmd));
+                    }
+                    if (item.f) {
+                        void item.f(userData);
+                    }
+                    event.stopPropagation();
+                });
+                if (subItems == 0) {
+                    hide(htmlItem);
+                }
+            }
+            else {
+                htmlItem.addEventListener('click', (event) => {
+                    if (item.cmd) {
+                        this.dispatchEvent(new CustomEvent(item.cmd));
+                    }
+                    if (item.f) {
+                        void item.f(userData);
+                    }
+                    event.stopPropagation();
+                });
+                htmlItem.addEventListener('click', () => this.close());
+            }
+        }
+        return htmlItem;
+    }
+}
+let definedMenu = false;
+function defineHarmonyMenu() {
+    if (!definedMenu) {
+        defineElement('harmony-menu', HTMLHarmonyMenuElement);
+        definedMenu = true;
+        injectGlobalCss();
+    }
+}
+
+class HTMLHarmonyElement extends HTMLElement {
+    initialized = false;
+    initElement() {
+        if (this.initialized) {
+            return;
+        }
+        this.initialized = true;
+        this.createElement();
+    }
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
+    createElement() {
+    }
+    connectedCallback() {
+        this.initElement();
+    }
+    attributeChangedCallback(name, oldValue, newValue) {
+        this.initElement();
+        this.onAttributeChanged(name, oldValue, newValue);
+    }
+    // eslint-disable-next-line @typescript-eslint/no-empty-function, @typescript-eslint/no-unused-vars
+    onAttributeChanged(name, oldValue, newValue) {
+    }
+    static get observedAttributes() {
+        return ['label'];
+    }
+}
+
+var TreeItemKind;
+(function (TreeItemKind) {
+    TreeItemKind["Root"] = "root";
+    TreeItemKind["Directory"] = "directory";
+    TreeItemKind["File"] = "file";
+    TreeItemKind["Item"] = "item";
+})(TreeItemKind || (TreeItemKind = {}));
+class TreeItem {
+    name;
+    icon;
+    kind;
+    parent;
+    childs = new Set;
+    actions = new Set();
+    userData;
+    constructor(name, options = {}) {
+        this.name = name;
+        this.icon = options.icon;
+        this.kind = options.kind ?? TreeItemKind.File;
+        this.parent = options.parent;
+        this.userData = options.userData;
+        if (options.parent) {
+            options.parent.addChild(this);
+        }
+        if (options.childs) {
+            for (const child of options.childs) {
+                this.addChild(child);
+            }
+        }
+        this.#sortByName();
+    }
+    addChild(child) {
+        this.childs.add(child);
+    }
+    #sortByName() {
+        this.childs[Symbol.iterator] = function* () {
+            yield* [...this.values()].sort((a, b) => {
+                return a.name.toLowerCase() < b.name.toLowerCase() ? -1 : 1;
+            });
+        };
+    }
+    getPath(separator = '/') {
+        let path = '';
+        if (this.parent) {
+            const parentPath = this.parent.getPath(separator);
+            if (parentPath) {
+                path = parentPath + separator;
+            }
+        }
+        return path + this.name;
+    }
+    getLevel() {
+        if (this.parent) {
+            return 1 + this.parent.getLevel();
+        }
+        return 0;
+    }
+    addAction(action) {
+        this.actions.add(action);
+    }
+    addActions(actions) {
+        for (const action of actions) {
+            this.actions.add(action);
+        }
+    }
+    removeAction(action) {
+        this.actions.delete(action);
+    }
+    static createFromPathList(paths, options = {}) {
+        class element {
+            tree;
+            childs = new Map();
+            constructor(tree) {
+                this.tree = tree;
+            }
+        }
+        const root = new TreeItem(options.rootName ?? '', { userData: options.rootUserData ?? options.userData, kind: TreeItemKind.Root });
+        const top = new element(root);
+        for (const [path, perElementUserData] of paths.entries()) {
+            const segments = path.split(options.pathSeparator ?? '/');
+            let current = top;
+            let parent = root;
+            for (let i = 0, l = segments.length; i < l; i++) {
+                const s = segments[i];
+                if (s == '') {
+                    continue;
+                }
+                let kind = TreeItemKind.Directory;
+                if (i == l - 1) {
+                    kind = TreeItemKind.File;
+                }
+                if (!current.childs.has(s)) {
+                    current.childs.set(s, new element(new TreeItem(s, { parent: parent, kind: kind, userData: perElementUserData != path ? perElementUserData : options.userData })));
+                }
+                parent = current.childs.get(s).tree;
+                current = current.childs.get(s);
+            }
+        }
+        return root;
+    }
+    #matchFilter(filter) {
+        if (!filter) {
+            return true;
+        }
+        const lowerName = this.name.toLowerCase();
+        if (filter.name) {
+            if (!lowerName.includes(filter.name.toLowerCase())) {
+                return false;
+            }
+            if (this.kind != TreeItemKind.File) {
+                return false;
+            }
+        }
+        if (filter.kinds) {
+            let match = false;
+            for (const tf of filter.kinds) {
+                if (tf === this.kind) {
+                    match = true;
+                    break;
+                }
+            }
+            if (!match) {
+                return false;
+            }
+        }
+        if (filter.kind !== undefined) {
+            if (filter.kind !== this.kind) {
+                return false;
+            }
+        }
+        if (filter.extensions) {
+            if (this.kind != TreeItemKind.File) {
+                return false;
+            }
+            const extension = lowerName.split('.').pop() ?? '';
+            if (!filter.extensions.has(extension)) {
+                if (filter.extensions.get('^') === false) {
+                    return false;
+                }
+            }
+            else {
+                if ((filter.extensions.get(extension) ?? filter.extensions.get('*')) === false) {
+                    return false;
+                }
+            }
+        }
+        if (filter.customFilter) {
+            return filter.customFilter(this);
+        }
+        return true;
+    }
+    *walk(filter) {
+        const stack = [this];
+        let current;
+        do {
+            current = stack.pop();
+            if (!current) {
+                break;
+            }
+            if (current.#matchFilter(filter)) {
+                yield current;
+            }
+            for (const child of current.childs) {
+                stack.push(child);
+            }
+        } while (current);
+    }
+}
+class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
+    #shadowRoot;
+    #root;
+    #htmlContextMenu;
+    #isInitialized = new Set();
+    #isExpanded = new Map();
+    #filter;
+    #isVisible = new Set();
+    #actions = new Map();
+    #itemElements = new Map();
+    #elementItem = new Map();
+    #selectedItem = null;
+    #rootLevel;
+    #sticky = new Set();
+    #dynamicSheet = new CSSStyleSheet();
+    #cssLevel = new Set();
+    createElement() {
+        this.#shadowRoot = this.attachShadow({ mode: 'closed' });
+        void shadowRootStyle(this.#shadowRoot, treeCSS);
+        this.#shadowRoot.adoptedStyleSheets.push(this.#dynamicSheet);
+        I18n.observeElement(this.#shadowRoot);
+        this.#refresh();
+        this.addEventListener('scroll', () => this.#handleScroll());
+    }
+    adoptStyle(css) {
+        this.initElement();
+        void shadowRootStyle(this.#shadowRoot, css);
+    }
+    #refresh() {
+        if (!this.#shadowRoot) {
+            return;
+        }
+        if (!this.#root) {
+            return;
+        }
+        this.#createItem(this.#root, null, true);
+        this.#refreshFilter();
+    }
+    #refreshFilter() {
+        for (const [item, itemElement] of this.#itemElements) {
+            const show = (!this.#filter || this.#isVisible.has(item)) && this.#isFullyExpanded(item);
+            display(itemElement.element, show);
+        }
+    }
+    #isFullyExpanded(item) {
+        let current = item.parent;
+        if (!current) {
+            return true;
+        }
+        do {
+            if (!this.#isExpanded.get(current)) {
+                return false;
+            }
+            current = current.parent;
+        } while (current);
+        return true;
+    }
+    setRoot(root) {
+        this.#root = root;
+        this.#shadowRoot?.replaceChildren();
+        this.#filterItems();
+    }
+    #buildContextMenu(contextMenu, x, y) {
+        if (!this.#htmlContextMenu) {
+            defineHarmonyMenu();
+            this.#htmlContextMenu = createElement('harmony-menu');
+        }
+        this.#htmlContextMenu.showContextual(contextMenu, x, y);
+    }
+    #contextMenuHandler(event, item) {
+        if (!event.shiftKey) {
+            this.dispatchEvent(new CustomEvent('contextmenu', {
+                detail: {
+                    item: item,
+                    buildContextMenu: (menu) => this.#buildContextMenu(menu, event.clientX, event.clientY),
+                },
+            }));
+            event.preventDefault();
+            event.stopPropagation();
+        }
+    }
+    #createItem(item, predecessor, createExpanded) {
+        let element;
+        const itemElement = this.#itemElements.get(item);
+        if (itemElement) {
+            element = itemElement.element;
+            if (predecessor) {
+                predecessor.after(element);
+            }
+            else {
+                this.#shadowRoot?.append(element);
+            }
+        }
+        else {
+            const itemLevel = item.getLevel();
+            let header;
+            let actions;
+            this.#addCssLevel(itemLevel);
+            element = createElement('div', {
+                class: `item level${itemLevel}`,
+                parent: this.#shadowRoot,
+                childs: [
+                    header = createElement('div', {
+                        class: 'header',
+                        childs: [
+                            createElement('div', {
+                                class: 'padding',
+                            }),
+                            createElement('div', {
+                                class: 'title',
+                                innerText: item.name,
+                            }),
+                            actions = createElement('div', {
+                                class: 'actions',
+                            }),
+                        ],
+                        $click: () => {
+                            if (this.#isExpanded.get(item)) {
+                                this.collapseItem(item);
+                            }
+                            else {
+                                this.expandItem(item);
+                                this.#refreshFilter();
+                            }
+                            this.dispatchEvent(new CustomEvent('itemclick', { detail: { item: item } }));
+                        },
+                        $contextmenu: (event) => this.#contextMenuHandler(event, item),
+                    }),
+                ]
+            });
+            if (predecessor) {
+                predecessor.after(element);
+            }
+            this.#itemElements.set(item, { element: element, header: header, actions: actions });
+            this.#elementItem.set(element, item);
+        }
+        if (item.kind == TreeItemKind.Root && item.name == '') {
+            element.classList.add('root');
+        }
+        if (item.kind) {
+            element.classList.add(`type-${item.kind}`);
+        }
+        if (createExpanded || this.#isExpanded.get(item)) {
+            this.expandItem(item);
+        }
+        this.refreshActions(item);
+        return element;
+    }
+    expandItem(item) {
+        if (item.parent) {
+            this.expandItem(item.parent);
+        }
+        const element = this.#itemElements.get(item)?.element;
+        if (!element) {
+            return;
+        }
+        if (this.#isExpanded.get(item)) {
+            return;
+        }
+        this.#isExpanded.set(item, true);
+        if (!this.#isInitialized.has(item)) {
+            let predecessor = element;
+            for (const child of item.childs) {
+                const childElement = this.#createItem(child, predecessor, false);
+                predecessor = childElement;
+            }
+            this.#isInitialized.add(item);
+        }
+        else {
+            for (const child of item.childs) {
+                this.showItem(child);
+            }
+        }
+    }
+    collapseItem(item) {
+        this.#isExpanded.set(item, false);
+        for (const child of item.childs) {
+            this.hideItem(child);
+        }
+    }
+    showItem(item) {
+        const element = this.#itemElements.get(item);
+        if (element) {
+            show(element.element);
+        }
+        if (this.#isExpanded.get(item)) {
+            for (const child of item.childs) {
+                this.showItem(child);
+            }
+        }
+    }
+    hideItem(item) {
+        const element = this.#itemElements.get(item);
+        if (element) {
+            hide(element.element);
+        }
+        for (const child of item.childs) {
+            this.hideItem(child);
+        }
+    }
+    selectItem(item, scrollIntoView = true) {
+        if (item == this.#selectedItem) {
+            return;
+        }
+        if (this.#selectedItem) {
+            this.#itemElements.get(this.#selectedItem)?.header?.classList.remove('selected');
+        }
+        if (item) {
+            if (item.parent) {
+                this.expandItem(item.parent);
+            }
+            const itemElement = this.#itemElements.get(item)?.header;
+            itemElement?.classList.add('selected');
+            if (scrollIntoView) {
+                setTimeout(() => {
+                    itemElement?.scrollIntoView({ block: 'center' });
+                }, 0);
+            }
+        }
+        this.#selectedItem = item;
+    }
+    addAction(name, img, tooltip) {
+        const action = {
+            name: name,
+            tooltip: tooltip,
+        };
+        if (typeof img == 'string') {
+            action.innerHTML = img;
+        }
+        else {
+            action.element = img;
+        }
+        this.#actions.set(name, action);
+    }
+    refreshActions(item) {
+        const htmlActions = this.#itemElements.get(item)?.actions;
+        htmlActions?.replaceChildren();
+        for (const actionName of item.actions) {
+            const action = this.#actions.get(actionName);
+            if (action) {
+                createElement('div', {
+                    child: action.element,
+                    innerHTML: action.innerHTML,
+                    parent: htmlActions,
+                    i18n: {
+                        title: action.tooltip,
+                    },
+                    $click: (event) => this.#actionHandler(event, item, actionName),
+                });
+            }
+        }
+    }
+    #actionHandler(event, item, action) {
+        this.dispatchEvent(new CustomEvent('itemaction', {
+            detail: {
+                item: item,
+                action: action,
+            },
+        }));
+        event.preventDefault();
+        event.stopPropagation();
+    }
+    setFilter(filter) {
+        this.#filter = filter;
+        this.#filterItems();
+    }
+    #filterItems() {
+        this.#isVisible.clear();
+        if (this.#filter && this.#root) {
+            for (const item of this.#root.walk(this.#filter)) {
+                let current = item;
+                do {
+                    this.#isVisible.add(current);
+                    current = current.parent;
+                } while (current);
+            }
+        }
+        this.#refresh();
+    }
+    #handleScroll() {
+        let stickyHeight = 0;
+        for (const sticky of this.#sticky) {
+            const rect = sticky.getBoundingClientRect();
+            stickyHeight += rect.height;
+        }
+        const rect = this.getBoundingClientRect();
+        const elements = this.#shadowRoot.elementsFromPoint(rect.x + 1, rect.y + stickyHeight + 1);
+        if (!elements) {
+            return;
+        }
+        for (const element of elements) {
+            let treeItem = this.#elementItem.get(element);
+            if (!treeItem) {
+                continue;
+            }
+            treeItem = treeItem.parent;
+            if (!treeItem) {
+                continue;
+            }
+            this.#setSticky(treeItem);
+            break;
+        }
+    }
+    #addCssLevel(level) {
+        if (level == 0) {
+            return;
+        }
+        if (!this.#cssLevel.has(level)) {
+            this.#cssLevel.add(level);
+            this.#dynamicSheet.insertRule(`.level${level} .padding{flex: 0 0 ${level}rem}`);
+        }
+    }
+    #setSticky(item) {
+        for (const treeItemElement of this.#sticky) {
+            treeItemElement.style.cssText = '';
+        }
+        this.#sticky.clear();
+        let current = item;
+        while (current) {
+            const treeItemElement = this.#itemElements.get(current);
+            if (treeItemElement) {
+                this.#sticky.add(treeItemElement.element);
+                treeItemElement.element.style.cssText = `position:sticky;top:${current.getLevel()}rem;`;
+            }
+            current = current.parent;
+        }
+    }
+}
+let definedTree = false;
+function defineHarmonyTree() {
+    if (!definedTree) {
+        defineElement('harmony-tree', class extends HTMLHarmonyTreeElement {
+        });
+        defineElement('h-tree', class extends HTMLHarmonyTreeElement {
+        });
+        definedTree = true;
+        injectGlobalCss();
+    }
+}
+
+class HarmonyTree extends MyEventTarget {
+    htmlElement = createElement('div');
+    #shadowRoot;
+    #root;
+    #htmlContextMenu;
+    #isInitialized = new Set();
+    #isExpanded = new Map();
+    #filter;
+    #isVisible = new Set();
+    #actions = new Map();
+    #itemElements = new Map();
+    #elementItem = new Map();
+    #selectedItem = null;
+    #rootLevel;
+    #sticky = new Set();
+    #dynamicSheet = new CSSStyleSheet();
+    #cssLevel = new Set();
+    #initHTML() {
+        if (this.#shadowRoot) {
+            return;
+        }
+        this.#shadowRoot = this.htmlElement.attachShadow({ mode: 'closed' });
+        I18n.observeElement(this.#shadowRoot);
+        void shadowRootStyle(this.#shadowRoot, treeCSS);
+        this.#shadowRoot.adoptedStyleSheets.push(this.#dynamicSheet);
+        this.#refresh();
+        this.htmlElement.addEventListener('scroll', () => this.#handleScroll());
+    }
+    adoptStyle(css) {
+        this.#initHTML();
+        void shadowRootStyle(this.#shadowRoot, css);
+    }
+    #refresh() {
+        if (!this.#shadowRoot) {
+            return;
+        }
+        if (!this.#root) {
+            return;
+        }
+        this.#createItem(this.#root, null, true);
+        this.#refreshFilter();
+    }
+    #refreshFilter() {
+        for (const [item, itemElement] of this.#itemElements) {
+            const show = (!this.#filter || this.#isVisible.has(item)) && this.#isFullyExpanded(item);
+            display(itemElement.element, show);
+        }
+    }
+    #isFullyExpanded(item) {
+        let current = item.parent;
+        if (!current) {
+            return true;
+        }
+        do {
+            if (!this.#isExpanded.get(current)) {
+                return false;
+            }
+            current = current.parent;
+        } while (current);
+        return true;
+    }
+    setRoot(root) {
+        this.#initHTML();
+        this.#root = root;
+        this.#shadowRoot?.replaceChildren();
+        this.#filterItems();
+    }
+    #buildContextMenu(contextMenu, x, y) {
+        if (!this.#htmlContextMenu) {
+            defineHarmonyMenu();
+            this.#htmlContextMenu = createElement('harmony-menu');
+        }
+        this.#htmlContextMenu.showContextual(contextMenu, x, y);
+    }
+    #contextMenuHandler(event, item) {
+        if (!event.shiftKey) {
+            this.dispatchEvent(new CustomEvent('contextmenu', {
+                detail: {
+                    item: item,
+                    buildContextMenu: (menu) => this.#buildContextMenu(menu, event.clientX, event.clientY),
+                },
+            }));
+            event.preventDefault();
+            event.stopPropagation();
+        }
+    }
+    #createItem(item, predecessor, createExpanded) {
+        let element;
+        const itemElement = this.#itemElements.get(item);
+        if (itemElement) {
+            element = itemElement.element;
+            if (predecessor) {
+                predecessor.after(element);
+            }
+            else {
+                this.#shadowRoot?.append(element);
+            }
+        }
+        else {
+            const itemLevel = item.getLevel();
+            let header;
+            let actions;
+            this.#addCssLevel(itemLevel);
+            element = createElement('div', {
+                class: `item level${itemLevel}`,
+                parent: this.#shadowRoot,
+                childs: [
+                    header = createElement('div', {
+                        class: 'header',
+                        childs: [
+                            createElement('div', {
+                                class: 'padding',
+                            }),
+                            createElement('div', {
+                                class: 'title',
+                                innerText: item.name,
+                            }),
+                            actions = createElement('div', {
+                                class: 'actions',
+                            }),
+                        ],
+                        $click: () => {
+                            if (this.#isExpanded.get(item)) {
+                                this.collapseItem(item);
+                            }
+                            else {
+                                this.expandItem(item);
+                                this.#refreshFilter();
+                            }
+                            this.dispatchEvent(new CustomEvent('itemclick', { detail: { item: item } }));
+                        },
+                        $contextmenu: (event) => this.#contextMenuHandler(event, item),
+                    }),
+                ]
+            });
+            if (predecessor) {
+                predecessor.after(element);
+            }
+            this.#itemElements.set(item, { element: element, header: header, actions: actions });
+            this.#elementItem.set(element, item);
+        }
+        if (item.kind == TreeItemKind.Root && item.name == '') {
+            element.classList.add('root');
+        }
+        if (item.kind) {
+            element.classList.add(`type-${item.kind}`);
+        }
+        if (createExpanded || this.#isExpanded.get(item)) {
+            this.expandItem(item);
+        }
+        this.refreshActions(item);
+        return element;
+    }
+    expandItem(item) {
+        this.#initHTML();
+        if (item.parent) {
+            this.expandItem(item.parent);
+        }
+        const element = this.#itemElements.get(item)?.element;
+        if (!element) {
+            return;
+        }
+        if (this.#isExpanded.get(item)) {
+            return;
+        }
+        this.#isExpanded.set(item, true);
+        if (!this.#isInitialized.has(item)) {
+            let predecessor = element;
+            for (const child of item.childs) {
+                const childElement = this.#createItem(child, predecessor, false);
+                predecessor = childElement;
+            }
+            this.#isInitialized.add(item);
+        }
+        else {
+            for (const child of item.childs) {
+                this.showItem(child);
+            }
+        }
+    }
+    collapseItem(item) {
+        this.#initHTML();
+        this.#isExpanded.set(item, false);
+        for (const child of item.childs) {
+            this.hideItem(child);
+        }
+    }
+    showItem(item) {
+        this.#initHTML();
+        const element = this.#itemElements.get(item);
+        if (element) {
+            show(element.element);
+        }
+        if (this.#isExpanded.get(item)) {
+            for (const child of item.childs) {
+                this.showItem(child);
+            }
+        }
+    }
+    hideItem(item) {
+        const element = this.#itemElements.get(item);
+        if (element) {
+            hide(element.element);
+        }
+        for (const child of item.childs) {
+            this.hideItem(child);
+        }
+    }
+    selectItem(item, scrollIntoView = true) {
+        this.#initHTML();
+        if (item == this.#selectedItem) {
+            return;
+        }
+        if (this.#selectedItem) {
+            this.#itemElements.get(this.#selectedItem)?.header?.classList.remove('selected');
+        }
+        if (item) {
+            if (item.parent) {
+                this.expandItem(item.parent);
+            }
+            const itemElement = this.#itemElements.get(item)?.header;
+            itemElement?.classList.add('selected');
+            if (scrollIntoView) {
+                setTimeout(() => {
+                    itemElement?.scrollIntoView({ block: 'center' });
+                }, 0);
+            }
+        }
+        this.#selectedItem = item;
+    }
+    addAction(name, img, tooltip) {
+        const action = {
+            name: name,
+            tooltip: tooltip,
+        };
+        if (typeof img == 'string') {
+            action.innerHTML = img;
+        }
+        else {
+            action.element = img;
+        }
+        this.#actions.set(name, action);
+    }
+    refreshActions(item) {
+        const htmlActions = this.#itemElements.get(item)?.actions;
+        htmlActions?.replaceChildren();
+        for (const actionName of item.actions) {
+            const action = this.#actions.get(actionName);
+            if (action) {
+                createElement('div', {
+                    child: action.element,
+                    innerHTML: action.innerHTML,
+                    parent: htmlActions,
+                    i18n: {
+                        title: action.tooltip,
+                    },
+                    $click: (event) => this.#actionHandler(event, item, actionName),
+                });
+            }
+        }
+    }
+    #actionHandler(event, item, action) {
+        this.dispatchEvent(new CustomEvent('itemaction', {
+            detail: {
+                item: item,
+                action: action,
+            },
+        }));
+        event.preventDefault();
+        event.stopPropagation();
+    }
+    setFilter(filter) {
+        this.#initHTML();
+        this.#filter = filter;
+        this.#filterItems();
+    }
+    #filterItems() {
+        this.#isVisible.clear();
+        if (this.#filter && this.#root) {
+            for (const item of this.#root.walk(this.#filter)) {
+                let current = item;
+                do {
+                    this.#isVisible.add(current);
+                    current = current.parent;
+                } while (current);
+            }
+        }
+        this.#refresh();
+    }
+    #handleScroll() {
+        let stickyHeight = 0;
+        for (const sticky of this.#sticky) {
+            const rect = sticky.getBoundingClientRect();
+            stickyHeight += rect.height;
+        }
+        const rect = this.htmlElement.getBoundingClientRect();
+        const elements = this.#shadowRoot.elementsFromPoint(rect.x + 1, rect.y + stickyHeight + 1);
+        if (!elements) {
+            return;
+        }
+        for (const element of elements) {
+            let treeItem = this.#elementItem.get(element);
+            if (!treeItem) {
+                continue;
+            }
+            treeItem = treeItem.parent;
+            if (!treeItem) {
+                continue;
+            }
+            this.#setSticky(treeItem);
+            break;
+        }
+    }
+    #addCssLevel(level) {
+        if (level == 0) {
+            return;
+        }
+        if (!this.#cssLevel.has(level)) {
+            this.#cssLevel.add(level);
+            this.#dynamicSheet.insertRule(`.level${level} .padding{flex: 0 0 ${level}rem}`);
+        }
+    }
+    #setSticky(item) {
+        for (const treeItemElement of this.#sticky) {
+            treeItemElement.style.cssText = '';
+        }
+        this.#sticky.clear();
+        let current = item;
+        while (current) {
+            const treeItemElement = this.#itemElements.get(current);
+            if (treeItemElement) {
+                this.#sticky.add(treeItemElement.element);
+                treeItemElement.element.style.cssText = `position:sticky;top:${current.getLevel()}rem;`;
+            }
+            current = current.parent;
+        }
+    }
+}
+/*
+let definedTree = false;
+export function defineHarmonyTree(): void {
+    if (!definedTree) {
+        defineElement('harmony-tree', class extends HTMLHarmonyTreeElement { });
+        defineElement('h-tree', class extends HTMLHarmonyTreeElement { });
+        definedTree = true;
+        injectGlobalCss();
+    }
+}
+*/
+
+var manipulator2dCSS = ":host {\n\t--handle-radius: var(--harmony-2d-manipulator-radius, 0.5rem);\n\t--harmony-2d-manipulator-shadow-bg-color: var(--harmony-2d-manipulator-bg-color, red);\n\t--harmony-2d-manipulator-shadow-border: var(--harmony-2d-manipulator-border, none);\n\t--handle-bg-color: var(--harmony-2d-manipulator-handle-bg-color, chartreuse);\n\t--corner-bg-color: var(--harmony-2d-manipulator-corner-bg-color, var(--handle-bg-color));\n\t--side-bg-color: var(--harmony-2d-manipulator-side-bg-color, var(--handle-bg-color));\n\t--rotate-bg-color: var(--harmony-2d-manipulator-rotate-bg-color, var(--handle-bg-color));\n\n\twidth: 1rem;\n\theight: 1rem;\n\tdisplay: block;\n\tuser-select: none;\n\tpointer-events: all;\n}\n\n:host-context(.grabbing) {\n\tcursor: grabbing;\n}\n\n.manipulator {\n\tposition: absolute;\n\tbackground-color: var(--harmony-2d-manipulator-shadow-bg-color);\n\tborder: var(--harmony-2d-manipulator-shadow-border);\n\tcursor: move;\n\tpointer-events: all;\n}\n\n.rotator {\n\tscale: var(--rotate);\n\tposition: absolute;\n\twidth: var(--handle-radius);\n\theight: var(--handle-radius);\n\tbackground-color: var(--rotate-bg-color);\n\tborder-radius: calc(var(--handle-radius) * 0.5);\n\ttransform: translate(-50%, -50%);\n\tcursor: grab;\n}\n\n.corner {\n\tscale: var(--scale);\n\tposition: absolute;\n\twidth: var(--handle-radius);\n\theight: var(--handle-radius);\n\tbackground-color: var(--corner-bg-color);\n\tborder-radius: calc(var(--handle-radius) * 0.5);\n\ttransform: translate(-50%, -50%);\n\tcursor: grab;\n}\n\n.side {\n\tposition: absolute;\n\twidth: var(--handle-radius);\n\theight: var(--handle-radius);\n\tbackground-color: var(--side-bg-color);\n\tborder-radius: calc(var(--handle-radius) * 0.5);\n\ttransform: translate(-50%, -50%);\n\tcursor: grab;\n}\n\n.side.x {\n\tscale: var(--resize-x);\n}\n\n.side.y {\n\tscale: var(--resize-y);\n}\n\n.corner.grabbing {\n\tcursor: grabbing;\n}\n";
+
+function toBool(s) {
+    return s === '1' || s === 'true';
 }
 
 var ManipulatorDirection;
@@ -2724,33 +3811,6 @@ function defineHarmonyAccordion() {
 
 var circularProgressCSS = ":host {\n\t--track-color: var(--harmony-circular-progress-track-color, #CCC);\n\t--progress-color: var(--harmony-circular-progress-progress-color, #F00);\n\tdisplay: inline-flex;\n}\n\n.track {\n\tcolor: var(--track-color);\n\topacity: 30%;\n\tstroke-width: 10%;\n}\n\n.progress {\n\tcolor: var(--progress-color);\n\tstroke-dasharray: calc(var(--progress) * pi * 100% * 0.8) calc((1 - var(--progress)) * pi * 100% * 0.8);\n\tstroke-width: 10%;\n\tstroke-dashoffset: calc(pi * 100% * 0.8 * 0.25);\n}\n";
 
-class HTMLHarmonyElement extends HTMLElement {
-    initialized = false;
-    initElement() {
-        if (this.initialized) {
-            return;
-        }
-        this.initialized = true;
-        this.createElement();
-    }
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
-    createElement() {
-    }
-    connectedCallback() {
-        this.initElement();
-    }
-    attributeChangedCallback(name, oldValue, newValue) {
-        this.initElement();
-        this.onAttributeChanged(name, oldValue, newValue);
-    }
-    // eslint-disable-next-line @typescript-eslint/no-empty-function, @typescript-eslint/no-unused-vars
-    onAttributeChanged(name, oldValue, newValue) {
-    }
-    static get observedAttributes() {
-        return ['label'];
-    }
-}
-
 class HTMLHarmonyCircularProgressElement extends HTMLHarmonyElement {
     #shadowRoot;
     #disabled = false;
@@ -3716,206 +4776,6 @@ function defineHarmonyLabelProperty() {
     if (!definedLabelProperty) {
         defineElement('harmony-label-property', HTMLHarmonyLabelPropertyElement);
         definedLabelProperty = true;
-        injectGlobalCss();
-    }
-}
-
-var menuCSS = ":host {\n\tfont-size: 1.5em;\n\tcursor: not-allowed;\n\tcolor: var(--harmony-ui-text-primary);\n\tbackground-color: var(--harmony-ui-menu-bg-color);\n\toverflow: auto;\n\tz-index: 100000;\n}\n\n.harmony-menu-item {\n\tbackground-color: green;\n\tcursor: pointer;\n\tbackground-color: var(--harmony-ui-menu-item-bg-color);\n}\n\n.harmony-menu-item.disabled {\n\tpointer-events: none;\n}\n\n.harmony-menu-item.selected {\n\tbackground-color: var(--harmony-ui-menu-item-selected-bg-color);\n}\n\n\n.harmony-menu-item.separator {\n\theight: 5px;\n\tbackground-color: black;\n}\n\n.harmony-menu-item>.harmony-menu-item-title:hover {\n\tbackground-color: var(--harmony-ui-menu-item-hover-bg-color);\n}\n\n.harmony-menu-item.selected>.harmony-menu-item-title::after {\n\tcontent: \"✔\";\n}\n\n.harmony-menu-item>.harmony-menu-item-title::after {\n\ttransition: all 0.2s ease 0s;\n\twidth: 32px;\n\theight: 32px;\n}\n\n.harmony-menu-item.closed>.harmony-menu-item-title,\n.harmony-menu-item.opened>.harmony-menu-item-title {\n\tpadding-right: 32px;\n}\n\n.harmony-menu-item.closed>.harmony-menu-item-title::after {\n\tcontent: \"➤\";\n}\n\n.harmony-menu-item.opened>.harmony-menu-item-title::after {\n\tcontent: \"➤\";\n\ttransform: rotate(90deg);\n}\n\n.harmony-menu-item .submenu {\n\tbackground-color: var(--harmony-ui-menu-submenu-bg-color);\n\tpadding-left: 10px;\n\tmargin-left: 2px;\n\tdisplay: none;\n\toverflow: hidden;\n\tposition: relative;\n\tbackground-color: var(--harmony-ui-menu-submenu-fg-color);\n}\n\n.harmony-menu-item.opened>.submenu {\n\tdisplay: block;\n}\n";
-
-class HTMLHarmonyMenuElement extends HTMLElement {
-    #doOnce = true;
-    #subMenus = new Map();
-    #shadowRoot;
-    #contextual = false;
-    constructor() {
-        super();
-        this.#shadowRoot = this.attachShadow({ mode: 'closed' });
-        document.addEventListener('click', (event) => {
-            if (this.#contextual && !this.contains(event.target)) {
-                this.close();
-            }
-        });
-    }
-    #show(items, userData) {
-        this.#setItems(items, userData);
-        this.#checkSize();
-    }
-    show(items, userData) {
-        this.#show(items, userData);
-        this.setContextual(false);
-    }
-    showContextual(items, clientX, clientY, userData) {
-        document.body.append(this);
-        this.style.left = clientX + 'px';
-        this.style.top = clientY + 'px';
-        this.setContextual(true);
-        this.#show(items, userData);
-    }
-    setContextual(contextual) {
-        this.style.position = contextual ? 'absolute' : '';
-        this.#contextual = contextual;
-    }
-    #checkSize() {
-        const bodyRect = document.body.getBoundingClientRect();
-        const elemRect = this.getBoundingClientRect();
-        this.style.maxWidth = bodyRect.width + 'px';
-        this.style.maxHeight = bodyRect.height + 'px';
-        if (elemRect.right > bodyRect.right) {
-            this.style.left = Math.max((bodyRect.width - elemRect.width), 0) + 'px';
-            /*if (elemRect.width > bodyRect.width) {
-                this.style.maxWidth = bodyRect.width + 'px';
-            } else {
-                this.style.maxWidth = '';
-            }*/
-        }
-        if (elemRect.bottom > bodyRect.bottom) {
-            this.style.top = Math.max((bodyRect.height - elemRect.height), 0) + 'px';
-            /*if (elemRect.height > bodyRect.height) {
-                this.style.maxHeight = bodyRect.height + 'px';
-            } else {
-                this.style.maxHeight = '';
-            }*/
-        }
-        if (elemRect.left < 0) {
-            this.style.left = '0px';
-        }
-        if (elemRect.top < 0) {
-            this.style.top = '0px';
-        }
-    }
-    close() {
-        if (this.#contextual) {
-            this.remove();
-        }
-    }
-    connectedCallback() {
-        if (this.#doOnce) {
-            I18n.observeElement(this.#shadowRoot);
-            void shadowRootStyle(this.#shadowRoot, menuCSS);
-            const callback = (entries) => {
-                entries.forEach(() => {
-                    this.#checkSize();
-                });
-            };
-            const resizeObserver = new ResizeObserver(callback);
-            resizeObserver.observe(this);
-            resizeObserver.observe(document.body);
-            this.#doOnce = false;
-        }
-    }
-    #setItems(items, userData) {
-        this.#shadowRoot.replaceChildren();
-        if (items instanceof Array) {
-            for (const item of items) {
-                this.#shadowRoot.append(this.addItem(item, userData));
-            }
-        }
-        else {
-            for (const itemId in items) {
-                const item = items[itemId];
-                this.#shadowRoot.append(this.addItem(item, userData));
-            }
-        }
-    }
-    #openSubMenu(htmlSubMenu) {
-        for (const [htmlItem, sub] of this.#subMenus) {
-            if (sub == htmlSubMenu || sub.contains(htmlSubMenu)) {
-                htmlItem.classList.add('opened');
-                htmlItem.classList.remove('closed');
-            }
-            else {
-                htmlItem.classList.remove('opened');
-                htmlItem.classList.add('closed');
-            }
-        }
-        this.#checkSize();
-    }
-    addItem(item, userData) {
-        const htmlItem = createElement('div', {
-            class: 'harmony-menu-item',
-        });
-        if (!item) {
-            htmlItem.classList.add('separator');
-        }
-        else {
-            const htmlItemTitle = createElement('div', {
-                class: 'harmony-menu-item-title',
-            });
-            if (item.i18n) {
-                htmlItemTitle.classList.add('i18n');
-                htmlItemTitle.setAttribute('data-i18n', item.i18n);
-                htmlItemTitle.innerText = item.i18n;
-            }
-            else {
-                htmlItemTitle.innerText = item.name ?? '';
-            }
-            htmlItem.append(htmlItemTitle);
-            if (item.selected) {
-                htmlItem.classList.add('selected');
-            }
-            if (item.disabled) {
-                htmlItem.classList.add('disabled');
-            }
-            if (item.submenu) {
-                const htmlSubMenu = createElement('div', {
-                    class: 'submenu',
-                });
-                this.#subMenus.set(htmlItem, htmlSubMenu);
-                let subItems = 0;
-                if (item.submenu instanceof Array) {
-                    for (const subItem of item.submenu) {
-                        htmlSubMenu.append(this.addItem(subItem, userData));
-                        ++subItems;
-                    }
-                }
-                else {
-                    for (const subItemName in item.submenu) {
-                        const subItem = item.submenu[subItemName];
-                        htmlSubMenu.append(this.addItem(subItem, userData));
-                        ++subItems;
-                    }
-                }
-                htmlItem.append(htmlSubMenu);
-                //htmlSubMenu.style.display = 'none';
-                htmlItem.classList.add('closed');
-                if (item.opened) {
-                    this.#openSubMenu(htmlSubMenu);
-                }
-                htmlItem.addEventListener('click', event => {
-                    this.#openSubMenu(htmlSubMenu);
-                    if (item.cmd) {
-                        this.dispatchEvent(new CustomEvent(item.cmd));
-                    }
-                    if (item.f) {
-                        void item.f(userData);
-                    }
-                    event.stopPropagation();
-                });
-                if (subItems == 0) {
-                    hide(htmlItem);
-                }
-            }
-            else {
-                htmlItem.addEventListener('click', (event) => {
-                    if (item.cmd) {
-                        this.dispatchEvent(new CustomEvent(item.cmd));
-                    }
-                    if (item.f) {
-                        void item.f(userData);
-                    }
-                    event.stopPropagation();
-                });
-                htmlItem.addEventListener('click', () => this.close());
-            }
-        }
-        return htmlItem;
-    }
-}
-let definedMenu = false;
-function defineHarmonyMenu() {
-    if (!definedMenu) {
-        defineElement('harmony-menu', HTMLHarmonyMenuElement);
-        definedMenu = true;
         injectGlobalCss();
     }
 }
@@ -5993,514 +6853,4 @@ function defineHarmonyToggleButton() {
     }
 }
 
-var treeCSS = ":host {\n\t--child-margin: var(--harmony-tree-child-margin, 1rem);\n\t--header-bg-color: var(--harmony-tree-header-bg-color, var(--main-bg-color-dark, black));\n\t--header-bg-color-hover: var(--harmony-tree-header-bg-color-hover, var(--main-bg-color-bright, #41454d));\n\t--selected-bg-color: var(--harmony-tree-selected-bg-color, var(--accent-primary, rgb(26, 172, 201)));\n\tcolor: var(--main-text-color-dark2, white);\n\tbackground-color: var(--header-bg-color);\n}\n\n.item {\n\twidth: 100%;\n}\n\n.header {\n\twidth: 100%;\n\theight: 1rem;\n\tbackground-color: var(--header-bg-color);\n\tcursor: pointer;\n\tdisplay: flex;\n\tgap: 0.2rem;\n\talign-items: center;\n}\n\n.header:hover{\n\tbackground-color: var(--header-bg-color-hover);\n}\n\n.title {\n\tflex: 1;\n}\n\n.childs {\n\tmargin-left: var(--child-margin);\n}\n\n.root>.header {\n\tdisplay: var(--harmony-tree-display-root, none);\n}\n\n.root>.childs {\n\tmargin-left: unset;\n}\n\n.actions {\n\tdisplay: flex;\n\tflex: 0;\n\tvisibility: hidden;\n}\n\n.header:hover>.actions {\n\tvisibility: visible;\n}\n\n.header.selected {\n\tbackground-color: var(--selected-bg-color);\n}\n";
-
-var TreeItemKind;
-(function (TreeItemKind) {
-    TreeItemKind["Root"] = "root";
-    TreeItemKind["Directory"] = "directory";
-    TreeItemKind["File"] = "file";
-    TreeItemKind["Item"] = "item";
-})(TreeItemKind || (TreeItemKind = {}));
-class TreeItem {
-    name;
-    icon;
-    kind;
-    parent;
-    childs = new Set;
-    actions = new Set();
-    userData;
-    constructor(name, options = {}) {
-        this.name = name;
-        this.icon = options.icon;
-        this.kind = options.kind ?? TreeItemKind.File;
-        this.parent = options.parent;
-        this.userData = options.userData;
-        if (options.parent) {
-            options.parent.addChild(this);
-        }
-        if (options.childs) {
-            for (const child of options.childs) {
-                this.addChild(child);
-            }
-        }
-        this.#sortByName();
-    }
-    addChild(child) {
-        this.childs.add(child);
-    }
-    #sortByName() {
-        this.childs[Symbol.iterator] = function* () {
-            yield* [...this.values()].sort((a, b) => {
-                return a.name.toLowerCase() < b.name.toLowerCase() ? -1 : 1;
-            });
-        };
-    }
-    getPath(separator = '/') {
-        let path = '';
-        if (this.parent) {
-            const parentPath = this.parent.getPath(separator);
-            if (parentPath) {
-                path = parentPath + separator;
-            }
-        }
-        return path + this.name;
-    }
-    getLevel() {
-        if (this.parent) {
-            return 1 + this.parent.getLevel();
-        }
-        return 0;
-    }
-    addAction(action) {
-        this.actions.add(action);
-    }
-    addActions(actions) {
-        for (const action of actions) {
-            this.actions.add(action);
-        }
-    }
-    removeAction(action) {
-        this.actions.delete(action);
-    }
-    static createFromPathList(paths, options = {}) {
-        class element {
-            tree;
-            childs = new Map();
-            constructor(tree) {
-                this.tree = tree;
-            }
-        }
-        const root = new TreeItem(options.rootName ?? '', { userData: options.rootUserData ?? options.userData, kind: TreeItemKind.Root });
-        const top = new element(root);
-        for (const [path, perElementUserData] of paths.entries()) {
-            const segments = path.split(options.pathSeparator ?? '/');
-            let current = top;
-            let parent = root;
-            for (let i = 0, l = segments.length; i < l; i++) {
-                const s = segments[i];
-                if (s == '') {
-                    continue;
-                }
-                let kind = TreeItemKind.Directory;
-                if (i == l - 1) {
-                    kind = TreeItemKind.File;
-                }
-                if (!current.childs.has(s)) {
-                    current.childs.set(s, new element(new TreeItem(s, { parent: parent, kind: kind, userData: perElementUserData != path ? perElementUserData : options.userData })));
-                }
-                parent = current.childs.get(s).tree;
-                current = current.childs.get(s);
-            }
-        }
-        return root;
-    }
-    #matchFilter(filter) {
-        if (!filter) {
-            return true;
-        }
-        const lowerName = this.name.toLowerCase();
-        if (filter.name) {
-            if (!lowerName.includes(filter.name.toLowerCase())) {
-                return false;
-            }
-            if (this.kind != TreeItemKind.File) {
-                return false;
-            }
-        }
-        if (filter.kinds) {
-            let match = false;
-            for (const tf of filter.kinds) {
-                if (tf === this.kind) {
-                    match = true;
-                    break;
-                }
-            }
-            if (!match) {
-                return false;
-            }
-        }
-        if (filter.kind !== undefined) {
-            if (filter.kind !== this.kind) {
-                return false;
-            }
-        }
-        if (filter.extensions) {
-            if (this.kind != TreeItemKind.File) {
-                return false;
-            }
-            const extension = lowerName.split('.').pop() ?? '';
-            if (!filter.extensions.has(extension)) {
-                if (filter.extensions.get('^') === false) {
-                    return false;
-                }
-            }
-            else {
-                if ((filter.extensions.get(extension) ?? filter.extensions.get('*')) === false) {
-                    return false;
-                }
-            }
-        }
-        if (filter.customFilter) {
-            return filter.customFilter(this);
-        }
-        return true;
-    }
-    *walk(filter) {
-        const stack = [this];
-        let current;
-        do {
-            current = stack.pop();
-            if (!current) {
-                break;
-            }
-            if (current.#matchFilter(filter)) {
-                yield current;
-            }
-            for (const child of current.childs) {
-                stack.push(child);
-            }
-        } while (current);
-    }
-}
-class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
-    #shadowRoot;
-    #root;
-    #htmlContextMenu;
-    #isInitialized = new Set();
-    #isExpanded = new Map();
-    #filter;
-    #isVisible = new Set();
-    #actions = new Map();
-    #itemElements = new Map();
-    #elementItem = new Map();
-    #selectedItem = null;
-    #rootLevel;
-    #sticky = new Set();
-    #dynamicSheet = new CSSStyleSheet();
-    #cssLevel = new Set();
-    createElement() {
-        this.#shadowRoot = this.attachShadow({ mode: 'closed' });
-        void shadowRootStyle(this.#shadowRoot, treeCSS);
-        this.#shadowRoot.adoptedStyleSheets.push(this.#dynamicSheet);
-        I18n.observeElement(this.#shadowRoot);
-        this.#refresh();
-        this.addEventListener('scroll', () => this.#handleScroll());
-    }
-    adoptStyle(css) {
-        this.initElement();
-        void shadowRootStyle(this.#shadowRoot, css);
-    }
-    #refresh() {
-        if (!this.#shadowRoot) {
-            return;
-        }
-        if (!this.#root) {
-            return;
-        }
-        this.#createItem(this.#root, null, true);
-        this.#refreshFilter();
-    }
-    #refreshFilter() {
-        for (const [item, itemElement] of this.#itemElements) {
-            const show = (!this.#filter || this.#isVisible.has(item)) && this.#isFullyExpanded(item);
-            display(itemElement.element, show);
-        }
-    }
-    #isFullyExpanded(item) {
-        let current = item.parent;
-        if (!current) {
-            return true;
-        }
-        do {
-            if (!this.#isExpanded.get(current)) {
-                return false;
-            }
-            current = current.parent;
-        } while (current);
-        return true;
-    }
-    setRoot(root) {
-        this.#root = root;
-        this.#shadowRoot?.replaceChildren();
-        this.#filterItems();
-    }
-    #buildContextMenu(contextMenu, x, y) {
-        if (!this.#htmlContextMenu) {
-            defineHarmonyMenu();
-            this.#htmlContextMenu = createElement('harmony-menu');
-        }
-        this.#htmlContextMenu.showContextual(contextMenu, x, y);
-    }
-    #contextMenuHandler(event, item) {
-        if (!event.shiftKey) {
-            this.dispatchEvent(new CustomEvent('contextmenu', {
-                detail: {
-                    item: item,
-                    buildContextMenu: (menu) => this.#buildContextMenu(menu, event.clientX, event.clientY),
-                },
-            }));
-            event.preventDefault();
-            event.stopPropagation();
-        }
-    }
-    #createItem(item, predecessor, createExpanded) {
-        let element;
-        const itemElement = this.#itemElements.get(item);
-        if (itemElement) {
-            element = itemElement.element;
-            if (predecessor) {
-                predecessor.after(element);
-            }
-            else {
-                this.#shadowRoot?.append(element);
-            }
-        }
-        else {
-            const itemLevel = item.getLevel();
-            let header;
-            let actions;
-            this.#addCssLevel(itemLevel);
-            element = createElement('div', {
-                class: `item level${itemLevel}`,
-                parent: this.#shadowRoot,
-                childs: [
-                    header = createElement('div', {
-                        class: 'header',
-                        childs: [
-                            createElement('div', {
-                                class: 'padding',
-                            }),
-                            createElement('div', {
-                                class: 'title',
-                                innerText: item.name,
-                            }),
-                            actions = createElement('div', {
-                                class: 'actions',
-                            }),
-                        ],
-                        $click: () => {
-                            if (this.#isExpanded.get(item)) {
-                                this.collapseItem(item);
-                            }
-                            else {
-                                this.expandItem(item);
-                                this.#refreshFilter();
-                            }
-                            this.dispatchEvent(new CustomEvent('itemclick', { detail: { item: item } }));
-                        },
-                        $contextmenu: (event) => this.#contextMenuHandler(event, item),
-                    }),
-                ]
-            });
-            if (predecessor) {
-                predecessor.after(element);
-            }
-            this.#itemElements.set(item, { element: element, header: header, actions: actions });
-            this.#elementItem.set(element, item);
-        }
-        if (item.kind == TreeItemKind.Root && item.name == '') {
-            element.classList.add('root');
-        }
-        if (item.kind) {
-            element.classList.add(`type-${item.kind}`);
-        }
-        if (createExpanded || this.#isExpanded.get(item)) {
-            this.expandItem(item);
-        }
-        this.refreshActions(item);
-        return element;
-    }
-    expandItem(item) {
-        if (item.parent) {
-            this.expandItem(item.parent);
-        }
-        const element = this.#itemElements.get(item)?.element;
-        if (!element) {
-            return;
-        }
-        if (this.#isExpanded.get(item)) {
-            return;
-        }
-        this.#isExpanded.set(item, true);
-        if (!this.#isInitialized.has(item)) {
-            let predecessor = element;
-            for (const child of item.childs) {
-                const childElement = this.#createItem(child, predecessor, false);
-                predecessor = childElement;
-            }
-            this.#isInitialized.add(item);
-        }
-        else {
-            for (const child of item.childs) {
-                this.showItem(child);
-            }
-        }
-    }
-    collapseItem(item) {
-        this.#isExpanded.set(item, false);
-        for (const child of item.childs) {
-            this.hideItem(child);
-        }
-    }
-    showItem(item) {
-        const element = this.#itemElements.get(item);
-        if (element) {
-            show(element.element);
-        }
-        if (this.#isExpanded.get(item)) {
-            for (const child of item.childs) {
-                this.showItem(child);
-            }
-        }
-    }
-    hideItem(item) {
-        const element = this.#itemElements.get(item);
-        if (element) {
-            hide(element.element);
-        }
-        for (const child of item.childs) {
-            this.hideItem(child);
-        }
-    }
-    selectItem(item, scrollIntoView = true) {
-        if (item == this.#selectedItem) {
-            return;
-        }
-        if (this.#selectedItem) {
-            this.#itemElements.get(this.#selectedItem)?.header?.classList.remove('selected');
-        }
-        if (item) {
-            if (item.parent) {
-                this.expandItem(item.parent);
-            }
-            const itemElement = this.#itemElements.get(item)?.header;
-            itemElement?.classList.add('selected');
-            if (scrollIntoView) {
-                setTimeout(() => {
-                    itemElement?.scrollIntoView({ block: 'center' });
-                }, 0);
-            }
-        }
-        this.#selectedItem = item;
-    }
-    addAction(name, img, tooltip) {
-        const action = {
-            name: name,
-            tooltip: tooltip,
-        };
-        if (typeof img == 'string') {
-            action.innerHTML = img;
-        }
-        else {
-            action.element = img;
-        }
-        this.#actions.set(name, action);
-    }
-    refreshActions(item) {
-        const htmlActions = this.#itemElements.get(item)?.actions;
-        htmlActions?.replaceChildren();
-        for (const actionName of item.actions) {
-            const action = this.#actions.get(actionName);
-            if (action) {
-                createElement('div', {
-                    child: action.element,
-                    innerHTML: action.innerHTML,
-                    parent: htmlActions,
-                    i18n: {
-                        title: action.tooltip,
-                    },
-                    $click: (event) => this.#actionHandler(event, item, actionName),
-                });
-            }
-        }
-    }
-    #actionHandler(event, item, action) {
-        this.dispatchEvent(new CustomEvent('itemaction', {
-            detail: {
-                item: item,
-                action: action,
-            },
-        }));
-        event.preventDefault();
-        event.stopPropagation();
-    }
-    setFilter(filter) {
-        this.#filter = filter;
-        this.#filterItems();
-    }
-    #filterItems() {
-        this.#isVisible.clear();
-        if (this.#filter && this.#root) {
-            for (const item of this.#root.walk(this.#filter)) {
-                let current = item;
-                do {
-                    this.#isVisible.add(current);
-                    current = current.parent;
-                } while (current);
-            }
-        }
-        this.#refresh();
-    }
-    #handleScroll() {
-        let stickyHeight = 0;
-        for (const sticky of this.#sticky) {
-            const rect = sticky.getBoundingClientRect();
-            stickyHeight += rect.height;
-        }
-        const rect = this.getBoundingClientRect();
-        const elements = this.#shadowRoot.elementsFromPoint(rect.x + 1, rect.y + stickyHeight + 1);
-        if (!elements) {
-            return;
-        }
-        for (const element of elements) {
-            let treeItem = this.#elementItem.get(element);
-            if (!treeItem) {
-                continue;
-            }
-            treeItem = treeItem.parent;
-            if (!treeItem) {
-                continue;
-            }
-            this.#setSticky(treeItem);
-            break;
-        }
-    }
-    #addCssLevel(level) {
-        if (level == 0) {
-            return;
-        }
-        if (!this.#cssLevel.has(level)) {
-            this.#cssLevel.add(level);
-            this.#dynamicSheet.insertRule(`.level${level} .padding{flex: 0 0 ${level}rem}`);
-        }
-    }
-    #setSticky(item) {
-        for (const treeItemElement of this.#sticky) {
-            treeItemElement.style.cssText = '';
-        }
-        this.#sticky.clear();
-        let current = item;
-        while (current) {
-            const treeItemElement = this.#itemElements.get(current);
-            if (treeItemElement) {
-                this.#sticky.add(treeItemElement.element);
-                treeItemElement.element.style.cssText = `position:sticky;top:${current.getLevel()}rem;`;
-            }
-            current = current.parent;
-        }
-    }
-}
-let definedTree = false;
-function defineHarmonyTree() {
-    if (!definedTree) {
-        defineElement('harmony-tree', class extends HTMLHarmonyTreeElement {
-        });
-        defineElement('h-tree', class extends HTMLHarmonyTreeElement {
-        });
-        definedTree = true;
-        injectGlobalCss();
-    }
-}
-
-export { AddI18nElement, HTMLHarmony2dManipulatorElement, HTMLHarmonyAccordionElement, HTMLHarmonyCircularProgressElement, HTMLHarmonyColorPickerElement, HTMLHarmonyCopyElement, HTMLHarmonyFileInputElement, HTMLHarmonyFilterElement, HTMLHarmonyInfoBoxElement, HTMLHarmonyInfoBoxElementType, HTMLHarmonyItemElement, HTMLHarmonyLabelPropertyElement, HTMLHarmonyMenuElement, HTMLHarmonyPaletteElement, HTMLHarmonyPanelElement, HTMLHarmonyRadioElement, HTMLHarmonySelectElement, HTMLHarmonySliderElement, HTMLHarmonySlideshowElement, HTMLHarmonySplitterElement, HTMLHarmonySwitchElement, HTMLHarmonyTabElement, HTMLHarmonyTabGroupElement, HTMLHarmonyToggleButtonElement, HTMLHarmonyTooltipElement, HTMLHarmonyTreeElement, HarmonyFilterListType, HarmonyPanel, HarmonyTab, HarmonyTabGroup, I18n, I18nElements, I18nEvents, ManipulatorCorner, ManipulatorDirection, ManipulatorResizeOrigin, ManipulatorSide, ManipulatorUpdatedEventType, TreeItem, TreeItemKind, addRemoveClass, cloneEvent, createElement, createElementNS, createShadowRoot, createShadowRootNS, defineElement, defineHarmony2dManipulator, defineHarmonyAccordion, defineHarmonyCircularProgress, defineHarmonyColorPicker, defineHarmonyCopy, defineHarmonyFileInput, defineHarmonyFilter, defineHarmonyInfoBox, defineHarmonyItem, defineHarmonyLabelProperty, defineHarmonyMenu, defineHarmonyPalette, defineHarmonyPanel, defineHarmonyRadio, defineHarmonySelect, defineHarmonySlider, defineHarmonySlideshow, defineHarmonySplitter, defineHarmonySwitch, defineHarmonyTab, defineHarmonyTabGroup, defineHarmonyToggleButton, defineHarmonyTooltip, defineHarmonyTree, display, documentStyle, documentStyleSync, getCustomElementRegistry, hide, isVisible, shadowRootStyle, shadowRootStyleSync, show, styleInject, svgNamespace, toggle, updateElement, updateShadowRoot, visible };
+export { AddI18nElement, HTMLHarmony2dManipulatorElement, HTMLHarmonyAccordionElement, HTMLHarmonyCircularProgressElement, HTMLHarmonyColorPickerElement, HTMLHarmonyCopyElement, HTMLHarmonyFileInputElement, HTMLHarmonyFilterElement, HTMLHarmonyInfoBoxElement, HTMLHarmonyInfoBoxElementType, HTMLHarmonyItemElement, HTMLHarmonyLabelPropertyElement, HTMLHarmonyMenuElement, HTMLHarmonyPaletteElement, HTMLHarmonyPanelElement, HTMLHarmonyRadioElement, HTMLHarmonySelectElement, HTMLHarmonySliderElement, HTMLHarmonySlideshowElement, HTMLHarmonySplitterElement, HTMLHarmonySwitchElement, HTMLHarmonyTabElement, HTMLHarmonyTabGroupElement, HTMLHarmonyToggleButtonElement, HTMLHarmonyTooltipElement, HTMLHarmonyTreeElement, HarmonyFilterListType, HarmonyPanel, HarmonyTab, HarmonyTabGroup, HarmonyTree, I18n, I18nElements, I18nEvents, ManipulatorCorner, ManipulatorDirection, ManipulatorResizeOrigin, ManipulatorSide, ManipulatorUpdatedEventType, TreeItem, TreeItemKind, addRemoveClass, cloneEvent, createElement, createElementNS, createShadowRoot, createShadowRootNS, defineElement, defineHarmony2dManipulator, defineHarmonyAccordion, defineHarmonyCircularProgress, defineHarmonyColorPicker, defineHarmonyCopy, defineHarmonyFileInput, defineHarmonyFilter, defineHarmonyInfoBox, defineHarmonyItem, defineHarmonyLabelProperty, defineHarmonyMenu, defineHarmonyPalette, defineHarmonyPanel, defineHarmonyRadio, defineHarmonySelect, defineHarmonySlider, defineHarmonySlideshow, defineHarmonySplitter, defineHarmonySwitch, defineHarmonyTab, defineHarmonyTabGroup, defineHarmonyToggleButton, defineHarmonyTooltip, defineHarmonyTree, display, documentStyle, documentStyleSync, getCustomElementRegistry, hide, isVisible, shadowRootStyle, shadowRootStyleSync, show, styleInject, svgNamespace, toggle, updateElement, updateShadowRoot, visible };

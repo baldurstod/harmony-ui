@@ -1,257 +1,14 @@
+import { MyEventTarget } from 'harmony-utils';
 import treeCSS from '../css/harmony-tree.css';
+import { defineHarmonyMenu, HarmonyMenuItems, HTMLHarmonyMenuElement } from '../elements/harmony-menu';
+import { ItemActionEventData, ItemClickEventData, TreeAction, TreeContextMenuEventData, TreeItem, TreeItemElement, TreeItemFilter, TreeItemKind } from '../elements/harmony-tree';
 import { shadowRootStyle } from '../harmony-css';
-import { createElement, defineElement, display, hide, show } from '../harmony-html';
+import { createElement, display, hide, show } from '../harmony-html';
 import { I18n } from '../harmony-i18n';
-import { injectGlobalCss } from '../utils/globalcss';
-import { HTMLHarmonyElement } from './harmony-element';
-import { defineHarmonyMenu, HarmonyMenuItems, HTMLHarmonyMenuElement } from './harmony-menu';
+import { HarmonyComponent } from './component';
 
-export type ItemClickEventData = { item: TreeItem };
-export type ItemActionEventData = { item: TreeItem, action: string };
-
-export type TreeAction = {
-	name: string;
-	element?: HTMLElement;
-	innerHTML?: string;
-	tooltip?: string;
-}
-
-export type TreeItemFilter = {
-	name?: string;
-	kind?: TreeItemKind;
-	kinds?: TreeItemKind[];
-	/** User provided function that return true to keep the item or false to reject it. */
-	customFilter?: (item: TreeItem) => boolean;
-	extensions?: Map<string, boolean | undefined>;
-}
-
-export enum TreeItemKind {
-	Root = 'root',
-	Directory = 'directory',
-	File = 'file',
-	Item = 'item',
-}
-
-export type TreeItemOptions = {
-	icon?: string,
-	kind?: TreeItemKind,
-	parent?: TreeItem,
-	childs?: TreeItem[],
-	userData?: unknown,
-}
-
-export class TreeItem {
-	name: string;
-	icon?: string;
-	kind: TreeItemKind;
-	parent?: TreeItem;
-	childs = new Set<TreeItem>;
-	actions = new Set<string>();
-	userData?: unknown;
-
-	constructor(name: string, options: TreeItemOptions = {}) {
-		this.name = name;
-		this.icon = options.icon;
-		this.kind = options.kind ?? TreeItemKind.File;
-		this.parent = options.parent;
-		this.userData = options.userData;
-
-		if (options.parent) {
-			options.parent.addChild(this);
-		}
-
-		if (options.childs) {
-			for (const child of options.childs) {
-				this.addChild(child);
-			}
-		}
-
-		this.#sortByName();
-	}
-
-	addChild(child: TreeItem): void {
-		this.childs.add(child);
-	}
-
-	#sortByName(): void {
-		this.childs[Symbol.iterator] = function* (): ArrayIterator<TreeItem> {
-			yield* [...this.values()].sort(
-				(a, b) => {
-					return a.name.toLowerCase() < b.name.toLowerCase() ? -1 : 1;
-				}
-			);
-		}
-	}
-
-	getPath(separator = '/'): string {
-		let path = '';
-		if (this.parent) {
-			const parentPath = this.parent.getPath(separator);
-			if (parentPath) {
-				path = parentPath + separator;
-			}
-		}
-
-		return path + this.name;
-	}
-
-	getLevel(): number {
-		if (this.parent) {
-			return 1 + this.parent.getLevel();
-		}
-
-		return 0;
-	}
-
-	addAction(action: string): void {
-		this.actions.add(action);
-	}
-
-	addActions(actions: string[]): void {
-		for (const action of actions) {
-			this.actions.add(action);
-		}
-	}
-
-	removeAction(action: string): void {
-		this.actions.delete(action);
-	}
-
-	static createFromPathList(paths: Set<string> | Map<string, unknown>, options: { pathSeparator?: string, rootUserData?: unknown, userData?: unknown, rootName?: string } = {}): TreeItem {
-		class element {
-			tree: TreeItem;
-			childs = new Map<string, element>()
-
-			constructor(tree: TreeItem) {
-				this.tree = tree;
-			}
-		}
-
-		const root = new TreeItem(options.rootName ?? '', { userData: options.rootUserData ?? options.userData, kind: TreeItemKind.Root });
-
-		const top = new element(root);
-
-		for (const [path, perElementUserData] of paths.entries()) {
-			const segments = path.split(options.pathSeparator ?? '/');
-
-			let current = top;
-			let parent = root;
-			for (let i = 0, l = segments.length; i < l; i++) {
-				const s = segments[i]!;
-				if (s == '') {
-					continue;
-				}
-
-				let kind = TreeItemKind.Directory;
-				if (i == l - 1) {
-					kind = TreeItemKind.File;
-				}
-
-				if (!current.childs.has(s)) {
-					current.childs.set(s, new element(new TreeItem(s, { parent: parent, kind: kind, userData: perElementUserData != path ? perElementUserData : options.userData })));
-				}
-
-				parent = current.childs.get(s)!.tree;
-				current = current.childs.get(s)!;
-			}
-		}
-
-		return root;
-	}
-
-	#matchFilter(filter?: TreeItemFilter): boolean {
-		if (!filter) {
-			return true;
-		}
-
-		const lowerName = this.name.toLowerCase();
-		if (filter.name) {
-			if (!lowerName.includes(filter.name.toLowerCase())) {
-				return false;
-			}
-
-			if (this.kind != TreeItemKind.File) {
-				return false;
-			}
-		}
-
-		if (filter.kinds) {
-			let match = false;
-			for (const tf of filter.kinds) {
-				if (tf === this.kind) {
-					match = true;
-					break;
-				}
-			}
-
-			if (!match) {
-				return false;
-			}
-		}
-
-		if (filter.kind !== undefined) {
-			if (filter.kind !== this.kind) {
-				return false;
-			}
-		}
-
-		if (filter.extensions) {
-			if (this.kind != TreeItemKind.File) {
-				return false;
-			}
-			const extension = lowerName.split('.').pop() ?? '';
-
-			if (!filter.extensions.has(extension)) {
-				if (filter.extensions.get('^') === false) {
-					return false;
-				}
-			} else {
-				if ((filter.extensions.get(extension) ?? filter.extensions.get('*')) === false) {
-					return false;
-				}
-			}
-		}
-
-		if (filter.customFilter) {
-			return filter.customFilter(this);
-		}
-
-		return true;
-	}
-
-	*walk(filter?: TreeItemFilter): Generator<TreeItem, void, unknown> {
-		const stack: TreeItem[] = [this];
-		let current: TreeItem | undefined;
-
-		do {
-			current = stack.pop();
-			if (!current) {
-				break;
-			}
-
-			if (current.#matchFilter(filter)) {
-				yield current;
-			}
-
-			for (const child of current.childs) {
-				stack.push(child);
-			}
-		} while (current)
-	}
-}
-
-export type TreeContextMenuEventData = {
-	item?: TreeItem,
-	buildContextMenu: (menu: HarmonyMenuItems) => void,
-};
-
-export type TreeItemElement = {
-	element: HTMLElement;
-	header: HTMLElement;
-	actions: HTMLElement;
-}
-
-export class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
+export class HarmonyTree extends MyEventTarget implements HarmonyComponent {
+	readonly htmlElement = createElement('div');
 	#shadowRoot?: ShadowRoot;
 	#root?: TreeItem | null;
 	#htmlContextMenu?: HTMLHarmonyMenuElement;
@@ -268,19 +25,22 @@ export class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
 	#dynamicSheet = new CSSStyleSheet();
 	#cssLevel = new Set<number>();
 
-	protected createElement(): void {
-		this.#shadowRoot = this.attachShadow({ mode: 'closed' });
-		void shadowRootStyle(this.#shadowRoot, treeCSS);
-		this.#shadowRoot.adoptedStyleSheets.push(this.#dynamicSheet);
+	#initHTML(): void {
+		if (this.#shadowRoot) {
+			return;
+		}
+
+		this.#shadowRoot = this.htmlElement.attachShadow({ mode: 'closed' });
 		I18n.observeElement(this.#shadowRoot);
+		void shadowRootStyle(this.#shadowRoot, treeCSS);
 
+		this.#shadowRoot.adoptedStyleSheets.push(this.#dynamicSheet);
 		this.#refresh();
-
-		this.addEventListener('scroll', () => this.#handleScroll());
+		this.htmlElement.addEventListener('scroll', () => this.#handleScroll());
 	}
 
 	adoptStyle(css: string): void {
-		this.initElement();
+		this.#initHTML();
 		void shadowRootStyle(this.#shadowRoot!, css);
 	}
 
@@ -321,6 +81,7 @@ export class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
 	}
 
 	setRoot(root?: TreeItem | null): void {
+		this.#initHTML();
 		this.#root = root;
 
 		this.#shadowRoot?.replaceChildren();
@@ -425,6 +186,7 @@ export class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
 	}
 
 	expandItem(item: TreeItem): void {
+		this.#initHTML();
 		if (item.parent) {
 			this.expandItem(item.parent);
 		}
@@ -458,6 +220,7 @@ export class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
 	}
 
 	collapseItem(item: TreeItem): void {
+		this.#initHTML();
 		this.#isExpanded.set(item, false);
 
 		for (const child of item.childs) {
@@ -466,6 +229,7 @@ export class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
 	}
 
 	showItem(item: TreeItem): void {
+		this.#initHTML();
 		const element = this.#itemElements.get(item);
 		if (element) {
 			show(element.element);
@@ -489,6 +253,7 @@ export class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
 	}
 
 	selectItem(item: TreeItem | null, scrollIntoView = true): void {
+		this.#initHTML();
 		if (item == this.#selectedItem) {
 			return;
 		}
@@ -560,6 +325,7 @@ export class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
 	}
 
 	setFilter(filter?: TreeItemFilter): void {
+		this.#initHTML();
 		this.#filter = filter;
 		this.#filterItems();
 	}
@@ -586,7 +352,7 @@ export class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
 			stickyHeight += rect.height;
 		}
 
-		const rect = this.getBoundingClientRect();
+		const rect = this.htmlElement.getBoundingClientRect();
 		const elements = this.#shadowRoot!.elementsFromPoint(rect.x + 1, rect.y + stickyHeight + 1);
 
 		if (!elements) {
@@ -641,6 +407,7 @@ export class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
 	}
 }
 
+/*
 let definedTree = false;
 export function defineHarmonyTree(): void {
 	if (!definedTree) {
@@ -650,3 +417,4 @@ export function defineHarmonyTree(): void {
 		injectGlobalCss();
 	}
 }
+*/
