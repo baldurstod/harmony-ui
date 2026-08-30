@@ -3300,14 +3300,19 @@ class HarmonyTree extends MyEventTarget {
                             }),
                         ],
                         $click: () => {
-                            if (this.#isExpanded.get(item)) {
+                            const expanded = this.#isExpanded.get(item);
+                            const event = new CustomEvent('itemclick', { detail: { item: item }, cancelable: true, });
+                            this.dispatchEvent(event);
+                            if (event.defaultPrevented) {
+                                return;
+                            }
+                            if (expanded) {
                                 this.collapseItem(item);
                             }
                             else {
                                 this.expandItem(item);
                                 this.#refreshFilter();
                             }
-                            this.dispatchEvent(new CustomEvent('itemclick', { detail: { item: item } }));
                         },
                         $contextmenu: (event) => this.#contextMenuHandler(event, item),
                     }),
@@ -3331,26 +3336,20 @@ class HarmonyTree extends MyEventTarget {
         this.refreshActions(item);
         return element;
     }
+    isExpanded(item) {
+        return this.#isExpanded.get(item) ?? false;
+    }
     expandItem(item) {
         this.#initHTML();
         if (item.parent) {
             this.expandItem(item.parent);
-        }
-        const element = this.#itemElements.get(item)?.element;
-        if (!element) {
-            return;
         }
         if (this.#isExpanded.get(item)) {
             return;
         }
         this.#isExpanded.set(item, true);
         if (!this.#isInitialized.has(item)) {
-            let predecessor = element;
-            for (const child of item.childs) {
-                const childElement = this.#createItem(child, predecessor, false);
-                predecessor = childElement;
-            }
-            this.#isInitialized.add(item);
+            this.#initItem(item);
         }
         else {
             for (const child of item.childs) {
@@ -3358,12 +3357,28 @@ class HarmonyTree extends MyEventTarget {
             }
         }
     }
+    #initItem(item) {
+        const element = this.#itemElements.get(item)?.element;
+        if (!element) {
+            return;
+        }
+        let predecessor = element;
+        for (const child of item.childs) {
+            const childElement = this.#createItem(child, predecessor, false);
+            predecessor = childElement;
+        }
+        this.#isInitialized.add(item);
+    }
     collapseItem(item) {
         this.#initHTML();
         this.#isExpanded.set(item, false);
         for (const child of item.childs) {
             this.hideItem(child);
         }
+    }
+    refreshItem(item) {
+        this.#isInitialized.delete(item);
+        this.#initItem(item);
     }
     showItem(item) {
         this.#initHTML();

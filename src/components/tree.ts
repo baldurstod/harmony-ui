@@ -146,14 +146,20 @@ export class HarmonyTree extends MyEventTarget implements HarmonyComponent {
 							}),
 						],
 						$click: () => {
-							if (this.#isExpanded.get(item)) {
+							const expanded = this.#isExpanded.get(item);
+							const event = new CustomEvent<ItemClickEventData>('itemclick', { detail: { item: item }, cancelable: true, });
+							this.dispatchEvent(event);
+							if (event.defaultPrevented) {
+								return;
+							}
+
+							if (expanded) {
 								this.collapseItem(item);
 							} else {
 								this.expandItem(item);
 								this.#refreshFilter();
 							}
 
-							this.dispatchEvent(new CustomEvent<ItemClickEventData>('itemclick', { detail: { item: item } }));
 						},
 						$contextmenu: (event: MouseEvent) => this.#contextMenuHandler(event, item),
 					}),
@@ -185,16 +191,14 @@ export class HarmonyTree extends MyEventTarget implements HarmonyComponent {
 		return element;
 	}
 
+	isExpanded(item: TreeItem): boolean {
+		return this.#isExpanded.get(item) ?? false;
+	}
+
 	expandItem(item: TreeItem): void {
 		this.#initHTML();
 		if (item.parent) {
 			this.expandItem(item.parent);
-		}
-
-		const element = this.#itemElements.get(item)?.element;
-
-		if (!element) {
-			return;
 		}
 
 		if (this.#isExpanded.get(item)) {
@@ -204,19 +208,28 @@ export class HarmonyTree extends MyEventTarget implements HarmonyComponent {
 		this.#isExpanded.set(item, true);
 
 		if (!this.#isInitialized.has(item)) {
-			const childs: HTMLElement[] = [];
-			let predecessor = element;
-			for (const child of item.childs) {
-				const childElement = this.#createItem(child, predecessor, false);
-				childs.push(childElement);
-				predecessor = childElement;
-			}
-			this.#isInitialized.add(item);
+			this.#initItem(item);
 		} else {
 			for (const child of item.childs) {
 				this.showItem(child);
 			}
 		}
+	}
+
+	#initItem(item: TreeItem): void {
+		const element = this.#itemElements.get(item)?.element;
+		if (!element) {
+			return;
+		}
+
+		const childs: HTMLElement[] = [];
+		let predecessor = element;
+		for (const child of item.childs) {
+			const childElement = this.#createItem(child, predecessor, false);
+			childs.push(childElement);
+			predecessor = childElement;
+		}
+		this.#isInitialized.add(item);
 	}
 
 	collapseItem(item: TreeItem): void {
@@ -226,6 +239,11 @@ export class HarmonyTree extends MyEventTarget implements HarmonyComponent {
 		for (const child of item.childs) {
 			this.hideItem(child);
 		}
+	}
+
+	refreshItem(item: TreeItem): void {
+		this.#isInitialized.delete(item);
+		this.#initItem(item);
 	}
 
 	showItem(item: TreeItem): void {

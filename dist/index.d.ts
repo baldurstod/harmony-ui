@@ -374,8 +374,10 @@ export declare class HarmonyTree extends MyEventTarget implements HarmonyCompone
     readonly htmlElement: HTMLElement;
     adoptStyle(css: string): void;
     setRoot(root?: TreeItem | null): void;
+    isExpanded(item: TreeItem): boolean;
     expandItem(item: TreeItem): void;
     collapseItem(item: TreeItem): void;
+    refreshItem(item: TreeItem): void;
     showItem(item: TreeItem): void;
     hideItem(item: TreeItem): void;
     selectItem(item: TreeItem | null, scrollIntoView?: boolean): void;
