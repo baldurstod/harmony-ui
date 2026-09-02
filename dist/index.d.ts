@@ -282,6 +282,8 @@ export declare type HarmonyPanelParams = {
     adoptStyle?: string;
     /** Add custom style sheets to the panel. */
     adoptStyles?: string[];
+    /** Tab index for the content panel. */
+    tabIndex?: string;
 };
 
 export declare type HarmonySlideshowOptions = {

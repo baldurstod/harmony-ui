@@ -48,6 +48,8 @@ export type HarmonyPanelParams = {
 	adoptStyle?: string;
 	/** Add custom style sheets to the panel. */
 	adoptStyles?: string[];
+	/** Tab index for the content panel. */
+	tabIndex?: string
 }
 
 export class HarmonyPanel implements HarmonyComponent, HasI18n {
@@ -78,6 +80,7 @@ export class HarmonyPanel implements HarmonyComponent, HasI18n {
 	#title?: string;
 	#titleI18n?: string | I18nDescriptor | null;
 	#parentTab?: HarmonyTab;
+	#tabIndex?: string
 	static #dragMode = 'none';
 	static #resizeX = 0;
 	static #resizeY = 0;
@@ -109,6 +112,7 @@ export class HarmonyPanel implements HarmonyComponent, HasI18n {
 		this.setCollapsed(params.collapsed ?? false);
 		this.isMovable = params.movable ?? false;
 		this.#dropTarget = params.dropTarget ?? false;
+		this.#tabIndex = params.tabIndex;
 		this.setLayout(params.layout ?? 'row');
 		if (params.floating) {
 			this.setFloating();
@@ -150,6 +154,7 @@ export class HarmonyPanel implements HarmonyComponent, HasI18n {
 		this.#htmlContent = createElement('div', {
 			class: 'content',
 			parent: this.#shadowRoot,
+			...(this.#tabIndex !== undefined && { '@tabindex': this.#tabIndex }),
 		});
 		display(this.#shadowRoot.host as HTMLElement, !this.#startClosed);
 		this.#htmlResize = createElement('div', {

@@ -947,6 +947,7 @@ class HarmonyPanel {
     #title;
     #titleI18n;
     #parentTab;
+    #tabIndex;
     static #dragMode = 'none';
     static #resizeX = 0;
     static #resizeY = 0;
@@ -975,6 +976,7 @@ class HarmonyPanel {
         this.setCollapsed(params.collapsed ?? false);
         this.isMovable = params.movable ?? false;
         this.#dropTarget = params.dropTarget ?? false;
+        this.#tabIndex = params.tabIndex;
         this.setLayout(params.layout ?? 'row');
         if (params.floating) {
             this.setFloating();
@@ -1010,6 +1012,7 @@ class HarmonyPanel {
         this.#htmlContent = createElement('div', {
             class: 'content',
             parent: this.#shadowRoot,
+            ...(this.#tabIndex !== undefined && { '@tabindex': this.#tabIndex }),
         });
         display(this.#shadowRoot.host, !this.#startClosed);
         this.#htmlResize = createElement('div', {
