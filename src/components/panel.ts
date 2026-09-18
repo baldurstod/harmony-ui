@@ -26,6 +26,10 @@ export type HarmonyPanelParams = {
 	collapsed?: boolean;
 	/** Create this panel floating. Default to false. */
 	floating?: boolean;
+	/** For floating panels, width in % of the window width */
+	width?: number;
+	/** For floating panels, height in % of the window height */
+	height?: number;
 	/** Create this panel closed. Only for floating panels. Default to false. */
 	closed?: boolean;
 	/** Can this panel be moved. Default to false. */
@@ -115,7 +119,7 @@ export class HarmonyPanel implements HarmonyComponent, HasI18n {
 		this.#tabIndex = params.tabIndex;
 		this.setLayout(params.layout ?? 'row');
 		if (params.floating) {
-			this.setFloating();
+			this.setFloating(params.width, params.height);
 			// If we start in floating mode, force a the presence of a header
 			this.getHeader();
 		}
@@ -711,16 +715,19 @@ export class HarmonyPanel implements HarmonyComponent, HasI18n {
 		HarmonyPanel.#deltaY = rect.y - HarmonyPanel.#startClientY;
 	}
 
-	setFloating(): void {
+	setFloating(width?: number | undefined, height?: number | undefined): void {
 		document.body.append(this.htmlElement);
 		this.#floating = true;
 		this.htmlElement.classList.add('floating');
 		this.htmlElement.classList.remove('docked');
 
-		this.htmlElement.style.left = `25%`;
-		this.htmlElement.style.top = `25%`;
-		this.htmlElement.style.width = `50%`;
-		this.htmlElement.style.height = `50%`;
+		width = (width ?? 50);
+		height = (height ?? 50);
+
+		this.htmlElement.style.left = `${(100 - width) / 2}%`;
+		this.htmlElement.style.top = `${(100 - height) / 2}%`;
+		this.htmlElement.style.width = `${width}%`;
+		this.htmlElement.style.height = `${height}%`;
 		this.htmlElement.style.position = 'absolute';
 	}
 

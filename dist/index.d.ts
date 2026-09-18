@@ -244,7 +244,7 @@ export declare class HarmonyPanel implements HarmonyComponent, HasI18n {
     setTitle(title: string): void;
     setTitleI18n(i18n: string | I18nDescriptor | null): void;
     adoptStyleSheet(styleSheet: CSSStyleSheet): void;
-    setFloating(): void;
+    setFloating(width?: number | undefined, height?: number | undefined): void;
     setDocked(parentPanel: HarmonyPanel): void;
     activate(): void;
     open(): void;
@@ -260,6 +260,10 @@ export declare type HarmonyPanelParams = {
     collapsed?: boolean;
     /** Create this panel floating. Default to false. */
     floating?: boolean;
+    /** For floating panels, width in % of the window width */
+    width?: number;
+    /** For floating panels, height in % of the window height */
+    height?: number;
     /** Create this panel closed. Only for floating panels. Default to false. */
     closed?: boolean;
     /** Can this panel be moved. Default to false. */

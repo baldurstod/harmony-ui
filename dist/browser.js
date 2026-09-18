@@ -1702,7 +1702,7 @@ class HarmonyPanel {
         this.#tabIndex = params.tabIndex;
         this.setLayout(params.layout ?? 'row');
         if (params.floating) {
-            this.setFloating();
+            this.setFloating(params.width, params.height);
             // If we start in floating mode, force a the presence of a header
             this.getHeader();
         }
@@ -2256,15 +2256,17 @@ class HarmonyPanel {
         _a$1.#deltaX = rect.x - _a$1.#startClientX;
         _a$1.#deltaY = rect.y - _a$1.#startClientY;
     }
-    setFloating() {
+    setFloating(width, height) {
         document.body.append(this.htmlElement);
         this.#floating = true;
         this.htmlElement.classList.add('floating');
         this.htmlElement.classList.remove('docked');
-        this.htmlElement.style.left = `25%`;
-        this.htmlElement.style.top = `25%`;
-        this.htmlElement.style.width = `50%`;
-        this.htmlElement.style.height = `50%`;
+        width = (width ?? 50);
+        height = (height ?? 50);
+        this.htmlElement.style.left = `${(100 - width) / 2}%`;
+        this.htmlElement.style.top = `${(100 - height) / 2}%`;
+        this.htmlElement.style.width = `${width}%`;
+        this.htmlElement.style.height = `${height}%`;
         this.htmlElement.style.position = 'absolute';
     }
     setDocked(parentPanel) {
