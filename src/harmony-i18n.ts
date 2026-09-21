@@ -57,10 +57,6 @@ export function AddI18nElement(element: Element, descriptor: string | I18nDescri
 		}
 
 		for (const target of targets) {
-			delete existing[target];
-		}
-
-		for (const target of targets) {
 			const desc = descriptor[target];
 			if (desc === null) {
 				delete existing[target];

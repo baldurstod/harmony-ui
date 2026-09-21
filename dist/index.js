@@ -42,9 +42,6 @@ function AddI18nElement(element, descriptor) {
             return;
         }
         for (const target of targets) {
-            delete existing[target];
-        }
-        for (const target of targets) {
             const desc = descriptor[target];
             if (desc === null) {
                 delete existing[target];
