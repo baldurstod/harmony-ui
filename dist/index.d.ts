@@ -264,6 +264,8 @@ export declare type HarmonyPanelParams = {
     width?: number;
     /** For floating panels, height in % of the window height */
     height?: number;
+    /** Define if this panel can be closed by user. Default to false. */
+    closable?: boolean;
     /** Create this panel closed. Only for floating panels. Default to false. */
     closed?: boolean;
     /** Can this panel be moved. Default to false. */

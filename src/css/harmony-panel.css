@@ -80,6 +80,16 @@
 	background-color: var(--header-bg-color);
 	display: var(--display-header, flex);
 	align-items: center;
+	display: flex;
+	align-items: center;
+}
+
+.header-title {
+	flex: 1;
+}
+
+.header-close {
+	display: flex;
 }
 
 .header.hidden {

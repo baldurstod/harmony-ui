@@ -1,7 +1,8 @@
+import { closeSVG } from 'harmony-svg';
 import { errorOnce } from 'harmony-utils';
 import panelCSS from '../css/harmony-panel.css';
 import { shadowRootStyle } from '../harmony-css';
-import { addRemoveClass, createElement, display, hide, show, updateElement, updateShadowRoot } from '../harmony-html';
+import { addRemoveClass, createElement, CreateElementChildOption, display, hide, show, updateElement, updateShadowRoot } from '../harmony-html';
 import { I18n, I18nDescriptor } from '../harmony-i18n';
 import { HasI18n } from '../interfaces/hasi18n';
 import { HarmonyComponent } from './component';
@@ -30,6 +31,8 @@ export type HarmonyPanelParams = {
 	width?: number;
 	/** For floating panels, height in % of the window height */
 	height?: number;
+	/** Define if this panel can be closed by user. Default to false. */
+	closable?: boolean;
 	/** Create this panel closed. Only for floating panels. Default to false. */
 	closed?: boolean;
 	/** Can this panel be moved. Default to false. */
@@ -66,10 +69,12 @@ export class HarmonyPanel implements HarmonyComponent, HasI18n {
 	isMovable = false;
 	#collapsible = true;
 	#collapsed = false;
+	#closable!: boolean;
 	#startClosed = false;
 	#dropTarget!: boolean;
 	customPanelId = nextId++;
 	#htmlHeader?: HTMLElement;
+	#htmlHeaderTitle?: HTMLElement;
 	#htmlTabGroup?: HarmonyTabGroup;
 	#htmlContent?: HTMLElement;
 	#htmlResize?: HTMLElement;
@@ -115,6 +120,7 @@ export class HarmonyPanel implements HarmonyComponent, HasI18n {
 		this.setCollapsible(params.collapsible ?? true);
 		this.setCollapsed(params.collapsed ?? false);
 		this.isMovable = params.movable ?? false;
+		this.#closable = params.closable ?? false;
 		this.#dropTarget = params.dropTarget ?? false;
 		this.#tabIndex = params.tabIndex;
 		this.setLayout(params.layout ?? 'row');
@@ -183,10 +189,26 @@ export class HarmonyPanel implements HarmonyComponent, HasI18n {
 		this.#initHTML();
 
 		if (!this.#htmlHeader) {
+			const childs: CreateElementChildOption[] = [
+				this.#htmlHeaderTitle = createElement('div', {
+					class: 'header-title',
+					$dblclick: () => this.#toggleCollapse(),
+					$mousedown: (event: Event) => this.#handleMouseDown(event as MouseEvent),
+				}),
+			];
+
+			if (this.#closable) {
+				childs.push(createElement('span', {
+					class: 'header-close',
+					innerHTML: closeSVG,
+					$click: () => this.close(),
+				}));
+
+			}
+
 			this.#htmlHeader = createElement('div', {
 				class: 'header',
-				$dblclick: () => this.#toggleCollapse(),
-				$mousedown: (event: Event) => this.#handleMouseDown(event as MouseEvent),
+				childs,
 			});
 		}
 		this.#shadowRoot!.prepend(this.#htmlHeader);
@@ -599,9 +621,10 @@ export class HarmonyPanel implements HarmonyComponent, HasI18n {
 	}
 
 	setTitleI18n(i18n: string | I18nDescriptor | null): void {
+		this.getHeader()
 		this.#titleI18n = i18n;
 		if (typeof i18n === 'string') {
-			updateElement(this.getHeader(), {
+			updateElement(this.#htmlHeaderTitle, {
 				i18n,
 			});
 		} else {
