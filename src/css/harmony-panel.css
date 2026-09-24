@@ -13,6 +13,7 @@
 
 	--header-bg-color: var(--harmony-panel-header-bg-color, var(--main-bg-color-dark, black));
 	--content-bg-color: var(--harmony-panel-content-bg-color, var(--main-bg-color-dark, black));
+	--border-color: var(--harmony-panel-border-color, var(--text-primary, white));
 
 	--resize-bar-size: 0.5rem;
 	--layout: column;
@@ -200,6 +201,7 @@
 
 :host(.floating) {
 	z-index: 10000;
+	border: 0.1rem solid var(--border-color);
 }
 
 :host(.floating) .resize {
