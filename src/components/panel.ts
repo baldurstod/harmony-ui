@@ -185,6 +185,11 @@ export class HarmonyPanel implements HarmonyComponent, HasI18n {
 		});
 	}
 
+	getHtml(): HTMLElement {
+		this.#initHTML();
+		return this.#shadowRoot!.host as HTMLElement;
+	}
+
 	getHeader(): HTMLElement {
 		this.#initHTML();
 

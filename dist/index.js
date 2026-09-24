@@ -1031,6 +1031,10 @@ class HarmonyPanel {
             $mousedown: (event) => this.#handleMouseDown(event),
         });
     }
+    getHtml() {
+        this.#initHTML();
+        return this.#shadowRoot.host;
+    }
     getHeader() {
         this.#initHTML();
         if (!this.#htmlHeader) {
@@ -1051,8 +1055,6 @@ class HarmonyPanel {
             this.#htmlHeader = createElement('div', {
                 class: 'header',
                 childs,
-                //$dblclick: () => this.#toggleCollapse(),
-                //$mousedown: (event: Event) => this.#handleMouseDown(event as MouseEvent),
             });
         }
         this.#shadowRoot.prepend(this.#htmlHeader);

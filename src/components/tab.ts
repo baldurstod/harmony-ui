@@ -23,6 +23,7 @@ export type HarmonyTabParams = {
 	draggable?: boolean;
 	/** Set the tab content. Content will be automatically show / hidden depending on the tab state. */
 	content?: HTMLElement;
+	/** The HarmonyPanel this tab is linked to. */
 	panel?: HarmonyPanel;
 }
 

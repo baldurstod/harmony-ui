@@ -226,6 +226,7 @@ export declare class HarmonyPanel implements HarmonyComponent, HasI18n {
     customPanelId: number;
     constructor(params?: HarmonyPanelParams);
     setParams(params: HarmonyPanelParams): void;
+    getHtml(): HTMLElement;
     getHeader(): HTMLElement;
     getContent(): HTMLElement;
     append(...nodes: (Node | string | HarmonyComponent)[]): void;
@@ -374,6 +375,7 @@ export declare type HarmonyTabParams = {
     draggable?: boolean;
     /** Set the tab content. Content will be automatically show / hidden depending on the tab state. */
     content?: HTMLElement;
+    /** The HarmonyPanel this tab is linked to. */
     panel?: HarmonyPanel;
 };
 
