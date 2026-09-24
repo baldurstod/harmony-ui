@@ -1764,8 +1764,6 @@ class HarmonyPanel {
             const childs = [
                 this.#htmlHeaderTitle = createElement('div', {
                     class: 'header-title',
-                    $dblclick: () => this.#toggleCollapse(),
-                    $mousedown: (event) => this.#handleMouseDown(event),
                 }),
             ];
             if (this.#closable) {
@@ -1778,6 +1776,8 @@ class HarmonyPanel {
             this.#htmlHeader = createElement('div', {
                 class: 'header',
                 childs,
+                $dblclick: () => this.#toggleCollapse(),
+                $mousedown: (event) => this.#handleMouseDown(event),
             });
         }
         this.#shadowRoot.prepend(this.#htmlHeader);

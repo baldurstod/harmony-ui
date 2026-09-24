@@ -197,8 +197,6 @@ export class HarmonyPanel implements HarmonyComponent, HasI18n {
 			const childs: CreateElementChildOption[] = [
 				this.#htmlHeaderTitle = createElement('div', {
 					class: 'header-title',
-					$dblclick: () => this.#toggleCollapse(),
-					$mousedown: (event: Event) => this.#handleMouseDown(event as MouseEvent),
 				}),
 			];
 
@@ -214,6 +212,8 @@ export class HarmonyPanel implements HarmonyComponent, HasI18n {
 			this.#htmlHeader = createElement('div', {
 				class: 'header',
 				childs,
+				$dblclick: () => this.#toggleCollapse(),
+				$mousedown: (event: Event) => this.#handleMouseDown(event as MouseEvent),
 			});
 		}
 		this.#shadowRoot!.prepend(this.#htmlHeader);
