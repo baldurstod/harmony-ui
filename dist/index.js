@@ -5773,10 +5773,14 @@ class HTMLHarmonyRadioElement extends HTMLElement {
         const config = { childList: true, subtree: true };
         const mutationCallback = (mutationsList) => {
             for (const mutation of mutationsList) {
-                const addedNodes = mutation.addedNodes;
-                for (const addedNode of addedNodes) {
+                for (const addedNode of mutation.addedNodes) {
                     if (addedNode.parentNode == this) {
                         this.#initButton(addedNode);
+                    }
+                }
+                for (const removedNode of mutation.removedNodes) {
+                    if (removedNode.parentNode == this) {
+                        this.#selected.delete(removedNode.value);
                     }
                 }
             }
