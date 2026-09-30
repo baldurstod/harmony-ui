@@ -127,7 +127,7 @@
 	content: "+";
 }
 
-.resize {
+.panel-resize {
 	pointer-events: none;
 	display: none;
 	top: 0;
@@ -137,73 +137,73 @@
 	position: absolute;
 }
 
-.resize>* {
+.panel-resize>* {
 	pointer-events: all;
 	position: absolute;
 }
 
-.resize>.side {
+.panel-resize>.side {
 	inset: calc(var(--resize-bar-size) * 0.5);
 }
 
-.resize>.corner {
+.panel-resize>.corner {
 	height: var(--resize-bar-size);
 	width: var(--resize-bar-size);
 }
 
-.resize>.top,
-.resize>.bottom {
+.panel-resize>.top,
+.panel-resize>.bottom {
 	height: var(--resize-bar-size);
 	width: auto;
 	cursor: ns-resize;
 }
 
-.resize>.right,
-.resize>.left {
+.panel-resize>.right,
+.panel-resize>.left {
 	width: var(--resize-bar-size);
 	height: auto;
 	cursor: ew-resize;
 }
 
-.resize>.top {
+.panel-resize>.top {
 	top: calc(var(--resize-bar-size) * -0.5);
 	bottom: unset;
 }
 
-.resize>.bottom {
+.panel-resize>.bottom {
 	top: unset;
 	bottom: calc(var(--resize-bar-size) * -0.5);
 }
 
-.resize>.left {
+.panel-resize>.left {
 	left: calc(var(--resize-bar-size) * -0.5);
 	right: unset;
 }
 
-.resize>.right {
+.panel-resize>.right {
 	left: unset;
 	right: calc(var(--resize-bar-size) * -0.5);
 }
 
-.resize>.top_right {
+.panel-resize>.top_right {
 	top: calc(var(--resize-bar-size) * -0.5);
 	right: calc(var(--resize-bar-size) * -0.5);
 	cursor: ne-resize;
 }
 
-.resize>.bottom_right {
+.panel-resize>.bottom_right {
 	bottom: calc(var(--resize-bar-size) * -0.5);
 	right: calc(var(--resize-bar-size) * -0.5);
 	cursor: se-resize;
 }
 
-.resize>.top_left {
+.panel-resize>.top_left {
 	top: calc(var(--resize-bar-size) * -0.5);
 	left: calc(var(--resize-bar-size) * -0.5);
 	cursor: nw-resize;
 }
 
-.resize>.bottom_left {
+.panel-resize>.bottom_left {
 	bottom: calc(var(--resize-bar-size) * -0.5);
 	left: calc(var(--resize-bar-size) * -0.5);
 	cursor: sw-resize;
@@ -214,6 +214,6 @@
 	border: 0.1rem solid var(--border-color);
 }
 
-:host(.floating) .resize {
+:host(.floating) .panel-resize {
 	display: initial;
 }
