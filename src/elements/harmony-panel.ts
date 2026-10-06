@@ -73,7 +73,7 @@ export class HTMLHarmonyPanelElement extends HTMLElement implements HasI18n {
 			parent: this.#shadowRoot,
 		});
 		this.#htmlResize = createElement('div', {
-			class: 'resize',
+			class: 'panel-resize',
 			parent: this.#shadowRoot,
 			childs: [
 				createElement('div', { class: 'side top', $mousedown: (event: MouseEvent) => this.#startResize(event, 0, -1) }),

@@ -5051,7 +5051,7 @@ class HTMLHarmonyPanelElement extends HTMLElement {
             parent: this.#shadowRoot,
         });
         this.#htmlResize = createElement('div', {
-            class: 'resize',
+            class: 'panel-resize',
             parent: this.#shadowRoot,
             childs: [
                 createElement('div', { class: 'side top', $mousedown: (event) => this.#startResize(event, 0, -1) }),
