@@ -260,13 +260,13 @@ function createElementOptions(element: HTMLElement, options?: CreateElementOptio
 	}
 }
 
-async function adoptStyle(element: HTMLElement | Document | ShadowRoot, cssText: string): Promise<void> {
+export async function adoptStyle(element: HTMLElement | Document | ShadowRoot, cssText: string): Promise<void> {
 	const sheet = new CSSStyleSheet;
 	await sheet.replace(cssText);
 	adoptStyleSheet(element, sheet);
 }
 
-function adoptStyleSheet(element: HTMLElement | Document | ShadowRoot, sheet: CSSStyleSheet): void {
+export function adoptStyleSheet(element: HTMLElement | Document | ShadowRoot, sheet: CSSStyleSheet): void {
 	if ((element as HTMLHarmonyToggleButtonElement).adoptStyleSheet) {
 		(element as HTMLHarmonyToggleButtonElement).adoptStyleSheet(sheet);
 	} else {

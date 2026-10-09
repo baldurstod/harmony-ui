@@ -6,6 +6,10 @@ export declare function AddI18nElement(element: Element, descriptor: string | I1
 
 export declare function addRemoveClass(element: HTMLElement | undefined, clas: string, add: boolean): void;
 
+export declare function adoptStyle(element: HTMLElement | Document | ShadowRoot, cssText: string): Promise<void>;
+
+export declare function adoptStyleSheet(element: HTMLElement | Document | ShadowRoot, sheet: CSSStyleSheet): void;
+
 export declare function cloneEvent(event: Event): Event;
 
 export declare type ColorPickerEventData = {
