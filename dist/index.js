@@ -280,8 +280,14 @@ class I18n {
     static formatString(s, values) {
         let str = this.getString(s);
         for (const key in values) {
-            str = str.replace(new RegExp("\\${" + key + "\\}", "gi"), String(values[key]));
-            str = str.replace(new RegExp("\\#{" + key + "\\}", "gi"), this.getString(String(values[key])));
+            const valueRegExp = new RegExp("\\${" + key + "\\}", "gi");
+            const translationRegExp = new RegExp("\\#{" + key + "\\}", "gi");
+            if (str.match(valueRegExp)) {
+                str = str.replace(valueRegExp, String(values[key]));
+            }
+            if (str.match(translationRegExp)) {
+                str = str.replace(translationRegExp, this.getString(String(values[key])));
+            }
         }
         return str;
     }
