@@ -63,7 +63,7 @@ export class HarmonyPanel implements HarmonyComponent, HasI18n {
 	readonly htmlElement = createElement('div');
 	readonly isHarmonyPanel = true as const;
 	#doOnce = true;
-	#parent = null;
+	#parent: HarmonyPanel | null = null;
 	#size = 1;
 	#layout?: HarmonyPanelLayout;
 	isMovable = false;
@@ -233,7 +233,7 @@ export class HarmonyPanel implements HarmonyComponent, HasI18n {
 			const htmlElement = (node as HarmonyComponent).htmlElement;
 			if (htmlElement) {
 				if ((node as HarmonyPanel).isHarmonyPanel) {
-					this.#childPanels.add((node as HarmonyPanel));
+					(node as HarmonyPanel).setParent(this);
 					if (this.#layout === 'tabs') {
 						this.#addTab((node as HarmonyPanel));
 					}
@@ -253,7 +253,8 @@ export class HarmonyPanel implements HarmonyComponent, HasI18n {
 			const htmlElement = (node as HarmonyComponent).htmlElement;
 			if (htmlElement) {
 				if ((node as HarmonyPanel).isHarmonyPanel) {
-					this.#childPanels.add((node as HarmonyPanel));
+					//this.#childPanels.add((node as HarmonyPanel));
+					(node as HarmonyPanel).setParent(this);
 					if (this.#layout === 'tabs') {
 						this.#addTab((node as HarmonyPanel));
 					}
@@ -264,6 +265,14 @@ export class HarmonyPanel implements HarmonyComponent, HasI18n {
 				this.#htmlContent!.prepend(node as Node | string);
 			}
 		}
+	}
+
+	#addChild(child: HarmonyPanel): void {
+		this.#childPanels.add(child);
+	}
+
+	#removeChild(child: HarmonyPanel): void {
+		this.#childPanels.delete(child);
 	}
 	/*
 		appendChild(child: HTMLElement) {
@@ -949,6 +958,7 @@ export class HarmonyPanel implements HarmonyComponent, HasI18n {
 
 	activate(): void {
 		this.#parentTab?.activate();
+		this.#parent?.activate();
 	}
 
 	open(): void {
@@ -960,5 +970,15 @@ export class HarmonyPanel implements HarmonyComponent, HasI18n {
 		if (this.#shadowRoot) {
 			hide(this.#shadowRoot);
 		}
+	}
+
+	setParent(parent: HarmonyPanel | null): void {
+		if (this.#parent) {
+			this.#parent.#removeChild(this);
+		}
+		if (parent) {
+			parent.#addChild(this);
+		}
+		this.#parent = parent;
 	}
 }

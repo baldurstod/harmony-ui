@@ -1076,7 +1076,7 @@ class HarmonyPanel {
             const htmlElement = node.htmlElement;
             if (htmlElement) {
                 if (node.isHarmonyPanel) {
-                    this.#childPanels.add(node);
+                    node.setParent(this);
                     if (this.#layout === 'tabs') {
                         this.#addTab(node);
                     }
@@ -1095,7 +1095,8 @@ class HarmonyPanel {
             const htmlElement = node.htmlElement;
             if (htmlElement) {
                 if (node.isHarmonyPanel) {
-                    this.#childPanels.add(node);
+                    //this.#childPanels.add((node as HarmonyPanel));
+                    node.setParent(this);
                     if (this.#layout === 'tabs') {
                         this.#addTab(node);
                     }
@@ -1107,6 +1108,12 @@ class HarmonyPanel {
                 this.#htmlContent.prepend(node);
             }
         }
+    }
+    #addChild(child) {
+        this.#childPanels.add(child);
+    }
+    #removeChild(child) {
+        this.#childPanels.delete(child);
     }
     /*
         appendChild(child: HTMLElement) {
@@ -1723,6 +1730,7 @@ class HarmonyPanel {
     }
     activate() {
         this.#parentTab?.activate();
+        this.#parent?.activate();
     }
     open() {
         this.#initHTML();
@@ -1732,6 +1740,15 @@ class HarmonyPanel {
         if (this.#shadowRoot) {
             hide(this.#shadowRoot);
         }
+    }
+    setParent(parent) {
+        if (this.#parent) {
+            this.#parent.#removeChild(this);
+        }
+        if (parent) {
+            parent.#addChild(this);
+        }
+        this.#parent = parent;
     }
 }
 _a$1 = HarmonyPanel;

@@ -254,6 +254,7 @@ export declare class HarmonyPanel implements HarmonyComponent, HasI18n {
     activate(): void;
     open(): void;
     close(): void;
+    setParent(parent: HarmonyPanel | null): void;
 }
 
 export declare type HarmonyPanelLayout = 'row' | 'column' | 'tabs';
