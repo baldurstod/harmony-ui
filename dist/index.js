@@ -318,19 +318,23 @@ class Help {
     static #shadowRoot;
     static #elements = new Map();
     static {
-        document.body.addEventListener('keydown', (event) => this.#handleKeyDown(event));
-        document.body.addEventListener('keyup', (event) => this.#handleKeyUp(event));
-        this.#shadowRoot = createShadowRoot('div', {
-            parent: document.body,
-            hidden: true,
-            childs: [
-                this.#html = createElement('div', {
-                    class: 'help',
-                    hidden: true,
-                }),
-            ],
-        });
-        void shadowRootStyle(this.#shadowRoot, helpCSS);
+        const onLoad = () => {
+            document.body.addEventListener('keydown', (event) => this.#handleKeyDown(event));
+            document.body.addEventListener('keyup', (event) => this.#handleKeyUp(event));
+            this.#shadowRoot = createShadowRoot('div', {
+                parent: document.body,
+                hidden: true,
+                childs: [
+                    this.#html = createElement('div', {
+                        class: 'help',
+                        hidden: true,
+                    }),
+                ],
+            });
+            void shadowRootStyle(this.#shadowRoot, helpCSS);
+            removeEventListener('load', onLoad);
+        };
+        addEventListener('load', onLoad);
     }
     static #handleKeyDown(event) {
         if (event.key == 'F1' && !event.repeat) {

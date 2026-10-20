@@ -9,20 +9,25 @@ export class Help {
 	static #elements = new Map<Element, string | I18nDescriptor>();
 
 	static {
-		document.body.addEventListener('keydown', (event: KeyboardEvent) => this.#handleKeyDown(event));
-		document.body.addEventListener('keyup', (event: KeyboardEvent) => this.#handleKeyUp(event));
-		this.#shadowRoot = createShadowRoot('div', {
-			parent: document.body,
-			hidden: true,
-			childs: [
-				this.#html = createElement('div', {
-					class: 'help',
-					hidden: true,
-				}),
-			],
-		});
+		const onLoad = (): void => {
 
-		void shadowRootStyle(this.#shadowRoot, helpCSS);
+			document.body.addEventListener('keydown', (event: KeyboardEvent) => this.#handleKeyDown(event));
+			document.body.addEventListener('keyup', (event: KeyboardEvent) => this.#handleKeyUp(event));
+			this.#shadowRoot = createShadowRoot('div', {
+				parent: document.body,
+				hidden: true,
+				childs: [
+					this.#html = createElement('div', {
+						class: 'help',
+						hidden: true,
+					}),
+				],
+			});
+			void shadowRootStyle(this.#shadowRoot, helpCSS);
+			removeEventListener('load', onLoad);
+		}
+
+		addEventListener('load', onLoad);
 	}
 
 	static #handleKeyDown(event: KeyboardEvent): void {
