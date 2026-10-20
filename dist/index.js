@@ -643,9 +643,14 @@ function getCustomElementRegistry() {
 }
 function defineElement(name, constructor, options) {
     if (window.customElements) {
-        customElements.define(name, constructor, options);
+        if (!customElements.get(name)) {
+            customElements.define(name, constructor, options);
+        }
     }
-    getCustomElementRegistry()?.define(name, constructor, options);
+    const customRegistry = getCustomElementRegistry();
+    if (customRegistry && !customRegistry.get(name)) {
+        customRegistry.define(name, constructor, options);
+    }
 }
 function addRemoveClass(element, clas, add) {
     if (add) {

@@ -361,9 +361,14 @@ export function getCustomElementRegistry(): CustomElementRegistry | undefined {
 
 export function defineElement(name: string, constructor: CustomElementConstructor, options?: ElementDefinitionOptions): void {
 	if (window.customElements) {
-		customElements.define(name, constructor, options);
+		if (!customElements.get(name)) {
+			customElements.define(name, constructor, options);
+		}
 	}
-	getCustomElementRegistry()?.define(name, constructor, options);
+	const customRegistry = getCustomElementRegistry();
+	if (customRegistry && !customRegistry.get(name)) {
+		customRegistry.define(name, constructor, options);
+	}
 }
 
 export function addRemoveClass(element: HTMLElement | undefined, clas: string, add: boolean): void {
