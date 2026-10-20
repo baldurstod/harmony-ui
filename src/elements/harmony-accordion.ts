@@ -196,12 +196,8 @@ export class HTMLHarmonyAccordionElement extends HTMLElement {
 	}
 }
 
-let definedAccordion = false;
-export function defineHarmonyAccordion(): void {
-	if (!definedAccordion) {
-		defineHarmonyItem();
-		defineElement('harmony-accordion', HTMLHarmonyAccordionElement);
-		definedAccordion = true;
-		injectGlobalCss();
-	}
+export function defineHarmonyAccordion(suffix: string = ''): void {
+	defineHarmonyItem(suffix);
+	defineElement('harmony-accordion' + suffix, HTMLHarmonyAccordionElement);
+	injectGlobalCss();
 }

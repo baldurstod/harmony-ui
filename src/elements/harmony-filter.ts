@@ -282,12 +282,8 @@ export class HTMLHarmonyFilterElement extends HTMLHarmonyElement {
 
 }
 
-let definedFilter = false;
-export function defineHarmonyFilter(): void {
-	if (!definedFilter) {
-		defineHarmonyItem();
-		defineElement('harmony-filter', HTMLHarmonyFilterElement);
-		definedFilter = true;
-		injectGlobalCss();
-	}
+export function defineHarmonyFilter(suffix: string = ''): void {
+	defineHarmonyItem(suffix);
+	defineElement('harmony-filter' + suffix, HTMLHarmonyFilterElement);
+	injectGlobalCss();
 }

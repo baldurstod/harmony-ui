@@ -81,53 +81,53 @@ export declare type CreateShadowRootOptions = {
 
 export declare function defineElement(name: string, constructor: CustomElementConstructor, options?: ElementDefinitionOptions): void;
 
-export declare function defineHarmony2dManipulator(): void;
+export declare function defineHarmony2dManipulator(suffix?: string): void;
 
-export declare function defineHarmonyAccordion(): void;
+export declare function defineHarmonyAccordion(suffix?: string): void;
 
-export declare function defineHarmonyCircularProgress(): void;
+export declare function defineHarmonyCircularProgress(suffix?: string): void;
 
-export declare function defineHarmonyColorPicker(): void;
+export declare function defineHarmonyColorPicker(suffix?: string): void;
 
-export declare function defineHarmonyCopy(): void;
+export declare function defineHarmonyCopy(suffix?: string): void;
 
-export declare function defineHarmonyFileInput(): void;
+export declare function defineHarmonyFileInput(suffix?: string): void;
 
-export declare function defineHarmonyFilter(): void;
+export declare function defineHarmonyFilter(suffix?: string): void;
 
-export declare function defineHarmonyInfoBox(): void;
+export declare function defineHarmonyInfoBox(suffix?: string): void;
 
-export declare function defineHarmonyItem(): void;
+export declare function defineHarmonyItem(suffix?: string): void;
 
-export declare function defineHarmonyLabelProperty(): void;
+export declare function defineHarmonyLabelProperty(suffix?: string): void;
 
-export declare function defineHarmonyMenu(): void;
+export declare function defineHarmonyMenu(suffix?: string): void;
 
-export declare function defineHarmonyPalette(): void;
+export declare function defineHarmonyPalette(suffix?: string): void;
 
-export declare function defineHarmonyPanel(): void;
+export declare function defineHarmonyPanel(suffix?: string): void;
 
-export declare function defineHarmonyRadio(): void;
+export declare function defineHarmonyRadio(suffix?: string): void;
 
-export declare function defineHarmonySelect(): void;
+export declare function defineHarmonySelect(suffix?: string): void;
 
-export declare function defineHarmonySlider(): void;
+export declare function defineHarmonySlider(suffix?: string): void;
 
-export declare function defineHarmonySlideshow(): void;
+export declare function defineHarmonySlideshow(suffix?: string): void;
 
-export declare function defineHarmonySplitter(): void;
+export declare function defineHarmonySplitter(suffix?: string): void;
 
-export declare function defineHarmonySwitch(): void;
+export declare function defineHarmonySwitch(suffix?: string): void;
 
-export declare function defineHarmonyTab(): void;
+export declare function defineHarmonyTab(suffix?: string): void;
 
-export declare function defineHarmonyTabGroup(): void;
+export declare function defineHarmonyTabGroup(suffix?: string): void;
 
-export declare function defineHarmonyToggleButton(): void;
+export declare function defineHarmonyToggleButton(suffix?: string): void;
 
-export declare function defineHarmonyTooltip(): void;
+export declare function defineHarmonyTooltip(suffix?: string): void;
 
-export declare function defineHarmonyTree(): void;
+export declare function defineHarmonyTree(suffix?: string): void;
 
 export declare function display(htmlElement: HTMLElement | SVGElement | ShadowRoot | (HTMLElement | SVGElement | ShadowRoot)[] | undefined | null, visible: boolean): void;
 

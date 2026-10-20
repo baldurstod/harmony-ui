@@ -104,11 +104,7 @@ export class HTMLHarmonySelectElement extends HTMLElement {
 	}
 }
 
-let definedSelect = false;
-export function defineHarmonySelect(): void {
-	if (!definedSelect) {
-		defineElement('harmony-select', HTMLHarmonySelectElement);
-		definedSelect = true;
-		injectGlobalCss();
-	}
+export function defineHarmonySelect(suffix: string = ''): void {
+	defineElement('harmony-select' + suffix, HTMLHarmonySelectElement);
+	injectGlobalCss();
 }

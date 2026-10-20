@@ -750,11 +750,7 @@ export class HTMLHarmonyPanelElement extends HTMLElement implements HasI18n {
 	}
 }
 
-let definedPanel = false;
-export function defineHarmonyPanel(): void {
-	if (!definedPanel) {
-		defineElement('harmony-panel', HTMLHarmonyPanelElement);
-		definedPanel = true;
-		injectGlobalCss();
-	}
+export function defineHarmonyPanel(suffix: string = ''): void {
+	defineElement('harmony-panel' + suffix, HTMLHarmonyPanelElement);
+	injectGlobalCss();
 }

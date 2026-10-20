@@ -145,11 +145,7 @@ export class HTMLHarmonyTabElement extends HTMLElement {
 	}
 }
 
-let definedTab = false;
-export function defineHarmonyTab(): void {
-	if (!definedTab) {
-		defineElement('harmony-tab', HTMLHarmonyTabElement);
-		definedTab = true;
-		injectGlobalCss();
-	}
+export function defineHarmonyTab(suffix: string = ''): void {
+	defineElement('harmony-tab' + suffix, HTMLHarmonyTabElement);
+	injectGlobalCss();
 }

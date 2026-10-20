@@ -103,11 +103,7 @@ export class HTMLHarmonyToggleButtonElement extends HTMLElement {
 	}
 }
 
-let definedToggleButton = false;
-export function defineHarmonyToggleButton(): void {
-	if (!definedToggleButton) {
-		defineElement('harmony-toggle-button', HTMLHarmonyToggleButtonElement);
-		definedToggleButton = true;
-		injectGlobalCss();
-	}
+export function defineHarmonyToggleButton(suffix: string = ''): void {
+	defineElement('harmony-toggle-button' + suffix, HTMLHarmonyToggleButtonElement);
+	injectGlobalCss();
 }

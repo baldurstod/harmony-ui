@@ -96,12 +96,8 @@ export class HTMLHarmonyCircularProgressElement extends HTMLHarmonyElement {
 	}
 }
 
-let definedCircularProgress = false;
-export function defineHarmonyCircularProgress(): void {
-	if (!definedCircularProgress) {
-		defineElement('harmony-circular-progress', class extends HTMLHarmonyCircularProgressElement { });
-		defineElement('h-cp', class extends HTMLHarmonyCircularProgressElement { });
-		definedCircularProgress = true;
-		injectGlobalCss();
-	}
+export function defineHarmonyCircularProgress(suffix: string = ''): void {
+	defineElement('harmony-circular-progress' + suffix, class extends HTMLHarmonyCircularProgressElement { });
+	defineElement('h-cp' + suffix, class extends HTMLHarmonyCircularProgressElement { });
+	injectGlobalCss();
 }

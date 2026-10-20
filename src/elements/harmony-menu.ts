@@ -226,11 +226,7 @@ export class HTMLHarmonyMenuElement extends HTMLElement {
 	}
 }
 
-let definedMenu = false;
-export function defineHarmonyMenu(): void {
-	if (!definedMenu) {
-		defineElement('harmony-menu', HTMLHarmonyMenuElement);
-		definedMenu = true;
-		injectGlobalCss();
-	}
+export function defineHarmonyMenu(suffix: string = ''): void {
+	defineElement('harmony-menu' + suffix, HTMLHarmonyMenuElement);
+	injectGlobalCss();
 }

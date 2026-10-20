@@ -106,11 +106,7 @@ export class HTMLHarmonyTabGroupElement extends HTMLElement {
 	}
 }
 
-let definedTabGroup = false;
-export function defineHarmonyTabGroup(): void {
-	if (!definedTabGroup) {
-		defineElement('harmony-tab-group', HTMLHarmonyTabGroupElement);
-		definedTabGroup = true;
-		injectGlobalCss();
-	}
+export function defineHarmonyTabGroup(suffix: string = ''): void {
+	defineElement('harmony-tab-group' + suffix, HTMLHarmonyTabGroupElement);
+	injectGlobalCss();
 }

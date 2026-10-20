@@ -384,11 +384,7 @@ export class HTMLHarmonySlideshowElement extends HTMLElement {
 	}
 }
 
-let definedSlideshow = false;
-export function defineHarmonySlideshow(): void {
-	if (!definedSlideshow) {
-		defineElement('harmony-slideshow', HTMLHarmonySlideshowElement);
-		definedSlideshow = true;
-		injectGlobalCss();
-	}
+export function defineHarmonySlideshow(suffix: string = ''): void {
+	defineElement('harmony-slideshow' + suffix, HTMLHarmonySlideshowElement);
+	injectGlobalCss();
 }

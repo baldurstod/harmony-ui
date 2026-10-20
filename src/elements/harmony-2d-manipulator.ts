@@ -916,11 +916,7 @@ export class HTMLHarmony2dManipulatorElement extends HTMLElement {
 	}
 }
 
-let defined2dManipulator = false;
-export function defineHarmony2dManipulator(): void {
-	if (!defined2dManipulator) {
-		defineElement('harmony-2d-manipulator', HTMLHarmony2dManipulatorElement);
-		defined2dManipulator = true;
-		injectGlobalCss();
-	}
+export function defineHarmony2dManipulator(suffix: string = ''): void {
+	defineElement('harmony-2d-manipulator' + suffix, HTMLHarmony2dManipulatorElement);
+	injectGlobalCss();
 }

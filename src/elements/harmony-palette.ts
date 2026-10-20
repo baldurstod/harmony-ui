@@ -200,11 +200,7 @@ export class HTMLHarmonyPaletteElement extends HTMLElement {
 	}
 }
 
-let definedPalette = false;
-export function defineHarmonyPalette(): void {
-	if (!definedPalette) {
-		defineElement('harmony-palette', HTMLHarmonyPaletteElement);
-		definedPalette = true;
-		injectGlobalCss();
-	}
+export function defineHarmonyPalette(suffix: string = ''): void {
+	defineElement('harmony-palette' + suffix, HTMLHarmonyPaletteElement);
+	injectGlobalCss();
 }

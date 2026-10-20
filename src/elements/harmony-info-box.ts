@@ -72,11 +72,7 @@ export class HTMLHarmonyInfoBoxElement extends HTMLElement {
 	}
 }
 
-let definedInfoBox = false;
-export function defineHarmonyInfoBox(): void {
-	if (!definedInfoBox) {
-		defineElement('harmony-info-box', HTMLHarmonyInfoBoxElement);
-		definedInfoBox = true;
-		injectGlobalCss();
-	}
+export function defineHarmonyInfoBox(suffix: string = ''): void {
+	defineElement('harmony-info-box' + suffix, HTMLHarmonyInfoBoxElement);
+	injectGlobalCss();
 }

@@ -109,11 +109,7 @@ export class HTMLHarmonyFileInputElement extends HTMLElement {
 	}
 }
 
-let definedFileInput = false;
-export function defineHarmonyFileInput(): void {
-	if (!definedFileInput) {
-		defineElement('harmony-file-input', HTMLHarmonyFileInputElement);
-		definedFileInput = true;
-		injectGlobalCss();
-	}
+export function defineHarmonyFileInput(suffix: string = ''): void {
+	defineElement('harmony-file-input' + suffix, HTMLHarmonyFileInputElement);
+	injectGlobalCss();
 }

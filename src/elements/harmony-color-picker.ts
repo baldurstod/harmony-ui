@@ -238,11 +238,7 @@ export class HTMLHarmonyColorPickerElement extends HTMLElement {
 	}
 }
 
-let definedColorPicker = false;
-export function defineHarmonyColorPicker(): void {
-	if (!definedColorPicker) {
-		defineElement('harmony-color-picker', HTMLHarmonyColorPickerElement);
-		definedColorPicker = true;
-		injectGlobalCss();
-	}
+export function defineHarmonyColorPicker(suffix: string = ''): void {
+	defineElement('harmony-color-picker' + suffix, HTMLHarmonyColorPickerElement);
+	injectGlobalCss();
 }

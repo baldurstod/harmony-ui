@@ -208,11 +208,7 @@ export class HTMLHarmonySliderElement extends HTMLHarmonyElement {
 	}
 }
 
-let definedSlider = false;
-export function defineHarmonySlider(): void {
-	if (!definedSlider) {
-		defineElement('harmony-slider', HTMLHarmonySliderElement);
-		definedSlider = true;
-		injectGlobalCss();
-	}
+export function defineHarmonySlider(suffix: string = ''): void {
+	defineElement('harmony-slider' + suffix, HTMLHarmonySliderElement);
+	injectGlobalCss();
 }

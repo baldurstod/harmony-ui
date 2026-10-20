@@ -176,11 +176,7 @@ export class HTMLHarmonyRadioElement extends HTMLElement {
 	}
 }
 
-let definedRadio = false;
-export function defineHarmonyRadio(): void {
-	if (!definedRadio) {
-		defineElement('harmony-radio', HTMLHarmonyRadioElement);
-		definedRadio = true;
-		injectGlobalCss();
-	}
+export function defineHarmonyRadio(suffix: string = ''): void {
+	defineElement('harmony-radio' + suffix, HTMLHarmonyRadioElement);
+	injectGlobalCss();
 }

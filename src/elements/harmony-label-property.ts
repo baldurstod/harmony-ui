@@ -33,11 +33,7 @@ export class HTMLHarmonyLabelPropertyElement extends HTMLElement {
 	}
 }
 
-let definedLabelProperty = false;
-export function defineHarmonyLabelProperty(): void {
-	if (!definedLabelProperty) {
-		defineElement('harmony-label-property', HTMLHarmonyLabelPropertyElement);
-		definedLabelProperty = true;
-		injectGlobalCss();
-	}
+export function defineHarmonyLabelProperty(suffix: string = ''): void {
+	defineElement('harmony-label-property' + suffix, HTMLHarmonyLabelPropertyElement);
+	injectGlobalCss();
 }

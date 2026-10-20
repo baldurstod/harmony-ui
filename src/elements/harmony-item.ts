@@ -49,10 +49,6 @@ export class HTMLHarmonyItemElement extends HTMLElement {
 	}
 }
 
-let definedHarmonyItem = false;
-export function defineHarmonyItem(): void {
-	if (!definedHarmonyItem) {
-		defineElement('harmony-item', HTMLHarmonyItemElement);
-		definedHarmonyItem = true;
-	}
+export function defineHarmonyItem(suffix: string = ''): void {
+	defineElement('harmony-item' + suffix, HTMLHarmonyItemElement);
 }

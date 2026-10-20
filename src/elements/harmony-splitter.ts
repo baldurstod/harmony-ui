@@ -121,11 +121,7 @@ export class HTMLHarmonySplitterElement extends HTMLElement {
 	}
 }
 
-let definedSplitter = false;
-export function defineHarmonySplitter(): void {
-	if (!definedSplitter) {
-		defineElement('harmony-splitter', HTMLHarmonySplitterElement);
-		definedSplitter = true;
-		injectGlobalCss();
-	}
+export function defineHarmonySplitter(suffix: string = ''): void {
+	defineElement('harmony-splitter' + suffix, HTMLHarmonySplitterElement);
+	injectGlobalCss();
 }

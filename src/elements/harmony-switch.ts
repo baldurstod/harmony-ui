@@ -158,11 +158,7 @@ export class HTMLHarmonySwitchElement extends HTMLHarmonyElement {
 	}
 }
 
-let definedSwitch = false;
-export function defineHarmonySwitch(): void {
-	if (!definedSwitch) {
-		defineElement('harmony-switch', HTMLHarmonySwitchElement);
-		definedSwitch = true;
-		injectGlobalCss();
-	}
+export function defineHarmonySwitch(suffix: string = ''): void {
+	defineElement('harmony-switch' + suffix, HTMLHarmonySwitchElement);
+	injectGlobalCss();
 }

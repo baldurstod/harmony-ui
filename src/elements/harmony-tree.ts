@@ -641,12 +641,8 @@ export class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
 	}
 }
 
-let definedTree = false;
-export function defineHarmonyTree(): void {
-	if (!definedTree) {
-		defineElement('harmony-tree', class extends HTMLHarmonyTreeElement { });
-		defineElement('h-tree', class extends HTMLHarmonyTreeElement { });
-		definedTree = true;
-		injectGlobalCss();
-	}
+export function defineHarmonyTree(suffix: string = ''): void {
+	defineElement('harmony-tree' + suffix, class extends HTMLHarmonyTreeElement { });
+	defineElement('h-tree' + suffix, class extends HTMLHarmonyTreeElement { });
+	injectGlobalCss();
 }

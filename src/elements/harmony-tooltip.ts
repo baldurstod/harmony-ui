@@ -42,11 +42,7 @@ export class HTMLHarmonyTooltipElement extends HTMLElement {
 	}
 }
 
-let definedTooltip = false;
-export function defineHarmonyTooltip(): void {
-	if (!definedTooltip) {
-		defineElement('harmony-tooltip', HTMLHarmonyTooltipElement);
-		definedTooltip = true;
-		injectGlobalCss();
-	}
+export function defineHarmonyTooltip(suffix: string = ''): void {
+	defineElement('harmony-tooltip' + suffix, HTMLHarmonyTooltipElement);
+	injectGlobalCss();
 }

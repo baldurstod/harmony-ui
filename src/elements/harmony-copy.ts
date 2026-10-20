@@ -36,12 +36,8 @@ export class HTMLHarmonyCopyElement extends HTMLElement {
 	}
 }
 
-let definedCopy = false;
-export function defineHarmonyCopy(): void {
-	if (!definedCopy) {
-		defineElement('harmony-copy', HTMLHarmonyCopyElement);
-		void documentStyle(copyCSS);
-		definedCopy = true;
-		injectGlobalCss();
-	}
+export function defineHarmonyCopy(suffix: string = ''): void {
+	defineElement('harmony-copy' + suffix, HTMLHarmonyCopyElement);
+	void documentStyle(copyCSS);
+	injectGlobalCss();
 }

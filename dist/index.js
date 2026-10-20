@@ -1966,13 +1966,9 @@ class HTMLHarmonyMenuElement extends HTMLElement {
         return htmlItem;
     }
 }
-let definedMenu = false;
-function defineHarmonyMenu() {
-    if (!definedMenu) {
-        defineElement('harmony-menu', HTMLHarmonyMenuElement);
-        definedMenu = true;
-        injectGlobalCss();
-    }
+function defineHarmonyMenu(suffix = '') {
+    defineElement('harmony-menu' + suffix, HTMLHarmonyMenuElement);
+    injectGlobalCss();
 }
 
 class HTMLHarmonyElement extends HTMLElement {
@@ -2498,16 +2494,12 @@ class HTMLHarmonyTreeElement extends HTMLHarmonyElement {
         }
     }
 }
-let definedTree = false;
-function defineHarmonyTree() {
-    if (!definedTree) {
-        defineElement('harmony-tree', class extends HTMLHarmonyTreeElement {
-        });
-        defineElement('h-tree', class extends HTMLHarmonyTreeElement {
-        });
-        definedTree = true;
-        injectGlobalCss();
-    }
+function defineHarmonyTree(suffix = '') {
+    defineElement('harmony-tree' + suffix, class extends HTMLHarmonyTreeElement {
+    });
+    defineElement('h-tree' + suffix, class extends HTMLHarmonyTreeElement {
+    });
+    injectGlobalCss();
 }
 
 class HarmonyTree extends MyEventTarget {
@@ -3642,13 +3634,9 @@ class HTMLHarmony2dManipulatorElement extends HTMLElement {
         this.#refresh();
     }
 }
-let defined2dManipulator = false;
-function defineHarmony2dManipulator() {
-    if (!defined2dManipulator) {
-        defineElement('harmony-2d-manipulator', HTMLHarmony2dManipulatorElement);
-        defined2dManipulator = true;
-        injectGlobalCss();
-    }
+function defineHarmony2dManipulator(suffix = '') {
+    defineElement('harmony-2d-manipulator' + suffix, HTMLHarmony2dManipulatorElement);
+    injectGlobalCss();
 }
 
 var accordionCSS = ":host {\n\toverflow: hidden;\n\tdisplay: flex;\n\tjustify-content: center;\n\tflex-direction: column;\n\tposition: relative;\n\n\t/*--accordion-text-color: #000;*/\n}\n\n.item .header {\n\tcursor: pointer;\n\tdisplay: block;\n\tuser-select: none;\n\tpadding: 5px;\n\t/*color: var(--accordion-text-color)\n\tcolor: var(--accordion-text-color)*/\n}\n\n.item .content {\n\tdisplay: block;\n\toverflow: hidden;\n\theight: 0;\n\t/*transition: all 0.5s ease 0s;*/\n}\n\n.item .content.selected {\n\theight: unset;\n\tpadding: 10px;\n}\n\n\n@media (prefers-color-scheme: light) {\n\t:host {\n\t\t--accordion-text-color: #000;\n\t\t--accordion-background-color: #eee;\n\t\tcolor: #000;\n\t\tbackground: #eee;\n\t}\n}\n\n@media (prefers-color-scheme: dark) {\n\t:host {\n\t\t--accordion-text-color: #eee;\n\t\t--accordion-background-color: #000;\n\t\tcolor: #eee;\n\t\tbackground: #000;\n\t}\n}\n";
@@ -3694,12 +3682,8 @@ class HTMLHarmonyItemElement extends HTMLElement {
         return ['id', 'item-id'];
     }
 }
-let definedHarmonyItem = false;
-function defineHarmonyItem() {
-    if (!definedHarmonyItem) {
-        defineElement('harmony-item', HTMLHarmonyItemElement);
-        definedHarmonyItem = true;
-    }
+function defineHarmonyItem(suffix = '') {
+    defineElement('harmony-item' + suffix, HTMLHarmonyItemElement);
 }
 
 class HTMLHarmonyAccordionElement extends HTMLElement {
@@ -3869,14 +3853,10 @@ class HTMLHarmonyAccordionElement extends HTMLElement {
         return ['multiple'];
     }
 }
-let definedAccordion = false;
-function defineHarmonyAccordion() {
-    if (!definedAccordion) {
-        defineHarmonyItem();
-        defineElement('harmony-accordion', HTMLHarmonyAccordionElement);
-        definedAccordion = true;
-        injectGlobalCss();
-    }
+function defineHarmonyAccordion(suffix = '') {
+    defineHarmonyItem(suffix);
+    defineElement('harmony-accordion' + suffix, HTMLHarmonyAccordionElement);
+    injectGlobalCss();
 }
 
 var circularProgressCSS = ":host {\n\t--track-color: var(--harmony-circular-progress-track-color, #CCC);\n\t--progress-color: var(--harmony-circular-progress-progress-color, #F00);\n\tdisplay: inline-flex;\n}\n\n.track {\n\tcolor: var(--track-color);\n\topacity: 30%;\n\tstroke-width: 10%;\n}\n\n.progress {\n\tcolor: var(--progress-color);\n\tstroke-dasharray: calc(var(--progress) * pi * 100% * 0.8) calc((1 - var(--progress)) * pi * 100% * 0.8);\n\tstroke-width: 10%;\n\tstroke-dashoffset: calc(pi * 100% * 0.8 * 0.25);\n}\n";
@@ -3963,16 +3943,12 @@ class HTMLHarmonyCircularProgressElement extends HTMLHarmonyElement {
         return ['data-label', 'data-i18n'];
     }
 }
-let definedCircularProgress = false;
-function defineHarmonyCircularProgress() {
-    if (!definedCircularProgress) {
-        defineElement('harmony-circular-progress', class extends HTMLHarmonyCircularProgressElement {
-        });
-        defineElement('h-cp', class extends HTMLHarmonyCircularProgressElement {
-        });
-        definedCircularProgress = true;
-        injectGlobalCss();
-    }
+function defineHarmonyCircularProgress(suffix = '') {
+    defineElement('harmony-circular-progress' + suffix, class extends HTMLHarmonyCircularProgressElement {
+    });
+    defineElement('h-cp' + suffix, class extends HTMLHarmonyCircularProgressElement {
+    });
+    injectGlobalCss();
 }
 
 var colorPickerCSS = ":host {\n\t--harmony-color-picker-shadow-width: var(--harmony-color-picker-width, 15rem);\n\t--harmony-color-picker-shadow-height: var(--harmony-color-picker-height, 15rem);\n\t--harmony-color-picker-shadow-gap: var(--harmony-color-picker-gap, 0.5rem);\n\n\t--foreground-layer: none;\n\n\tbackground-color: var(--main-bg-color-bright);\n\tpadding: var(--harmony-color-picker-shadow-gap);\n\tbox-sizing: border-box;\n\tdisplay: inline-grid;\n\t/*grid-template-rows: 1rem 5fr;\n\tgrid-template-columns: 2fr 2fr 1rem;*/\n\tcolumn-gap: var(--harmony-color-picker-shadow-gap);\n\trow-gap: var(--harmony-color-picker-shadow-gap);\n\n\t/*width: var(--harmony-color-picker-width, 10rem);\n\theight: var(--harmony-color-picker-height, 10rem);*/\n\t/*display: flex;\n\tflex-wrap: wrap;*/\n\tgrid-template-areas: \"h h h h\" \"m m m a\" \"i i s s\" \"b b b b\";\n}\n\n#hue-picker {\n\tposition: relative;\n\t/*flex-basis: var(--harmony-color-picker-shadow-width);*/\n\tpadding: 1rem;\n\tbackground-image: linear-gradient(90deg, red, yellow, lime, cyan, blue, magenta, red);\n\tgrid-area: h;\n\theight: 0;\n}\n\n#main-picker {\n\tposition: relative;\n\tgrid-area: m;\n\twidth: var(--harmony-color-picker-shadow-width);\n\theight: var(--harmony-color-picker-shadow-height);\n\tbackground-image: linear-gradient(180deg, white, rgba(255, 255, 255, 0) 50%), linear-gradient(0deg, black, rgba(0, 0, 0, 0) 50%), linear-gradient(90deg, #808080, rgba(128, 128, 128, 0));\n\tbackground-color: currentColor;\n}\n\n#alpha-picker {\n\tposition: relative;\n\tpadding: 1rem;\n\tgrid-area: a;\n\twidth: 0;\n}\n\n#hue-selector {\n\tpadding: 1rem 0.2rem;\n}\n\n#alpha-selector {\n\tpadding: 0.2rem 1rem;\n}\n\n#main-selector {\n\tpadding: 0.5rem;\n\tborder-radius: 50%;\n}\n\n#input {\n\twidth: calc(var(--harmony-color-picker-shadow-width) * 0.6);\n\tgrid-area: i;\n\tfont-family: monospace;\n\tfont-size: 1.5rem;\n\tbox-sizing: border-box;\n}\n\n#sample {\n\tgrid-area: s;\n\t/*width: calc(var(--harmony-color-picker-shadow-width) * 0.25);*/\n}\n\n#buttons {\n\tgrid-area: b;\n\tdisplay: flex;\n\tgap: 2rem;\n}\n\n#buttons>button {\n\tflex: 1;\n\tfont-size: 1.5rem;\n\tcursor: pointer;\n}\n\n.alpha-background {\n\tbackground: var(--foreground-layer),\n\t\tlinear-gradient(45deg, lightgrey 25%, transparent 25%, transparent 75%, lightgrey 75%) 0 0 / 1rem 1rem,\n\t\tlinear-gradient(45deg, lightgrey 25%, white 25%, white 75%, lightgrey 75%) 0.5em 0.5em / 1em 1em;\n}\n\n.selector {\n\tposition: absolute;\n\tborder: 2px solid #fff;\n\tborder-radius: 100%;\n\tbox-shadow: 0 0 3px 1px #67b9ff;\n\ttransform: translate(-50%, -50%);\n\tcursor: pointer;\n\tdisplay: block;\n\tbackground: none;\n\tborder-radius: 2px;\n}\n";
@@ -4181,13 +4157,9 @@ class HTMLHarmonyColorPickerElement extends HTMLElement {
         }
     }
 }
-let definedColorPicker = false;
-function defineHarmonyColorPicker() {
-    if (!definedColorPicker) {
-        defineElement('harmony-color-picker', HTMLHarmonyColorPickerElement);
-        definedColorPicker = true;
-        injectGlobalCss();
-    }
+function defineHarmonyColorPicker(suffix = '') {
+    defineElement('harmony-color-picker' + suffix, HTMLHarmonyColorPickerElement);
+    injectGlobalCss();
 }
 
 var copyCSS = "harmony-copy {\n\tcursor: pointer;\n\tposition: relative;\n}\n\n.harmony-copy-copied {\n\ttransition: top 1s;\n\tposition: absolute;\n\ttop: 0%;\n}\n\n.harmony-copy-copied-end {\n\ttop: -100%;\n}\n";
@@ -4221,14 +4193,10 @@ class HTMLHarmonyCopyElement extends HTMLElement {
         }
     }
 }
-let definedCopy = false;
-function defineHarmonyCopy() {
-    if (!definedCopy) {
-        defineElement('harmony-copy', HTMLHarmonyCopyElement);
-        void documentStyle(copyCSS);
-        definedCopy = true;
-        injectGlobalCss();
-    }
+function defineHarmonyCopy(suffix = '') {
+    defineElement('harmony-copy' + suffix, HTMLHarmonyCopyElement);
+    void documentStyle(copyCSS);
+    injectGlobalCss();
 }
 
 var fileInputCSS = "label {\n\tcursor: pointer;\n\tdisplay: flex;\n\tuser-select: none;\n}\n\nlabel>span {\n\tmargin: auto;\n}\n\n.tooltip {\n\tposition: relative;\n}\n\n.text {\n\tflex: 1;\n\tfont-size: 2rem;\n}\n\n.icon,\n.info {\n\tzoom: 2;\n}\n";
@@ -4273,13 +4241,9 @@ class HTMLHarmonyTooltipElement extends HTMLElement {
         return ['data-label', 'data-i18n', 'data-position'];
     }
 }
-let definedTooltip = false;
-function defineHarmonyTooltip() {
-    if (!definedTooltip) {
-        defineElement('harmony-tooltip', HTMLHarmonyTooltipElement);
-        definedTooltip = true;
-        injectGlobalCss();
-    }
+function defineHarmonyTooltip(suffix = '') {
+    defineElement('harmony-tooltip' + suffix, HTMLHarmonyTooltipElement);
+    injectGlobalCss();
 }
 
 class HTMLHarmonyFileInputElement extends HTMLElement {
@@ -4375,13 +4339,9 @@ class HTMLHarmonyFileInputElement extends HTMLElement {
         return ['data-label', 'data-i18n', 'data-accept', 'data-tooltip-i18n', 'multiple'];
     }
 }
-let definedFileInput = false;
-function defineHarmonyFileInput() {
-    if (!definedFileInput) {
-        defineElement('harmony-file-input', HTMLHarmonyFileInputElement);
-        definedFileInput = true;
-        injectGlobalCss();
-    }
+function defineHarmonyFileInput(suffix = '') {
+    defineElement('harmony-file-input' + suffix, HTMLHarmonyFileInputElement);
+    injectGlobalCss();
 }
 
 var filterCSS = ":host {\n\toverflow: hidden;\n\tdisplay: flex;\n\tjustify-content: center;\n\tposition: relative;\n\twidth: 100%;\n\n\t--bg-color: var(--harmony-toolbar-bg-color, var(--main-bg-color, black));\n\tbackground-color: var(--bg-color);\n}\n\n.string {\n\twidth: 100%;\n\tdisplay: flex;\n\tgap: 0.25rem;\n}\n\n.string>span {\n\tflex: 0 0 auto;\n\tmax-width: 50%;\n}\n\n.string>input {\n\tflex: 1 1 auto;\n}\n\nbutton {\n\ttext-wrap: nowrap;\n}\n";
@@ -4522,13 +4482,9 @@ class HTMLHarmonySwitchElement extends HTMLHarmonyElement {
         return ['data-label', 'data-i18n', 'disabled', 'ternary', 'state'];
     }
 }
-let definedSwitch = false;
-function defineHarmonySwitch() {
-    if (!definedSwitch) {
-        defineElement('harmony-switch', HTMLHarmonySwitchElement);
-        definedSwitch = true;
-        injectGlobalCss();
-    }
+function defineHarmonySwitch(suffix = '') {
+    defineElement('harmony-switch' + suffix, HTMLHarmonySwitchElement);
+    injectGlobalCss();
 }
 
 /**
@@ -4731,14 +4687,10 @@ class HTMLHarmonyFilterElement extends HTMLHarmonyElement {
         }));
     }
 }
-let definedFilter = false;
-function defineHarmonyFilter() {
-    if (!definedFilter) {
-        defineHarmonyItem();
-        defineElement('harmony-filter', HTMLHarmonyFilterElement);
-        definedFilter = true;
-        injectGlobalCss();
-    }
+function defineHarmonyFilter(suffix = '') {
+    defineHarmonyItem(suffix);
+    defineElement('harmony-filter' + suffix, HTMLHarmonyFilterElement);
+    injectGlobalCss();
 }
 
 var infoBoxCSS = ":host {\n\tdisplay: flex;\n\tpadding: 0.5rem;\n}\n\n:host-context(.ok) {\n\tbackground-color: green;\n\tcolor: white;\n}\n\n:host-context(.warning) {\n\tbackground-color: #413c26;\n\tcolor: #D3A247;\n}\n\n:host-context(.error) {\n\tbackground-color: #4E3534;\n\tcolor: red;\n}\n";
@@ -4805,13 +4757,9 @@ class HTMLHarmonyInfoBoxElement extends HTMLElement {
         return ['i18n', 'type'];
     }
 }
-let definedInfoBox = false;
-function defineHarmonyInfoBox() {
-    if (!definedInfoBox) {
-        defineElement('harmony-info-box', HTMLHarmonyInfoBoxElement);
-        definedInfoBox = true;
-        injectGlobalCss();
-    }
+function defineHarmonyInfoBox(suffix = '') {
+    defineElement('harmony-info-box' + suffix, HTMLHarmonyInfoBoxElement);
+    injectGlobalCss();
 }
 
 var labelPropertyCSS = ":host {\n\tdisplay: flex;\n\tgap: var(--harmony-label-property-gap, 0.5);\n}\n";
@@ -4841,13 +4789,9 @@ class HTMLHarmonyLabelPropertyElement extends HTMLElement {
         }
     }
 }
-let definedLabelProperty = false;
-function defineHarmonyLabelProperty() {
-    if (!definedLabelProperty) {
-        defineElement('harmony-label-property', HTMLHarmonyLabelPropertyElement);
-        definedLabelProperty = true;
-        injectGlobalCss();
-    }
+function defineHarmonyLabelProperty(suffix = '') {
+    defineElement('harmony-label-property' + suffix, HTMLHarmonyLabelPropertyElement);
+    injectGlobalCss();
 }
 
 var paletteCSS = ":host {\r\n\t--harmony-palette-shadow-color-size: var(--harmony-palette-color-size, 2rem);\r\n\t--harmony-palette-shadow-gap: var(--harmony-palette-gap, 0.5rem);\r\n\t--harmony-palette-shadow-border-color: var(--harmony-palette-border-color, grey);\r\n\t--harmony-palette-shadow-selected-border-color: var(--harmony-palette-selected-border-color, orange);\r\n\tdisplay: flex;\r\n\tflex-direction: row;\r\n\tflex-wrap: wrap;\r\n\tgap: var(--harmony-palette-shadow-gap);\r\n}\r\n\r\n.color {\r\n\theight: var(--harmony-palette-shadow-color-size);\r\n\twidth: var(--harmony-palette-shadow-color-size);\r\n\tborder-radius: calc(var(--harmony-palette-shadow-color-size) * .1);\r\n\tborder: calc(var(--harmony-palette-shadow-color-size) * .1) solid var(--harmony-palette-shadow-border-color);\r\n\tpadding: calc(var(--harmony-palette-shadow-color-size) * .1);\r\n\tcursor: pointer;\r\n}\r\n\r\n.color.selected {\r\n\tborder-color: var(--harmony-palette-shadow-selected-border-color);\r\n\tborder-width: calc(var(--harmony-palette-shadow-color-size) * .2);\r\n\tpadding: 0;\r\n\tcolor: black;\r\n}\r\n\r\n.color>svg {\r\n\theight: 100%;\r\n\twidth: 100%;\r\n}\r\n";
@@ -5014,13 +4958,9 @@ class HTMLHarmonyPaletteElement extends HTMLElement {
         return ['multiple'];
     }
 }
-let definedPalette = false;
-function defineHarmonyPalette() {
-    if (!definedPalette) {
-        defineElement('harmony-palette', HTMLHarmonyPaletteElement);
-        definedPalette = true;
-        injectGlobalCss();
-    }
+function defineHarmonyPalette(suffix = '') {
+    defineElement('harmony-palette' + suffix, HTMLHarmonyPaletteElement);
+    injectGlobalCss();
 }
 
 var _a;
@@ -5687,13 +5627,9 @@ class HTMLHarmonyPanelElement extends HTMLElement {
     }
 }
 _a = HTMLHarmonyPanelElement;
-let definedPanel = false;
-function defineHarmonyPanel() {
-    if (!definedPanel) {
-        defineElement('harmony-panel', HTMLHarmonyPanelElement);
-        definedPanel = true;
-        injectGlobalCss();
-    }
+function defineHarmonyPanel(suffix = '') {
+    defineElement('harmony-panel' + suffix, HTMLHarmonyPanelElement);
+    injectGlobalCss();
 }
 
 var radioCSS = ":host {\n\t--harmony-radio-shadow-button-border-radius: var(--harmony-radio-button-border-radius, 0.5rem);\n\tdisplay: inline-flex;\n\toverflow: hidden;\n\tuser-select: none;\n}\n\n.label {\n\tmargin: auto 0;\n\tfont-weight: bold;\n\tmargin-right: 0.25rem;\n}\n\n::slotted(button) {\n\tpadding: 0.5rem;\n\tcolor: var(--harmony-ui-text-primary);\n\tflex: auto;\n\tcursor: pointer;\n\tappearance: none;\n\tborder-style: solid;\n\tborder-width: 0.0625rem;\n\tborder-color: var(--harmony-ui-border-primary);\n\tborder-right-style: none;\n\tbackground-color: var(--harmony-ui-input-background-primary);\n\ttransition: background-color 0.2s linear;\n\tfont-size: 1rem;\n\toverflow: hidden;\n}\n\n::slotted(button:hover) {\n\tbackground-color: var(--harmony-ui-input-background-secondary);\n}\n\n::slotted(button[selected]) {\n\tbackground-color: var(--harmony-ui-accent-primary);\n}\n\n::slotted(button[selected]:hover) {\n\tbackground-color: var(--harmony-ui-accent-secondary);\n}\n\n::slotted(button:first-of-type) {\n\tborder-radius: var(--harmony-radio-shadow-button-border-radius) 0 0 var(--harmony-radio-shadow-button-border-radius);\n}\n\n::slotted(button:last-child) {\n\tborder-right-style: solid;\n\tborder-radius: 0 var(--harmony-radio-shadow-button-border-radius) var(--harmony-radio-shadow-button-border-radius) 0;\n}\n";
@@ -5847,13 +5783,9 @@ class HTMLHarmonyRadioElement extends HTMLElement {
         return ['data-label', 'data-i18n', 'disabled', 'multiple', 'value'];
     }
 }
-let definedRadio = false;
-function defineHarmonyRadio() {
-    if (!definedRadio) {
-        defineElement('harmony-radio', HTMLHarmonyRadioElement);
-        definedRadio = true;
-        injectGlobalCss();
-    }
+function defineHarmonyRadio(suffix = '') {
+    defineElement('harmony-radio' + suffix, HTMLHarmonyRadioElement);
+    injectGlobalCss();
 }
 
 var selectCSS = "";
@@ -5944,13 +5876,9 @@ class HTMLHarmonySelectElement extends HTMLElement {
         return ['multiple'];
     }
 }
-let definedSelect = false;
-function defineHarmonySelect() {
-    if (!definedSelect) {
-        defineElement('harmony-select', HTMLHarmonySelectElement);
-        definedSelect = true;
-        injectGlobalCss();
-    }
+function defineHarmonySelect(suffix = '') {
+    defineElement('harmony-select' + suffix, HTMLHarmonySelectElement);
+    injectGlobalCss();
 }
 
 var sliderCSS = ":host {\n\tdisplay: flex;\n}\n\nlabel {\n\twidth: var(--h-slider-label-width, auto);\n}\n\ninput[type=range] {\n\tflex: auto;\n}\n\ninput[type=number] {\n\tflex: 0 0 var(--h-slider-input-width, 4rem);\n\tfont-size: var(--h-slider-input-font-size, 1.2rem);\n\tmin-width: 0;\n\ttext-align: center;\n}\n";
@@ -6141,13 +6069,9 @@ class HTMLHarmonySliderElement extends HTMLHarmonyElement {
         return super.observedAttributes.concat(['label', 'min', 'max', 'input-step', 'has-input', 'append-icon', 'prepend-icon', 'value']);
     }
 }
-let definedSlider = false;
-function defineHarmonySlider() {
-    if (!definedSlider) {
-        defineElement('harmony-slider', HTMLHarmonySliderElement);
-        definedSlider = true;
-        injectGlobalCss();
-    }
+function defineHarmonySlider(suffix = '') {
+    defineElement('harmony-slider' + suffix, HTMLHarmonySliderElement);
+    injectGlobalCss();
 }
 
 var slideshowZoomCSS = ":host {\n\tposition: fixed;\n\tpointer-events: none;\n\twidth: 100%;\n\theight: 100%;\n\tz-index: var(--harmony-slideshow-zoom-z-index, 1000000);\n\ttop: 0;\n\tleft: 0;\n\n}\n\nimg {\n\twidth: 100%;\n\tposition: relative;\n\twidth: 1500px;\n}\n";
@@ -6480,13 +6404,9 @@ class HTMLHarmonySlideshowElement extends HTMLElement {
         return ['dynamic'];
     }
 }
-let definedSlideshow = false;
-function defineHarmonySlideshow() {
-    if (!definedSlideshow) {
-        defineElement('harmony-slideshow', HTMLHarmonySlideshowElement);
-        definedSlideshow = true;
-        injectGlobalCss();
-    }
+function defineHarmonySlideshow(suffix = '') {
+    defineElement('harmony-slideshow' + suffix, HTMLHarmonySlideshowElement);
+    injectGlobalCss();
 }
 
 var splitterCSS = ":host {\n\tdisplay: flex;\n\tpointer-events: none;\n\t/*--harmony-color-picker-shadow-gap: var(--harmony-color-picker-gap, 0.5rem);*/\n\t--harmony-splitter-shadow-gutter-thickness: var(--harmony-splitter-gutter-thickness, 0.3rem);\n\t--harmony-splitter-shadow-gutter-bg-color: var(--harmony-splitter-gutter-bg-color, black);\n}\n\n:host(.vertical) {\n\tflex-direction: row;\n}\n\n:host(.horizontal) {\n\tflex-direction: column;\n}\n\n:host .gutter {\n\tflex: 0 0 var(--harmony-splitter-shadow-gutter-thickness);\n\tpointer-events: all;\n\tbackground-color: var(--harmony-splitter-shadow-gutter-bg-color);\n}\n\n:host(.vertical) .gutter {\n\tcursor: ew-resize;\n}\n\n:host(.horizontal) .gutter {\n\tcursor: ns-resize;\n}\n\n:host .panel {\n\tflex: 0 0 50%;\n\tdisplay: flex;\n\tpointer-events: none;\n}\n";
@@ -6595,13 +6515,9 @@ class HTMLHarmonySplitterElement extends HTMLElement {
         return ['orientation'];
     }
 }
-let definedSplitter = false;
-function defineHarmonySplitter() {
-    if (!definedSplitter) {
-        defineElement('harmony-splitter', HTMLHarmonySplitterElement);
-        definedSplitter = true;
-        injectGlobalCss();
-    }
+function defineHarmonySplitter(suffix = '') {
+    defineElement('harmony-splitter' + suffix, HTMLHarmonySplitterElement);
+    injectGlobalCss();
 }
 
 class HTMLHarmonyTabElement extends HTMLElement {
@@ -6723,13 +6639,9 @@ class HTMLHarmonyTabElement extends HTMLElement {
         return ['data-i18n', 'data-text', 'disabled', 'data-closable'];
     }
 }
-let definedTab = false;
-function defineHarmonyTab() {
-    if (!definedTab) {
-        defineElement('harmony-tab', HTMLHarmonyTabElement);
-        definedTab = true;
-        injectGlobalCss();
-    }
+function defineHarmonyTab(suffix = '') {
+    defineElement('harmony-tab' + suffix, HTMLHarmonyTabElement);
+    injectGlobalCss();
 }
 
 var tabGroupCSS = ":host,\nharmony-tab-group {\n\twidth: 100%;\n\theight: 100%;\n\tdisplay: flex;\n\tflex-direction: column;\n\tposition: relative;\n}\n\n.harmony-tab-group-header {\n\tbackground-color: var(--main-bg-color-bright);\n\tdisplay: flex;\n\toverflow: auto hidden;\n\twidth: 100%;\n\tscrollbar-width: none;\n}\n\n.harmony-tab-group-content {\n\tflex: 1;\n\tbackground-color: var(--main-bg-color-dark);\n\toverflow: auto;\n\twidth: 100%;\n}\n";
@@ -6823,13 +6735,9 @@ class HTMLHarmonyTabGroupElement extends HTMLElement {
         this.#content.innerText = '';
     }
 }
-let definedTabGroup = false;
-function defineHarmonyTabGroup() {
-    if (!definedTabGroup) {
-        defineElement('harmony-tab-group', HTMLHarmonyTabGroupElement);
-        definedTabGroup = true;
-        injectGlobalCss();
-    }
+function defineHarmonyTabGroup(suffix = '') {
+    defineElement('harmony-tab-group' + suffix, HTMLHarmonyTabGroupElement);
+    injectGlobalCss();
 }
 
 var toggleButtonCSS = ":host {\n\tcursor: pointer;\n\tdisplay: inline-block;\n\tposition: relative;\n}\n\non,\noff {\n\theight: 100%;\n\twidth: 100%;\n\tbackground-size: 100% auto;\n\tbox-sizing: border-box;\n}\n";
@@ -6918,13 +6826,9 @@ class HTMLHarmonyToggleButtonElement extends HTMLElement {
         return ['state'];
     }
 }
-let definedToggleButton = false;
-function defineHarmonyToggleButton() {
-    if (!definedToggleButton) {
-        defineElement('harmony-toggle-button', HTMLHarmonyToggleButtonElement);
-        definedToggleButton = true;
-        injectGlobalCss();
-    }
+function defineHarmonyToggleButton(suffix = '') {
+    defineElement('harmony-toggle-button' + suffix, HTMLHarmonyToggleButtonElement);
+    injectGlobalCss();
 }
 
 /**
