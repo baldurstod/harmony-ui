@@ -49,7 +49,7 @@ export class HTMLHarmonyTabElement extends HTMLElement {
 
 	connectedCallback(): void {
 		const parentElement = this.parentElement as HTMLHarmonyTabGroupElement;
-		if (parentElement && parentElement.tagName == 'HARMONY-TAB-GROUP') {
+		if (parentElement && parentElement.tagName.startsWith('HARMONY-TAB-GROUP')) {
 			parentElement.addTab(this);
 			this.#group = parentElement;
 		}

@@ -4438,7 +4438,7 @@ class HTMLHarmonyAccordionElement extends HTMLElement {
         if (this.#items.has(item)) {
             return;
         }
-        if (item.tagName == 'HARMONY-ITEM') {
+        if (item.tagName.startsWith('HARMONY-ITEM')) {
             const htmlSlot = createElement('slot', {
                 parent: this.#shadowRoot,
             });
@@ -7279,7 +7279,7 @@ class HTMLHarmonyTabElement extends HTMLElement {
     }
     connectedCallback() {
         const parentElement = this.parentElement;
-        if (parentElement && parentElement.tagName == 'HARMONY-TAB-GROUP') {
+        if (parentElement && parentElement.tagName.startsWith('HARMONY-TAB-GROUP')) {
             parentElement.addTab(this);
             this.#group = parentElement;
         }
