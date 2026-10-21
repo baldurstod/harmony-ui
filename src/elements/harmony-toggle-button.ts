@@ -8,12 +8,19 @@ import { injectGlobalCss } from '../utils/globalcss';
 export class HTMLHarmonyToggleButtonElement extends HTMLElement {
 	#state = false;
 	#shadowRoot: ShadowRoot;
+	#htmlLabel?: HTMLElement;
 	#htmlSlotOn: HTMLSlotElement;
 	#htmlSlotOff: HTMLSlotElement;
 
 	constructor() {
 		super();
 		this.#shadowRoot = this.attachShadow({ mode: 'closed' });
+
+		this.#htmlLabel = createElement('div', {
+			parent: this.#shadowRoot,
+			class: 'label',
+		});
+
 		this.#htmlSlotOn = createElement('slot', {
 			parent: this.#shadowRoot,
 			name: 'on',
@@ -39,8 +46,23 @@ export class HTMLHarmonyToggleButtonElement extends HTMLElement {
 	}
 
 	attributeChangedCallback(name: string, oldValue: string, newValue: string): void {
-		if (name == 'state') {
-			this.state = toBool(newValue);
+		switch (name) {
+			case 'state':
+				this.state = toBool(newValue);
+				break;
+			case 'data-label':
+				if (this.#htmlLabel) {
+					this.#htmlLabel.innerText = newValue;
+				}
+				this.#htmlLabel?.classList.remove('i18n');
+				break;
+			case 'data-i18n':
+				this.#htmlLabel?.setAttribute('data-i18n', newValue);
+				if (this.#htmlLabel) {
+					this.#htmlLabel.innerText = newValue;
+				}
+				this.#htmlLabel?.classList.add('i18n');
+				break;
 		}
 	}
 
@@ -99,7 +121,7 @@ export class HTMLHarmonyToggleButtonElement extends HTMLElement {
 	}
 
 	static get observedAttributes(): string[] {
-		return ['state'];
+		return ['state', 'data-label', 'data-i18n'];
 	}
 }
 

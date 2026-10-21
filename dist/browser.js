@@ -7463,16 +7463,21 @@ function defineHarmonyTabGroup(suffix = '') {
     injectGlobalCss();
 }
 
-var toggleButtonCSS = ":host {\n\tcursor: pointer;\n\tdisplay: inline-block;\n\tposition: relative;\n}\n\non,\noff {\n\theight: 100%;\n\twidth: 100%;\n\tbackground-size: 100% auto;\n\tbox-sizing: border-box;\n}\n";
+var toggleButtonCSS = ":host {\n\tcursor: pointer;\n\tdisplay: inline-block;\n\tposition: relative;\n\tdisplay: flex;\n\talign-items: center;\n}\n\n.label {\n\tfont-size: 1.5rem;\n}\n\non,\noff {\n\theight: 100%;\n\twidth: 100%;\n\tbackground-size: 100% auto;\n\tbox-sizing: border-box;\n}\n";
 
 class HTMLHarmonyToggleButtonElement extends HTMLElement {
     #state = false;
     #shadowRoot;
+    #htmlLabel;
     #htmlSlotOn;
     #htmlSlotOff;
     constructor() {
         super();
         this.#shadowRoot = this.attachShadow({ mode: 'closed' });
+        this.#htmlLabel = createElement('div', {
+            parent: this.#shadowRoot,
+            class: 'label',
+        });
         this.#htmlSlotOn = createElement('slot', {
             parent: this.#shadowRoot,
             name: 'on',
@@ -7493,8 +7498,23 @@ class HTMLHarmonyToggleButtonElement extends HTMLElement {
         this.#refresh();
     }
     attributeChangedCallback(name, oldValue, newValue) {
-        if (name == 'state') {
-            this.state = toBool(newValue);
+        switch (name) {
+            case 'state':
+                this.state = toBool(newValue);
+                break;
+            case 'data-label':
+                if (this.#htmlLabel) {
+                    this.#htmlLabel.innerText = newValue;
+                }
+                this.#htmlLabel?.classList.remove('i18n');
+                break;
+            case 'data-i18n':
+                this.#htmlLabel?.setAttribute('data-i18n', newValue);
+                if (this.#htmlLabel) {
+                    this.#htmlLabel.innerText = newValue;
+                }
+                this.#htmlLabel?.classList.add('i18n');
+                break;
         }
     }
     get state() {
@@ -7546,7 +7566,7 @@ class HTMLHarmonyToggleButtonElement extends HTMLElement {
         this.#shadowRoot.adoptedStyleSheets.push(styleSheet);
     }
     static get observedAttributes() {
-        return ['state'];
+        return ['state', 'data-label', 'data-i18n'];
     }
 }
 function defineHarmonyToggleButton(suffix = '') {
