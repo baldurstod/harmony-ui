@@ -1,6 +1,6 @@
 import toggleButtonCSS from '../css/harmony-toggle-button.css';
 import { shadowRootStyle } from '../harmony-css';
-import { createElement, defineElement, hide, show } from '../harmony-html';
+import { addRemoveClass, createElement, defineElement, hide, show } from '../harmony-html';
 import { I18n } from '../harmony-i18n';
 import { toBool } from '../utils/attributes';
 import { injectGlobalCss } from '../utils/globalcss';
@@ -8,25 +8,32 @@ import { injectGlobalCss } from '../utils/globalcss';
 export class HTMLHarmonyToggleButtonElement extends HTMLElement {
 	#state = false;
 	#shadowRoot: ShadowRoot;
-	#htmlLabel?: HTMLElement;
+	#htmlLabel: HTMLElement;
+	#htmlContent: HTMLElement;
 	#htmlSlotOn: HTMLSlotElement;
 	#htmlSlotOff: HTMLSlotElement;
+	#disabled = false;
 
 	constructor() {
 		super();
 		this.#shadowRoot = this.attachShadow({ mode: 'closed' });
 
-		this.#htmlLabel = createElement('div', {
+		this.#htmlContent = createElement('div', {
 			parent: this.#shadowRoot,
+			class: 'content',
+		});
+
+		this.#htmlLabel = createElement('div', {
+			parent: this.#htmlContent,
 			class: 'label',
 		});
 
 		this.#htmlSlotOn = createElement('slot', {
-			parent: this.#shadowRoot,
+			parent: this.#htmlContent,
 			name: 'on',
 		}) as HTMLSlotElement;
 		this.#htmlSlotOff = createElement('slot', {
-			parent: this.#shadowRoot,
+			parent: this.#htmlContent,
 			name: 'off',
 		}) as HTMLSlotElement;
 
@@ -39,6 +46,15 @@ export class HTMLHarmonyToggleButtonElement extends HTMLElement {
 			event.stopPropagation();
 		});
 		this.#initObserver();
+	}
+
+	set disabled(disabled) {
+		this.#disabled = disabled ? true : false;
+		addRemoveClass(this.#htmlContent, 'disabled', this.#disabled);
+	}
+
+	get disabled(): boolean {
+		return this.#disabled;
 	}
 
 	connectedCallback(): void {
@@ -62,6 +78,9 @@ export class HTMLHarmonyToggleButtonElement extends HTMLElement {
 					this.#htmlLabel.innerText = newValue;
 				}
 				this.#htmlLabel?.classList.add('i18n');
+				break;
+			case 'disabled':
+				this.disabled = toBool(newValue);
 				break;
 		}
 	}
@@ -97,7 +116,9 @@ export class HTMLHarmonyToggleButtonElement extends HTMLElement {
 	}
 
 	#click(): void {
-		this.state = !this.#state;
+		if (!this.#disabled) {
+			this.state = !this.#state;
+		}
 	}
 
 	#initObserver(): void {
@@ -121,7 +142,7 @@ export class HTMLHarmonyToggleButtonElement extends HTMLElement {
 	}
 
 	static get observedAttributes(): string[] {
-		return ['state', 'data-label', 'data-i18n'];
+		return ['state', 'data-label', 'data-i18n', 'disabled'];
 	}
 }
 

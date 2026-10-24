@@ -3,7 +3,6 @@
 
 <head>
 	<title>Test toggle</title>
-	<script type="module" src="../dist/define/browser/harmony-toggle-button.js"></script>
 	<link rel="stylesheet" type="text/css" href="./assets/css/examples.css" />
 	<style>
 		harmony-toggle-button {
@@ -14,15 +13,29 @@
 
 <body>
 	<harmony-toggle-button id="toggle" data-i18n-on="#i18n_on" data-i18n-off="#i18n_off">
-		<img slot="on" src="./assets/img/flashlight_on_FILL0_wght400_GRAD0_opsz24.svg">
-		<img slot="off" src="./assets/img/flashlight_off_FILL0_wght400_GRAD0_opsz24.svg">
+		<span slot="on" id="slotOn1"></span>
+		<span slot="off" id="slotOff1"></span>
 	</harmony-toggle-button>
+	<span>Disabled</span>
+	<harmony-toggle-button id="toggle" data-i18n-on="#i18n_on" data-i18n-off="#i18n_off" disabled="true">
+		<span slot="on" id="slotOn2"></span>
+		<span slot="off" id="slotOff2"></span>
+	</harmony-toggle-button>
+	<button disabled> test</button>
 </body>
 <script type="module">
 	import { createElement, defineHarmonyToggleButton, I18n } from '../dist/browser.js';
 	I18n.start();
 	defineHarmonyToggleButton();
 	document.getElementById('toggle').addEventListener('change', (event) => console.log(event.target.checked));
+
+	const imgOn = await (await fetch('./assets/img/flashlight_on_FILL0_wght400_GRAD0_opsz24.svg')).text();
+	const imgOff = await (await fetch('./assets/img/flashlight_off_FILL0_wght400_GRAD0_opsz24.svg')).text();
+
+	slotOn1.innerHTML = imgOn;
+	slotOn2.innerHTML = imgOn;
+	slotOff1.innerHTML = imgOff;
+	slotOff2.innerHTML = imgOff;
 </script>
 
 </html>

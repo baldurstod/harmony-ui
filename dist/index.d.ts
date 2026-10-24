@@ -723,6 +723,8 @@ export declare class HTMLHarmonyTabGroupElement extends HTMLElement {
 export declare class HTMLHarmonyToggleButtonElement extends HTMLElement {
     #private;
     constructor();
+    set disabled(disabled: boolean);
+    get disabled(): boolean;
     connectedCallback(): void;
     attributeChangedCallback(name: string, oldValue: string, newValue: string): void;
     get state(): boolean;

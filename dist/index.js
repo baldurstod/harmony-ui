@@ -6740,27 +6740,33 @@ function defineHarmonyTabGroup(suffix = '') {
     injectGlobalCss();
 }
 
-var toggleButtonCSS = ":host {\n\tcursor: pointer;\n\tdisplay: inline-block;\n\tposition: relative;\n\tdisplay: flex;\n\talign-items: center;\n}\n\n.label {\n\tfont-size: 1.5rem;\n}\n\non,\noff {\n\theight: 100%;\n\twidth: 100%;\n\tbackground-size: 100% auto;\n\tbox-sizing: border-box;\n}\n";
+var toggleButtonCSS = ":host {\n\tcursor: pointer;\n\tdisplay: inline-block;\n\tposition: relative;\n}\n\n.content {\n\tdisplay: flex;\n\talign-items: center;\n}\n\n.disabled {\n\tcursor: default;\n\tcolor: var(--harmony-ui-text-inactive);\n}\n\n.label {\n\tfont-size: 1.5rem;\n}\n\non,\noff {\n\theight: 100%;\n\twidth: 100%;\n\tbackground-size: 100% auto;\n\tbox-sizing: border-box;\n}\n";
 
 class HTMLHarmonyToggleButtonElement extends HTMLElement {
     #state = false;
     #shadowRoot;
     #htmlLabel;
+    #htmlContent;
     #htmlSlotOn;
     #htmlSlotOff;
+    #disabled = false;
     constructor() {
         super();
         this.#shadowRoot = this.attachShadow({ mode: 'closed' });
-        this.#htmlLabel = createElement('div', {
+        this.#htmlContent = createElement('div', {
             parent: this.#shadowRoot,
+            class: 'content',
+        });
+        this.#htmlLabel = createElement('div', {
+            parent: this.#htmlContent,
             class: 'label',
         });
         this.#htmlSlotOn = createElement('slot', {
-            parent: this.#shadowRoot,
+            parent: this.#htmlContent,
             name: 'on',
         });
         this.#htmlSlotOff = createElement('slot', {
-            parent: this.#shadowRoot,
+            parent: this.#htmlContent,
             name: 'off',
         });
         I18n.observeElement(this.#shadowRoot);
@@ -6770,6 +6776,13 @@ class HTMLHarmonyToggleButtonElement extends HTMLElement {
             event.stopPropagation();
         });
         this.#initObserver();
+    }
+    set disabled(disabled) {
+        this.#disabled = disabled ? true : false;
+        addRemoveClass(this.#htmlContent, 'disabled', this.#disabled);
+    }
+    get disabled() {
+        return this.#disabled;
     }
     connectedCallback() {
         this.#refresh();
@@ -6791,6 +6804,9 @@ class HTMLHarmonyToggleButtonElement extends HTMLElement {
                     this.#htmlLabel.innerText = newValue;
                 }
                 this.#htmlLabel?.classList.add('i18n');
+                break;
+            case 'disabled':
+                this.disabled = toBool(newValue);
                 break;
         }
     }
@@ -6823,7 +6839,9 @@ class HTMLHarmonyToggleButtonElement extends HTMLElement {
         }
     }
     #click() {
-        this.state = !this.#state;
+        if (!this.#disabled) {
+            this.state = !this.#state;
+        }
     }
     #initObserver() {
         const config = { childList: true, subtree: true };
@@ -6843,7 +6861,7 @@ class HTMLHarmonyToggleButtonElement extends HTMLElement {
         this.#shadowRoot.adoptedStyleSheets.push(styleSheet);
     }
     static get observedAttributes() {
-        return ['state', 'data-label', 'data-i18n'];
+        return ['state', 'data-label', 'data-i18n', 'disabled'];
     }
 }
 function defineHarmonyToggleButton(suffix = '') {

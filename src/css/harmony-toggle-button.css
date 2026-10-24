@@ -2,8 +2,16 @@
 	cursor: pointer;
 	display: inline-block;
 	position: relative;
+}
+
+.content {
 	display: flex;
 	align-items: center;
+}
+
+.disabled {
+	cursor: default;
+	color: var(--harmony-ui-text-inactive);
 }
 
 .label {
