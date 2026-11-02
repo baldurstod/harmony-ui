@@ -38,6 +38,16 @@ export class HTMLHarmonyInfoBoxElement extends HTMLElement {
 		}
 	}
 
+	append(...nodes: (Node | string)[]): void {
+		// eslint-disable-next-line prefer-rest-params
+		this.#htmlContent.append(...nodes);
+	}
+
+	prepend(...nodes: (Node | string)[]): void {
+		// eslint-disable-next-line prefer-rest-params
+		this.#htmlContent.prepend(...nodes);
+	}
+
 	#processChilds(): void {
 		//This is a 2 steps process cause we may change DOM
 		const list: HTMLImageElement[] = [];

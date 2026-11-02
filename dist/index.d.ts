@@ -514,6 +514,8 @@ export declare class HTMLHarmonyInfoBoxElement extends HTMLElement {
     #private;
     constructor();
     connectedCallback(): void;
+    append(...nodes: (Node | string)[]): void;
+    prepend(...nodes: (Node | string)[]): void;
     attributeChangedCallback(name: string, oldValue: string, newValue: string): void;
     static get observedAttributes(): string[];
 }

@@ -5449,6 +5449,14 @@ class HTMLHarmonyInfoBoxElement extends HTMLElement {
             this.#shadowRoot.append(this.#htmlContent);
         }
     }
+    append(...nodes) {
+        // eslint-disable-next-line prefer-rest-params
+        this.#htmlContent.append(...nodes);
+    }
+    prepend(...nodes) {
+        // eslint-disable-next-line prefer-rest-params
+        this.#htmlContent.prepend(...nodes);
+    }
     #processChilds() {
         //This is a 2 steps process cause we may change DOM
         const list = [];
