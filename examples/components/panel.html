@@ -3,7 +3,7 @@
 
 <head>
 	<meta charset="utf-8">
-	<title>Test tooltip</title>
+	<title>Test panel</title>
 	<link href="../assets/css/examples.css" rel="stylesheet">
 	<style>
 		body>div {
@@ -22,9 +22,12 @@
 	createPanel('column');
 	createPanel('tabs');
 
-	function createPanel(layout) {
-		const panel = new HarmonyPanel({ layout });
+	createPanel('row', { floating: true, });
+
+	function createPanel(layout, params) {
+		const panel = new HarmonyPanel({ layout, ...params });
 		document.body.append(panel.htmlElement);
+		panel.setTitle(layout);
 
 		const panels = [];
 		for (let i = 0; i < 3; i++) {

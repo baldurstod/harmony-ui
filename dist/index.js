@@ -1,7 +1,7 @@
 import { closeSVG, folderOpenSVG, infoSVG, checkOutlineSVG } from 'harmony-svg';
 import { MyEventTarget, errorOnce, Color, BugReporter } from 'harmony-utils';
 
-var panelCSS = ":host {\n\tdisplay: flex;\n\tflex: 1;\n\tflex-direction: column;\n\t/*flex: 0 0 auto;*/\n\tbox-sizing: border-box;\n\tpointer-events: all;\n\tposition: relative;\n\tbox-sizing: border-box;\n\n\tmax-width: 100%;\n\tmax-height: 100%;\n\n\t--header-bg-color: var(--harmony-panel-header-bg-color, var(--main-bg-color-dark, black));\n\t--content-bg-color: var(--harmony-panel-content-bg-color, var(--main-bg-color-dark, black));\n\t--border-color: var(--harmony-panel-border-color, var(--text-primary, white));\n\n\t--resize-bar-size: 0.5rem;\n\t--layout: column;\n}\n\n/* Prevent child panel header to appear for tabs layout */\n@container style(--layout: tabs) {\n\t:host {\n\t\t--display-header: none;\n\t}\n}\n\n@container style(--layout: column) {\n\t:host {\n\t\t--display-header: initial;\n\t}\n}\n\n@container style(--layout: row) {\n\t:host {\n\t\t--display-header: initial;\n\t}\n}\n\n:host(.collapsed) {\n\tflex: 0 0 auto;\n}\n\n.harmony-panel-row,\n:host(.harmony-panel-row) {\n\t--layout: row;\n}\n\n.harmony-panel-row>harmony-panel {\n\theight: 100%;\n}\n\n.harmony-panel-column,\n:host(.harmony-panel-column) {\n\t--layout: column;\n}\n\n.harmony-panel-tabs,\n:host(.harmony-panel-tabs) {\n\t--layout: tabs;\n}\n\n.harmony-panel-column>harmony-panel {\n\twidth: 100%;\n}\n\n.harmony-panel-splitter {\n\tdisplay: none;\n\tflex: 0 0 10px;\n\tbackground-color: red;\n}\n\n.header {\n\tcursor: pointer;\n\tfont-size: 1.5em;\n\tpadding: 0.25rem;\n\toverflow: hidden;\n\tflex: 0 0 2rem;\n\tbackground-color: var(--header-bg-color);\n\tdisplay: var(--display-header, flex);\n\talign-items: center;\n\tdisplay: flex;\n\talign-items: center;\n}\n\n.header-title {\n\tflex: 1;\n}\n\n.header-close {\n\tdisplay: flex;\n}\n\n.header.hidden {\n\tdisplay: var(--harmony-panel-display-headers, none);\n}\n\n.content {\n\twidth: 100%;\n\tbox-sizing: border-box;\n\tbackground-color: var(--content-bg-color);\n\tflex: 1;\n\toverflow: hidden;\n\tdisplay: flex;\n\tposition: relative;\n\tflex-direction: var(--layout, column);\n}\n\n.header.target {\n\tbackground: blue;\n}\n\n.content.target {\n\tbackground: blue;\n}\n\n[collapsible='1']>.title::after,\n:host(.collapsible)>.title::after {\n\tcontent: \"-\";\n\tright: 0.25rem;\n\tposition: absolute;\n}\n\n[collapsed='1']>.title::after,\n:host(.collapsed)>.title::after {\n\tcontent: \"+\";\n}\n\n.panel-resize {\n\tpointer-events: none;\n\tdisplay: none;\n\ttop: 0;\n\tleft: 0;\n\twidth: 100%;\n\theight: 100%;\n\tposition: absolute;\n}\n\n.panel-resize>* {\n\tpointer-events: all;\n\tposition: absolute;\n}\n\n.panel-resize>.side {\n\tinset: calc(var(--resize-bar-size) * 0.5);\n}\n\n.panel-resize>.corner {\n\theight: var(--resize-bar-size);\n\twidth: var(--resize-bar-size);\n}\n\n.panel-resize>.top,\n.panel-resize>.bottom {\n\theight: var(--resize-bar-size);\n\twidth: auto;\n\tcursor: ns-resize;\n}\n\n.panel-resize>.right,\n.panel-resize>.left {\n\twidth: var(--resize-bar-size);\n\theight: auto;\n\tcursor: ew-resize;\n}\n\n.panel-resize>.top {\n\ttop: calc(var(--resize-bar-size) * -0.5);\n\tbottom: unset;\n}\n\n.panel-resize>.bottom {\n\ttop: unset;\n\tbottom: calc(var(--resize-bar-size) * -0.5);\n}\n\n.panel-resize>.left {\n\tleft: calc(var(--resize-bar-size) * -0.5);\n\tright: unset;\n}\n\n.panel-resize>.right {\n\tleft: unset;\n\tright: calc(var(--resize-bar-size) * -0.5);\n}\n\n.panel-resize>.top_right {\n\ttop: calc(var(--resize-bar-size) * -0.5);\n\tright: calc(var(--resize-bar-size) * -0.5);\n\tcursor: ne-resize;\n}\n\n.panel-resize>.bottom_right {\n\tbottom: calc(var(--resize-bar-size) * -0.5);\n\tright: calc(var(--resize-bar-size) * -0.5);\n\tcursor: se-resize;\n}\n\n.panel-resize>.top_left {\n\ttop: calc(var(--resize-bar-size) * -0.5);\n\tleft: calc(var(--resize-bar-size) * -0.5);\n\tcursor: nw-resize;\n}\n\n.panel-resize>.bottom_left {\n\tbottom: calc(var(--resize-bar-size) * -0.5);\n\tleft: calc(var(--resize-bar-size) * -0.5);\n\tcursor: sw-resize;\n}\n\n:host(.floating) {\n\tz-index: 10000;\n\tborder: 0.1rem solid var(--border-color);\n}\n\n:host(.floating) .panel-resize {\n\tdisplay: initial;\n}\n";
+var panelCSS = ":host {\n\tdisplay: flex;\n\tflex: 1;\n\tflex-direction: column;\n\t/*flex: 0 0 auto;*/\n\tbox-sizing: border-box;\n\tpointer-events: all;\n\tposition: relative;\n\tbox-sizing: border-box;\n\n\tmax-width: 100%;\n\tmax-height: 100%;\n\n\t--header-bg-color: var(--harmony-panel-header-bg-color, var(--main-bg-color-dark, black));\n\t--content-bg-color: var(--harmony-panel-content-bg-color, var(--main-bg-color-dark, black));\n\t--border-color: var(--harmony-panel-border-color, var(--text-primary, white));\n\n\t--resize-bar-size: 0.5rem;\n\t--layout: column;\n}\n\n/* Prevent child panel header to appear for tabs layout */\n@container style(--layout: tabs) {\n\t:host {\n\t\t--display-header: none;\n\t}\n}\n\n@container style(--layout: column) {\n\t:host {\n\t\t--display-header: initial;\n\t}\n}\n\n@container style(--layout: row) {\n\t:host {\n\t\t--display-header: initial;\n\t}\n}\n\n:host(.collapsed) {\n\tflex: 0 0 auto;\n}\n\n.harmony-panel-row,\n:host(.harmony-panel-row) {\n\t--layout: row;\n}\n\n.harmony-panel-row>harmony-panel {\n\theight: 100%;\n}\n\n.harmony-panel-column,\n:host(.harmony-panel-column) {\n\t--layout: column;\n}\n\n.harmony-panel-tabs,\n:host(.harmony-panel-tabs) {\n\t--layout: tabs;\n}\n\n.harmony-panel-column>harmony-panel {\n\twidth: 100%;\n}\n\n.harmony-panel-splitter {\n\tdisplay: none;\n\tflex: 0 0 10px;\n\tbackground-color: red;\n}\n\n.header {\n\tcursor: pointer;\n\tfont-size: 1.5em;\n\tpadding: 0.25rem;\n\toverflow: hidden;\n\tflex: 0 0 2rem;\n\tbackground-color: var(--header-bg-color);\n\tdisplay: var(--display-header, flex);\n\talign-items: center;\n\tdisplay: flex;\n\talign-items: center;\n}\n\n.header-title {\n\tflex: 1;\n}\n\n.header-close {\n\tdisplay: flex;\n}\n\n.header.hidden {\n\tdisplay: var(--harmony-panel-display-headers, none);\n}\n\n.content {\n\twidth: 100%;\n\tbox-sizing: border-box;\n\tbackground-color: var(--content-bg-color);\n\tflex: 1;\n\toverflow: hidden;\n\tdisplay: flex;\n\tposition: relative;\n\tflex-direction: var(--layout, column);\n}\n\n.header.target {\n\tbackground: blue;\n}\n\n.content.target {\n\tbackground: blue;\n}\n\n[collapsible='1']>.title::after,\n:host(.collapsible)>.title::after {\n\tcontent: \"-\";\n\tright: 0.25rem;\n\tposition: absolute;\n}\n\n[collapsed='1']>.title::after,\n:host(.collapsed)>.title::after {\n\tcontent: \"+\";\n}\n\n.panel-resize {\n\tpointer-events: none;\n\tdisplay: none;\n\ttop: 0;\n\tleft: 0;\n\twidth: 100%;\n\theight: 100%;\n\tposition: absolute;\n}\n\n.panel-resize>* {\n\tpointer-events: all;\n\tposition: absolute;\n}\n\n.panel-resize>.side {\n\tinset: calc(var(--resize-bar-size) * 0.5);\n}\n\n.panel-resize>.corner {\n\theight: var(--resize-bar-size);\n\twidth: var(--resize-bar-size);\n}\n\n.panel-resize>.top,\n.panel-resize>.bottom {\n\theight: var(--resize-bar-size);\n\twidth: auto;\n\tcursor: ns-resize;\n}\n\n.panel-resize>.right,\n.panel-resize>.left {\n\twidth: var(--resize-bar-size);\n\theight: auto;\n\tcursor: ew-resize;\n}\n\n.panel-resize>.top {\n\ttop: calc(var(--resize-bar-size) * -0.5);\n\tbottom: unset;\n}\n\n.panel-resize>.bottom {\n\ttop: unset;\n\tbottom: calc(var(--resize-bar-size) * -0.5);\n}\n\n.panel-resize>.left {\n\tleft: calc(var(--resize-bar-size) * -0.5);\n\tright: unset;\n}\n\n.panel-resize>.right {\n\tleft: unset;\n\tright: calc(var(--resize-bar-size) * -0.5);\n}\n\n.panel-resize>.top_right {\n\ttop: calc(var(--resize-bar-size) * -0.5);\n\tright: calc(var(--resize-bar-size) * -0.5);\n\tcursor: ne-resize;\n}\n\n.panel-resize>.bottom_right {\n\tbottom: calc(var(--resize-bar-size) * -0.5);\n\tright: calc(var(--resize-bar-size) * -0.5);\n\tcursor: se-resize;\n}\n\n.panel-resize>.top_left {\n\ttop: calc(var(--resize-bar-size) * -0.5);\n\tleft: calc(var(--resize-bar-size) * -0.5);\n\tcursor: nw-resize;\n}\n\n.panel-resize>.bottom_left {\n\tbottom: calc(var(--resize-bar-size) * -0.5);\n\tleft: calc(var(--resize-bar-size) * -0.5);\n\tcursor: sw-resize;\n}\n\n:host(.floating) {\n\tz-index: 10000;\n\tborder: 0.1rem solid var(--border-color);\n}\n\n:host(.floating) .panel-resize {\n\tdisplay: initial;\n}\n\n:host(.floating.collapsed) {\n\tmin-width: 10rem;\n\tmin-height: 0rem;\n}\n";
 
 async function documentStyle(cssText) {
     return await shadowRootStyle(document, cssText);
@@ -955,8 +955,12 @@ class HarmonyPanel {
     #headerVisible = false;
     #isDraggable = true;
     #floating = false;
-    #floatingWidth;
-    #floatingHeight;
+    #floatingRect = {
+        x: { type: 'px', value: 0 },
+        y: { type: 'px', value: 0 },
+        width: { type: 'px', value: 0 },
+        height: { type: 'px', value: 0 },
+    };
     #childPanels = new Set;
     #title;
     #titleI18n;
@@ -1437,6 +1441,7 @@ class HarmonyPanel {
         else {
             this.expand();
         }
+        this.#updateSize();
     }
     displayHeader(visible) {
         this.#headerVisible = visible;
@@ -1456,7 +1461,7 @@ class HarmonyPanel {
     setTitle(title) {
         this.#title = title;
         const header = this.getHeader();
-        header.innerText = title;
+        this.#htmlHeaderTitle.innerText = title;
         show(header);
         /*
         if (title) {
@@ -1563,12 +1568,17 @@ class HarmonyPanel {
         }
         const rect = this.htmlElement.getBoundingClientRect();
         this.setFloating();
-        this.#floatingWidth = this.#floatingWidth ?? rect.width;
-        this.#floatingHeight = this.#floatingHeight ?? rect.height;
+        this.#floatingRect.width = {
+            type: 'px',
+            value: rect.width,
+        };
+        this.#floatingRect.height = {
+            type: 'px',
+            value: rect.height,
+        };
         this.htmlElement.style.left = `${rect.x}px`;
         this.htmlElement.style.top = `${rect.y}px`;
-        this.htmlElement.style.width = `${this.#floatingWidth}px`;
-        this.htmlElement.style.height = `${this.#floatingHeight}px`;
+        this.#updateSize();
         this.htmlElement.style.position = 'absolute';
         _a$1.#deltaX = rect.x - _a$1.#startClientX;
         _a$1.#deltaY = rect.y - _a$1.#startClientY;
@@ -1584,6 +1594,11 @@ class HarmonyPanel {
         this.htmlElement.style.top = `${(100 - height) / 2}%`;
         this.htmlElement.style.width = `${width}%`;
         this.htmlElement.style.height = `${height}%`;
+        this.#floatingRect.width.type = '%';
+        this.#floatingRect.width.value = width;
+        this.#floatingRect.height.type = '%';
+        this.#floatingRect.height.value = height;
+        this.#updateSize();
         this.htmlElement.style.position = 'absolute';
     }
     setDocked(parentPanel) {
@@ -1594,10 +1609,26 @@ class HarmonyPanel {
         // Reset styles used during drag
         this.htmlElement.style.left = '';
         this.htmlElement.style.top = '';
-        this.htmlElement.style.width = '';
-        this.htmlElement.style.height = '';
+        this.#updateSize();
         this.htmlElement.style.position = '';
         this.htmlElement.style.flex = '';
+    }
+    #updateSize() {
+        if (this.#floating) {
+            if (this.#collapsed) {
+                this.htmlElement.style.width = '';
+                this.htmlElement.style.height = '';
+            }
+            else {
+                this.htmlElement.style.width = `${this.#floatingRect.width.value}${this.#floatingRect.width.type}`;
+                this.htmlElement.style.height = `${this.#floatingRect.height.value}${this.#floatingRect.height.type}`;
+            }
+        }
+        else {
+            // Docked
+            this.htmlElement.style.width = '';
+            this.htmlElement.style.height = '';
+        }
     }
     #drag(event) {
         if (!_a$1.#dragging) {
@@ -1646,12 +1677,13 @@ class HarmonyPanel {
                 deltaHeight += deltaY;
                 break;
         }
-        this.#floatingWidth = rect.width + deltaWidth;
-        this.#floatingHeight = rect.height + deltaHeight;
+        this.#floatingRect.width.type = 'px';
+        this.#floatingRect.width.value = rect.width + deltaWidth;
+        this.#floatingRect.height.type = 'px';
+        this.#floatingRect.height.value = rect.height + deltaHeight;
         this.htmlElement.style.left = `${rect.x + deltaLeft}px`;
         this.htmlElement.style.top = `${rect.y + deltaTop}px`;
-        this.htmlElement.style.width = `${this.#floatingWidth}px`;
-        this.htmlElement.style.height = `${this.#floatingHeight}px`;
+        this.#updateSize();
     }
     #stopResize() {
         _a$1.#dragging = false;

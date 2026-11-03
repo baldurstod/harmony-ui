@@ -891,6 +891,18 @@ export declare type PaletteColor = {
     h: string;
 };
 
+export declare type PanelCoord = {
+    type: 'px' | '%';
+    value: number;
+};
+
+export declare type PanelRect = {
+    x: PanelCoord;
+    y: PanelCoord;
+    width: PanelCoord;
+    height: PanelCoord;
+};
+
 declare type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 
 /**

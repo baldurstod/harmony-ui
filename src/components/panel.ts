@@ -59,6 +59,18 @@ export type HarmonyPanelParams = {
 	tabIndex?: string
 }
 
+export type PanelCoord = {
+	type: 'px' | '%';
+	value: number;
+}
+
+export type PanelRect = {
+	x: PanelCoord;
+	y: PanelCoord;
+	width: PanelCoord;
+	height: PanelCoord;
+}
+
 export class HarmonyPanel implements HarmonyComponent, HasI18n {
 	readonly htmlElement = createElement('div');
 	readonly isHarmonyPanel = true as const;
@@ -83,8 +95,13 @@ export class HarmonyPanel implements HarmonyComponent, HasI18n {
 	#headerVisible = false;
 	#isDraggable = true;
 	#floating = false;
-	#floatingWidth?: number;
-	#floatingHeight?: number;
+	#floatingRect: PanelRect = {
+		x: { type: 'px', value: 0 },
+		y: { type: 'px', value: 0 },
+		width: { type: 'px', value: 0 },
+		height: { type: 'px', value: 0 },
+	};
+
 	#childPanels = new Set<HarmonyPanel>;
 	#title?: string;
 	#titleI18n?: string | I18nDescriptor | null;
@@ -597,6 +614,7 @@ export class HarmonyPanel implements HarmonyComponent, HasI18n {
 		} else {
 			this.expand();
 		}
+		this.#updateSize();
 	}
 
 	displayHeader(visible: boolean) {
@@ -622,7 +640,7 @@ export class HarmonyPanel implements HarmonyComponent, HasI18n {
 	setTitle(title: string): void {
 		this.#title = title;
 		const header = this.getHeader();
-		header.innerText = title;
+		this.#htmlHeaderTitle!.innerText = title;
 		show(header);
 		/*
 		if (title) {
@@ -739,13 +757,19 @@ export class HarmonyPanel implements HarmonyComponent, HasI18n {
 		const rect = this.htmlElement.getBoundingClientRect();
 		this.setFloating();
 
-		this.#floatingWidth = this.#floatingWidth ?? rect.width;
-		this.#floatingHeight = this.#floatingHeight ?? rect.height;
+		this.#floatingRect.width = {
+			type: 'px',
+			value: rect.width,
+		};
+
+		this.#floatingRect.height = {
+			type: 'px',
+			value: rect.height,
+		};
 
 		this.htmlElement.style.left = `${rect.x}px`;
 		this.htmlElement.style.top = `${rect.y}px`;
-		this.htmlElement.style.width = `${this.#floatingWidth}px`;
-		this.htmlElement.style.height = `${this.#floatingHeight}px`;
+		this.#updateSize();
 		this.htmlElement.style.position = 'absolute';
 
 		HarmonyPanel.#deltaX = rect.x - HarmonyPanel.#startClientX;
@@ -765,6 +789,14 @@ export class HarmonyPanel implements HarmonyComponent, HasI18n {
 		this.htmlElement.style.top = `${(100 - height) / 2}%`;
 		this.htmlElement.style.width = `${width}%`;
 		this.htmlElement.style.height = `${height}%`;
+
+		this.#floatingRect.width.type = '%';
+		this.#floatingRect.width.value = width;
+
+		this.#floatingRect.height.type = '%';
+		this.#floatingRect.height.value = height;
+
+		this.#updateSize();
 		this.htmlElement.style.position = 'absolute';
 	}
 
@@ -777,10 +809,25 @@ export class HarmonyPanel implements HarmonyComponent, HasI18n {
 		// Reset styles used during drag
 		this.htmlElement.style.left = '';
 		this.htmlElement.style.top = '';
-		this.htmlElement.style.width = '';
-		this.htmlElement.style.height = '';
+		this.#updateSize();
 		this.htmlElement.style.position = '';
 		this.htmlElement.style.flex = '';
+	}
+
+	#updateSize(): void {
+		if (this.#floating) {
+			if (this.#collapsed) {
+				this.htmlElement.style.width = '';
+				this.htmlElement.style.height = '';
+			} else {
+				this.htmlElement.style.width = `${this.#floatingRect.width.value}${this.#floatingRect.width.type}`;
+				this.htmlElement.style.height = `${this.#floatingRect.height.value}${this.#floatingRect.height.type}`;
+			}
+		} else {
+			// Docked
+			this.htmlElement.style.width = '';
+			this.htmlElement.style.height = '';
+		}
 	}
 
 	#drag(event: MouseEvent): void {
@@ -840,14 +887,15 @@ export class HarmonyPanel implements HarmonyComponent, HasI18n {
 				break;
 		}
 
+		this.#floatingRect.width.type = 'px';
+		this.#floatingRect.width.value = rect.width + deltaWidth;
 
-		this.#floatingWidth = rect.width + deltaWidth;
-		this.#floatingHeight = rect.height + deltaHeight;
+		this.#floatingRect.height.type = 'px';
+		this.#floatingRect.height.value = rect.height + deltaHeight;
 
 		this.htmlElement.style.left = `${rect.x + deltaLeft}px`;
 		this.htmlElement.style.top = `${rect.y + deltaTop}px`;
-		this.htmlElement.style.width = `${this.#floatingWidth}px`;
-		this.htmlElement.style.height = `${this.#floatingHeight}px`;
+		this.#updateSize();
 	}
 
 	#stopResize(): void {
