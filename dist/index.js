@@ -311,7 +311,7 @@ class I18n {
     }
 }
 
-var helpCSS = ":host {\n\tposition: absolute;\n\theight: 100%;\n\twidth: 100%;\n\ttop: 0;\n\tleft: 0;\n\tpointer-events: none;\n\tz-index: 10000;\n\tfont-size: var(--harmony-help-font-size, 2rem);\n}\n\ndiv {\n\tposition: fixed;\n\tleft: 20%;\n\ttop: 5%;\n\tmax-height: 30%;\n\twidth: 60%;\n\ttext-align: center;\n\tbackground-color: #772222;\n\tborder-radius: 1rem;\n\toverflow: auto;\n\tz-index: 10;\n\tfont-family: tf2build, Verdana, sans-serif;\n\tpadding: 1rem;\n\tbox-sizing: border-box;\n}\n\n.help.html {\n\ttext-align: unset;\n\tmax-height: 90%;\n}\n";
+var helpCSS = ":host {\n\tposition: fixed;\n\theight: 100%;\n\twidth: 100%;\n\ttop: 0;\n\tleft: 0;\n\tpointer-events: none;\n\tz-index: 10000;\n\tfont-size: var(--harmony-help-font-size, 2rem);\n\t--help-background-color: var(--harmony-help-background-color, #772222);\n\t--help-border-color: var(--harmony-help-border-color, #FFF);\n\t--help-border-size: var(--harmony-help-border-size, 0.5rem);\n\t--help-border: var(--harmony-help-border, var(--help-border-size) solid var(--help-border-color));\n}\n\ndiv {\n\tposition: fixed;\n\ttop: 30%;\n\tmax-height: 30%;\n\twidth: 100%;\n\ttext-align: center;\n\tbackground-color: var(--help-background-color);\n\toverflow: auto;\n\tz-index: 10;\n\tfont-family: tf2build, Verdana, sans-serif;\n\tpadding: 1rem;\n\tbox-sizing: border-box;\n\tborder-top: var(--help-border);\n\tborder-bottom: var(--help-border);\n}\n\n.bottom {\n\ttop: unset;\n\tbottom: 30%;\n}\n\n.help.html {\n\ttext-align: unset;\n\tmax-height: 90%;\n}\n";
 
 class Help {
     static #html;
@@ -347,9 +347,15 @@ class Help {
             hide(this.#shadowRoot);
         }
     }
-    static #handleMouseOver(element) {
+    static #handleMouseOver(element, event) {
         const i18n = this.#elements.get(element);
         if (i18n) {
+            if (event.clientY < document.documentElement.clientHeight / 2) {
+                this.#html.classList.add('bottom');
+            }
+            else {
+                this.#html.classList.remove('bottom');
+            }
             this.#html.classList.remove('html');
             if (i18n && typeof i18n !== 'string' && i18n.innerHTML) {
                 this.#html.classList.add('html');
@@ -368,7 +374,7 @@ class Help {
     }
     static addElement(element, i18n) {
         if (!this.#elements.has(element)) {
-            element.addEventListener('mouseover', () => Help.#handleMouseOver(element));
+            element.addEventListener('mouseover', (event) => Help.#handleMouseOver(element, event));
             element.addEventListener('mouseout', () => Help.#handleMouseOut());
         }
         this.#elements.set(element, i18n);

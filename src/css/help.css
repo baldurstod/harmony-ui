@@ -1,5 +1,5 @@
 :host {
-	position: absolute;
+	position: fixed;
 	height: 100%;
 	width: 100%;
 	top: 0;
@@ -7,22 +7,31 @@
 	pointer-events: none;
 	z-index: 10000;
 	font-size: var(--harmony-help-font-size, 2rem);
+	--help-background-color: var(--harmony-help-background-color, #772222);
+	--help-border-color: var(--harmony-help-border-color, #FFF);
+	--help-border-size: var(--harmony-help-border-size, 0.5rem);
+	--help-border: var(--harmony-help-border, var(--help-border-size) solid var(--help-border-color));
 }
 
 div {
 	position: fixed;
-	left: 20%;
-	top: 5%;
+	top: 30%;
 	max-height: 30%;
-	width: 60%;
+	width: 100%;
 	text-align: center;
-	background-color: #772222;
-	border-radius: 1rem;
+	background-color: var(--help-background-color);
 	overflow: auto;
 	z-index: 10;
 	font-family: tf2build, Verdana, sans-serif;
 	padding: 1rem;
 	box-sizing: border-box;
+	border-top: var(--help-border);
+	border-bottom: var(--help-border);
+}
+
+.bottom {
+	top: unset;
+	bottom: 30%;
 }
 
 .help.html {

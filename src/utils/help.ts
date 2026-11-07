@@ -43,9 +43,14 @@ export class Help {
 		}
 	}
 
-	static #handleMouseOver(element: Element): void {
+	static #handleMouseOver(element: Element, event: MouseEvent): void {
 		const i18n = this.#elements.get(element);
 		if (i18n) {
+			if (event.clientY < document.documentElement.clientHeight / 2) {
+				this.#html.classList.add('bottom');
+			} else {
+				this.#html.classList.remove('bottom');
+			}
 
 			this.#html.classList.remove('html');
 			if (i18n && typeof i18n !== 'string' && i18n.innerHTML) {
@@ -67,7 +72,7 @@ export class Help {
 
 	static addElement(element: HTMLElement, i18n: string | I18nDescriptor): void {
 		if (!this.#elements.has(element)) {
-			element.addEventListener('mouseover', () => Help.#handleMouseOver(element));
+			element.addEventListener('mouseover', (event: MouseEvent) => Help.#handleMouseOver(element, event));
 			element.addEventListener('mouseout', () => Help.#handleMouseOut());
 
 		}
