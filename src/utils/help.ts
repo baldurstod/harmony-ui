@@ -57,6 +57,10 @@ export class Help {
 				this.#html.classList.add('html');
 			}
 
+			// Delete the previous value first
+			updateElement(this.#html, {
+				i18n: null,
+			});
 			updateElement(this.#html, {
 				i18n: i18n,
 			});

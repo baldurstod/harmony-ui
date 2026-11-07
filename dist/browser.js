@@ -1034,7 +1034,7 @@ class I18n {
     }
 }
 
-var helpCSS = ":host {\n\tposition: fixed;\n\theight: 100%;\n\twidth: 100%;\n\ttop: 0;\n\tleft: 0;\n\tpointer-events: none;\n\tz-index: 10000;\n\tfont-size: var(--harmony-help-font-size, 2rem);\n\t--help-background-color: var(--harmony-help-background-color, #772222);\n\t--help-border-color: var(--harmony-help-border-color, #FFF);\n\t--help-border-size: var(--harmony-help-border-size, 0.5rem);\n\t--help-border: var(--harmony-help-border, var(--help-border-size) solid var(--help-border-color));\n}\n\ndiv {\n\tposition: fixed;\n\ttop: 30%;\n\tmax-height: 30%;\n\twidth: 100%;\n\ttext-align: center;\n\tbackground-color: var(--help-background-color);\n\toverflow: auto;\n\tz-index: 10;\n\tfont-family: tf2build, Verdana, sans-serif;\n\tpadding: 1rem;\n\tbox-sizing: border-box;\n\tborder-top: var(--help-border);\n\tborder-bottom: var(--help-border);\n}\n\n.bottom {\n\ttop: unset;\n\tbottom: 30%;\n}\n\n.help.html {\n\ttext-align: unset;\n\tmax-height: 90%;\n}\n";
+var helpCSS = ":host {\n\tposition: fixed;\n\theight: 100%;\n\twidth: 100%;\n\ttop: 0;\n\tleft: 0;\n\tpointer-events: none;\n\tz-index: 10000;\n\tfont-size: var(--harmony-help-font-size, 2rem);\n\t--help-background-color: var(--harmony-help-background-color, #772222);\n\t--help-border-color: var(--harmony-help-border-color, #FFF);\n\t--help-border-size: var(--harmony-help-border-size, 0.5rem);\n\t--help-border: var(--harmony-help-border, var(--help-border-size) solid var(--help-border-color));\n}\n\ndiv {\n\tposition: fixed;\n\tbottom: 60%;\n\tmax-height: 30%;\n\twidth: 100%;\n\ttext-align: center;\n\tbackground-color: var(--help-background-color);\n\toverflow: auto;\n\tz-index: 10;\n\tfont-family: tf2build, Verdana, sans-serif;\n\tpadding: 1rem;\n\tbox-sizing: border-box;\n\tborder-top: var(--help-border);\n\tborder-bottom: var(--help-border);\n}\n\n.bottom {\n\tbottom: unset;\n\ttop: 60%;\n}\n\n.help.html {\n\ttext-align: unset;\n\t/*max-height: 90%;*/\n}\n";
 
 class Help {
     static #html;
@@ -1083,6 +1083,10 @@ class Help {
             if (i18n && typeof i18n !== 'string' && i18n.innerHTML) {
                 this.#html.classList.add('html');
             }
+            // Delete the previous value first
+            updateElement(this.#html, {
+                i18n: null,
+            });
             updateElement(this.#html, {
                 i18n: i18n,
             });
