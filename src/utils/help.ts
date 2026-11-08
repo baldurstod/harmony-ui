@@ -8,10 +8,15 @@ export class Help {
 	static #html: HTMLElement;
 	static #shadowRoot: ShadowRoot;
 	static #elements = new Map<Element, string | I18nDescriptor>();
+	static #initialized = false;
 
-	static {
+	static #init(): void {
+		if (this.#initialized) {
+			return;
+		}
+		this.#initialized = true;
+
 		const onLoad = (): void => {
-
 			document.body.addEventListener('keydown', (event: KeyboardEvent) => this.#handleKeyDown(event));
 			document.body.addEventListener('keyup', (event: KeyboardEvent) => this.#handleKeyUp(event));
 			this.#shadowRoot = createShadowRoot('div', {
@@ -40,7 +45,14 @@ export class Help {
 			});
 		}
 
-		addEventListener('load', onLoad);
+		if (document.body) {
+			// document.body exist, call the function
+			onLoad();
+		} else {
+			// wait for load to finish
+			addEventListener('load', onLoad);
+		}
+
 	}
 
 	static #handleKeyDown(event: KeyboardEvent): void {
@@ -82,9 +94,10 @@ export class Help {
 	}
 
 	static addElement(element: HTMLElement, i18n: string | I18nDescriptor): void {
+		this.#init();
 		if (!this.#elements.has(element)) {
-			element.addEventListener('mouseover', (event: MouseEvent) => Help.#handleMouseOver(element, event));
-			element.addEventListener('mouseout', () => Help.#handleMouseOut());
+			element.addEventListener('mouseover', (event: MouseEvent) => this.#handleMouseOver(element, event));
+			element.addEventListener('mouseout', () => this.#handleMouseOut());
 		}
 		this.#elements.set(element, i18n);
 	}

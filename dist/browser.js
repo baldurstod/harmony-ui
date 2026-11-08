@@ -7588,7 +7588,12 @@ class Help {
     static #html;
     static #shadowRoot;
     static #elements = new Map();
-    static {
+    static #initialized = false;
+    static #init() {
+        if (this.#initialized) {
+            return;
+        }
+        this.#initialized = true;
         const onLoad = () => {
             document.body.addEventListener('keydown', (event) => this.#handleKeyDown(event));
             document.body.addEventListener('keyup', (event) => this.#handleKeyUp(event));
@@ -7617,7 +7622,14 @@ class Help {
                 }
             });
         };
-        addEventListener('load', onLoad);
+        if (document.body) {
+            // document.body exist, call the function
+            onLoad();
+        }
+        else {
+            // wait for load to finish
+            addEventListener('load', onLoad);
+        }
     }
     static #handleKeyDown(event) {
         if (event.key == 'F1' && !event.repeat) {
@@ -7654,9 +7666,10 @@ class Help {
         hide(this.#html);
     }
     static addElement(element, i18n) {
+        this.#init();
         if (!this.#elements.has(element)) {
-            element.addEventListener('mouseover', (event) => Help.#handleMouseOver(element, event));
-            element.addEventListener('mouseout', () => Help.#handleMouseOut());
+            element.addEventListener('mouseover', (event) => this.#handleMouseOver(element, event));
+            element.addEventListener('mouseout', () => this.#handleMouseOut());
         }
         this.#elements.set(element, i18n);
     }
