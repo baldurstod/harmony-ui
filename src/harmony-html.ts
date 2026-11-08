@@ -3,6 +3,7 @@ import { AddI18nElement, I18nDescriptor } from './harmony-i18n';
 import { HasI18n } from './interfaces/hasi18n';
 import { ET } from './utils/create';
 import { Help } from './utils/help';
+import { getObject } from './utils/registry';
 
 export const svgNamespace = 'http://www.w3.org/2000/svg';
 
@@ -246,7 +247,7 @@ function createElementOptions(element: HTMLElement, options?: CreateElementOptio
 					(element as HTMLInputElement).checked = optionValue as boolean;
 					break;
 				case 'help':
-					Help.addElement(element, optionValue as string | I18nDescriptor);
+					(getObject('Help') as typeof Help | undefined)?.addElement(element, optionValue as string | I18nDescriptor);
 					break;
 				case 'elementCreated':
 					break;

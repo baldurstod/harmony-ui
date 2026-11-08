@@ -135,6 +135,8 @@ export declare function documentStyle(cssText: string): Promise<void>;
 
 export declare function documentStyleSync(cssText: string): void;
 
+export declare function enableHelp(): void;
+
 export declare function getCustomElementRegistry(): CustomElementRegistry | undefined;
 
 declare interface HarmonyComponent {
@@ -403,6 +405,11 @@ export declare class HarmonyTree extends MyEventTarget implements HarmonyCompone
 
 declare interface HasI18n {
     setTitleI18n(i18n: string | I18nDescriptor | null): void;
+}
+
+export declare class Help {
+    #private;
+    static addElement(element: HTMLElement, i18n: string | I18nDescriptor): void;
 }
 
 export declare function hide(htmlElement: HTMLElement | SVGElement | ShadowRoot | (HTMLElement | SVGElement | ShadowRoot)[] | undefined | null): void;

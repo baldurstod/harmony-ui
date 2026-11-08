@@ -2,6 +2,7 @@ import helpCSS from '../css/help.css';
 import { shadowRootStyle } from '../harmony-css';
 import { createElement, createShadowRoot, hide, show, updateElement } from '../harmony-html';
 import { I18nDescriptor } from '../harmony-i18n';
+import { isRegistered, registerObject } from './registry';
 
 export class Help {
 	static #html: HTMLElement;
@@ -86,5 +87,11 @@ export class Help {
 			element.addEventListener('mouseout', () => Help.#handleMouseOut());
 		}
 		this.#elements.set(element, i18n);
+	}
+}
+
+export function enableHelp(): void {
+	if (!isRegistered('Help')) {
+		registerObject('Help', Help);
 	}
 }

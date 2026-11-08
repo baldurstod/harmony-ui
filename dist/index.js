@@ -311,84 +311,18 @@ class I18n {
     }
 }
 
-var helpCSS = ":host {\n\tposition: fixed;\n\theight: 100%;\n\twidth: 100%;\n\ttop: 0;\n\tleft: 0;\n\tpointer-events: none;\n\tz-index: 10000;\n\tfont-size: var(--harmony-help-font-size, 2rem);\n\t--help-background-color: var(--harmony-help-background-color, #772222);\n\t--help-border-color: var(--harmony-help-border-color, #FFF);\n\t--help-border-size: var(--harmony-help-border-size, 0.5rem);\n\t--help-border: var(--harmony-help-border, var(--help-border-size) solid var(--help-border-color));\n}\n\ndiv {\n\tposition: fixed;\n\tmax-height: 30%;\n\twidth: 100%;\n\ttext-align: center;\n\tbackground-color: var(--help-background-color);\n\toverflow: auto;\n\tz-index: 10;\n\tfont-family: tf2build, Verdana, sans-serif;\n\tpadding: 1rem;\n\tbox-sizing: border-box;\n\tborder-top: var(--help-border);\n\tborder-bottom: var(--help-border);\n}\n\n\n.help.html {\n\ttext-align: unset;\n}\n";
-
-class Help {
-    static #html;
-    static #shadowRoot;
-    static #elements = new Map();
-    static {
-        const onLoad = () => {
-            document.body.addEventListener('keydown', (event) => this.#handleKeyDown(event));
-            document.body.addEventListener('keyup', (event) => this.#handleKeyUp(event));
-            this.#shadowRoot = createShadowRoot('div', {
-                parent: document.body,
-                hidden: true,
-                childs: [
-                    this.#html = createElement('div', {
-                        class: 'help',
-                        hidden: true,
-                    }),
-                ],
-            });
-            void shadowRootStyle(this.#shadowRoot, helpCSS);
-            removeEventListener('load', onLoad);
-            document.body.addEventListener('mousemove', (event) => {
-                const p = (event.clientY / document.documentElement.clientHeight) * 100;
-                this.#html.style.top = '';
-                if (p < 50) {
-                    this.#html.style.top = `${event.clientY + 50}px`;
-                    this.#html.style.bottom = '';
-                }
-                else {
-                    this.#html.style.bottom = `${document.documentElement.clientHeight - event.clientY + 50}px`;
-                    this.#html.style.top = '';
-                }
-            });
-        };
-        addEventListener('load', onLoad);
+const objects = new Map();
+function isRegistered(name) {
+    return objects.has(name.toLowerCase());
+}
+function registerObject(name, o) {
+    if (objects.has(name.toLowerCase())) {
+        console.error(`${name.toLowerCase()} is already registered`);
     }
-    static #handleKeyDown(event) {
-        if (event.key == 'F1' && !event.repeat) {
-            event.preventDefault();
-            show(this.#shadowRoot);
-        }
-    }
-    static #handleKeyUp(event) {
-        if (event.key == 'F1') {
-            hide(this.#shadowRoot);
-        }
-    }
-    static #handleMouseOver(element, event) {
-        const i18n = this.#elements.get(element);
-        if (i18n) {
-            this.#html.classList.remove('html');
-            if (i18n && typeof i18n !== 'string' && i18n.innerHTML) {
-                this.#html.classList.add('html');
-            }
-            // Delete the previous value first
-            updateElement(this.#html, {
-                i18n: null,
-            });
-            updateElement(this.#html, {
-                i18n: i18n,
-            });
-            show(this.#html);
-        }
-        else {
-            hide(this.#html);
-        }
-    }
-    static #handleMouseOut() {
-        hide(this.#html);
-    }
-    static addElement(element, i18n) {
-        if (!this.#elements.has(element)) {
-            element.addEventListener('mouseover', (event) => Help.#handleMouseOver(element, event));
-            element.addEventListener('mouseout', () => Help.#handleMouseOut());
-        }
-        this.#elements.set(element, i18n);
-    }
+    objects.set(name.toLowerCase(), o);
+}
+function getObject(name) {
+    return objects.get(name.toLowerCase());
 }
 
 const svgNamespace = 'http://www.w3.org/2000/svg';
@@ -559,7 +493,7 @@ function createElementOptions(element, options, shadowRoot) {
                     element.checked = optionValue;
                     break;
                 case 'help':
-                    Help.addElement(element, optionValue);
+                    getObject('Help')?.addElement(element, optionValue);
                     break;
                 case 'elementCreated':
                     break;
@@ -6925,6 +6859,91 @@ function defineHarmonyToggleButton(suffix = '') {
     injectGlobalCss();
 }
 
+var helpCSS = ":host {\n\tposition: fixed;\n\theight: 100%;\n\twidth: 100%;\n\ttop: 0;\n\tleft: 0;\n\tpointer-events: none;\n\tz-index: 10000;\n\tfont-size: var(--harmony-help-font-size, 2rem);\n\t--help-background-color: var(--harmony-help-background-color, #772222);\n\t--help-border-color: var(--harmony-help-border-color, #FFF);\n\t--help-border-size: var(--harmony-help-border-size, 0.5rem);\n\t--help-border: var(--harmony-help-border, var(--help-border-size) solid var(--help-border-color));\n}\n\ndiv {\n\tposition: fixed;\n\tmax-height: 30%;\n\twidth: 100%;\n\ttext-align: center;\n\tbackground-color: var(--help-background-color);\n\toverflow: auto;\n\tz-index: 10;\n\tfont-family: tf2build, Verdana, sans-serif;\n\tpadding: 1rem;\n\tbox-sizing: border-box;\n\tborder-top: var(--help-border);\n\tborder-bottom: var(--help-border);\n}\n\n\n.help.html {\n\ttext-align: unset;\n}\n";
+
+class Help {
+    static #html;
+    static #shadowRoot;
+    static #elements = new Map();
+    static {
+        const onLoad = () => {
+            document.body.addEventListener('keydown', (event) => this.#handleKeyDown(event));
+            document.body.addEventListener('keyup', (event) => this.#handleKeyUp(event));
+            this.#shadowRoot = createShadowRoot('div', {
+                parent: document.body,
+                hidden: true,
+                childs: [
+                    this.#html = createElement('div', {
+                        class: 'help',
+                        hidden: true,
+                    }),
+                ],
+            });
+            void shadowRootStyle(this.#shadowRoot, helpCSS);
+            removeEventListener('load', onLoad);
+            document.body.addEventListener('mousemove', (event) => {
+                const p = (event.clientY / document.documentElement.clientHeight) * 100;
+                this.#html.style.top = '';
+                if (p < 50) {
+                    this.#html.style.top = `${event.clientY + 50}px`;
+                    this.#html.style.bottom = '';
+                }
+                else {
+                    this.#html.style.bottom = `${document.documentElement.clientHeight - event.clientY + 50}px`;
+                    this.#html.style.top = '';
+                }
+            });
+        };
+        addEventListener('load', onLoad);
+    }
+    static #handleKeyDown(event) {
+        if (event.key == 'F1' && !event.repeat) {
+            event.preventDefault();
+            show(this.#shadowRoot);
+        }
+    }
+    static #handleKeyUp(event) {
+        if (event.key == 'F1') {
+            hide(this.#shadowRoot);
+        }
+    }
+    static #handleMouseOver(element, event) {
+        const i18n = this.#elements.get(element);
+        if (i18n) {
+            this.#html.classList.remove('html');
+            if (i18n && typeof i18n !== 'string' && i18n.innerHTML) {
+                this.#html.classList.add('html');
+            }
+            // Delete the previous value first
+            updateElement(this.#html, {
+                i18n: null,
+            });
+            updateElement(this.#html, {
+                i18n: i18n,
+            });
+            show(this.#html);
+        }
+        else {
+            hide(this.#html);
+        }
+    }
+    static #handleMouseOut() {
+        hide(this.#html);
+    }
+    static addElement(element, i18n) {
+        if (!this.#elements.has(element)) {
+            element.addEventListener('mouseover', (event) => Help.#handleMouseOver(element, event));
+            element.addEventListener('mouseout', () => Help.#handleMouseOut());
+        }
+        this.#elements.set(element, i18n);
+    }
+}
+function enableHelp() {
+    if (!isRegistered('Help')) {
+        registerObject('Help', Help);
+    }
+}
+
 /**
  * Wrapper around window.prompt(), but the message is an i18n key.
  * @param messageI18n The i18n key of text to display to the user.
@@ -6935,4 +6954,4 @@ function promptI18n(messageI18n, defaultValue) {
     return prompt(I18n.getString(messageI18n), defaultValue);
 }
 
-export { AddI18nElement, HTMLHarmony2dManipulatorElement, HTMLHarmonyAccordionElement, HTMLHarmonyCircularProgressElement, HTMLHarmonyColorPickerElement, HTMLHarmonyCopyElement, HTMLHarmonyFileInputElement, HTMLHarmonyFilterElement, HTMLHarmonyInfoBoxElement, HTMLHarmonyInfoBoxElementType, HTMLHarmonyItemElement, HTMLHarmonyLabelPropertyElement, HTMLHarmonyMenuElement, HTMLHarmonyPaletteElement, HTMLHarmonyPanelElement, HTMLHarmonyRadioElement, HTMLHarmonySelectElement, HTMLHarmonySliderElement, HTMLHarmonySlideshowElement, HTMLHarmonySplitterElement, HTMLHarmonySwitchElement, HTMLHarmonyTabElement, HTMLHarmonyTabGroupElement, HTMLHarmonyToggleButtonElement, HTMLHarmonyTooltipElement, HTMLHarmonyTreeElement, HarmonyFilterListType, HarmonyPanel, HarmonyTab, HarmonyTabGroup, HarmonyTree, I18n, I18nElements, I18nEvents, ManipulatorCorner, ManipulatorDirection, ManipulatorResizeOrigin, ManipulatorSide, ManipulatorUpdatedEventType, TreeItem, TreeItemKind, addRemoveClass, adoptStyle, adoptStyleSheet, cloneEvent, createElement, createElementNS, createShadowRoot, createShadowRootNS, defineElement, defineHarmony2dManipulator, defineHarmonyAccordion, defineHarmonyCircularProgress, defineHarmonyColorPicker, defineHarmonyCopy, defineHarmonyFileInput, defineHarmonyFilter, defineHarmonyInfoBox, defineHarmonyItem, defineHarmonyLabelProperty, defineHarmonyMenu, defineHarmonyPalette, defineHarmonyPanel, defineHarmonyRadio, defineHarmonySelect, defineHarmonySlider, defineHarmonySlideshow, defineHarmonySplitter, defineHarmonySwitch, defineHarmonyTab, defineHarmonyTabGroup, defineHarmonyToggleButton, defineHarmonyTooltip, defineHarmonyTree, display, documentStyle, documentStyleSync, getCustomElementRegistry, hide, isVisible, promptI18n, shadowRootStyle, shadowRootStyleSync, show, styleInject, svgNamespace, toggle, updateElement, updateShadowRoot, visible };
+export { AddI18nElement, HTMLHarmony2dManipulatorElement, HTMLHarmonyAccordionElement, HTMLHarmonyCircularProgressElement, HTMLHarmonyColorPickerElement, HTMLHarmonyCopyElement, HTMLHarmonyFileInputElement, HTMLHarmonyFilterElement, HTMLHarmonyInfoBoxElement, HTMLHarmonyInfoBoxElementType, HTMLHarmonyItemElement, HTMLHarmonyLabelPropertyElement, HTMLHarmonyMenuElement, HTMLHarmonyPaletteElement, HTMLHarmonyPanelElement, HTMLHarmonyRadioElement, HTMLHarmonySelectElement, HTMLHarmonySliderElement, HTMLHarmonySlideshowElement, HTMLHarmonySplitterElement, HTMLHarmonySwitchElement, HTMLHarmonyTabElement, HTMLHarmonyTabGroupElement, HTMLHarmonyToggleButtonElement, HTMLHarmonyTooltipElement, HTMLHarmonyTreeElement, HarmonyFilterListType, HarmonyPanel, HarmonyTab, HarmonyTabGroup, HarmonyTree, Help, I18n, I18nElements, I18nEvents, ManipulatorCorner, ManipulatorDirection, ManipulatorResizeOrigin, ManipulatorSide, ManipulatorUpdatedEventType, TreeItem, TreeItemKind, addRemoveClass, adoptStyle, adoptStyleSheet, cloneEvent, createElement, createElementNS, createShadowRoot, createShadowRootNS, defineElement, defineHarmony2dManipulator, defineHarmonyAccordion, defineHarmonyCircularProgress, defineHarmonyColorPicker, defineHarmonyCopy, defineHarmonyFileInput, defineHarmonyFilter, defineHarmonyInfoBox, defineHarmonyItem, defineHarmonyLabelProperty, defineHarmonyMenu, defineHarmonyPalette, defineHarmonyPanel, defineHarmonyRadio, defineHarmonySelect, defineHarmonySlider, defineHarmonySlideshow, defineHarmonySplitter, defineHarmonySwitch, defineHarmonyTab, defineHarmonyTabGroup, defineHarmonyToggleButton, defineHarmonyTooltip, defineHarmonyTree, display, documentStyle, documentStyleSync, enableHelp, getCustomElementRegistry, hide, isVisible, promptI18n, shadowRootStyle, shadowRootStyleSync, show, styleInject, svgNamespace, toggle, updateElement, updateShadowRoot, visible };
