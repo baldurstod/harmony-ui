@@ -1,11 +1,11 @@
 import { closeSVG } from 'harmony-svg';
 import { errorOnce, MyEventTarget } from 'harmony-utils';
-import { cloneEvent } from '../browser';
 import tabCSS from '../css/components/tab.css';
 import { shadowRootStyle } from '../harmony-css';
 import { addRemoveClass, createElement, display, show, updateElement } from '../harmony-html';
 import { I18n, I18nDescriptor } from '../harmony-i18n';
 import { HasI18n } from '../interfaces/hasi18n';
+import { cloneEvent } from '../utils/events';
 import { HarmonyComponent } from './component';
 import { HarmonyPanel } from './panel';
 import { HarmonyTabGroup } from './tabgroup';
