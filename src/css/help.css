@@ -15,7 +15,6 @@
 
 div {
 	position: fixed;
-	bottom: 60%;
 	max-height: 30%;
 	width: 100%;
 	text-align: center;
@@ -29,12 +28,7 @@ div {
 	border-bottom: var(--help-border);
 }
 
-.bottom {
-	bottom: unset;
-	top: 60%;
-}
 
 .help.html {
 	text-align: unset;
-	/*max-height: 90%;*/
 }
