@@ -1,4 +1,4 @@
-import { HTMLHarmonyToggleButtonElement } from './browser';
+import { HTMLHarmony2dManipulatorElement, HTMLHarmonyAccordionElement, HTMLHarmonyCircularProgressElement, HTMLHarmonyColorPickerElement, HTMLHarmonyCopyElement, HTMLHarmonyFileInputElement, HTMLHarmonyFilterElement, HTMLHarmonyInfoBoxElement, HTMLHarmonyItemElement, HTMLHarmonyLabelPropertyElement, HTMLHarmonyMenuElement, HTMLHarmonyPaletteElement, HTMLHarmonyPanelElement, HTMLHarmonyRadioElement, HTMLHarmonySelectElement, HTMLHarmonySliderElement, HTMLHarmonySlideshowElement, HTMLHarmonySplitterElement, HTMLHarmonySwitchElement, HTMLHarmonyTabElement, HTMLHarmonyTabGroupElement, HTMLHarmonyToggleButtonElement, HTMLHarmonyTooltipElement, HTMLHarmonyTreeElement } from './browser';
 import { AddI18nElement, I18nDescriptor } from './harmony-i18n';
 import { HasI18n } from './interfaces/hasi18n';
 import { ET } from './utils/create';
@@ -69,6 +69,49 @@ export type CreateShadowRootOptions = {
 
 export type CreateElementOptionValue = null | boolean | string | I18nDescriptor | EventListenerOrEventListenerObject | [] | Record<string, string>;
 
+// Overloads for standard elements
+export function createElement(tagName: 'button', options?: CreateElementOptions): HTMLButtonElement;
+export function createElement(tagName: 'canvas', options?: CreateElementOptions): HTMLCanvasElement;
+export function createElement(tagName: 'datalist', options?: CreateElementOptions): HTMLDataListElement;
+export function createElement(tagName: 'dialog', options?: CreateElementOptions): HTMLDialogElement;
+export function createElement(tagName: 'div', options?: CreateElementOptions): HTMLDivElement;
+export function createElement(tagName: 'img', options?: CreateElementOptions): HTMLImageElement;
+export function createElement(tagName: 'input', options?: CreateElementOptions): HTMLInputElement;
+export function createElement(tagName: 'label', options?: CreateElementOptions): HTMLLabelElement;
+export function createElement(tagName: 'optgroup', options?: CreateElementOptions): HTMLOptGroupElement;
+export function createElement(tagName: 'option', options?: CreateElementOptions): HTMLOptionElement;
+export function createElement(tagName: 'select', options?: CreateElementOptions): HTMLSelectElement;
+export function createElement(tagName: 'slot', options?: CreateElementOptions): HTMLSlotElement;
+export function createElement(tagName: 'span', options?: CreateElementOptions): HTMLSpanElement;
+export function createElement(tagName: 'textarea', options?: CreateElementOptions): HTMLTextAreaElement;
+
+// Overloads for harmony elements
+export function createElement(tagName: 'harmony-2d-manipulator', options?: CreateElementOptions): HTMLHarmony2dManipulatorElement;
+export function createElement(tagName: 'harmony-accordion', options?: CreateElementOptions): HTMLHarmonyAccordionElement;
+export function createElement(tagName: 'harmony-circular-progress', options?: CreateElementOptions): HTMLHarmonyCircularProgressElement;
+export function createElement(tagName: 'harmony-color-picker', options?: CreateElementOptions): HTMLHarmonyColorPickerElement;
+export function createElement(tagName: 'harmony-copy', options?: CreateElementOptions): HTMLHarmonyCopyElement;
+export function createElement(tagName: 'harmony-file-input', options?: CreateElementOptions): HTMLHarmonyFileInputElement;
+export function createElement(tagName: 'harmony-filter', options?: CreateElementOptions): HTMLHarmonyFilterElement;
+export function createElement(tagName: 'harmony-info-box', options?: CreateElementOptions): HTMLHarmonyInfoBoxElement;
+export function createElement(tagName: 'harmony-item', options?: CreateElementOptions): HTMLHarmonyItemElement;
+export function createElement(tagName: 'harmony-label-property', options?: CreateElementOptions): HTMLHarmonyLabelPropertyElement;
+export function createElement(tagName: 'harmony-menu', options?: CreateElementOptions): HTMLHarmonyMenuElement;
+export function createElement(tagName: 'harmony-palette', options?: CreateElementOptions): HTMLHarmonyPaletteElement;
+export function createElement(tagName: 'harmony-panel', options?: CreateElementOptions): HTMLHarmonyPanelElement;
+export function createElement(tagName: 'harmony-radio', options?: CreateElementOptions): HTMLHarmonyRadioElement;
+export function createElement(tagName: 'harmony-select', options?: CreateElementOptions): HTMLHarmonySelectElement;
+export function createElement(tagName: 'harmony-slider', options?: CreateElementOptions): HTMLHarmonySliderElement;
+export function createElement(tagName: 'harmony-slideshow', options?: CreateElementOptions): HTMLHarmonySlideshowElement;
+export function createElement(tagName: 'harmony-splitter', options?: CreateElementOptions): HTMLHarmonySplitterElement;
+export function createElement(tagName: 'harmony-switch', options?: CreateElementOptions): HTMLHarmonySwitchElement;
+export function createElement(tagName: 'harmony-tab-group', options?: CreateElementOptions): HTMLHarmonyTabGroupElement;
+export function createElement(tagName: 'harmony-tab', options?: CreateElementOptions): HTMLHarmonyTabElement;
+export function createElement(tagName: 'harmony-toggle-button', options?: CreateElementOptions): HTMLHarmonyToggleButtonElement;
+export function createElement(tagName: 'harmony-tooltip', options?: CreateElementOptions): HTMLHarmonyTooltipElement;
+export function createElement(tagName: 'harmony-tree', options?: CreateElementOptions): HTMLHarmonyTreeElement;
+
+export function createElement(tagName: string, options?: CreateElementOptions): HTMLElement;
 export function createElement(tagName: string, options?: CreateElementOptions): HTMLElement {
 	const element = document.createElement(tagName);
 	createElementOptions(element, options);

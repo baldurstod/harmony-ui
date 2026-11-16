@@ -17,6 +17,82 @@ export declare type ColorPickerEventData = {
     rgba: [number, number, number, number];
 };
 
+export declare function createElement(tagName: 'button', options?: CreateElementOptions): HTMLButtonElement;
+
+export declare function createElement(tagName: 'canvas', options?: CreateElementOptions): HTMLCanvasElement;
+
+export declare function createElement(tagName: 'datalist', options?: CreateElementOptions): HTMLDataListElement;
+
+export declare function createElement(tagName: 'dialog', options?: CreateElementOptions): HTMLDialogElement;
+
+export declare function createElement(tagName: 'div', options?: CreateElementOptions): HTMLDivElement;
+
+export declare function createElement(tagName: 'img', options?: CreateElementOptions): HTMLImageElement;
+
+export declare function createElement(tagName: 'input', options?: CreateElementOptions): HTMLInputElement;
+
+export declare function createElement(tagName: 'label', options?: CreateElementOptions): HTMLLabelElement;
+
+export declare function createElement(tagName: 'optgroup', options?: CreateElementOptions): HTMLOptGroupElement;
+
+export declare function createElement(tagName: 'option', options?: CreateElementOptions): HTMLOptionElement;
+
+export declare function createElement(tagName: 'select', options?: CreateElementOptions): HTMLSelectElement;
+
+export declare function createElement(tagName: 'slot', options?: CreateElementOptions): HTMLSlotElement;
+
+export declare function createElement(tagName: 'span', options?: CreateElementOptions): HTMLSpanElement;
+
+export declare function createElement(tagName: 'textarea', options?: CreateElementOptions): HTMLTextAreaElement;
+
+export declare function createElement(tagName: 'harmony-2d-manipulator', options?: CreateElementOptions): HTMLHarmony2dManipulatorElement;
+
+export declare function createElement(tagName: 'harmony-accordion', options?: CreateElementOptions): HTMLHarmonyAccordionElement;
+
+export declare function createElement(tagName: 'harmony-circular-progress', options?: CreateElementOptions): HTMLHarmonyCircularProgressElement;
+
+export declare function createElement(tagName: 'harmony-color-picker', options?: CreateElementOptions): HTMLHarmonyColorPickerElement;
+
+export declare function createElement(tagName: 'harmony-copy', options?: CreateElementOptions): HTMLHarmonyCopyElement;
+
+export declare function createElement(tagName: 'harmony-file-input', options?: CreateElementOptions): HTMLHarmonyFileInputElement;
+
+export declare function createElement(tagName: 'harmony-filter', options?: CreateElementOptions): HTMLHarmonyFilterElement;
+
+export declare function createElement(tagName: 'harmony-info-box', options?: CreateElementOptions): HTMLHarmonyInfoBoxElement;
+
+export declare function createElement(tagName: 'harmony-item', options?: CreateElementOptions): HTMLHarmonyItemElement;
+
+export declare function createElement(tagName: 'harmony-label-property', options?: CreateElementOptions): HTMLHarmonyLabelPropertyElement;
+
+export declare function createElement(tagName: 'harmony-menu', options?: CreateElementOptions): HTMLHarmonyMenuElement;
+
+export declare function createElement(tagName: 'harmony-palette', options?: CreateElementOptions): HTMLHarmonyPaletteElement;
+
+export declare function createElement(tagName: 'harmony-panel', options?: CreateElementOptions): HTMLHarmonyPanelElement;
+
+export declare function createElement(tagName: 'harmony-radio', options?: CreateElementOptions): HTMLHarmonyRadioElement;
+
+export declare function createElement(tagName: 'harmony-select', options?: CreateElementOptions): HTMLHarmonySelectElement;
+
+export declare function createElement(tagName: 'harmony-slider', options?: CreateElementOptions): HTMLHarmonySliderElement;
+
+export declare function createElement(tagName: 'harmony-slideshow', options?: CreateElementOptions): HTMLHarmonySlideshowElement;
+
+export declare function createElement(tagName: 'harmony-splitter', options?: CreateElementOptions): HTMLHarmonySplitterElement;
+
+export declare function createElement(tagName: 'harmony-switch', options?: CreateElementOptions): HTMLHarmonySwitchElement;
+
+export declare function createElement(tagName: 'harmony-tab-group', options?: CreateElementOptions): HTMLHarmonyTabGroupElement;
+
+export declare function createElement(tagName: 'harmony-tab', options?: CreateElementOptions): HTMLHarmonyTabElement;
+
+export declare function createElement(tagName: 'harmony-toggle-button', options?: CreateElementOptions): HTMLHarmonyToggleButtonElement;
+
+export declare function createElement(tagName: 'harmony-tooltip', options?: CreateElementOptions): HTMLHarmonyTooltipElement;
+
+export declare function createElement(tagName: 'harmony-tree', options?: CreateElementOptions): HTMLHarmonyTreeElement;
+
 export declare function createElement(tagName: string, options?: CreateElementOptions): HTMLElement;
 
 export declare type CreateElementChildOption = Element | ShadowRoot | string | null | undefined;
@@ -226,7 +302,7 @@ export declare type HarmonyPaletteSelectEventData = {
 
 export declare class HarmonyPanel implements HarmonyComponent, HasI18n {
     #private;
-    readonly htmlElement: HTMLElement;
+    readonly htmlElement: HTMLDivElement;
     readonly isHarmonyPanel: true;
     isMovable: boolean;
     customPanelId: number;
@@ -319,7 +395,7 @@ export declare type HarmonySwitchChange = {
 
 export declare class HarmonyTab extends MyEventTarget implements HarmonyComponent, HasI18n {
     #private;
-    readonly htmlElement: HTMLElement;
+    readonly htmlElement: HTMLDivElement;
     content?: HTMLElement;
     panel?: HarmonyPanel;
     constructor(params?: HarmonyTabParams);
@@ -345,7 +421,7 @@ export declare type HarmonyTabEventData = {
 
 export declare class HarmonyTabGroup implements HarmonyComponent {
     #private;
-    readonly htmlElement: HTMLElement;
+    readonly htmlElement: HTMLDivElement;
     constructor(params?: HarmonyTabGroupParams);
     setParams(params: HarmonyTabGroupParams): void;
     append(...tabs: HarmonyTab[]): void;
@@ -388,7 +464,7 @@ export declare type HarmonyTabParams = {
 
 export declare class HarmonyTree extends MyEventTarget implements HarmonyComponent {
     #private;
-    readonly htmlElement: HTMLElement;
+    readonly htmlElement: HTMLDivElement;
     adoptStyle(css: string): void;
     setRoot(root?: TreeItem | null): void;
     isExpanded(item: TreeItem): boolean;
