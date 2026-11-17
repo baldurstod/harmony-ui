@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<title>Test input</title>
+	<link href="./assets/css/examples.css" rel="stylesheet">
+	</link>
+</head>
+
+<body>
+	<harmony-input i18n="#test_label"></harmony-input>
+</body>
+<script type="module">
+	import { defineHarmonyInput, I18n, HarmonyInput } from '../dist/browser.js';
+	I18n.start();
+	defineHarmonyInput();
+	const input = new HarmonyInput();
+	input.setTitleI18n('#test_label');
+	document.body.append(input.htmlElement);
+	input.setInfo('test');
+
+	const levels = ['info', 'warning', 'error', null];
+	let index = 0;
+
+	setInterval(() => {
+		changeLevel(levels[index]);
+		index = (index + 1) % levels.length;
+
+	}, 1000);
+
+	function changeLevel(level) {
+		if (level) {
+			input.setInfoBox('test' + level, level);
+		} else {
+			input.setInfoBox(null);
+		}
+	}
+
+</script>
+
+</html>

@@ -2,6 +2,8 @@ import { Color } from 'harmony-utils';
 import { MyEventTarget } from 'harmony-utils';
 import { Radian } from 'harmony-types';
 
+export declare function AddAndProcessI18nElement(element: Element, descriptor: string | I18nDescriptor | null): void;
+
 export declare function AddI18nElement(element: Element, descriptor: string | I18nDescriptor | null): void;
 
 export declare function addRemoveClass(element: HTMLElement | undefined, clas: string, add: boolean): void;
@@ -173,6 +175,8 @@ export declare function defineHarmonyFilter(suffix?: string): void;
 
 export declare function defineHarmonyInfoBox(suffix?: string): void;
 
+export declare function defineHarmonyInput(suffix?: string): void;
+
 export declare function defineHarmonyItem(suffix?: string): void;
 
 export declare function defineHarmonyLabelProperty(suffix?: string): void;
@@ -278,6 +282,40 @@ export declare type HarmonyFilterOption = {
 };
 
 export declare type HarmonyFilterType = 'string' | 'number' | 'range' | 'list' | 'select' | 'custom';
+
+export declare class HarmonyInput extends MyEventTarget implements HarmonyComponent, HasI18n {
+    #private;
+    readonly htmlElement: HTMLDivElement;
+    constructor(params?: HarmonyInputParams);
+    setParams(params: HarmonyInputParams): void;
+    setLabel(label: string): void;
+    setTitleI18n(i18n: string | I18nDescriptor | null): void;
+    setDisabled(disabled: boolean): void;
+    getDisabled(): boolean;
+    scrollIntoView(): void;
+    setInfo(info: string | I18nDescriptor | null): void;
+    setWarning(info: string | I18nDescriptor | null): void;
+    setError(info: string | I18nDescriptor | null): void;
+    setInfoBox(info: string | I18nDescriptor | null, level?: HarmonyInputInfoLevel): void;
+}
+
+export declare type HarmonyInputEventData = {
+    input: HarmonyInput;
+    originalEvent?: Event;
+};
+
+export declare type HarmonyInputInfoLevel = 'info' | 'error' | 'warning';
+
+export declare type HarmonyInputParams = {
+    /** Label. */
+    label?: string;
+    /** Internationalized label. */
+    labelI18n?: string | I18nDescriptor | null;
+    /** Set the input disabled. Default to false. */
+    disabled?: boolean;
+    /** Set the input value. */
+    value?: string;
+};
 
 export declare type HarmonyMenuItem = {
     i18n?: string;
@@ -609,6 +647,13 @@ export declare enum HTMLHarmonyInfoBoxElementType {
     Error = "error"
 }
 
+export declare class HTMLHarmonyInputElement extends HTMLElement {
+    #private;
+    connectedCallback(): void;
+    attributeChangedCallback(name: string, oldValue: string, newValue: string): void;
+    static get observedAttributes(): string[];
+}
+
 export declare class HTMLHarmonyItemElement extends HTMLElement {
     #private;
     constructor();
@@ -855,6 +900,7 @@ export declare class I18n {
     static observeElement(element: HTMLElement | ShadowRoot): void;
     static i18n(): void;
     static updateElement(htmlElement: Element | ShadowRoot): void;
+    static updateElement2(element: Element): void;
     /**
      * @deprecated use setLang() instead
      */

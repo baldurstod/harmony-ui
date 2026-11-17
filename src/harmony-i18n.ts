@@ -44,6 +44,11 @@ type Target = {
 
 export const I18nElements = new Map<Element, I18nDescriptor>();
 
+export function AddAndProcessI18nElement(element: Element, descriptor: string | I18nDescriptor | null): void {
+	AddI18nElement(element, descriptor);
+	I18n.updateElement2(element);
+}
+
 export function AddI18nElement(element: Element, descriptor: string | I18nDescriptor | null): void {
 	if (typeof descriptor == 'string') {
 		descriptor = { innerText: descriptor };
@@ -282,6 +287,10 @@ export class I18n {
 	static updateElement(htmlElement: Element | ShadowRoot): void {
 		this.#processList(htmlElement, 'i18n', 'data-i18n', 'innerHTML');
 		this.#processJSON(htmlElement);
+	}
+
+	static updateElement2(element: Element): void {
+		this.#processElement2(element);
 	}
 
 	/**

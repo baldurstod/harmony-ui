@@ -116,6 +116,7 @@ export class HarmonyTab extends MyEventTarget implements HarmonyComponent, HasI1
 	}
 
 	setDisabled(disabled: boolean): void {
+		this.#initHTML();
 		this.#disabled = disabled ? true : false;
 		addRemoveClass(this.#htmlHeader, 'disabled', this.#disabled);
 	}

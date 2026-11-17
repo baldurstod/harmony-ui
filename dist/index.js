@@ -1,7 +1,7 @@
-import { closeSVG, folderOpenSVG, infoSVG, checkOutlineSVG } from 'harmony-svg';
 import { MyEventTarget, errorOnce, Color, BugReporter } from 'harmony-utils';
+import { closeSVG, folderOpenSVG, infoSVG, checkOutlineSVG } from 'harmony-svg';
 
-var panelCSS = ":host {\n\tdisplay: flex;\n\tflex: 1;\n\tflex-direction: column;\n\t/*flex: 0 0 auto;*/\n\tbox-sizing: border-box;\n\tpointer-events: all;\n\tposition: relative;\n\tbox-sizing: border-box;\n\n\tmax-width: 100%;\n\tmax-height: 100%;\n\n\t--header-bg-color: var(--harmony-panel-header-bg-color, var(--main-bg-color-dark, black));\n\t--content-bg-color: var(--harmony-panel-content-bg-color, var(--main-bg-color-dark, black));\n\t--border-color: var(--harmony-panel-border-color, var(--text-primary, white));\n\n\t--resize-bar-size: 0.5rem;\n\t--layout: column;\n}\n\n/* Prevent child panel header to appear for tabs layout */\n@container style(--layout: tabs) {\n\t:host {\n\t\t--display-header: none;\n\t}\n}\n\n@container style(--layout: column) {\n\t:host {\n\t\t--display-header: initial;\n\t}\n}\n\n@container style(--layout: row) {\n\t:host {\n\t\t--display-header: initial;\n\t}\n}\n\n:host(.collapsed) {\n\tflex: 0 0 auto;\n}\n\n.harmony-panel-row,\n:host(.harmony-panel-row) {\n\t--layout: row;\n}\n\n.harmony-panel-row>harmony-panel {\n\theight: 100%;\n}\n\n.harmony-panel-column,\n:host(.harmony-panel-column) {\n\t--layout: column;\n}\n\n.harmony-panel-tabs,\n:host(.harmony-panel-tabs) {\n\t--layout: tabs;\n}\n\n.harmony-panel-column>harmony-panel {\n\twidth: 100%;\n}\n\n.harmony-panel-splitter {\n\tdisplay: none;\n\tflex: 0 0 10px;\n\tbackground-color: red;\n}\n\n.header {\n\tcursor: pointer;\n\tfont-size: 1.5em;\n\tpadding: 0.25rem;\n\toverflow: hidden;\n\tflex: 0 0 2rem;\n\tbackground-color: var(--header-bg-color);\n\tdisplay: var(--display-header, flex);\n\talign-items: center;\n\tdisplay: flex;\n\talign-items: center;\n}\n\n.header-title {\n\tflex: 1;\n}\n\n.header-close {\n\tdisplay: flex;\n}\n\n.header.hidden {\n\tdisplay: var(--harmony-panel-display-headers, none);\n}\n\n.content {\n\twidth: 100%;\n\tbox-sizing: border-box;\n\tbackground-color: var(--content-bg-color);\n\tflex: 1;\n\toverflow: hidden;\n\tdisplay: flex;\n\tposition: relative;\n\tflex-direction: var(--layout, column);\n}\n\n.header.target {\n\tbackground: blue;\n}\n\n.content.target {\n\tbackground: blue;\n}\n\n[collapsible='1']>.title::after,\n:host(.collapsible)>.title::after {\n\tcontent: \"-\";\n\tright: 0.25rem;\n\tposition: absolute;\n}\n\n[collapsed='1']>.title::after,\n:host(.collapsed)>.title::after {\n\tcontent: \"+\";\n}\n\n.panel-resize {\n\tpointer-events: none;\n\tdisplay: none;\n\ttop: 0;\n\tleft: 0;\n\twidth: 100%;\n\theight: 100%;\n\tposition: absolute;\n}\n\n.panel-resize>* {\n\tpointer-events: all;\n\tposition: absolute;\n}\n\n.panel-resize>.side {\n\tinset: calc(var(--resize-bar-size) * 0.5);\n}\n\n.panel-resize>.corner {\n\theight: var(--resize-bar-size);\n\twidth: var(--resize-bar-size);\n}\n\n.panel-resize>.top,\n.panel-resize>.bottom {\n\theight: var(--resize-bar-size);\n\twidth: auto;\n\tcursor: ns-resize;\n}\n\n.panel-resize>.right,\n.panel-resize>.left {\n\twidth: var(--resize-bar-size);\n\theight: auto;\n\tcursor: ew-resize;\n}\n\n.panel-resize>.top {\n\ttop: calc(var(--resize-bar-size) * -0.5);\n\tbottom: unset;\n}\n\n.panel-resize>.bottom {\n\ttop: unset;\n\tbottom: calc(var(--resize-bar-size) * -0.5);\n}\n\n.panel-resize>.left {\n\tleft: calc(var(--resize-bar-size) * -0.5);\n\tright: unset;\n}\n\n.panel-resize>.right {\n\tleft: unset;\n\tright: calc(var(--resize-bar-size) * -0.5);\n}\n\n.panel-resize>.top_right {\n\ttop: calc(var(--resize-bar-size) * -0.5);\n\tright: calc(var(--resize-bar-size) * -0.5);\n\tcursor: ne-resize;\n}\n\n.panel-resize>.bottom_right {\n\tbottom: calc(var(--resize-bar-size) * -0.5);\n\tright: calc(var(--resize-bar-size) * -0.5);\n\tcursor: se-resize;\n}\n\n.panel-resize>.top_left {\n\ttop: calc(var(--resize-bar-size) * -0.5);\n\tleft: calc(var(--resize-bar-size) * -0.5);\n\tcursor: nw-resize;\n}\n\n.panel-resize>.bottom_left {\n\tbottom: calc(var(--resize-bar-size) * -0.5);\n\tleft: calc(var(--resize-bar-size) * -0.5);\n\tcursor: sw-resize;\n}\n\n:host(.floating) {\n\tz-index: 10000;\n\tborder: 0.1rem solid var(--border-color);\n}\n\n:host(.floating) .panel-resize {\n\tdisplay: initial;\n}\n\n:host(.floating.collapsed) {\n\tmin-width: 10rem;\n\tmin-height: 0rem;\n}\n";
+var inputCSS = ":host {\n\tdisplay: flex;\n\tflex-direction: column;\n\tgap: 0.2rem;\n}\n\nlabel {\n\tdisplay: flex;\n\tgap: 0.2rem;\n\tjustify-content: space-between;\n}\n\n.info-box {\n\tborder: 0.1rem solid;\n\tpadding: 0.2rem;\n\tcolor: rgb(var(--r), var(--g), var(--b));\n\tbackground-color: rgb(var(--r), var(--g), var(--b), 0.25);\n}\n\n.info-box.info {\n\t--r: 0;\n\t--g: 133;\n\t--b: 250;\n}\n\n.info-box.warning {\n\t--r: 250;\n\t--g: 165;\n\t--b: 0;\n}\n\n.info-box.error {\n\t--r: 255;\n\t--g: 0;\n\t--b: 0;\n}\n";
 
 async function documentStyle(cssText) {
     return await shadowRootStyle(document, cssText);
@@ -31,6 +31,10 @@ var I18nEvents;
 })(I18nEvents || (I18nEvents = {}));
 const targets = ['innerHTML', 'innerText', 'placeholder', 'title', 'label'];
 const I18nElements = new Map();
+function AddAndProcessI18nElement(element, descriptor) {
+    AddI18nElement(element, descriptor);
+    I18n.updateElement2(element);
+}
 function AddI18nElement(element, descriptor) {
     if (typeof descriptor == 'string') {
         descriptor = { innerText: descriptor };
@@ -241,6 +245,9 @@ class I18n {
     static updateElement(htmlElement) {
         this.#processList(htmlElement, 'i18n', 'data-i18n', 'innerHTML');
         this.#processJSON(htmlElement);
+    }
+    static updateElement2(element) {
+        this.#processElement2(element);
     }
     /**
      * @deprecated use setLang() instead
@@ -611,6 +618,97 @@ function addRemoveClass(element, clas, add) {
     }
 }
 
+class HarmonyInput extends MyEventTarget {
+    htmlElement = createElement('div');
+    #shadowRoot;
+    #htmlLabel;
+    #htmlInput;
+    #htmlInfo;
+    #disabled = false;
+    #active = false;
+    constructor(params = {}) {
+        super();
+        this.setParams(params);
+    }
+    setParams(params) {
+        this.#initHTML();
+    }
+    #initHTML() {
+        if (this.#shadowRoot) {
+            return;
+        }
+        this.#shadowRoot = this.htmlElement.attachShadow({ mode: 'closed' });
+        I18n.observeElement(this.#shadowRoot);
+        void shadowRootStyle(this.#shadowRoot, inputCSS);
+        createElement('label', {
+            parent: this.#shadowRoot,
+            childs: [
+                this.#htmlLabel = createElement('span'),
+                this.#htmlInput = createElement('input', {
+                //$click: (event: Event) => { event.stopPropagation(); this.close() },
+                }),
+            ],
+        });
+        this.#htmlInfo = createElement('div', {
+            parent: this.#shadowRoot,
+            hidden: true,
+            class: 'info-box',
+        });
+    }
+    setLabel(label) {
+        this.#initHTML();
+        this.#htmlLabel.innerText = label;
+    }
+    setTitleI18n(i18n) {
+        this.#initHTML();
+        if (typeof i18n === 'string') {
+            updateElement(this.#htmlLabel, {
+                i18n,
+            });
+        }
+        else {
+            errorOnce('unhandled type ' + typeof i18n + i18n);
+        }
+    }
+    setDisabled(disabled) {
+        this.#initHTML();
+        this.#disabled = disabled ? true : false;
+        addRemoveClass(this.#htmlInput, 'disabled', this.#disabled);
+    }
+    getDisabled() {
+        return this.#disabled;
+    }
+    scrollIntoView() {
+        this.#initHTML();
+        this.#htmlInput.scrollIntoView();
+    }
+    setInfo(info) {
+        this.setInfoBox(info, 'info');
+    }
+    setWarning(info) {
+        this.setInfoBox(info, 'warning');
+    }
+    setError(info) {
+        this.setInfoBox(info, 'error');
+    }
+    setInfoBox(info, level = 'info') {
+        this.#initHTML();
+        for (const level of ['info', 'warning', 'error']) {
+            this.#htmlInfo.classList.remove(level);
+        }
+        this.#htmlInfo.classList.add(level);
+        AddAndProcessI18nElement(this.#htmlInfo, info);
+        if (!info) {
+            hide(this.#htmlInfo);
+        }
+        else {
+            show(this.#htmlInfo);
+        }
+    }
+}
+
+var panelCSS = ":host {\n\tdisplay: flex;\n\tflex: 1;\n\tflex-direction: column;\n\t/*flex: 0 0 auto;*/\n\tbox-sizing: border-box;\n\tpointer-events: all;\n\tposition: relative;\n\tbox-sizing: border-box;\n\n\tmax-width: 100%;\n\tmax-height: 100%;\n\n\t--header-bg-color: var(--harmony-panel-header-bg-color, var(--main-bg-color-dark, black));\n\t--content-bg-color: var(--harmony-panel-content-bg-color, var(--main-bg-color-dark, black));\n\t--border-color: var(--harmony-panel-border-color, var(--text-primary, white));\n\n\t--resize-bar-size: 0.5rem;\n\t--layout: column;\n}\n\n/* Prevent child panel header to appear for tabs layout */\n@container style(--layout: tabs) {\n\t:host {\n\t\t--display-header: none;\n\t}\n}\n\n@container style(--layout: column) {\n\t:host {\n\t\t--display-header: initial;\n\t}\n}\n\n@container style(--layout: row) {\n\t:host {\n\t\t--display-header: initial;\n\t}\n}\n\n:host(.collapsed) {\n\tflex: 0 0 auto;\n}\n\n.harmony-panel-row,\n:host(.harmony-panel-row) {\n\t--layout: row;\n}\n\n.harmony-panel-row>harmony-panel {\n\theight: 100%;\n}\n\n.harmony-panel-column,\n:host(.harmony-panel-column) {\n\t--layout: column;\n}\n\n.harmony-panel-tabs,\n:host(.harmony-panel-tabs) {\n\t--layout: tabs;\n}\n\n.harmony-panel-column>harmony-panel {\n\twidth: 100%;\n}\n\n.harmony-panel-splitter {\n\tdisplay: none;\n\tflex: 0 0 10px;\n\tbackground-color: red;\n}\n\n.header {\n\tcursor: pointer;\n\tfont-size: 1.5em;\n\tpadding: 0.25rem;\n\toverflow: hidden;\n\tflex: 0 0 2rem;\n\tbackground-color: var(--header-bg-color);\n\tdisplay: var(--display-header, flex);\n\talign-items: center;\n\tdisplay: flex;\n\talign-items: center;\n}\n\n.header-title {\n\tflex: 1;\n}\n\n.header-close {\n\tdisplay: flex;\n}\n\n.header.hidden {\n\tdisplay: var(--harmony-panel-display-headers, none);\n}\n\n.content {\n\twidth: 100%;\n\tbox-sizing: border-box;\n\tbackground-color: var(--content-bg-color);\n\tflex: 1;\n\toverflow: hidden;\n\tdisplay: flex;\n\tposition: relative;\n\tflex-direction: var(--layout, column);\n}\n\n.header.target {\n\tbackground: blue;\n}\n\n.content.target {\n\tbackground: blue;\n}\n\n[collapsible='1']>.title::after,\n:host(.collapsible)>.title::after {\n\tcontent: \"-\";\n\tright: 0.25rem;\n\tposition: absolute;\n}\n\n[collapsed='1']>.title::after,\n:host(.collapsed)>.title::after {\n\tcontent: \"+\";\n}\n\n.panel-resize {\n\tpointer-events: none;\n\tdisplay: none;\n\ttop: 0;\n\tleft: 0;\n\twidth: 100%;\n\theight: 100%;\n\tposition: absolute;\n}\n\n.panel-resize>* {\n\tpointer-events: all;\n\tposition: absolute;\n}\n\n.panel-resize>.side {\n\tinset: calc(var(--resize-bar-size) * 0.5);\n}\n\n.panel-resize>.corner {\n\theight: var(--resize-bar-size);\n\twidth: var(--resize-bar-size);\n}\n\n.panel-resize>.top,\n.panel-resize>.bottom {\n\theight: var(--resize-bar-size);\n\twidth: auto;\n\tcursor: ns-resize;\n}\n\n.panel-resize>.right,\n.panel-resize>.left {\n\twidth: var(--resize-bar-size);\n\theight: auto;\n\tcursor: ew-resize;\n}\n\n.panel-resize>.top {\n\ttop: calc(var(--resize-bar-size) * -0.5);\n\tbottom: unset;\n}\n\n.panel-resize>.bottom {\n\ttop: unset;\n\tbottom: calc(var(--resize-bar-size) * -0.5);\n}\n\n.panel-resize>.left {\n\tleft: calc(var(--resize-bar-size) * -0.5);\n\tright: unset;\n}\n\n.panel-resize>.right {\n\tleft: unset;\n\tright: calc(var(--resize-bar-size) * -0.5);\n}\n\n.panel-resize>.top_right {\n\ttop: calc(var(--resize-bar-size) * -0.5);\n\tright: calc(var(--resize-bar-size) * -0.5);\n\tcursor: ne-resize;\n}\n\n.panel-resize>.bottom_right {\n\tbottom: calc(var(--resize-bar-size) * -0.5);\n\tright: calc(var(--resize-bar-size) * -0.5);\n\tcursor: se-resize;\n}\n\n.panel-resize>.top_left {\n\ttop: calc(var(--resize-bar-size) * -0.5);\n\tleft: calc(var(--resize-bar-size) * -0.5);\n\tcursor: nw-resize;\n}\n\n.panel-resize>.bottom_left {\n\tbottom: calc(var(--resize-bar-size) * -0.5);\n\tleft: calc(var(--resize-bar-size) * -0.5);\n\tcursor: sw-resize;\n}\n\n:host(.floating) {\n\tz-index: 10000;\n\tborder: 0.1rem solid var(--border-color);\n}\n\n:host(.floating) .panel-resize {\n\tdisplay: initial;\n}\n\n:host(.floating.collapsed) {\n\tmin-width: 10rem;\n\tmin-height: 0rem;\n}\n";
+
 var tabCSS$1 = ":host {\n\tdisplay: inline-block;\n\tbackground-color: var(--main-bg-color-bright);\n\t/*padding: 10px;*/\n\tborder: 0.1rem solid var(--harmony-ui-text-primary);\n\tborder-top: 0px;\n\tposition: relative;\n\tcolor: var(--harmony-ui-text-primary);\n\tcursor: pointer;\n\tuser-select: none;\n\tpointer-events: all;\n\tflex: 0 0;\n\ttext-align: center;\n\twhite-space: nowrap;\n\tdisplay: flex;\n\talign-items: center;\n}\n\ndiv {\n\tpadding: 0.2rem;\n}\n";
 
 function cloneEvent(event) {
@@ -692,6 +790,7 @@ class HarmonyTab extends MyEventTarget {
         show(this.#htmlTitle);
     }
     setDisabled(disabled) {
+        this.#initHTML();
         this.#disabled = disabled ? true : false;
         addRemoveClass(this.#htmlHeader, 'disabled', this.#disabled);
     }
@@ -4752,6 +4851,29 @@ function defineHarmonyInfoBox(suffix = '') {
     injectGlobalCss();
 }
 
+class HTMLHarmonyInputElement extends HTMLElement {
+    #input = new HarmonyInput();
+    connectedCallback() {
+        this.append(this.#input.htmlElement);
+    }
+    attributeChangedCallback(name, oldValue, newValue) {
+        switch (name) {
+            case 'label':
+                this.#input.setLabel(newValue);
+                break;
+            case 'i18n':
+                this.#input.setTitleI18n(newValue);
+                break;
+        }
+    }
+    static get observedAttributes() {
+        return ['label', 'i18n'];
+    }
+}
+function defineHarmonyInput(suffix = '') {
+    defineElement('harmony-input' + suffix, HTMLHarmonyInputElement);
+}
+
 var labelPropertyCSS = ":host {\n\tdisplay: flex;\n\tgap: var(--harmony-label-property-gap, 0.5);\n}\n";
 
 class HTMLHarmonyLabelPropertyElement extends HTMLElement {
@@ -6967,4 +7089,4 @@ function promptI18n(messageI18n, defaultValue) {
     return prompt(I18n.getString(messageI18n), defaultValue);
 }
 
-export { AddI18nElement, HTMLHarmony2dManipulatorElement, HTMLHarmonyAccordionElement, HTMLHarmonyCircularProgressElement, HTMLHarmonyColorPickerElement, HTMLHarmonyCopyElement, HTMLHarmonyFileInputElement, HTMLHarmonyFilterElement, HTMLHarmonyInfoBoxElement, HTMLHarmonyInfoBoxElementType, HTMLHarmonyItemElement, HTMLHarmonyLabelPropertyElement, HTMLHarmonyMenuElement, HTMLHarmonyPaletteElement, HTMLHarmonyPanelElement, HTMLHarmonyRadioElement, HTMLHarmonySelectElement, HTMLHarmonySliderElement, HTMLHarmonySlideshowElement, HTMLHarmonySplitterElement, HTMLHarmonySwitchElement, HTMLHarmonyTabElement, HTMLHarmonyTabGroupElement, HTMLHarmonyToggleButtonElement, HTMLHarmonyTooltipElement, HTMLHarmonyTreeElement, HarmonyFilterListType, HarmonyPanel, HarmonyTab, HarmonyTabGroup, HarmonyTree, Help, I18n, I18nElements, I18nEvents, ManipulatorCorner, ManipulatorDirection, ManipulatorResizeOrigin, ManipulatorSide, ManipulatorUpdatedEventType, TreeItem, TreeItemKind, addRemoveClass, adoptStyle, adoptStyleSheet, cloneEvent, createElement, createElementNS, createShadowRoot, createShadowRootNS, defineElement, defineHarmony2dManipulator, defineHarmonyAccordion, defineHarmonyCircularProgress, defineHarmonyColorPicker, defineHarmonyCopy, defineHarmonyFileInput, defineHarmonyFilter, defineHarmonyInfoBox, defineHarmonyItem, defineHarmonyLabelProperty, defineHarmonyMenu, defineHarmonyPalette, defineHarmonyPanel, defineHarmonyRadio, defineHarmonySelect, defineHarmonySlider, defineHarmonySlideshow, defineHarmonySplitter, defineHarmonySwitch, defineHarmonyTab, defineHarmonyTabGroup, defineHarmonyToggleButton, defineHarmonyTooltip, defineHarmonyTree, display, documentStyle, documentStyleSync, enableHelp, getCustomElementRegistry, hide, isVisible, promptI18n, shadowRootStyle, shadowRootStyleSync, show, styleInject, svgNamespace, toggle, updateElement, updateShadowRoot, visible };
+export { AddAndProcessI18nElement, AddI18nElement, HTMLHarmony2dManipulatorElement, HTMLHarmonyAccordionElement, HTMLHarmonyCircularProgressElement, HTMLHarmonyColorPickerElement, HTMLHarmonyCopyElement, HTMLHarmonyFileInputElement, HTMLHarmonyFilterElement, HTMLHarmonyInfoBoxElement, HTMLHarmonyInfoBoxElementType, HTMLHarmonyInputElement, HTMLHarmonyItemElement, HTMLHarmonyLabelPropertyElement, HTMLHarmonyMenuElement, HTMLHarmonyPaletteElement, HTMLHarmonyPanelElement, HTMLHarmonyRadioElement, HTMLHarmonySelectElement, HTMLHarmonySliderElement, HTMLHarmonySlideshowElement, HTMLHarmonySplitterElement, HTMLHarmonySwitchElement, HTMLHarmonyTabElement, HTMLHarmonyTabGroupElement, HTMLHarmonyToggleButtonElement, HTMLHarmonyTooltipElement, HTMLHarmonyTreeElement, HarmonyFilterListType, HarmonyInput, HarmonyPanel, HarmonyTab, HarmonyTabGroup, HarmonyTree, Help, I18n, I18nElements, I18nEvents, ManipulatorCorner, ManipulatorDirection, ManipulatorResizeOrigin, ManipulatorSide, ManipulatorUpdatedEventType, TreeItem, TreeItemKind, addRemoveClass, adoptStyle, adoptStyleSheet, cloneEvent, createElement, createElementNS, createShadowRoot, createShadowRootNS, defineElement, defineHarmony2dManipulator, defineHarmonyAccordion, defineHarmonyCircularProgress, defineHarmonyColorPicker, defineHarmonyCopy, defineHarmonyFileInput, defineHarmonyFilter, defineHarmonyInfoBox, defineHarmonyInput, defineHarmonyItem, defineHarmonyLabelProperty, defineHarmonyMenu, defineHarmonyPalette, defineHarmonyPanel, defineHarmonyRadio, defineHarmonySelect, defineHarmonySlider, defineHarmonySlideshow, defineHarmonySplitter, defineHarmonySwitch, defineHarmonyTab, defineHarmonyTabGroup, defineHarmonyToggleButton, defineHarmonyTooltip, defineHarmonyTree, display, documentStyle, documentStyleSync, enableHelp, getCustomElementRegistry, hide, isVisible, promptI18n, shadowRootStyle, shadowRootStyleSync, show, styleInject, svgNamespace, toggle, updateElement, updateShadowRoot, visible };

@@ -1,0 +1,36 @@
+:host {
+	display: flex;
+	flex-direction: column;
+	gap: 0.2rem;
+}
+
+label {
+	display: flex;
+	gap: 0.2rem;
+	justify-content: space-between;
+}
+
+.info-box {
+	border: 0.1rem solid;
+	padding: 0.2rem;
+	color: rgb(var(--r), var(--g), var(--b));
+	background-color: rgb(var(--r), var(--g), var(--b), 0.25);
+}
+
+.info-box.info {
+	--r: 0;
+	--g: 133;
+	--b: 250;
+}
+
+.info-box.warning {
+	--r: 250;
+	--g: 165;
+	--b: 0;
+}
+
+.info-box.error {
+	--r: 255;
+	--g: 0;
+	--b: 0;
+}
