@@ -85,7 +85,8 @@ export class HarmonyInput extends MyEventTarget implements HarmonyComponent, Has
 
 	setDisabled(disabled: boolean): void {
 		this.#initHTML();
-		this.#disabled = disabled ? true : false;
+		this.#disabled = disabled;
+		this.#htmlInput!.disabled = disabled;
 		addRemoveClass(this.#htmlInput, 'disabled', this.#disabled);
 	}
 
@@ -122,5 +123,20 @@ export class HarmonyInput extends MyEventTarget implements HarmonyComponent, Has
 		} else {
 			show(this.#htmlInfo);
 		}
+	}
+
+	getValue(): string {
+		this.#initHTML();
+		return this.#htmlInput!.value;
+	}
+
+	setValue(value: string): void {
+		this.#initHTML();
+		this.#htmlInput!.value = value;
+	}
+
+	addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void {
+		this.#initHTML();
+		this.#htmlInput?.addEventListener(type, listener, options);
 	}
 }

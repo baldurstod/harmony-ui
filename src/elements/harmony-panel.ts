@@ -460,7 +460,6 @@ export class HTMLHarmonyPanelElement extends HTMLElement implements HasI18n {
 		*/
 	}
 
-
 	setTitleI18n(i18n: string | I18nDescriptor | null): void {
 		if (typeof i18n === 'string') {
 			this.#setTitleI18n(i18n);

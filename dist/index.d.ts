@@ -63,6 +63,8 @@ export declare function createElement(tagName: 'harmony-filter', options?: Creat
 
 export declare function createElement(tagName: 'harmony-info-box', options?: CreateElementOptions): HTMLHarmonyInfoBoxElement;
 
+export declare function createElement(tagName: 'harmony-input', options?: CreateElementOptions): HTMLHarmonyInputElement;
+
 export declare function createElement(tagName: 'harmony-item', options?: CreateElementOptions): HTMLHarmonyItemElement;
 
 export declare function createElement(tagName: 'harmony-label-property', options?: CreateElementOptions): HTMLHarmonyLabelPropertyElement;
@@ -297,6 +299,9 @@ export declare class HarmonyInput extends MyEventTarget implements HarmonyCompon
     setWarning(info: string | I18nDescriptor | null): void;
     setError(info: string | I18nDescriptor | null): void;
     setInfoBox(info: string | I18nDescriptor | null, level?: HarmonyInputInfoLevel): void;
+    getValue(): string;
+    setValue(value: string): void;
+    addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
 }
 
 export declare type HarmonyInputEventData = {
@@ -647,9 +652,19 @@ export declare enum HTMLHarmonyInfoBoxElementType {
     Error = "error"
 }
 
-export declare class HTMLHarmonyInputElement extends HTMLElement {
+export declare class HTMLHarmonyInputElement extends HTMLElement implements HasI18n {
     #private;
     connectedCallback(): void;
+    addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+    get value(): string;
+    set value(value: string);
+    get disabled(): boolean;
+    set disabled(value: boolean);
+    setInfo(info: string | I18nDescriptor | null): void;
+    setWarning(warning: string | I18nDescriptor | null): void;
+    setError(error: string | I18nDescriptor | null): void;
+    setInfoBox(info: string | I18nDescriptor | null, level?: HarmonyInputInfoLevel): void;
+    setTitleI18n(i18n: string | I18nDescriptor | null): void;
     attributeChangedCallback(name: string, oldValue: string, newValue: string): void;
     static get observedAttributes(): string[];
 }

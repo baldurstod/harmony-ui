@@ -12,7 +12,7 @@ label {
 
 .info-box {
 	border: 0.1rem solid;
-	padding: 0.2rem;
+	padding: 0.5rem;
 	color: rgb(var(--r), var(--g), var(--b));
 	background-color: rgb(var(--r), var(--g), var(--b), 0.25);
 }

@@ -1,4 +1,4 @@
-import { HTMLHarmony2dManipulatorElement, HTMLHarmonyAccordionElement, HTMLHarmonyCircularProgressElement, HTMLHarmonyColorPickerElement, HTMLHarmonyCopyElement, HTMLHarmonyFileInputElement, HTMLHarmonyFilterElement, HTMLHarmonyInfoBoxElement, HTMLHarmonyItemElement, HTMLHarmonyLabelPropertyElement, HTMLHarmonyMenuElement, HTMLHarmonyPaletteElement, HTMLHarmonyPanelElement, HTMLHarmonyRadioElement, HTMLHarmonySelectElement, HTMLHarmonySliderElement, HTMLHarmonySlideshowElement, HTMLHarmonySplitterElement, HTMLHarmonySwitchElement, HTMLHarmonyTabElement, HTMLHarmonyTabGroupElement, HTMLHarmonyToggleButtonElement, HTMLHarmonyTooltipElement, HTMLHarmonyTreeElement } from './browser';
+import { HTMLHarmony2dManipulatorElement, HTMLHarmonyAccordionElement, HTMLHarmonyCircularProgressElement, HTMLHarmonyColorPickerElement, HTMLHarmonyCopyElement, HTMLHarmonyFileInputElement, HTMLHarmonyFilterElement, HTMLHarmonyInfoBoxElement, HTMLHarmonyInputElement, HTMLHarmonyItemElement, HTMLHarmonyLabelPropertyElement, HTMLHarmonyMenuElement, HTMLHarmonyPaletteElement, HTMLHarmonyPanelElement, HTMLHarmonyRadioElement, HTMLHarmonySelectElement, HTMLHarmonySliderElement, HTMLHarmonySlideshowElement, HTMLHarmonySplitterElement, HTMLHarmonySwitchElement, HTMLHarmonyTabElement, HTMLHarmonyTabGroupElement, HTMLHarmonyToggleButtonElement, HTMLHarmonyTooltipElement, HTMLHarmonyTreeElement } from './browser';
 import { AddI18nElement, I18nDescriptor } from './harmony-i18n';
 import { HasI18n } from './interfaces/hasi18n';
 import { ET } from './utils/create';
@@ -94,6 +94,7 @@ export function createElement(tagName: 'harmony-copy', options?: CreateElementOp
 export function createElement(tagName: 'harmony-file-input', options?: CreateElementOptions): HTMLHarmonyFileInputElement;
 export function createElement(tagName: 'harmony-filter', options?: CreateElementOptions): HTMLHarmonyFilterElement;
 export function createElement(tagName: 'harmony-info-box', options?: CreateElementOptions): HTMLHarmonyInfoBoxElement;
+export function createElement(tagName: 'harmony-input', options?: CreateElementOptions): HTMLHarmonyInputElement;
 export function createElement(tagName: 'harmony-item', options?: CreateElementOptions): HTMLHarmonyItemElement;
 export function createElement(tagName: 'harmony-label-property', options?: CreateElementOptions): HTMLHarmonyLabelPropertyElement;
 export function createElement(tagName: 'harmony-menu', options?: CreateElementOptions): HTMLHarmonyMenuElement;

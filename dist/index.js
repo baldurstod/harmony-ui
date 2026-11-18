@@ -1,7 +1,7 @@
 import { MyEventTarget, errorOnce, Color, BugReporter } from 'harmony-utils';
 import { closeSVG, folderOpenSVG, infoSVG, checkOutlineSVG } from 'harmony-svg';
 
-var inputCSS = ":host {\n\tdisplay: flex;\n\tflex-direction: column;\n\tgap: 0.2rem;\n}\n\nlabel {\n\tdisplay: flex;\n\tgap: 0.2rem;\n\tjustify-content: space-between;\n}\n\n.info-box {\n\tborder: 0.1rem solid;\n\tpadding: 0.2rem;\n\tcolor: rgb(var(--r), var(--g), var(--b));\n\tbackground-color: rgb(var(--r), var(--g), var(--b), 0.25);\n}\n\n.info-box.info {\n\t--r: 0;\n\t--g: 133;\n\t--b: 250;\n}\n\n.info-box.warning {\n\t--r: 250;\n\t--g: 165;\n\t--b: 0;\n}\n\n.info-box.error {\n\t--r: 255;\n\t--g: 0;\n\t--b: 0;\n}\n";
+var inputCSS = ":host {\n\tdisplay: flex;\n\tflex-direction: column;\n\tgap: 0.2rem;\n}\n\nlabel {\n\tdisplay: flex;\n\tgap: 0.2rem;\n\tjustify-content: space-between;\n}\n\n.info-box {\n\tborder: 0.1rem solid;\n\tpadding: 0.5rem;\n\tcolor: rgb(var(--r), var(--g), var(--b));\n\tbackground-color: rgb(var(--r), var(--g), var(--b), 0.25);\n}\n\n.info-box.info {\n\t--r: 0;\n\t--g: 133;\n\t--b: 250;\n}\n\n.info-box.warning {\n\t--r: 250;\n\t--g: 165;\n\t--b: 0;\n}\n\n.info-box.error {\n\t--r: 255;\n\t--g: 0;\n\t--b: 0;\n}\n";
 
 async function documentStyle(cssText) {
     return await shadowRootStyle(document, cssText);
@@ -672,7 +672,8 @@ class HarmonyInput extends MyEventTarget {
     }
     setDisabled(disabled) {
         this.#initHTML();
-        this.#disabled = disabled ? true : false;
+        this.#disabled = disabled;
+        this.#htmlInput.disabled = disabled;
         addRemoveClass(this.#htmlInput, 'disabled', this.#disabled);
     }
     getDisabled() {
@@ -704,6 +705,18 @@ class HarmonyInput extends MyEventTarget {
         else {
             show(this.#htmlInfo);
         }
+    }
+    getValue() {
+        this.#initHTML();
+        return this.#htmlInput.value;
+    }
+    setValue(value) {
+        this.#initHTML();
+        this.#htmlInput.value = value;
+    }
+    addEventListener(type, listener, options) {
+        this.#initHTML();
+        this.#htmlInput?.addEventListener(type, listener, options);
     }
 }
 
@@ -4856,6 +4869,36 @@ class HTMLHarmonyInputElement extends HTMLElement {
     connectedCallback() {
         this.append(this.#input.htmlElement);
     }
+    addEventListener(type, listener, options) {
+        this.#input.addEventListener(type, listener, options);
+    }
+    get value() {
+        return this.#input.getValue();
+    }
+    set value(value) {
+        this.#input.setValue(value);
+    }
+    get disabled() {
+        return this.#input.getDisabled();
+    }
+    set disabled(value) {
+        this.#input.setDisabled(value);
+    }
+    setInfo(info) {
+        this.#input.setInfo(info);
+    }
+    setWarning(warning) {
+        this.#input.setWarning(warning);
+    }
+    setError(error) {
+        this.#input.setError(error);
+    }
+    setInfoBox(info, level = 'info') {
+        this.#input.setInfoBox(info, level);
+    }
+    setTitleI18n(i18n) {
+        this.#input.setTitleI18n(i18n);
+    }
     attributeChangedCallback(name, oldValue, newValue) {
         switch (name) {
             case 'label':
@@ -4864,10 +4907,19 @@ class HTMLHarmonyInputElement extends HTMLElement {
             case 'i18n':
                 this.#input.setTitleI18n(newValue);
                 break;
+            case 'info':
+                this.#input.setInfo(newValue);
+                break;
+            case 'warning':
+                this.#input.setWarning(newValue);
+                break;
+            case 'error':
+                this.#input.setError(newValue);
+                break;
         }
     }
     static get observedAttributes() {
-        return ['label', 'i18n'];
+        return ['label', 'i18n', 'info', 'warning', 'error'];
     }
 }
 function defineHarmonyInput(suffix = '') {
