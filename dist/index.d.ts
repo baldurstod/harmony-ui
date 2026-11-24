@@ -925,6 +925,7 @@ export declare class I18n {
     static addEventListener(type: string, callback: EventListenerOrEventListenerObject | null, options?: AddEventListenerOptions | boolean): void;
     static getString(s: string): string;
     static formatString(s: string, values: Record<string, I18nValue>): string;
+    static formatHTMLElement(s: string, values: Record<string, I18nValue | HTMLElement>): HTMLSpanElement;
     /**
      * @deprecated use getAuthors() instead
      */

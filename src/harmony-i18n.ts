@@ -337,16 +337,90 @@ export class I18n {
 		let str = this.getString(s);
 
 		for (const key in values) {
-			const valueRegExp = new RegExp("\\${" + key + "\\}", "gi");
-			const translationRegExp = new RegExp("\\#{" + key + "\\}", "gi");
+			const valueRegExp = new RegExp("\\$\\{" + key + "\\}", "gi");
 			if (str.match(valueRegExp)) {
 				str = str.replace(valueRegExp, String(values[key]));
 			}
+
+			const translationRegExp = new RegExp("\\#\\{" + key + "\\}", "gi");
 			if (str.match(translationRegExp)) {
 				str = str.replace(translationRegExp, this.getString(String(values[key])));
 			}
 		}
 		return str;
+	}
+
+	static formatHTMLElement(s: string, values: Record<string, I18nValue | HTMLElement>): HTMLSpanElement {
+		let str = this.getString(s);
+
+		const element = document.createElement('span');
+
+		// First, do the translation values
+		for (const key in values) {
+			const translationRegExp = new RegExp("\\#\\{" + key + "\\}", "gi");
+			if (str.match(translationRegExp)) {
+				str = str.replace(translationRegExp, this.getString(String(values[key])));
+			}
+		}
+
+		let nodes: (Node | string)[] = [str];
+
+		function insertHtml(nodes: (Node | string)[], regExp: RegExp, element: HTMLElement | string): (Node | string)[] {
+			const newNodes: (Node | string)[] = [];
+
+			for (const node of nodes) {
+				if (typeof node !== 'string') {
+					newNodes.push(node);
+					continue;
+				}
+
+				const matches = node.match(regExp);
+				if (matches) {
+					const split = node.split(matches[0]);
+					for (const s of split) {
+						if (s !== '') {
+							newNodes.push(s);
+						}
+
+						if (typeof element === 'string') {
+							newNodes.push(element);
+						} else {
+							// Clone the node cause it could appear several times
+							newNodes.push(element.cloneNode(true));
+						}
+					}
+					// We added one to many copy of the element; remove it
+					newNodes.pop();
+				} else {
+					newNodes.push(node);
+				}
+			}
+
+			return newNodes;
+		}
+
+		for (const key of ['br']) {
+			const htmlRegExp = new RegExp("\\$<" + key + ">", "gi");
+			nodes = insertHtml(nodes, htmlRegExp, document.createElement(key));
+		}
+
+		for (const key in values) {
+			const value = values[key];
+
+			const valueRegExp = new RegExp("\\$\\{" + key + "\\}", "gi");
+
+			if (value instanceof HTMLElement) {
+				// Deal with HTMLElement
+				nodes = insertHtml(nodes, valueRegExp, value);
+			} else {
+				// Other types
+				if (str.match(valueRegExp)) {
+					str = str.replace(valueRegExp, String(values[key]));
+				}
+			}
+		}
+		element.append(...nodes);
+		return element;
 	}
 
 	/**
