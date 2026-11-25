@@ -7,7 +7,11 @@ import { getObject } from './utils/registry';
 
 export const svgNamespace = 'http://www.w3.org/2000/svg';
 
-export type CreateElementChildOption = Element | ShadowRoot | string | null | undefined;
+export interface CompoundElement {
+	parent: Element | ShadowRoot;
+};
+
+export type CreateElementChildOption = Element | ShadowRoot | string | null | undefined | CompoundElement;
 
 export type HarmonyEventListener = ((evt: Event) => void) |
 	((evt: MouseEvent) => void) |
@@ -181,8 +185,10 @@ function append(element: Element | ShadowRoot, child: CreateElementChildOption):
 
 	if (child instanceof ShadowRoot) {
 		element.append(child.host);
-	} else {
+	} else if (child instanceof Element || typeof child === 'string') {
 		element.append(child);
+	} else {
+		element.append(child.parent);
 	}
 }
 
@@ -206,7 +212,7 @@ function createElementOptions(element: HTMLElement, options?: CreateElementOptio
 					element.id = optionValue as string;
 					break;
 				case 'class':
-					element.classList.add(...(optionValue as string).split(' ').filter((n: string) => n));
+					element.classList.add(...(optionValue as string | undefined ?? '').split(' ').filter((n: string) => n));
 					break;
 				case 'i18n':
 					if ((element as unknown as HasI18n).setTitleI18n) {

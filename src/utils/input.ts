@@ -1,4 +1,4 @@
-import { createElement } from '../harmony-html';
+import { CompoundElement, createElement } from '../harmony-html';
 
 export interface CreateTextInputOptions {
 	label: string;
@@ -9,14 +9,19 @@ export interface CreateTextInputOptions {
 	$change?: (event: InputEvent) => void,
 }
 
-export function createTextInput(options: CreateTextInputOptions): HTMLLabelElement {
-	return createElement('label', {
+export interface CompoundInputElement extends CompoundElement {
+	input: HTMLInputElement;
+}
+
+export function createTextInput(options: CreateTextInputOptions): CompoundInputElement {
+	let input: HTMLInputElement;
+	const parent = createElement('label', {
 		class: options.class,
 		childs: [
 			createElement('span', {
 				i18n: options.label,
 			}),
-			createElement('input', {
+			input = createElement('input', {
 				i18n: {
 					placeholder: options.placeholder,
 				},
@@ -26,5 +31,5 @@ export function createTextInput(options: CreateTextInputOptions): HTMLLabelEleme
 			}),
 		]
 	});
-
+	return { parent, input };
 }

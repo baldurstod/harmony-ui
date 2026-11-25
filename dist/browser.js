@@ -818,8 +818,11 @@ function append(element, child) {
     if (child instanceof ShadowRoot) {
         element.append(child.host);
     }
-    else {
+    else if (child instanceof Element || typeof child === 'string') {
         element.append(child);
+    }
+    else {
+        element.append(child.parent);
     }
 }
 function createElementOptions(element, options, shadowRoot) {
@@ -839,7 +842,7 @@ function createElementOptions(element, options, shadowRoot) {
                     element.id = optionValue;
                     break;
                 case 'class':
-                    element.classList.add(...optionValue.split(' ').filter((n) => n));
+                    element.classList.add(...(optionValue ?? '').split(' ').filter((n) => n));
                     break;
                 case 'i18n':
                     if (element.setTitleI18n) {
@@ -7928,13 +7931,14 @@ function promptI18n(messageI18n, defaultValue) {
 }
 
 function createTextInput(options) {
-    return createElement('label', {
+    let input;
+    const parent = createElement('label', {
         class: options.class,
         childs: [
             createElement('span', {
                 i18n: options.label,
             }),
-            createElement('input', {
+            input = createElement('input', {
                 i18n: {
                     placeholder: options.placeholder,
                 },
@@ -7944,6 +7948,7 @@ function createTextInput(options) {
             }),
         ]
     });
+    return { parent, input };
 }
 
 export { AddAndProcessI18nElement, AddI18nElement, HTMLHarmony2dManipulatorElement, HTMLHarmonyAccordionElement, HTMLHarmonyCircularProgressElement, HTMLHarmonyColorPickerElement, HTMLHarmonyCopyElement, HTMLHarmonyFileInputElement, HTMLHarmonyFilterElement, HTMLHarmonyInfoBoxElement, HTMLHarmonyInfoBoxElementType, HTMLHarmonyInputElement, HTMLHarmonyItemElement, HTMLHarmonyLabelPropertyElement, HTMLHarmonyMenuElement, HTMLHarmonyPaletteElement, HTMLHarmonyPanelElement, HTMLHarmonyRadioElement, HTMLHarmonySelectElement, HTMLHarmonySliderElement, HTMLHarmonySlideshowElement, HTMLHarmonySplitterElement, HTMLHarmonySwitchElement, HTMLHarmonyTabElement, HTMLHarmonyTabGroupElement, HTMLHarmonyToggleButtonElement, HTMLHarmonyTooltipElement, HTMLHarmonyTreeElement, HarmonyFilterListType, HarmonyInput, HarmonyPanel, index as HarmonySVG, HarmonyTab, HarmonyTabGroup, HarmonyTree, Help, I18n, I18nElements, I18nEvents, ManipulatorCorner, ManipulatorDirection, ManipulatorResizeOrigin, ManipulatorSide, ManipulatorUpdatedEventType, TreeItem, TreeItemKind, addRemoveClass, adoptStyle, adoptStyleSheet, cloneEvent, createElement, createElementNS, createShadowRoot, createShadowRootNS, createTextInput, defineElement, defineHarmony2dManipulator, defineHarmonyAccordion, defineHarmonyCircularProgress, defineHarmonyColorPicker, defineHarmonyCopy, defineHarmonyFileInput, defineHarmonyFilter, defineHarmonyInfoBox, defineHarmonyInput, defineHarmonyItem, defineHarmonyLabelProperty, defineHarmonyMenu, defineHarmonyPalette, defineHarmonyPanel, defineHarmonyRadio, defineHarmonySelect, defineHarmonySlider, defineHarmonySlideshow, defineHarmonySplitter, defineHarmonySwitch, defineHarmonyTab, defineHarmonyTabGroup, defineHarmonyToggleButton, defineHarmonyTooltip, defineHarmonyTree, display, documentStyle, documentStyleSync, enableHelp, getCustomElementRegistry, hide, isVisible, promptI18n, shadowRootStyle, shadowRootStyleSync, show, styleInject, svgNamespace, toggle, updateElement, updateShadowRoot, visible };

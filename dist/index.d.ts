@@ -19,6 +19,14 @@ export declare type ColorPickerEventData = {
     rgba: [number, number, number, number];
 };
 
+export declare interface CompoundElement {
+    parent: Element | ShadowRoot;
+}
+
+export declare interface CompoundInputElement extends CompoundElement {
+    input: HTMLInputElement;
+}
+
 export declare function createElement(tagName: 'button', options?: CreateElementOptions): HTMLButtonElement;
 
 export declare function createElement(tagName: 'canvas', options?: CreateElementOptions): HTMLCanvasElement;
@@ -99,7 +107,7 @@ export declare function createElement(tagName: 'harmony-tree', options?: CreateE
 
 export declare function createElement(tagName: string, options?: CreateElementOptions): HTMLElement;
 
-export declare type CreateElementChildOption = Element | ShadowRoot | string | null | undefined;
+export declare type CreateElementChildOption = Element | ShadowRoot | string | null | undefined | CompoundElement;
 
 export declare function createElementNS(namespaceURI: string, tagName: string, options?: CreateElementOptions): Element;
 
@@ -159,7 +167,7 @@ export declare type CreateShadowRootOptions = {
     slotAssignment?: SlotAssignmentMode;
 };
 
-export declare function createTextInput(options: CreateTextInputOptions): HTMLLabelElement;
+export declare function createTextInput(options: CreateTextInputOptions): CompoundInputElement;
 
 export declare interface CreateTextInputOptions {
     label: string;
