@@ -54,7 +54,7 @@ export type CreateElementOptions = {
 	value?: string,
 	elementCreated?: (element: Element, root?: ShadowRoot) => void,
 	[key: string]: unknown,
-	[key: `$${string}`]: HarmonyEventListener,
+	[key: `$${string}`]: HarmonyEventListener | undefined,
 	[key: `@${string}`]: string,
 }
 

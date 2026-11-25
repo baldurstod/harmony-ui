@@ -140,7 +140,7 @@ export declare type CreateElementOptions = {
     value?: string;
     elementCreated?: (element: Element, root?: ShadowRoot) => void;
     [key: string]: unknown;
-    [key: `$${string}`]: HarmonyEventListener;
+    [key: `$${string}`]: HarmonyEventListener | undefined;
     [key: `@${string}`]: string;
 };
 
@@ -158,6 +158,17 @@ export declare type CreateShadowRootOptions = {
     serializable?: boolean;
     slotAssignment?: SlotAssignmentMode;
 };
+
+export declare function createTextInput(options: CreateTextInputOptions): HTMLLabelElement;
+
+export declare interface CreateTextInputOptions {
+    label: string;
+    class?: string;
+    placeholder?: string;
+    defaultValue?: string;
+    $input?: (event: InputEvent) => void;
+    $change?: (event: InputEvent) => void;
+}
 
 export declare function defineElement(name: string, constructor: CustomElementConstructor, options?: ElementDefinitionOptions): void;
 

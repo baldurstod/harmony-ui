@@ -30,3 +30,4 @@ export * from './harmony-i18n';
 export * from './utils/events';
 export * from './utils/help';
 export * from './utils/i18n';
+export * from './utils/input';
