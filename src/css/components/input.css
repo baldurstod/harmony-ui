@@ -2,6 +2,7 @@
 	display: flex;
 	flex-direction: column;
 	gap: 0.2rem;
+	padding: 0.2rem;
 }
 
 label {
@@ -33,4 +34,8 @@ label {
 	--r: 255;
 	--g: 0;
 	--b: 0;
+}
+
+input {
+	flex: 1;
 }
