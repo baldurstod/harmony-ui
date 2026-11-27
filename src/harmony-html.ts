@@ -11,7 +11,7 @@ export interface CompoundElement {
 	parent: Element | ShadowRoot;
 };
 
-export type CreateElementChildOption = Element | ShadowRoot | string | null | undefined | CompoundElement;
+export type CreateElementChildOption = Element | ShadowRoot | string | null | undefined | CompoundElement | false;
 
 export type HarmonyEventListener = ((evt: Event) => void) |
 	((evt: MouseEvent) => void) |
@@ -179,7 +179,7 @@ export function updateShadowRoot(shadowRoot: ShadowRoot | undefined, options: Cr
 }
 
 function append(element: Element | ShadowRoot, child: CreateElementChildOption): void {
-	if (child === null || child === undefined) {
+	if (child === null || child === undefined || child === false) {
 		return;
 	}
 

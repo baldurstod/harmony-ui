@@ -812,7 +812,7 @@ function updateShadowRoot(shadowRoot, options) {
     return shadowRoot;
 }
 function append(element, child) {
-    if (child === null || child === undefined) {
+    if (child === null || child === undefined || child === false) {
         return;
     }
     if (child instanceof ShadowRoot) {

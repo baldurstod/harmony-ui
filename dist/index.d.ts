@@ -107,7 +107,7 @@ export declare function createElement(tagName: 'harmony-tree', options?: CreateE
 
 export declare function createElement(tagName: string, options?: CreateElementOptions): HTMLElement;
 
-export declare type CreateElementChildOption = Element | ShadowRoot | string | null | undefined | CompoundElement;
+export declare type CreateElementChildOption = Element | ShadowRoot | string | null | undefined | CompoundElement | false;
 
 export declare function createElementNS(namespaceURI: string, tagName: string, options?: CreateElementOptions): Element;
 
