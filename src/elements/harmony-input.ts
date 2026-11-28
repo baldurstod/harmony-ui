@@ -4,11 +4,7 @@ import { I18nDescriptor } from '../harmony-i18n';
 import { HasI18n } from '../interfaces/hasi18n';
 
 export class HTMLHarmonyInputElement extends HTMLElement implements HasI18n {
-	#input = new HarmonyInput();
-
-	connectedCallback(): void {
-		this.append(this.#input.htmlElement);
-	}
+	#input = new HarmonyInput({ container: this });
 
 	addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void {
 		this.#input.addEventListener(type, listener, options);

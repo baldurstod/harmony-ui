@@ -7,6 +7,7 @@ import { HasI18n } from '../interfaces/hasi18n';
 import { HarmonyComponent } from './component';
 
 export type HarmonyInputParams = {
+	container?: HTMLElement;
 	/** Label. */
 	label?: string;
 	/** Internationalized label. */
@@ -25,7 +26,7 @@ export type HarmonyInputEventData = {
 export type HarmonyInputInfoLevel = 'info' | 'error' | 'warning';
 
 export class HarmonyInput extends MyEventTarget implements HarmonyComponent, HasI18n {
-	readonly htmlElement = createElement('div');
+	readonly htmlElement: HTMLElement;
 	#shadowRoot?: ShadowRoot;
 	#htmlLabel?: HTMLSpanElement;
 	#htmlInput?: HTMLInputElement;
@@ -35,6 +36,7 @@ export class HarmonyInput extends MyEventTarget implements HarmonyComponent, Has
 
 	constructor(params: HarmonyInputParams = {}) {
 		super();
+		this.htmlElement = params.container ?? createElement('div');
 		this.setParams(params);
 	}
 

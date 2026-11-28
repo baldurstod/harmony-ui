@@ -685,7 +685,7 @@ function addRemoveClass(element, clas, add) {
 }
 
 class HarmonyInput extends MyEventTarget {
-    htmlElement = createElement('div');
+    htmlElement;
     #shadowRoot;
     #htmlLabel;
     #htmlInput;
@@ -694,6 +694,7 @@ class HarmonyInput extends MyEventTarget {
     #active = false;
     constructor(params = {}) {
         super();
+        this.htmlElement = params.container ?? createElement('div');
         this.setParams(params);
     }
     setParams(params) {
@@ -4931,10 +4932,7 @@ function defineHarmonyInfoBox(suffix = '') {
 }
 
 class HTMLHarmonyInputElement extends HTMLElement {
-    #input = new HarmonyInput();
-    connectedCallback() {
-        this.append(this.#input.htmlElement);
-    }
+    #input = new HarmonyInput({ container: this });
     addEventListener(type, listener, options) {
         this.#input.addEventListener(type, listener, options);
     }

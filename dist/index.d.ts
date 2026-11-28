@@ -306,7 +306,7 @@ export declare type HarmonyFilterType = 'string' | 'number' | 'range' | 'list' |
 
 export declare class HarmonyInput extends MyEventTarget implements HarmonyComponent, HasI18n {
     #private;
-    readonly htmlElement: HTMLDivElement;
+    readonly htmlElement: HTMLElement;
     constructor(params?: HarmonyInputParams);
     setParams(params: HarmonyInputParams): void;
     setLabel(label: string): void;
@@ -331,6 +331,7 @@ export declare type HarmonyInputEventData = {
 export declare type HarmonyInputInfoLevel = 'info' | 'error' | 'warning';
 
 export declare type HarmonyInputParams = {
+    container?: HTMLElement;
     /** Label. */
     label?: string;
     /** Internationalized label. */
@@ -673,7 +674,6 @@ export declare enum HTMLHarmonyInfoBoxElementType {
 
 export declare class HTMLHarmonyInputElement extends HTMLElement implements HasI18n {
     #private;
-    connectedCallback(): void;
     addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
     get value(): string;
     set value(value: string);
