@@ -3,12 +3,15 @@
 	flex-direction: column;
 	gap: 0.2rem;
 	padding: 0.2rem;
+	--fs: var(--font-size, 1.5rem);
+	font-size: var(--fs);
 }
 
 label {
 	display: flex;
 	gap: 0.2rem;
 	justify-content: space-between;
+	align-items: center;
 }
 
 .info-box {
@@ -38,4 +41,5 @@ label {
 
 input {
 	flex: 1;
+	font-size: var(--fs);
 }
